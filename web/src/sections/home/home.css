@@ -537,9 +537,100 @@
 }
 
 .home-team-manager-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+  padding-top: 24px;
+}
+
+.home-team-group {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(10, 168, 150, 0.16);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(145deg, rgba(10, 168, 150, 0.08), rgba(52, 95, 116, 0.07)),
+    rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 32px rgba(20, 33, 38, 0.08);
+}
+
+.home-team-group::before {
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  width: 2px;
+  height: 24px;
+  content: "";
+  background: linear-gradient(180deg, rgba(10, 168, 150, 0.12), var(--team-color));
+  transform: translateX(-50%);
+}
+
+.home-team-group::after {
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 9px;
+  height: 9px;
+  content: "";
+  border-radius: 50%;
+  background: var(--team-color);
+  box-shadow: 0 0 0 6px rgba(10, 168, 150, 0.08), 0 0 18px rgba(10, 168, 150, 0.18);
+  transform: translateX(-50%);
+}
+
+.home-team-branch {
+  position: relative;
+  width: 2px;
+  height: 20px;
+  justify-self: center;
+  background: linear-gradient(180deg, var(--team-color), rgba(10, 168, 150, 0.1));
+}
+
+.home-team-branch::after {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(190px, 76%);
+  height: 2px;
+  content: "";
+  background: linear-gradient(90deg, rgba(10, 168, 150, 0.08), rgba(56, 170, 184, 0.44), rgba(10, 168, 150, 0.08));
+  transform: translateX(-50%);
+}
+
+.home-team-report-node {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+
+.home-team-report-node::before {
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 2px;
+  height: 10px;
+  content: "";
+  background: linear-gradient(180deg, rgba(56, 170, 184, 0.48), var(--team-color));
+  transform: translateX(-50%);
+}
+
+.home-team-report-node .home-team-card {
+  z-index: 1;
+}
+
+.home-team-empty {
+  display: block;
+  padding: 12px;
+  color: var(--muted);
+  border: 1px dashed rgba(10, 168, 150, 0.26);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 .home-team-manager {
@@ -563,8 +654,9 @@
 
 .home-team-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding-top: 2px;
 }
 
 .home-partners-strip {
@@ -746,6 +838,7 @@
 
   .home-team-manager-grid {
     grid-template-columns: 1fr;
+    padding-top: 16px;
   }
 
   .home-team-line {
@@ -755,6 +848,15 @@
 
   .home-team-line::after {
     display: none;
+  }
+
+  .home-team-group::before {
+    top: -16px;
+    height: 16px;
+  }
+
+  .home-team-branch::after {
+    width: 2px;
   }
 
   .home-team-card,
@@ -929,4 +1031,14 @@ body.ui-theme-dark .home-team-showcase {
     radial-gradient(circle at 86% 72%, rgba(120, 164, 182, 0.12), transparent 42%),
     linear-gradient(180deg, rgba(18, 30, 36, 0.96), rgba(16, 26, 33, 0.86)),
     var(--surface);
+}
+
+body.ui-theme-dark .home-team-group {
+  background:
+    linear-gradient(145deg, rgba(82, 205, 191, 0.1), rgba(120, 164, 182, 0.08)),
+    rgba(18, 30, 36, 0.82);
+}
+
+body.ui-theme-dark .home-team-empty {
+  background: rgba(255, 255, 255, 0.05);
 }

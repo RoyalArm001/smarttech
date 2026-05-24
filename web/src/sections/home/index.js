@@ -126,13 +126,42 @@
     }
 
     var directorCard = director ? renderHomeTeamCard(director, "home-team-director") : "";
-    var managerCards = specialists.filter(isManager).map(function (member) {
-      return renderHomeTeamCard(member, "home-team-manager");
-    }).join("");
-    var specialistCards = specialists.filter(function (member) {
-      return !isManager(member);
-    }).map(function (member) {
-      return renderHomeTeamCard(member, "");
+    var managerGroups = specialists.filter(isManager).map(function (manager) {
+      return {
+        manager: manager,
+        reports: specialists.filter(function (member) {
+          return !isManager(member) && member.managerId === manager.id;
+        })
+      };
+    });
+    var usedReports = {};
+    managerGroups.forEach(function (group) {
+      group.reports.forEach(function (member) {
+        usedReports[member.id] = true;
+      });
+    });
+    var unassignedReports = specialists.filter(function (member) {
+      return !isManager(member) && !usedReports[member.id];
+    });
+    if (unassignedReports.length && managerGroups.length) {
+      managerGroups[0].reports = managerGroups[0].reports.concat(unassignedReports);
+    }
+
+    var managerCards = managerGroups.map(function (group) {
+      var reports = group.reports.map(function (member) {
+        return '<span class="home-team-report-node">' + renderHomeTeamCard(member, "home-team-specialist") + "</span>";
+      }).join("");
+
+      if (!reports) {
+        reports = '<span class="home-team-empty">' + e(site.i18n.get("teamPage.noReports", "This direction is coordinated by project scope.")) + "</span>";
+      }
+
+      return "" +
+        '<article class="home-team-group reveal" style="--team-color: ' + e(group.manager.color) + '">' +
+          renderHomeTeamCard(group.manager, "home-team-manager") +
+          '<span class="home-team-branch" aria-hidden="true"></span>' +
+          '<div class="home-team-grid">' + reports + "</div>" +
+        "</article>";
     }).join("");
 
     return "" +
@@ -218,7 +247,6 @@
             '<div class="home-team-lead">' + directorCard + "</div>" +
             '<div class="home-team-line" aria-hidden="true"></div>' +
             '<div class="home-team-manager-grid">' + managerCards + "</div>" +
-            '<div class="home-team-grid">' + specialistCards + "</div>" +
           "</div>" +
         "</div>" +
       "</section>";

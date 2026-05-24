@@ -36,6 +36,9 @@ function safeWebPath(urlPath) {
 
   var cleanPath = decoded.replace(/^\/+/g, "").replace(/\/+$/, "");
   var normalized = path.normalize(cleanPath);
+  if (normalized === ".") {
+    normalized = "";
+  }
   if (path.isAbsolute(normalized) || normalized.indexOf("..") === 0) {
     return null;
   }

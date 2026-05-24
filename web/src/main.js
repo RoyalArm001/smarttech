@@ -9,11 +9,14 @@
   var chatHistory = [];
   var chatHistoryLimit = 40;
   var chatSurveyState = null;
+  var backToTopUi = null;
   var routeTransition = null;
   var routeTransitionTimer = null;
   var uiSettingsStorageKey = "smarttech.uiSettings";
   var onlineLangStorageKey = "smarttech.onlineLang";
   var metricsVisitSessionKey = "smarttech.metrics.visitSession";
+  var staticMetricsStorageKey = "smarttech.metrics.staticVisits";
+  var chatDismissedSessionKey = "smarttech.chat.dismissed";
   var onlineTranslateScriptLoaded = false;
   var googleUiCleanupTimer = null;
   var languageOutsideClickHandler = null;
@@ -68,6 +71,11 @@
 
       return routeFromParts(parts, id);
     }
+  }
+
+  function shouldUseServerApi() {
+    var host = String(window.location.hostname || "").toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
   }
 
   function pageMarkup(page) {
@@ -201,6 +209,7 @@
     setupReveal();
     setupFooterYear();
     setupAutoChat();
+    setupBackToTop();
     applyTranslationBoundaries(page);
     setupMetricsAutomation();
     resetScroll();
@@ -499,7 +508,34 @@
     var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
     var requestSteps = Array.prototype.slice.call(form.querySelectorAll("[data-request-step]"));
     var requestStepButtons = Array.prototype.slice.call(form.querySelectorAll("[data-request-go]"));
+    var requestTypeInputs = Array.prototype.slice.call(form.querySelectorAll("input[name='requestType']"));
+    var systemInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-system]"));
+    var maintenanceInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-maintenance]"));
+    var specialistInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-specialist]"));
+    var scopePanels = Array.prototype.slice.call(form.querySelectorAll("[data-request-scope-panel]"));
+    var scopedBlocks = Array.prototype.slice.call(form.querySelectorAll("[data-scope-show]"));
+    var visitInput = form.querySelector("[data-request-visit]");
+    var quantityInputsBySystem = {};
+    var optionInputsBySystem = {};
+    var brandInputsBySystem = {};
+    var summaryFrame = null;
     var currentRequestStep = 0;
+
+    Array.prototype.forEach.call(form.querySelectorAll("[data-request-qty]"), function (input) {
+      quantityInputsBySystem[input.getAttribute("data-request-qty")] = input;
+    });
+
+    Array.prototype.forEach.call(form.querySelectorAll("[data-request-option]"), function (input) {
+      var id = input.getAttribute("data-system-id") || "";
+      if (!optionInputsBySystem[id]) optionInputsBySystem[id] = [];
+      optionInputsBySystem[id].push(input);
+    });
+
+    Array.prototype.forEach.call(form.querySelectorAll("[data-request-brand]"), function (input) {
+      var id = input.getAttribute("data-system-id") || "";
+      if (!brandInputsBySystem[id]) brandInputsBySystem[id] = [];
+      brandInputsBySystem[id].push(input);
+    });
 
     function copy() {
       var dictionaries = {
@@ -647,15 +683,21 @@
 
     function selectedSystems() {
       var labels = copy();
-      return Array.prototype.map.call(form.querySelectorAll("[data-request-system]:checked"), function (checkbox) {
-        var qty = form.querySelector("[data-request-qty='" + checkbox.value + "']");
+      return systemInputs.filter(function (checkbox) {
+        return checkbox.checked;
+      }).map(function (checkbox) {
+        var qty = quantityInputsBySystem[checkbox.value];
         var amount = qty && qty.value ? String(qty.value).trim() : "1";
         var unit = checkbox.getAttribute("data-unit") || "";
         var title = checkbox.getAttribute("data-title") || checkbox.value;
-        var components = Array.prototype.map.call(form.querySelectorAll("[data-request-option][data-system-id='" + checkbox.value + "']:checked"), function (option) {
+        var components = (optionInputsBySystem[checkbox.value] || []).filter(function (option) {
+          return option.checked;
+        }).map(function (option) {
           return option.value;
         });
-        var brands = Array.prototype.map.call(form.querySelectorAll("[data-request-brand][data-system-id='" + checkbox.value + "']:checked"), function (brand) {
+        var brands = (brandInputsBySystem[checkbox.value] || []).filter(function (brand) {
+          return brand.checked;
+        }).map(function (brand) {
           return brand.value;
         });
         return "- " + title + ": " + amount + (unit ? " " + unit : "") +
@@ -665,82 +707,106 @@
     }
 
     function selectedSystemTitles() {
-      return Array.prototype.map.call(form.querySelectorAll("[data-request-system]:checked"), function (checkbox) {
+      return systemInputs.filter(function (checkbox) {
+        return checkbox.checked;
+      }).map(function (checkbox) {
         return checkbox.getAttribute("data-title") || checkbox.value;
       });
     }
 
     function selectedMaintenance() {
-      return Array.prototype.map.call(form.querySelectorAll("[data-request-maintenance]:checked"), function (checkbox) {
+      return maintenanceInputs.filter(function (checkbox) {
+        return checkbox.checked;
+      }).map(function (checkbox) {
         return "- " + (checkbox.getAttribute("data-title") || checkbox.value);
       });
     }
 
     function selectedSpecialists() {
-      return Array.prototype.map.call(form.querySelectorAll("[data-request-specialist]:checked"), function (checkbox) {
+      return specialistInputs.filter(function (checkbox) {
+        return checkbox.checked;
+      }).map(function (checkbox) {
         return "- " + (checkbox.getAttribute("data-title") || checkbox.value);
       });
     }
 
     function isVisitNeeded() {
-      var field = form.elements.visitNeeded;
-      return !!(field && field.checked);
+      return !!(visitInput && visitInput.checked);
     }
 
     function updateQuantityState() {
-      Array.prototype.forEach.call(form.querySelectorAll("[data-request-system]"), function (checkbox) {
+      systemInputs.forEach(function (checkbox) {
         var card = checkbox.closest(".request-system-card");
         if (card) {
           card.classList.toggle("is-selected", checkbox.checked);
         }
-        var qty = form.querySelector("[data-request-qty='" + checkbox.value + "']");
+        var qty = quantityInputsBySystem[checkbox.value];
         if (qty) {
           qty.disabled = !checkbox.checked;
         }
-        Array.prototype.forEach.call(form.querySelectorAll("[data-request-option][data-system-id='" + checkbox.value + "']"), function (option) {
+        (optionInputsBySystem[checkbox.value] || []).forEach(function (option) {
           option.disabled = !checkbox.checked;
           if (!checkbox.checked) {
             option.checked = false;
           }
         });
-        Array.prototype.forEach.call(form.querySelectorAll("[data-request-brand][data-system-id='" + checkbox.value + "']"), function (brand) {
+        (brandInputsBySystem[checkbox.value] || []).forEach(function (brand) {
           brand.disabled = !checkbox.checked;
           if (!checkbox.checked) {
             brand.checked = false;
           }
         });
       });
+
+      requestTypeInputs.forEach(function (input) {
+        var card = input.closest(".request-choice");
+        if (card) card.classList.toggle("is-selected", input.checked);
+      });
+
+      maintenanceInputs.forEach(function (input) {
+        var card = input.closest(".request-check");
+        if (card) card.classList.toggle("is-selected", input.checked);
+      });
+
+      specialistInputs.forEach(function (input) {
+        var card = input.closest(".request-specialist-chip");
+        if (card) card.classList.toggle("is-selected", input.checked);
+      });
+
+      if (visitInput) {
+        var visitCard = visitInput.closest(".request-visit-toggle");
+        if (visitCard) visitCard.classList.toggle("is-selected", visitInput.checked);
+      }
     }
 
     function syncRequestScope() {
       var kind = checkedRequestKind();
-      Array.prototype.forEach.call(form.querySelectorAll("[data-request-scope-panel]"), function (panel) {
+      scopePanels.forEach(function (panel) {
         panel.classList.toggle("is-active", panel.getAttribute("data-request-scope-panel") === kind);
       });
-      Array.prototype.forEach.call(form.querySelectorAll("[data-scope-show]"), function (panel) {
+      scopedBlocks.forEach(function (panel) {
         var allowed = String(panel.getAttribute("data-scope-show") || "").split(/\s+/);
         panel.hidden = allowed.indexOf(kind) < 0;
       });
 
-      var visit = form.querySelector("[data-request-visit]");
-      if (visit && kind === "audit") {
-        visit.checked = true;
-      } else if (visit) {
-        visit.checked = false;
+      if (visitInput && kind === "audit") {
+        visitInput.checked = true;
+      } else if (visitInput) {
+        visitInput.checked = false;
       }
 
       if (kind !== "service") {
-        Array.prototype.forEach.call(form.querySelectorAll("[data-request-maintenance]"), function (checkbox) {
+        maintenanceInputs.forEach(function (checkbox) {
           checkbox.checked = false;
         });
       }
       if (kind !== "audit") {
-        Array.prototype.forEach.call(form.querySelectorAll("[data-request-specialist]"), function (checkbox) {
+        specialistInputs.forEach(function (checkbox) {
           checkbox.checked = false;
         });
       }
       if (kind === "audit") {
-        Array.prototype.forEach.call(form.querySelectorAll("[data-request-system]"), function (checkbox) {
+        systemInputs.forEach(function (checkbox) {
           checkbox.checked = false;
         });
       }
@@ -821,6 +887,17 @@
       summary.value = buildSummary(mode);
     }
 
+    function scheduleSummaryUpdate() {
+      if (summaryFrame) return;
+      var raf = window.requestAnimationFrame || function (callback) {
+        return window.setTimeout(callback, 16);
+      };
+      summaryFrame = raf(function () {
+        summaryFrame = null;
+        updateSummary();
+      });
+    }
+
     function setStatus(text) {
       if (status) {
         status.textContent = text || "";
@@ -861,6 +938,37 @@
       return base + (parts.length ? " - " + parts.join(" / ") : "");
     }
 
+    function downloadSummaryFile() {
+      if (!window.Blob || !window.URL || !window.URL.createObjectURL) {
+        return false;
+      }
+
+      var file = new Blob([summary.value], { type: "text/plain;charset=utf-8" });
+      var link = document.createElement("a");
+      var date = new Date().toISOString().slice(0, 10);
+      link.href = window.URL.createObjectURL(file);
+      link.download = "smarttech-request-" + date + ".txt";
+      document.body.appendChild(link);
+      link.click();
+      window.setTimeout(function () {
+        window.URL.revokeObjectURL(link.href);
+        link.remove();
+      }, 0);
+      return true;
+    }
+
+    function safeMailBody(fullText) {
+      var text = String(fullText || "");
+      var maxMailBodyLength = 1800;
+      if (text.length <= maxMailBodyLength) {
+        return text;
+      }
+
+      downloadSummaryFile();
+      return text.slice(0, 1400) +
+        "\n\nFull request is saved in the downloaded TXT file. If it did not download, use the TXT download button on the request page.";
+    }
+
     form.addEventListener("click", function (event) {
       var go = event.target.closest("[data-request-go]");
       var next = event.target.closest("[data-request-next]");
@@ -878,12 +986,23 @@
     });
 
     form.addEventListener("input", function () {
-      syncRequestScope();
-      updateSummary();
+      scheduleSummaryUpdate();
     });
+
     form.addEventListener("change", function (event) {
-      syncRequestScope();
-      if (event.target && event.target.name === "requestType") {
+      var target = event.target;
+      var shouldSyncScope = target && (
+        target.name === "requestType" ||
+        target.hasAttribute("data-request-system") ||
+        target.hasAttribute("data-request-maintenance") ||
+        target.hasAttribute("data-request-specialist") ||
+        target.hasAttribute("data-request-visit")
+      );
+
+      if (shouldSyncScope) {
+        syncRequestScope();
+      }
+      if (target && target.name === "requestType") {
         setRequestStep(1);
       }
       updateSummary();
@@ -894,7 +1013,7 @@
       var labels = copy();
       var subject = emailSubject(labels, mode);
       setSubmitState("sending");
-      window.location.href = site.utils.mailTo(recipient, subject, summary.value);
+      window.location.href = site.utils.mailTo(recipient, subject, safeMailBody(summary.value));
       setStatus(labels.mailStatus);
       window.setTimeout(function () {
         setSubmitState("ready");
@@ -917,22 +1036,10 @@
         updateSummary();
         setSubmitState("ready");
 
-        if (!window.Blob || !window.URL || !window.URL.createObjectURL) {
+        if (!downloadSummaryFile()) {
           setStatus(copy().mailStatus);
           return;
         }
-
-        var file = new Blob([summary.value], { type: "text/plain;charset=utf-8" });
-        var link = document.createElement("a");
-        var date = new Date().toISOString().slice(0, 10);
-        link.href = window.URL.createObjectURL(file);
-        link.download = "smarttech-request-" + date + ".txt";
-        document.body.appendChild(link);
-        link.click();
-        window.setTimeout(function () {
-          window.URL.revokeObjectURL(link.href);
-          link.remove();
-        }, 0);
         setStatus(copy().downloadStatus);
       });
     }
@@ -1021,7 +1128,7 @@
       status.textContent = feedbackText("sending");
       setBusy(true);
 
-      if (!window.fetch || window.location.protocol === "file:") {
+      if (!window.fetch || window.location.protocol === "file:" || !shouldUseServerApi()) {
         setBusy(false);
         openEmailFallback(payload);
         return;
@@ -1107,17 +1214,36 @@
     target.textContent = numberValue.toLocaleString("en-US");
   }
 
+  function setupStaticMetricsFallback(recordVisit) {
+    var visits = 0;
+
+    try {
+      visits = Math.max(0, Math.floor(Number(window.localStorage.getItem(staticMetricsStorageKey) || 0)));
+      if (recordVisit) {
+        visits += 1;
+        window.localStorage.setItem(staticMetricsStorageKey, String(visits));
+      }
+    } catch (error) {
+      visits = recordVisit ? 1 : 0;
+    }
+
+    setMetricValue("visits", visits);
+    setMetricValue("projects", (site.content.projects || []).length || 0);
+  }
+
   function setupMetricsAutomation() {
     var hasMetrics = document.querySelector("[data-metric-item]");
     if (!hasMetrics) return;
 
     setMetricValue("projects", (site.content.projects || []).length || 0);
 
-    if (window.location.protocol === "file:") {
+    var recordVisit = shouldRecordVisitThisSession();
+
+    if (window.location.protocol === "file:" || !window.fetch || !shouldUseServerApi()) {
+      setupStaticMetricsFallback(recordVisit);
       return;
     }
 
-    var recordVisit = shouldRecordVisitThisSession();
     var endpoint = recordVisit ? "/api/metrics/visit" : "/api/metrics";
     var options = {
       method: recordVisit ? "POST" : "GET",
@@ -1402,6 +1528,7 @@
         statusLabel: "\u0531\u056f\u057f\u056b\u057e",
         openLabel: "\u0532\u0561\u0581\u0565\u056c \u0579\u0561\u057f\u0568",
         closeLabel: "\u0553\u0561\u056f\u0565\u056c \u0579\u0561\u057f\u0568",
+        hideLabel: "\u0539\u0561\u0584\u0581\u0576\u0565\u056c \u0579\u0561\u057f\u0568",
         inputPlaceholder: "\u0533\u0580\u0565\u0584 \u0570\u0561\u0580\u0581\u0568...",
         sendLabel: "\u0548\u0582\u0572\u0561\u0580\u056f\u0565\u056c",
         typing: "\u0563\u0580\u0578\u0582\u0574 \u0567...",
@@ -1437,6 +1564,7 @@
         statusLabel: "Online",
         openLabel: "Open chat",
         closeLabel: "Close chat",
+        hideLabel: "Hide chat",
         inputPlaceholder: "Type your question...",
         sendLabel: "Send",
         typing: "typing...",
@@ -1472,6 +1600,7 @@
         statusLabel: "\u041e\u043d\u043b\u0430\u0439\u043d",
         openLabel: "\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
         closeLabel: "\u0417\u0430\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
+        hideLabel: "\u0421\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
         inputPlaceholder: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0432\u043e\u043f\u0440\u043e\u0441...",
         sendLabel: "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c",
         typing: "\u043f\u0435\u0447\u0430\u0442\u0430\u0435\u0442...",
@@ -1656,9 +1785,38 @@
     }
   }
 
+  function isChatDismissed() {
+    try {
+      return window.sessionStorage.getItem(chatDismissedSessionKey) === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setChatDismissed(isDismissed) {
+    if (!chatUi) return;
+
+    try {
+      if (isDismissed) {
+        window.sessionStorage.setItem(chatDismissedSessionKey, "1");
+      } else {
+        window.sessionStorage.removeItem(chatDismissedSessionKey);
+      }
+    } catch (error) {
+      // Session storage is best-effort.
+    }
+
+    if (isDismissed) {
+      setChatOpen(false);
+    }
+    chatUi.root.classList.toggle("is-dismissed", !!isDismissed);
+  }
+
   function setChatOpen(isOpen) {
     if (!chatUi) return;
+    if (isOpen && chatUi.root.classList.contains("is-dismissed")) return;
     chatUi.trigger.setAttribute("aria-expanded", String(isOpen));
+    document.body.classList.toggle("is-chat-open", !!isOpen);
 
     if (isOpen) {
       chatUi.panel.hidden = false;
@@ -1674,6 +1832,7 @@
     }
 
     chatUi.root.classList.remove("is-open");
+    document.body.classList.remove("is-chat-open");
     window.setTimeout(function () {
       if (chatUi && !chatUi.root.classList.contains("is-open")) {
         chatUi.panel.hidden = true;
@@ -1754,10 +1913,13 @@
     var host = document.createElement("div");
     host.className = "auto-chat-shell";
     host.innerHTML = '' +
-      '<button class="auto-chat-trigger" type="button" aria-expanded="false">' +
-        '<span class="auto-chat-trigger-icon" aria-hidden="true">ST</span>' +
-        '<span class="auto-chat-trigger-text"></span>' +
-      "</button>" +
+      '<div class="auto-chat-controls">' +
+        '<button class="auto-chat-trigger" type="button" aria-expanded="false">' +
+          '<span class="auto-chat-trigger-icon" aria-hidden="true">ST</span>' +
+          '<span class="auto-chat-trigger-text"></span>' +
+        "</button>" +
+        '<button class="auto-chat-dismiss" type="button" aria-label="Hide chat">&times;</button>' +
+      "</div>" +
       '<section class="auto-chat-panel" hidden>' +
         '<header class="auto-chat-head">' +
           '<div class="auto-chat-head-copy">' +
@@ -1780,6 +1942,7 @@
     var ui = {
       root: host,
       trigger: host.querySelector(".auto-chat-trigger"),
+      dismiss: host.querySelector(".auto-chat-dismiss"),
       triggerText: host.querySelector(".auto-chat-trigger-text"),
       panel: host.querySelector(".auto-chat-panel"),
       title: host.querySelector(".auto-chat-title"),
@@ -1800,6 +1963,10 @@
 
     ui.close.addEventListener("click", function () {
       setChatOpen(false);
+    });
+
+    ui.dismiss.addEventListener("click", function () {
+      setChatDismissed(true);
     });
 
     ui.quickActions.addEventListener("click", function (event) {
@@ -1844,6 +2011,9 @@
     chatUi.triggerText.textContent = copy.title;
     chatUi.trigger.setAttribute("aria-label", copy.openLabel);
     chatUi.close.setAttribute("aria-label", copy.closeLabel);
+    if (chatUi.dismiss) {
+      chatUi.dismiss.setAttribute("aria-label", copy.hideLabel || copy.closeLabel);
+    }
     chatUi.input.setAttribute("placeholder", copy.inputPlaceholder);
     chatUi.send.textContent = copy.sendLabel;
     refreshQuickButtons(copy);
@@ -1858,6 +2028,38 @@
     }
 
     renderChatHistory(copy);
+    setChatDismissed(isChatDismissed());
+  }
+
+  function buildBackToTopUi() {
+    var button = document.createElement("button");
+    button.className = "back-to-top-button";
+    button.type = "button";
+    button.setAttribute("aria-label", "Back to top");
+    button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5 5 12l1.6 1.6 4.3-4.3V20h2.2V9.3l4.3 4.3L19 12l-7-7Z" fill="currentColor"/></svg>';
+    document.body.appendChild(button);
+
+    button.addEventListener("click", function () {
+      var behavior = uiSettings.motion ? "smooth" : "auto";
+      try {
+        window.scrollTo({ top: 0, behavior: behavior });
+      } catch (error) {
+        window.scrollTo(0, 0);
+      }
+    });
+
+    window.addEventListener("scroll", function () {
+      button.classList.toggle("is-visible", window.scrollY > 520);
+    }, { passive: true });
+
+    button.classList.toggle("is-visible", window.scrollY > 520);
+    return button;
+  }
+
+  function setupBackToTop() {
+    if (!backToTopUi) {
+      backToTopUi = buildBackToTopUi();
+    }
   }
 
   window.addEventListener("hashchange", render);

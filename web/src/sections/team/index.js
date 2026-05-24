@@ -5,12 +5,60 @@
     });
   }
 
-  function renderSocialLinks(items) {
-    var e = site.utils.escapeHtml;
-    if (!items || !items.length) return "";
+  function socialIcon(type) {
+    var icons = {
+      email: '<path d="M3 5h18v14H3V5Zm2 3.2 7 5 7-5V7l-7 5-7-5v1.2Z" fill="currentColor"/>',
+      linkedin: '<path d="M6.8 9H3.7v11h3.1V9ZM5.3 4a1.8 1.8 0 1 0 0 3.6A1.8 1.8 0 0 0 5.3 4Zm6.5 5H8.9v11H12v-5.7c0-1.5.7-2.5 2-2.5 1.2 0 1.7.8 1.7 2.5V20h3.1v-6.2c0-3.2-1.6-5-4.2-5-1.4 0-2.3.6-2.8 1.4V9Z" fill="currentColor"/>',
+      telegram: '<path d="M21 4.4 18.2 20c-.2 1-1 1.2-1.8.7l-4.1-3-2 2c-.2.2-.5.4-.9.4l.3-4.3 7.8-7c.3-.3-.1-.5-.5-.2l-9.6 6-4.1-1.3c-.9-.3-.9-.9.2-1.3L19.7 3.8c.8-.3 1.5.2 1.3.6Z" fill="currentColor"/>',
+      github: '<path d="M12 3.5a8.5 8.5 0 0 0-2.7 16.6c.4.1.6-.2.6-.4v-1.5c-2.4.5-2.9-1-2.9-1-.4-.9-.9-1.1-.9-1.1-.8-.5.1-.5.1-.5.8.1 1.3.9 1.3.9.8 1.3 2 1 2.5.8.1-.6.3-1 .5-1.2-1.9-.2-3.9-1-3.9-4.2 0-.9.3-1.7.9-2.3-.1-.2-.4-1.1.1-2.3 0 0 .7-.2 2.4.9.7-.2 1.4-.3 2.1-.3s1.4.1 2.1.3c1.6-1.1 2.4-.9 2.4-.9.5 1.2.2 2.1.1 2.3.5.6.9 1.4.9 2.3 0 3.3-2 4-3.9 4.2.3.3.6.8.6 1.6v2c0 .2.1.5.6.4A8.5 8.5 0 0 0 12 3.5Z" fill="currentColor"/>',
+      whatsapp: '<path d="M12 3.5A8.3 8.3 0 0 0 5 16.3L4 20.5l4.3-1.1A8.3 8.3 0 1 0 12 3.5Zm4.8 11.7c-.2.6-1.2 1.1-1.7 1.2-.5.1-1.1.2-3.5-.8-3-1.3-4.9-4.3-5-4.5-.1-.2-1.2-1.6-1.2-3 0-1.4.7-2.1 1-2.4.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.4-.1.6.2.4.8 1.3 1.8 2.1 1.2 1.1 2.2 1.4 2.6 1.6.3.1.5.1.7-.1l.9-1.1c.2-.3.4-.2.7-.1l2 .9c.3.1.5.2.6.4 0 .1 0 .8-.2 1.6Z" fill="currentColor"/>',
+      link: '<path d="M10.4 7.5 12 5.9a4 4 0 0 1 5.7 5.7l-2.1 2.1a4 4 0 0 1-5.4.2l1.6-1.6a1.8 1.8 0 0 0 2.2-.2l2.1-2.1a1.8 1.8 0 0 0-2.5-2.5l-1.6 1.6-1.6-1.6Zm3.2 9L12 18.1a4 4 0 0 1-5.7-5.7l2.1-2.1a4 4 0 0 1 5.4-.2l-1.6 1.6a1.8 1.8 0 0 0-2.2.2L7.9 14a1.8 1.8 0 0 0 2.5 2.5l1.6-1.6 1.6 1.6Z" fill="currentColor"/>'
+    };
 
-    return items.map(function (item) {
-      return '<a href="' + e(item.href) + '" target="_blank" rel="noreferrer">' + e(item.label) + "</a>";
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (icons[type] || icons.link) + "</svg>";
+  }
+
+  function socialType(item) {
+    var text = String((item && (item.type || item.label || item.href)) || "").toLowerCase();
+    if (text.indexOf("mail") >= 0 || text.indexOf("@") >= 0) return "email";
+    if (text.indexOf("linkedin") >= 0) return "linkedin";
+    if (text.indexOf("telegram") >= 0 || text.indexOf("t.me") >= 0) return "telegram";
+    if (text.indexOf("github") >= 0) return "github";
+    if (text.indexOf("whatsapp") >= 0) return "whatsapp";
+    return "link";
+  }
+
+  function emailHref(email) {
+    return "mailto:" + String(email || "").replace(/[\r\n\s]/g, "");
+  }
+
+  function memberEmail(member) {
+    return (member && member.email) || (site.content.contacts && site.content.contacts.email) || "";
+  }
+
+  function renderSocialLinks(items, email, className) {
+    var e = site.utils.escapeHtml;
+    var links = [];
+    var linkClass = className || "member-social-link";
+
+    if (email) {
+      links.push({ label: "Email", href: emailHref(email), type: "email" });
+    }
+
+    (items || []).forEach(function (item) {
+      links.push(item);
+    });
+
+    if (!links.length) return "";
+
+    return links.map(function (item) {
+      var type = socialType(item);
+      var external = /^mailto:|^tel:/i.test(item.href) ? "" : ' target="_blank" rel="noreferrer"';
+      return '' +
+        '<a class="' + e(linkClass) + " " + e(linkClass + "-" + type) + '" href="' + e(item.href) + '"' + external + ' aria-label="' + e(item.label) + '">' +
+          socialIcon(type) +
+          "<span>" + e(item.label) + "</span>" +
+        "</a>";
     }).join("");
   }
 
@@ -34,6 +82,26 @@
           "<figcaption>" + e(item.title) + "</figcaption>" +
         "</figure>";
     }).join("");
+  }
+
+  function renderWorkGallery(items) {
+    var e = site.utils.escapeHtml;
+    if (!items || !items.length) return "";
+
+    return "" +
+      '<article class="member-info-card member-work-gallery-card reveal">' +
+        "<h2>" + e(site.i18n.get("teamDetail.workGallery", "Work photos")) + "</h2>" +
+        '<div class="member-work-gallery">' +
+          items.map(function (item, index) {
+            var title = item.title || ("Work photo " + (index + 1));
+            return "" +
+              '<figure class="member-work-photo">' +
+                '<img src="' + e(item.image) + '" alt="' + e(title) + '" loading="lazy">' +
+                "<figcaption>" + e(title) + "</figcaption>" +
+              "</figure>";
+          }).join("") +
+        "</div>" +
+      "</article>";
   }
 
   function teamRoleRank(member) {
@@ -99,20 +167,24 @@
     var title = localized.title || member.title;
     var description = localized.text || member.text;
     var profileUrl = site.utils.pageUrl("member", member.id);
+    var contactLinks = renderSocialLinks(member.socials || [], memberEmail(member), "team-social-link");
 
     return "" +
-      '<a class="team-card ' + e(extraClass || "") + ' reveal" href="' + e(profileUrl) + '" style="--team-color: ' + e(member.color) + '">' +
-        '<div class="team-photo-wrap">' +
-          '<img class="team-photo" src="' + e(member.image) + '" alt="' + e(title) + '" loading="lazy">' +
-          '<div class="team-mark">' + e(member.accent) + "</div>" +
-        "</div>" +
-        '<div class="team-card-copy">' +
-          '<span class="team-department">' + e(member.department || "Team") + "</span>" +
-          "<h3>" + e(title) + "</h3>" +
-          "<p>" + e(description) + "</p>" +
-          '<span class="team-card-action">' + e(site.i18n.get("common.learnMore", "View profile")) + "</span>" +
-        "</div>" +
-      "</a>";
+      '<article class="team-card ' + e(extraClass || "") + ' reveal" style="--team-color: ' + e(member.color) + '">' +
+        '<a class="team-card-profile" href="' + e(profileUrl) + '">' +
+          '<div class="team-photo-wrap">' +
+            '<img class="team-photo" src="' + e(member.image) + '" alt="' + e(title) + '" loading="lazy">' +
+            '<div class="team-mark">' + e(member.accent) + "</div>" +
+          "</div>" +
+          '<div class="team-card-copy">' +
+            '<span class="team-department">' + e(member.department || "Team") + "</span>" +
+            "<h3>" + e(title) + "</h3>" +
+            "<p>" + e(description) + "</p>" +
+            '<span class="team-card-action">' + e(site.i18n.get("common.learnMore", "View profile")) + "</span>" +
+          "</div>" +
+        "</a>" +
+        (contactLinks ? '<div class="team-card-links">' + contactLinks + "</div>" : "") +
+      "</article>";
   }
 
   function renderDirectorOrgChart(member) {
@@ -181,18 +253,19 @@
   function renderTeamManagerGroup(group) {
     var e = site.utils.escapeHtml;
     var reports = group.reports.map(function (member) {
-      return renderTeamCard(member, "team-card-specialist");
+      return '<div class="team-report-node">' + renderTeamCard(member, "team-card-specialist") + "</div>";
     }).join("");
+    var reportGridClass = "team-report-grid" + (group.reports.length ? " has-reports report-count-" + group.reports.length : " is-empty");
 
     if (!reports) {
       reports = '<p class="team-report-empty">' + e(site.i18n.get("teamPage.noReports", "This direction is coordinated by project scope.")) + "</p>";
     }
 
     return "" +
-      '<article class="team-manager-column reveal">' +
+      '<article class="team-manager-column reveal" style="--team-color: ' + e(group.manager.color) + '">' +
         '<div class="team-manager-head">' + renderTeamCard(group.manager, "team-card-manager") + "</div>" +
         '<div class="team-report-branch" aria-hidden="true"></div>' +
-        '<div class="team-report-grid">' + reports + "</div>" +
+        '<div class="' + e(reportGridClass) + '">' + reports + "</div>" +
       "</article>";
   }
 
@@ -222,12 +295,12 @@
   site.sections.team = function team() {
     var e = site.utils.escapeHtml;
     var director = getMemberById("director") || site.content.team[0];
-    var groups = getTeamStructure(director);
     var specialists = orderedTeamMembers().filter(function (member) {
       return !director || member.id !== director.id;
     });
-    var managerGroups = groups.map(function (group) {
-      return renderTeamManagerGroup(group);
+    var railCards = specialists.map(function (member) {
+      var cardClass = isManager(member) ? "team-card-person team-card-lead" : "team-card-person team-card-worker";
+      return '<div class="team-rail-node" style="--team-color: ' + e(member.color) + '">' + renderTeamCard(member, cardClass) + "</div>";
     }).join("");
     var itCards = specialists.filter(function (member) {
       return member.department === "IT";
@@ -254,14 +327,20 @@
       '<section id="team-content" class="section team-section">' +
         '<div class="container">' +
           '<div class="team-org-overview">' +
-            renderTeamCard(director, "team-card-director") +
-            '<div class="team-org-drop" aria-hidden="true"></div>' +
             '<div class="team-structure-head reveal">' +
               '<span class="eyebrow">' + e(site.i18n.get("teamPage.managementEyebrow", "Management")) + "</span>" +
               "<h2>" + e(site.i18n.get("teamPage.managementTitle", "General team management")) + "</h2>" +
               "<p>" + e(site.i18n.get("teamPage.managementText", "Managers are shown first, and each direction's specialists are grouped directly below their responsible manager.")) + "</p>" +
             "</div>" +
-            '<div class="team-management-grid">' + managerGroups + "</div>" +
+            '<div class="team-hierarchy team-carousel">' +
+              renderTeamCard(director, "team-card-director team-card-featured") +
+              '<div class="team-carousel-shell reveal">' +
+                '<div class="team-carousel-track">' +
+                  '<div class="team-carousel-set">' + railCards + "</div>" +
+                  '<div class="team-carousel-set" aria-hidden="true" inert>' + railCards + "</div>" +
+                "</div>" +
+              "</div>" +
+            "</div>" +
           "</div>" +
           '<div class="team-unit-panel reveal">' +
             "<div>" +
@@ -297,7 +376,7 @@
         titleKey: "team." + member.id + ".title",
         text: description,
         textKey: "team." + member.id + ".text",
-        image: member.coverImage || member.image,
+        image: member.image,
         tone: "team"
       }) +
       '<section class="section team-member-section">' +
@@ -316,7 +395,7 @@
             "</div>" +
             '<div class="member-social-block">' +
               '<h3>' + e(socialLabel) + "</h3>" +
-              '<div class="member-social-links">' + renderSocialLinks(member.socials || []) + "</div>" +
+              '<div class="member-social-links">' + renderSocialLinks(member.socials || [], memberEmail(member), "member-social-link") + "</div>" +
             "</div>" +
           "</aside>" +
           '<div class="member-content">' +
@@ -326,6 +405,7 @@
             "</article>" +
             renderDirectorOrgChart(member) +
             renderItWorkflow(member) +
+            renderWorkGallery(member.workImages || []) +
             '<article class="member-info-card reveal">' +
               "<h2>" + e(certLabel) + "</h2>" +
               '<div class="member-cert-grid">' + renderCertificates(member.certificates || []) + "</div>" +

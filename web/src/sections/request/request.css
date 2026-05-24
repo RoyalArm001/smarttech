@@ -251,9 +251,9 @@
   line-height: 1.35;
 }
 
-.request-choice:has(input:checked),
-.request-check:has(input:checked),
-.request-system-card:has(input[type="checkbox"]:checked) {
+.request-choice.is-selected,
+.request-check.is-selected,
+.request-system-card.is-selected {
   border-color: rgba(8, 123, 112, 0.42);
   background:
     linear-gradient(135deg, rgba(82, 205, 191, 0.16), rgba(56, 170, 184, 0.08)),
@@ -524,7 +524,7 @@
   background: var(--teal);
 }
 
-.request-visit-toggle:has(input:checked) {
+.request-visit-toggle.is-selected {
   border-color: rgba(8, 123, 112, 0.42);
   background:
     linear-gradient(135deg, rgba(82, 205, 191, 0.18), rgba(56, 170, 184, 0.1)),

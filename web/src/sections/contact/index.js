@@ -6,6 +6,7 @@
     var mapUrl = "https://maps.google.com/?ll=" + contacts.map.lat + "," + contacts.map.lng;
     var phoneLabels = [labels.office, labels.main, labels.store, labels.powder];
     var emails = contacts.emails && contacts.emails.length ? contacts.emails : [contacts.email];
+    var formAction = site.utils.mailTo(contacts.email, "Smart Tech contact request", "");
 
     var phoneLinks = contacts.phones.map(function (phone, index) {
       return '' +
@@ -50,7 +51,7 @@
             '</div>' +
             '<div class="social-row">' + socialLinks + '</div>' +
           '</div>' +
-          '<form class="contact-form reveal" id="contact-form" action="/api/contact" method="post">' +
+          '<form class="contact-form reveal" id="contact-form" action="' + e(formAction) + '" method="post" enctype="text/plain">' +
             '<label>' + e(labels.name) + '<input name="name" autocomplete="name" required></label>' +
             '<label>' + e(labels.phone) + '<input name="phone" autocomplete="tel" required></label>' +
             '<label>Email<input name="email" type="email" autocomplete="email"></label>' +
