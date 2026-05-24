@@ -10,6 +10,6 @@
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
  "engines": {
-  "node": "24.x"
+  "node": "22.x"
 }
 }
