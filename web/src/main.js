@@ -489,6 +489,9 @@
     var downloadButton = document.getElementById("request-download");
     var projectButton = document.getElementById("request-project-submit");
     var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
+    var requestSteps = Array.prototype.slice.call(form.querySelectorAll("[data-request-step]"));
+    var requestStepButtons = Array.prototype.slice.call(form.querySelectorAll("[data-request-go]"));
+    var currentRequestStep = 0;
 
     function copy() {
       var dictionaries = {
@@ -629,6 +632,11 @@
       return field ? String(field.value || "").trim() : "";
     }
 
+    function checkedRequestKind() {
+      var field = form.querySelector("input[name='requestType']:checked");
+      return field ? String(field.getAttribute("data-request-kind") || "sale") : "sale";
+    }
+
     function selectedSystems() {
       var labels = copy();
       return Array.prototype.map.call(form.querySelectorAll("[data-request-system]:checked"), function (checkbox) {
@@ -673,6 +681,10 @@
 
     function updateQuantityState() {
       Array.prototype.forEach.call(form.querySelectorAll("[data-request-system]"), function (checkbox) {
+        var card = checkbox.closest(".request-system-card");
+        if (card) {
+          card.classList.toggle("is-selected", checkbox.checked);
+        }
         var qty = form.querySelector("[data-request-qty='" + checkbox.value + "']");
         if (qty) {
           qty.disabled = !checkbox.checked;
@@ -690,6 +702,63 @@
           }
         });
       });
+    }
+
+    function syncRequestScope() {
+      var kind = checkedRequestKind();
+      Array.prototype.forEach.call(form.querySelectorAll("[data-request-scope-panel]"), function (panel) {
+        panel.classList.toggle("is-active", panel.getAttribute("data-request-scope-panel") === kind);
+      });
+      Array.prototype.forEach.call(form.querySelectorAll("[data-scope-show]"), function (panel) {
+        var allowed = String(panel.getAttribute("data-scope-show") || "").split(/\s+/);
+        panel.hidden = allowed.indexOf(kind) < 0;
+      });
+
+      var visit = form.querySelector("[data-request-visit]");
+      if (visit && kind === "audit") {
+        visit.checked = true;
+      } else if (visit) {
+        visit.checked = false;
+      }
+
+      if (kind !== "service") {
+        Array.prototype.forEach.call(form.querySelectorAll("[data-request-maintenance]"), function (checkbox) {
+          checkbox.checked = false;
+        });
+      }
+      if (kind !== "audit") {
+        Array.prototype.forEach.call(form.querySelectorAll("[data-request-specialist]"), function (checkbox) {
+          checkbox.checked = false;
+        });
+      }
+      if (kind === "audit") {
+        Array.prototype.forEach.call(form.querySelectorAll("[data-request-system]"), function (checkbox) {
+          checkbox.checked = false;
+        });
+      }
+    }
+
+    function setRequestStep(step, shouldScroll) {
+      var maxStep = requestSteps.length ? requestSteps.length - 1 : 0;
+      currentRequestStep = Math.max(0, Math.min(step, maxStep));
+
+      requestSteps.forEach(function (section) {
+        var sectionStep = Number(section.getAttribute("data-request-step") || 0);
+        section.classList.toggle("is-active", sectionStep === currentRequestStep);
+      });
+
+      requestStepButtons.forEach(function (button) {
+        var buttonStep = Number(button.getAttribute("data-request-go") || 0);
+        button.classList.toggle("is-active", buttonStep === currentRequestStep);
+        button.classList.toggle("is-complete", buttonStep < currentRequestStep);
+        button.setAttribute("aria-current", buttonStep === currentRequestStep ? "step" : "false");
+      });
+
+      form.setAttribute("data-current-step", String(currentRequestStep));
+
+      if (shouldScroll !== false && window.matchMedia && window.matchMedia("(max-width: 900px)").matches) {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function line(label, text, fallback) {
@@ -784,8 +853,33 @@
       return base + (parts.length ? " - " + parts.join(" / ") : "");
     }
 
-    form.addEventListener("input", updateSummary);
-    form.addEventListener("change", updateSummary);
+    form.addEventListener("click", function (event) {
+      var go = event.target.closest("[data-request-go]");
+      var next = event.target.closest("[data-request-next]");
+      var prev = event.target.closest("[data-request-prev]");
+
+      if (go) {
+        setRequestStep(Number(go.getAttribute("data-request-go") || 0));
+      }
+      if (next) {
+        setRequestStep(currentRequestStep + 1);
+      }
+      if (prev) {
+        setRequestStep(currentRequestStep - 1);
+      }
+    });
+
+    form.addEventListener("input", function () {
+      syncRequestScope();
+      updateSummary();
+    });
+    form.addEventListener("change", function (event) {
+      syncRequestScope();
+      if (event.target && event.target.name === "requestType") {
+        setRequestStep(1);
+      }
+      updateSummary();
+    });
 
     function openPreparedMail(mode) {
       updateSummary(mode);
@@ -837,12 +931,16 @@
 
     form.addEventListener("reset", function () {
       window.setTimeout(function () {
+        syncRequestScope();
+        setRequestStep(0, false);
         updateSummary();
         setStatus("");
         setSubmitState("ready");
       }, 0);
     });
 
+    syncRequestScope();
+    setRequestStep(0, false);
     updateSummary();
     setSubmitState("ready");
   }
@@ -1115,46 +1213,6 @@
     document.body.classList.remove("ui-compact", "ui-reduced-motion");
     persistUiSettings();
     applyAutoTheme();
-  }
-
-  function mergeDeep(target, source) {
-    for (var key in source) {
-      if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
-      var sourceValue = source[key];
-      var targetValue = target[key];
-
-      if (
-        sourceValue &&
-        typeof sourceValue === "object" &&
-        !Array.isArray(sourceValue) &&
-        targetValue &&
-        typeof targetValue === "object" &&
-        !Array.isArray(targetValue)
-      ) {
-        mergeDeep(targetValue, sourceValue);
-      } else {
-        target[key] = sourceValue;
-      }
-    }
-  }
-
-  function loadCmsOverrides() {
-    var cmsPath = "../src/content/cms.json";
-    return fetch(cmsPath, { cache: "no-store" })
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error("CMS overrides not found");
-        }
-        return response.json();
-      })
-      .then(function (data) {
-        if (data && typeof data === "object" && !Array.isArray(data)) {
-          mergeDeep(site.content, data);
-        }
-      })
-      .catch(function () {
-        // Optional CMS override file is not required.
-      });
   }
 
   function ensureTranslateHost() {
@@ -1799,15 +1857,13 @@
 
   setupEntryLoader();
 
-  loadCmsOverrides().then(function () {
-    if (window.location.protocol === "file:") {
-      if (!window.location.hash) {
-        window.location.hash = "home";
-      } else {
-        render();
-      }
+  if (window.location.protocol === "file:") {
+    if (!window.location.hash) {
+      window.location.hash = "home";
     } else {
       render();
     }
-  });
+  } else {
+    render();
+  }
 })(window.SmartTech);

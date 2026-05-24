@@ -1,0 +1,16 @@
+/index /home 301
+/index.html /home 301
+/pages/index.html /home 301
+/ /pages/index.html 200
+/home /pages/index.html 200
+/services /pages/services.html 200
+/service /pages/service.html 200
+/projects /pages/projects.html 200
+/project /pages/project.html 200
+/our-jobs /pages/our-jobs.html 200
+/request /pages/request.html 200
+/partners /pages/partners.html 200
+/team /pages/team.html 200
+/member /pages/member.html 200
+/about /pages/about.html 200
+/contact /pages/contact.html 200

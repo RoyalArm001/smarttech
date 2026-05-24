@@ -1,7 +1,6 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
-const crypto = require("crypto");
 const { URL } = require("url");
 
 const rootDir = __dirname;
@@ -82,24 +81,6 @@ function extensionlessRedirectLocation(requestUrl) {
   return null;
 }
 
-function hashPassword(password) {
-  return crypto.createHash("sha256").update(String(password)).digest("hex");
-}
-
-function loadJsonFile(filePath, fallback) {
-  try {
-    var raw = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(raw);
-  } catch (error) {
-    return fallback;
-  }
-}
-
-function saveJsonFile(filePath, data) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
-}
-
 function parseJsonBody(request) {
   return new Promise(function (resolve, reject) {
     var body = "";
@@ -150,27 +131,9 @@ function saveContactRequest(payload) {
   });
 }
 
-var activeSessions = {};
 var metricsState = { visits: 0, updatedAt: Date.now() };
 var projectsCountCache = { mtimeMs: 0, count: 0 };
 var metricsPersistTimer = null;
-
-function createSession(user) {
-  var token = crypto.randomBytes(24).toString("hex");
-  activeSessions[token] = {
-    username: user.username,
-    role: user.role || "editor",
-    createdAt: Date.now()
-  };
-  return token;
-}
-
-function getSessionUser(request) {
-  var auth = (request.headers.authorization || "").trim();
-  if (!auth.startsWith("Bearer ")) return null;
-  var token = auth.slice(7);
-  return activeSessions[token] || null;
-}
 
 function loadMetricsState() {
   var defaults = { visits: 0, updatedAt: Date.now() };
@@ -324,11 +287,7 @@ function serveApi(request, response) {
     return sendError(response, 405, "Method not allowed.");
   }
 
-  if (!pathName.startsWith("/api/admin/")) {
-    return false;
-  }
-
-  return sendError(response, 404, "Admin endpoint not found.");
+  return false;
 }
 
 function serveWeb(request, response) {

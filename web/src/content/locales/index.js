@@ -22,8 +22,8 @@
         }
       },
       common: {
-        consultation: "Ստանալ խորհրդատվություն",
-        proposal: "Ստանալ առաջարկ",
+        consultation: "Թողնել հայտ",
+        proposal: "Պատվիրել",
         viewProjects: "Տեսնել նախագծերը",
         viewServices: "Տեսնել ծառայությունները",
         callNow: "Զանգահարել հիմա",
@@ -206,8 +206,8 @@
         }
       },
       common: {
-        consultation: "Get consultation",
-        proposal: "Request proposal",
+        consultation: "Leave a request",
+        proposal: "Order service",
         viewProjects: "View projects",
         viewServices: "View services",
         callNow: "Call now",
@@ -363,8 +363,8 @@
         }
       },
       common: {
-        consultation: "Получить консультацию",
-        proposal: "Получить предложение",
+        consultation: "Оставить заявку",
+        proposal: "Заказать",
         viewProjects: "Смотреть проекты",
         viewServices: "Смотреть услуги",
         callNow: "Позвонить",
@@ -596,12 +596,12 @@
   });
 
   site.content.locales.hy.common = Object.assign({}, site.content.locales.hy.common, {
-    proposal: "Հավաքել հայտ"
+    proposal: "Պատվիրել"
   });
   site.content.locales.en.common = Object.assign({}, site.content.locales.en.common, {
-    proposal: "Build request"
+    proposal: "Order service"
   });
   site.content.locales.ru.common = Object.assign({}, site.content.locales.ru.common, {
-    proposal: "Собрать заявку"
+    proposal: "Заказать"
   });
 })(window.SmartTech);

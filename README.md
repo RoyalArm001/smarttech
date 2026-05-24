@@ -3,7 +3,7 @@
 ## Run
 
 ```bash
-npm run web
+npm run dev
 ```
 
 Default URL:
@@ -11,6 +11,8 @@ Default URL:
 - `http://localhost:3000/`
 
 If port 3000 is busy, the server will automatically try the next available port between 3000 and 3010.
+
+`npm run web` is reserved for cloud/static builds and creates the `dist/` folder.
 
 ## Notes
 
@@ -26,7 +28,19 @@ This validates the main Node and client-side JavaScript files for syntax errors.
 
 ## Deploy
 
-Deploy only the `web/` folder.
+For Node.js cloud hosting, deploy the whole project root and run:
+
+```bash
+npm start
+```
+
+For a purely static host, deploy the `web/` folder.
+
+For Vercel or Cloudflare Pages, use:
+
+- Build command: `npm run web`
+- Output directory: `dist`
+- Node version: 18 or newer
 
 ## Single Source Rule
 
@@ -35,7 +49,6 @@ All editable website code is in `web/`.
 - HTML pages: `web/pages/*.html`
 - JS logic: `web/src/**/*.js`
 - Styles: `web/src/**/*.css`
-- Optional CMS overrides: `web/src/content/cms.json`
 - Team assets: `web/src/assets/team/*`
 
 If you update content/design, change files only inside `web/`.
@@ -51,4 +64,3 @@ If you update content/design, change files only inside `web/`.
 - Languages/texts: `web/src/content/locales/index.js`
 
 Detailed guide: `web/docs/EDIT-GUIDE.md`
-# smarttech

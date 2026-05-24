@@ -406,10 +406,12 @@
     var copy = languageCopy();
     var heroImage = site.content.company.assetBase + "/images/services/building_management_automation.jpg";
 
+    var requestKinds = ["sale", "service", "audit"];
     var typeCards = copy.requestTypes.map(function (type, index) {
+      var kind = requestKinds[index] || "sale";
       return '' +
-        '<label class="request-choice">' +
-          '<input type="radio" name="requestType" value="' + e(type.value) + '"' + (index === 0 ? " checked" : "") + '>' +
+        '<label class="request-choice" data-request-type-card="' + e(kind) + '">' +
+          '<input type="radio" name="requestType" value="' + e(type.value) + '" data-request-kind="' + e(kind) + '"' + (index === 0 ? " checked" : "") + '>' +
           '<span>' +
             '<strong>' + e(type.label) + '</strong>' +
             '<small>' + e(type.note) + '</small>' +
@@ -494,6 +496,64 @@
         '</label>';
     }).join("");
 
+    var labels = {
+      hy: {
+        stepType: "Տեսակ",
+        stepContact: "Տվյալներ",
+        stepScope: "Ընտրություն",
+        stepSend: "Ուղարկում",
+        back: "Հետ",
+        next: "Առաջ",
+        saleTitle: "Վաճառք եւ նոր համակարգ",
+        saleText: "Ընտրեք անհրաժեշտ համակարգերը, քանակները, սարքերը եւ նախընտրելի մոդելները։",
+        serviceTitle: "Սպասարկում",
+        serviceText: "Ընտրեք սպասարկման աշխատանքները եւ նշեք, թե որ համակարգին է վերաբերում խնդիրը։",
+        auditTitle: "Աուդիտ եւ չափագրում",
+        auditText: "Նշեք այցի ցանկալի օրը, մասնագետներին եւ օբյեկտի տվյալները։"
+      },
+      en: {
+        stepType: "Type",
+        stepContact: "Details",
+        stepScope: "Selection",
+        stepSend: "Send",
+        back: "Back",
+        next: "Next",
+        saleTitle: "Sale and new system",
+        saleText: "Choose systems, quantities, devices and preferred brands.",
+        serviceTitle: "Maintenance",
+        serviceText: "Choose service tasks and the system that needs attention.",
+        auditTitle: "Audit and measurement",
+        auditText: "Choose visit time, specialists and facility details."
+      },
+      ru: {
+        stepType: "Тип",
+        stepContact: "Данные",
+        stepScope: "Выбор",
+        stepSend: "Отправка",
+        back: "Назад",
+        next: "Далее",
+        saleTitle: "Продажа и новая система",
+        saleText: "Выберите системы, количество, устройства и предпочтительные бренды.",
+        serviceTitle: "Сервис",
+        serviceText: "Выберите сервисные работы и систему, к которой относится задача.",
+        auditTitle: "Аудит и замер",
+        auditText: "Укажите время визита, специалистов и данные объекта."
+      }
+    };
+    var wizard = labels[site.i18n.language] || labels.hy;
+    var stepItems = [
+      wizard.stepType,
+      wizard.stepScope,
+      wizard.stepContact,
+      wizard.stepSend
+    ].map(function (label, index) {
+      return '' +
+        '<button class="request-stepper-item' + (index === 0 ? " is-active" : "") + '" type="button" data-request-go="' + e(index) + '">' +
+          '<span>' + e("0" + (index + 1)) + '</span>' +
+          '<strong>' + e(label) + '</strong>' +
+        '</button>';
+    }).join("");
+
     return '' +
       site.sections.pageHero({
         eyebrow: copy.heroEyebrow,
@@ -513,90 +573,125 @@
           '</div>' +
           '<form class="request-layout" id="request-builder-form">' +
             '<div class="request-panel request-panel-main reveal">' +
-              '<fieldset class="request-fieldset">' +
-                '<legend>' + e(copy.requestType) + '</legend>' +
-                '<div class="request-choice-row">' + typeCards + '</div>' +
-              '</fieldset>' +
-              '<div class="request-grid">' +
+              '<nav class="request-stepper" aria-label="Request steps">' + stepItems + '</nav>' +
+              '<section class="request-step is-active" data-request-step="0">' +
                 '<fieldset class="request-fieldset">' +
-                  '<legend>' + e(copy.contact) + '</legend>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.name) + '</span>' +
-                    '<input name="clientName" autocomplete="name" placeholder="' + e(copy.placeholderName) + '">' +
-                  '</label>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.phone) + '</span>' +
-                    '<input name="clientPhone" autocomplete="tel">' +
-                  '</label>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.email) + '</span>' +
-                    '<input name="clientEmail" type="email" autocomplete="email">' +
-                  '</label>' +
+                  '<legend>' + e(copy.requestType) + '</legend>' +
+                  '<div class="request-choice-row">' + typeCards + '</div>' +
                 '</fieldset>' +
-                '<fieldset class="request-fieldset">' +
-                  '<legend>' + e(copy.object) + '</legend>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.objectType) + '</span>' +
-                    '<select name="objectType">' + objectOptions + '</select>' +
-                  '</label>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.area) + '</span>' +
-                    '<input name="objectArea" placeholder="' + e(copy.placeholderArea) + '">' +
-                  '</label>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.address) + '</span>' +
-                    '<input name="objectAddress" placeholder="' + e(copy.placeholderAddress) + '">' +
-                  '</label>' +
-                  '<label class="request-field">' +
-                    '<span>' + e(copy.deadline) + '</span>' +
-                    '<select name="deadline">' + deadlineOptions + '</select>' +
-                  '</label>' +
-                '</fieldset>' +
-              '</div>' +
-              '<fieldset class="request-fieldset">' +
-                '<legend>' + e(copy.systems) + '</legend>' +
-                '<div class="request-system-grid">' + systems + '</div>' +
-              '</fieldset>' +
-              '<fieldset class="request-fieldset request-visit-fieldset">' +
-                '<legend>' + e(copy.visit) + '</legend>' +
-                '<div class="request-visit-panel">' +
-                  '<label class="request-visit-toggle">' +
-                    '<input type="checkbox" name="visitNeeded" value="yes" data-request-visit>' +
-                    '<span>' +
-                      '<strong>' + e(copy.visitNeeded) + '</strong>' +
-                      '<small>' + e(copy.visitNeededNote) + '</small>' +
-                    '</span>' +
-                  '</label>' +
-                  '<p>' + e(copy.visitText) + '</p>' +
-                  '<div class="request-grid request-visit-grid">' +
-                    '<label class="request-field">' +
-                      '<span>' + e(copy.visitDate) + '</span>' +
-                      '<input name="visitDate" type="date">' +
-                    '</label>' +
-                    '<label class="request-field">' +
-                      '<span>' + e(copy.visitTime) + '</span>' +
-                      '<input name="visitTime" type="time">' +
-                    '</label>' +
-                  '</div>' +
-                  '<label class="request-field request-field-full">' +
-                    '<span>' + e(copy.visitAccess) + '</span>' +
-                    '<textarea name="visitAccess" rows="3" placeholder="' + e(copy.visitAccessPlaceholder) + '"></textarea>' +
-                  '</label>' +
-                  '<div class="request-specialist-head">' +
-                    '<strong>' + e(copy.specialistsTitle) + '</strong>' +
-                    '<small>' + e(copy.specialistsHint) + '</small>' +
-                  '</div>' +
-                  '<div class="request-specialist-grid">' + specialists + '</div>' +
+                '<div class="request-step-actions">' +
+                  '<button class="button button-primary" type="button" data-request-next>' + e(wizard.next) + '</button>' +
                 '</div>' +
-              '</fieldset>' +
-              '<fieldset class="request-fieldset">' +
-                '<legend>' + e(copy.maintenance) + '</legend>' +
-                '<div class="request-check-grid">' + maintenance + '</div>' +
-              '</fieldset>' +
-              '<label class="request-field request-field-full">' +
-                '<span>' + e(copy.notes) + '</span>' +
-                '<textarea name="notes" rows="5" placeholder="' + e(copy.placeholderNotes) + '"></textarea>' +
-              '</label>' +
+              '</section>' +
+              '<section class="request-step" data-request-step="2">' +
+                '<div class="request-grid">' +
+                  '<fieldset class="request-fieldset">' +
+                    '<legend>' + e(copy.contact) + '</legend>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.name) + '</span>' +
+                      '<input name="clientName" autocomplete="name" placeholder="' + e(copy.placeholderName) + '">' +
+                    '</label>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.phone) + '</span>' +
+                      '<input name="clientPhone" autocomplete="tel">' +
+                    '</label>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.email) + '</span>' +
+                      '<input name="clientEmail" type="email" autocomplete="email">' +
+                    '</label>' +
+                  '</fieldset>' +
+                  '<fieldset class="request-fieldset">' +
+                    '<legend>' + e(copy.object) + '</legend>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.objectType) + '</span>' +
+                      '<select name="objectType">' + objectOptions + '</select>' +
+                    '</label>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.area) + '</span>' +
+                      '<input name="objectArea" placeholder="' + e(copy.placeholderArea) + '">' +
+                    '</label>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.address) + '</span>' +
+                      '<input name="objectAddress" placeholder="' + e(copy.placeholderAddress) + '">' +
+                    '</label>' +
+                    '<label class="request-field">' +
+                      '<span>' + e(copy.deadline) + '</span>' +
+                      '<select name="deadline">' + deadlineOptions + '</select>' +
+                    '</label>' +
+                  '</fieldset>' +
+                '</div>' +
+                '<div class="request-step-actions">' +
+                  '<button class="button" type="button" data-request-prev>' + e(wizard.back) + '</button>' +
+                  '<button class="button button-primary" type="button" data-request-next>' + e(wizard.next) + '</button>' +
+                '</div>' +
+              '</section>' +
+              '<section class="request-step" data-request-step="1">' +
+                '<div class="request-scope-intro is-active" data-request-scope-panel="sale">' +
+                  '<h3>' + e(wizard.saleTitle) + '</h3>' +
+                  '<p>' + e(wizard.saleText) + '</p>' +
+                '</div>' +
+                '<div class="request-scope-intro" data-request-scope-panel="service">' +
+                  '<h3>' + e(wizard.serviceTitle) + '</h3>' +
+                  '<p>' + e(wizard.serviceText) + '</p>' +
+                '</div>' +
+                '<div class="request-scope-intro" data-request-scope-panel="audit">' +
+                  '<h3>' + e(wizard.auditTitle) + '</h3>' +
+                  '<p>' + e(wizard.auditText) + '</p>' +
+                '</div>' +
+                '<fieldset class="request-fieldset" data-scope-show="sale service">' +
+                  '<legend>' + e(copy.systems) + '</legend>' +
+                  '<div class="request-system-grid">' + systems + '</div>' +
+                '</fieldset>' +
+                '<fieldset class="request-fieldset" data-scope-show="service">' +
+                  '<legend>' + e(copy.maintenance) + '</legend>' +
+                  '<div class="request-check-grid">' + maintenance + '</div>' +
+                '</fieldset>' +
+                '<fieldset class="request-fieldset request-visit-fieldset" data-scope-show="audit">' +
+                  '<legend>' + e(copy.visit) + '</legend>' +
+                  '<div class="request-visit-panel">' +
+                    '<label class="request-visit-toggle">' +
+                      '<input type="checkbox" name="visitNeeded" value="yes" data-request-visit>' +
+                      '<span>' +
+                        '<strong>' + e(copy.visitNeeded) + '</strong>' +
+                        '<small>' + e(copy.visitNeededNote) + '</small>' +
+                      '</span>' +
+                    '</label>' +
+                    '<p>' + e(copy.visitText) + '</p>' +
+                    '<div class="request-grid request-visit-grid">' +
+                      '<label class="request-field">' +
+                        '<span>' + e(copy.visitDate) + '</span>' +
+                        '<input name="visitDate" type="date">' +
+                      '</label>' +
+                      '<label class="request-field">' +
+                        '<span>' + e(copy.visitTime) + '</span>' +
+                        '<input name="visitTime" type="time">' +
+                      '</label>' +
+                    '</div>' +
+                    '<label class="request-field request-field-full">' +
+                      '<span>' + e(copy.visitAccess) + '</span>' +
+                      '<textarea name="visitAccess" rows="3" placeholder="' + e(copy.visitAccessPlaceholder) + '"></textarea>' +
+                    '</label>' +
+                    '<div class="request-specialist-head">' +
+                      '<strong>' + e(copy.specialistsTitle) + '</strong>' +
+                      '<small>' + e(copy.specialistsHint) + '</small>' +
+                    '</div>' +
+                    '<div class="request-specialist-grid">' + specialists + '</div>' +
+                  '</div>' +
+                '</fieldset>' +
+                '<div class="request-step-actions">' +
+                  '<button class="button" type="button" data-request-prev>' + e(wizard.back) + '</button>' +
+                  '<button class="button button-primary" type="button" data-request-next>' + e(wizard.next) + '</button>' +
+                '</div>' +
+              '</section>' +
+              '<section class="request-step" data-request-step="3">' +
+                '<label class="request-field request-field-full">' +
+                  '<span>' + e(copy.notes) + '</span>' +
+                  '<textarea name="notes" rows="5" placeholder="' + e(copy.placeholderNotes) + '"></textarea>' +
+                '</label>' +
+                '<div class="request-step-actions">' +
+                  '<button class="button" type="button" data-request-prev>' + e(wizard.back) + '</button>' +
+                '</div>' +
+              '</section>' +
             '</div>' +
             '<aside class="request-panel request-summary-card reveal">' +
               '<span class="eyebrow">' + e(copy.summaryTitle) + '</span>' +
