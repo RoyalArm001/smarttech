@@ -16,7 +16,7 @@
               heroTitleMarkup +
               '<p data-i18n-key="hero.lead">' + e(site.i18n.get("hero.lead")) + '</p>' +
               '<div class="button-row">' +
-                '<a class="button button-primary" href="' + e(site.utils.pageUrl("contact")) + '" data-i18n-key="common.proposal">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + '</a>' +
+                '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '" data-i18n-key="common.proposal">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + '</a>' +
                 '<a class="button button-light" href="' + e(site.utils.pageUrl("projects")) + '" data-i18n-key="common.viewProjects">' + e(site.i18n.get("common.viewProjects")) + '</a>' +
               '</div>' +
             '</div>' +

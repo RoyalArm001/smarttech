@@ -36,11 +36,14 @@ npm start
 
 For a purely static host, deploy the `web/` folder.
 
-For Vercel or Cloudflare Pages, use:
+For Vercel or Cloudflare Pages, use exactly:
 
 - Build command: `npm run web`
 - Output directory: `dist`
 - Node version: 18 or newer
+- Start command: leave empty
+
+After build, the hosting platform must publish `dist/`, not the project root and not `web/`.
 
 ## Single Source Rule
 

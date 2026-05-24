@@ -190,7 +190,7 @@
             "<h2>" + e(site.i18n.get("home.contactTitle")) + "</h2>" +
             "<p>" + e(site.i18n.get("home.contactText")) + "</p>" +
           "</div>" +
-          '<a class="button button-primary" href="' + e(site.utils.pageUrl("contact")) + '">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + "</a>" +
+          '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + "</a>" +
         "</div>" +
       "</section>" +
       '<section class="section home-projects-showcase">' +

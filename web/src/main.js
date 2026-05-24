@@ -30,35 +30,43 @@
   }
 
   function currentRoute() {
-    if (window.location.protocol === "file:") {
-      var hash = (window.location.hash || "#home").replace("#", "");
-      var parts = hash.split("/").filter(Boolean);
+    function routeFromParts(parts, fallbackId) {
       var page = normalizePageName(parts[0] || "home");
-
-      if (page === "service") {
-        return { page: "service", id: parts[1] || "" };
-      }
-      if (page === "project") {
-        return { page: "project", id: parts[1] || "" };
-      }
-      if (page === "member") {
-        return { page: "member", id: parts[1] || "" };
-      }
-
-      return { page: pages.indexOf(page) >= 0 ? page : "home", id: "" };
-    } else {
-      var path = window.location.pathname;
-      var filename = path.substring(path.lastIndexOf('/') + 1) || "index.html";
-      var page = normalizePageName(filename.split(".")[0] || "home");
-
-      var params = new URLSearchParams(window.location.search);
-      var id = params.get("id") || "";
+      var id = fallbackId || parts[1] || "";
 
       if (page === "service" || page === "project" || page === "member") {
         return { page: page, id: id };
       }
 
       return { page: pages.indexOf(page) >= 0 ? page : "home", id: "" };
+    }
+
+    if (window.location.protocol === "file:") {
+      var hash = (window.location.hash || "#home").replace("#", "");
+      var parts = hash.split("/").filter(Boolean);
+      return routeFromParts(parts, "");
+    } else {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get("id") || "";
+      var parts = window.location.pathname
+        .replace(/\/+$/g, "")
+        .split("/")
+        .filter(Boolean);
+
+      if (parts[0] === "pages") {
+        parts.shift();
+      }
+
+      var last = parts[parts.length - 1] || "";
+      if (last.indexOf(".") >= 0) {
+        parts[parts.length - 1] = last.split(".")[0];
+      }
+
+      if (parts[parts.length - 1] === "index") {
+        parts.pop();
+      }
+
+      return routeFromParts(parts, id);
     }
   }
 

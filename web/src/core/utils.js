@@ -37,11 +37,11 @@
       if (page === "home") return "#home";
       return id ? "#" + page + "/" + encodeURIComponent(id) : "#" + page;
     } else {
-      if (page === "home") return "home";
+      if (page === "home") return "/home";
       if (page === "service" || page === "project" || page === "member") {
-        return id ? page + "?id=" + encodeURIComponent(id) : page;
+        return id ? "/" + page + "?id=" + encodeURIComponent(id) : "/" + page;
       }
-      return page;
+      return "/" + page;
     }
   }
 
