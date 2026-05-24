@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Smart Tech logo">
+  <defs>
+    <linearGradient id="smarttech-bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1c8f88"/>
+      <stop offset="0.55" stop-color="#155d78"/>
+      <stop offset="1" stop-color="#10273b"/>
+    </linearGradient>
+    <linearGradient id="smarttech-accent" x1="256" y1="146" x2="405" y2="346" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f2ba39"/>
+      <stop offset="1" stop-color="#cb5238"/>
+    </linearGradient>
+    <filter id="smarttech-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f1d2a" flood-opacity="0.34"/>
+    </filter>
+  </defs>
+
+  <rect x="26" y="26" width="460" height="460" rx="110" fill="url(#smarttech-bg)" filter="url(#smarttech-shadow)"/>
+  <circle cx="256" cy="256" r="198" fill="none" stroke="#ffffff" stroke-opacity="0.24" stroke-width="10"/>
+
+  <path
+    d="M186 168 C136 168 132 234 186 234 H254 C308 234 306 300 254 300 H162"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="42"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <path
+    d="M308 176 H404 M356 176 V344"
+    fill="none"
+    stroke="url(#smarttech-accent)"
+    stroke-width="40"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <circle cx="404" cy="176" r="13" fill="#f2ba39"/>
+  <circle cx="356" cy="344" r="13" fill="#cb5238"/>
+  <circle cx="162" cy="300" r="10" fill="#70d7cc"/>
+</svg>
