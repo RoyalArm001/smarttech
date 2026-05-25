@@ -131,8 +131,10 @@
         manager: manager,
         reports: specialists.filter(function (member) {
           return !isManager(member) && member.managerId === manager.id;
-        })
+        }).sort(sortTeamMembers)
       };
+    }).sort(function (a, b) {
+      return sortTeamMembers(a.manager, b.manager);
     });
     var usedReports = {};
     managerGroups.forEach(function (group) {

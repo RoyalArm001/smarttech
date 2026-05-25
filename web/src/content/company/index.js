@@ -7,10 +7,10 @@
     assetBase: assetBase,
     logo: "",
     logoOptions: [
-      { name: "Primary", file: "./src/assets/brand/logo-smarttech.svg" },
-      { name: "Shield", file: "./src/assets/brand/logo-smarttech-shield.svg" },
-      { name: "Circuit", file: "./src/assets/brand/logo-smarttech-circuit.svg" },
-      { name: "Building Systems", file: "./src/assets/brand/logo-smarttech-building.svg" }
+      { name: "Primary", file: "../src/assets/brand/logo-smarttech.svg" },
+      { name: "Shield", file: "../src/assets/brand/logo-smarttech-shield.svg" },
+      { name: "Circuit", file: "../src/assets/brand/logo-smarttech-circuit.svg" },
+      { name: "Building Systems", file: "../src/assets/brand/logo-smarttech-building.svg" }
     ],
     description: "Անվտանգության համակարգերի և էլեկտրամոնտաժման լուծումների պրոֆեսիոնալ մատակարար",
     tagline: "Անվտանգություն, էլեկտրամոնտաժ և խելացի համակարգեր մեկ լուծմամբ",

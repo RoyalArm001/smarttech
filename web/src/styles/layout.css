@@ -275,7 +275,6 @@ body.ui-theme-dark .section img {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   pointer-events: auto;
 }
 
@@ -331,26 +330,31 @@ body.ui-theme-dark .section img {
 }
 
 .auto-chat-dismiss {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  z-index: 2;
   display: inline-grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(236, 246, 244, 0.92);
   border-radius: 50%;
   color: #ffffff;
-  background: rgba(14, 23, 29, 0.72);
-  box-shadow: 0 12px 24px rgba(10, 24, 31, 0.24);
+  background: linear-gradient(145deg, rgba(46, 59, 64, 0.96), rgba(27, 38, 43, 0.94));
+  box-shadow: 0 8px 18px rgba(10, 24, 31, 0.24), 0 0 0 3px rgba(10, 168, 150, 0.12);
   font-size: 1rem;
   line-height: 1;
-  opacity: 0.92;
-  transition: transform 180ms ease, background 180ms ease, opacity 180ms ease;
+  opacity: 0.96;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
 }
 
 .auto-chat-dismiss:hover,
 .auto-chat-dismiss:focus-visible {
   opacity: 1;
   background: var(--panel-dark);
-  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(10, 24, 31, 0.3), 0 0 0 4px rgba(10, 168, 150, 0.16);
+  transform: translate(-1px, -1px);
 }
 
 .auto-chat-trigger-icon {

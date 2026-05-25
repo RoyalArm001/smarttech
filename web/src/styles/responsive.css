@@ -3,7 +3,6 @@
   body {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
   }
@@ -29,7 +28,8 @@
   }
 
   .section {
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
     padding: 48px 0;
   }
 
@@ -42,7 +42,8 @@
   .home-projects-showcase,
   .home-team-showcase,
   .home-partners-strip {
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .hero {
@@ -159,6 +160,79 @@
   .request-brand-chip span {
     max-width: 100%;
     overflow-wrap: anywhere;
+  }
+
+  /* Prevent clipped cards/rails on iPhone-sized screens. */
+  .team-hierarchy,
+  .team-carousel,
+  .team-carousel-shell {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
+  .team-carousel-shell {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    padding-bottom: 10px !important;
+    margin-inline: -2px;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .team-carousel-shell::-webkit-scrollbar {
+    display: none;
+  }
+
+  .team-carousel-shell::before,
+  .team-carousel-shell::after {
+    display: none !important;
+  }
+
+  .team-carousel-track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .team-carousel-set {
+    gap: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .team-carousel-set[aria-hidden="true"] {
+    display: none !important;
+  }
+
+  .team-rail-node {
+    flex: 0 0 min(86vw, 294px) !important;
+    scroll-snap-align: center;
+  }
+
+  .team-carousel .team-card.team-card-person {
+    height: auto !important;
+    min-height: 136px !important;
+    padding: 12px 13px !important;
+  }
+
+  .team-carousel .team-card.team-card-person .team-card-profile {
+    grid-template-columns: 66px minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .team-carousel .team-card.team-card-person .team-photo-wrap,
+  .team-carousel .team-card.team-card-person .team-photo {
+    width: 66px !important;
+    height: 66px !important;
+  }
+
+  .team-carousel .team-card.team-card-person h3 {
+    font-size: 0.94rem !important;
+  }
+
+  .team-carousel .team-card.team-card-person p {
+    font-size: 0.8rem !important;
   }
 
   .auto-chat-shell {

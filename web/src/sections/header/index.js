@@ -58,8 +58,19 @@
     if (window.location.protocol === "file:") {
       page = (window.location.hash || "#home").replace("#", "").split("/")[0] || "home";
     } else {
-      var filename = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1) || "index.html";
-      page = filename.split(".")[0] || "home";
+      var parts = window.location.pathname
+        .replace(/\/+$/g, "")
+        .split("/")
+        .filter(Boolean);
+
+      if (parts[0] === "pages") {
+        parts.shift();
+      }
+
+      page = parts[0] || "home";
+      if (page.indexOf(".") >= 0) {
+        page = page.split(".")[0];
+      }
       if (page === "index" || page === "") page = "home";
     }
     if (page === "our-jobs" || page === "ourjobs") page = "projects";

@@ -34,6 +34,12 @@ const routeAliases = {
   "contact": "contact"
 };
 
+function toRootRelative(html) {
+  // `web/pages/*.html` files use `../` paths because they live under `/pages`.
+  // When we publish one of them as `/index.html`, those paths must become `./`.
+  return html.replace(/(href|src)=(["'])\.\.\//g, "$1=$2./");
+}
+
 Object.keys(routeAliases).forEach((route) => {
   const pageName = routeAliases[route];
   const sourceFile = path.resolve(sourceDir, "pages", pageName + ".html");
@@ -42,7 +48,8 @@ Object.keys(routeAliases).forEach((route) => {
   }
 
   if (route === "index") {
-    fs.copyFileSync(sourceFile, path.resolve(outputDir, "index.html"));
+    const rootHtml = fs.readFileSync(sourceFile, "utf8");
+    fs.writeFileSync(path.resolve(outputDir, "index.html"), toRootRelative(rootHtml));
     return;
   }
 

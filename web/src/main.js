@@ -22,8 +22,36 @@
   var languageOutsideClickHandler = null;
   var menuOutsideClickHandler = null;
   var menuEscHandler = null;
+  var menuResizeHandler = null;
   var autoThemeTimer = null;
   var uiSettings = readUiSettings();
+
+  var googleAnalyticsMeasurementId = "G-XXXXXXXXXX"; // Replace with your GA4 measurement ID
+
+  function initializeGoogleAnalytics() {
+    if (!googleAnalyticsMeasurementId || googleAnalyticsMeasurementId.indexOf("G-") !== 0) return;
+    if (window.googleAnalyticsInitialized) return;
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+    window.gtag = window.gtag || gtag;
+
+    var script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(googleAnalyticsMeasurementId);
+    document.head.appendChild(script);
+
+    window.gtag("js", new Date());
+    window.gtag("config", googleAnalyticsMeasurementId, { page_path: window.location.pathname + window.location.search });
+    window.googleAnalyticsInitialized = true;
+  }
+
+  function trackGoogleAnalyticsPageView() {
+    if (!googleAnalyticsMeasurementId || typeof window.gtag !== "function") return;
+    window.gtag("config", googleAnalyticsMeasurementId, { page_path: window.location.pathname + window.location.search });
+  }
 
   function normalizePageName(page) {
     var normalized = String(page || "").toLowerCase();
@@ -212,6 +240,8 @@
     setupBackToTop();
     applyTranslationBoundaries(page);
     setupMetricsAutomation();
+    initializeGoogleAnalytics();
+    trackGoogleAnalyticsPageView();
     resetScroll();
 
     if (!firstRenderDone) {
@@ -332,6 +362,15 @@
     var backdrop = document.querySelector(".nav-backdrop");
     if (!toggle || !panel) return;
 
+    if (menuResizeHandler) {
+      window.removeEventListener("resize", menuResizeHandler);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", menuResizeHandler);
+        window.visualViewport.removeEventListener("scroll", menuResizeHandler);
+      }
+      menuResizeHandler = null;
+    }
+
     if (menuOutsideClickHandler) {
       document.removeEventListener("click", menuOutsideClickHandler, true);
       menuOutsideClickHandler = null;
@@ -342,12 +381,34 @@
       menuEscHandler = null;
     }
 
+    function syncMobileMenuGeometry() {
+      var header = document.getElementById("site-header");
+      if (!header || !document.documentElement || !header.getBoundingClientRect) return;
+
+      var rect = header.getBoundingClientRect();
+      var height = Math.max(60, Math.ceil(rect.height));
+      var bottom = Math.max(height, Math.ceil(rect.bottom));
+      document.documentElement.style.setProperty("--smarttech-header-height", height + "px");
+      document.documentElement.style.setProperty("--smarttech-header-bottom", bottom + "px");
+    }
+
+    menuResizeHandler = syncMobileMenuGeometry;
+    window.addEventListener("resize", menuResizeHandler, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", menuResizeHandler, { passive: true });
+      window.visualViewport.addEventListener("scroll", menuResizeHandler, { passive: true });
+    }
+    syncMobileMenuGeometry();
+
     function setMenuState(isOpen, restoreFocus) {
       panel.classList.toggle("is-open", isOpen);
       document.body.classList.toggle("is-menu-open", isOpen);
+      syncMobileMenuGeometry();
       toggle.setAttribute("aria-expanded", String(isOpen));
       panel.setAttribute("aria-hidden", String(!isOpen));
       if (isOpen) {
+        window.requestAnimationFrame(syncMobileMenuGeometry);
+        panel.scrollTop = 0;
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
         }

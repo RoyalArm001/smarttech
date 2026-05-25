@@ -292,6 +292,103 @@
       "</article>";
   }
 
+  function teamUnitCopy() {
+    var dictionaries = {
+      hy: {
+        it: {
+          eyebrow: "IT",
+          title: site.i18n.get("teamPage.itTitle", "IT բաժին"),
+          text: site.i18n.get("teamPage.itText", "Ցանցային ինժեներիան եւ IT նախագծերի իրականացումը աշխատում են որպես առանձին տեխնիկական միավոր։")
+        },
+        automation: {
+          eyebrow: "Automation",
+          title: "Automation ուղղություն",
+          text: "Էլեկտրական սարքերի կառավարման, ավտոմատացման եւ սցենարային աշխատանքի մասնագետները առանձնացված են իրենց ուղղությամբ։"
+        },
+        bms: {
+          eyebrow: "BMS",
+          title: "BMS ուղղություն",
+          text: "Շենքի կառավարման BMS նախագծումը առանձին բաժին է՝ սեփական տեխնիկական պատասխանատվությամբ։"
+        },
+        audio: {
+          eyebrow: "Audio",
+          title: "Աուդիո համակարգերի ուղղություն",
+          text: "Public address, ֆոնային երաժշտություն, ձայնային ծանուցում եւ կոնֆերանսային աուդիո լուծումները առանձնացված են իրենց բաժնում։"
+        }
+      },
+      en: {
+        it: {
+          eyebrow: "IT",
+          title: site.i18n.get("teamPage.itTitle", "IT Department"),
+          text: site.i18n.get("teamPage.itText", "Network engineering and IT project delivery work as a separate technical unit.")
+        },
+        automation: {
+          eyebrow: "Automation",
+          title: "Automation unit",
+          text: "Device control, automation and scenario programming specialists are shown as their own direction."
+        },
+        bms: {
+          eyebrow: "BMS",
+          title: "BMS unit",
+          text: "Building management system design is a separate department with its own technical responsibility."
+        },
+        audio: {
+          eyebrow: "Audio",
+          title: "Audio systems unit",
+          text: "Public address, background music, voice notification and conference audio work are shown in their own direction."
+        }
+      },
+      ru: {
+        it: {
+          eyebrow: "IT",
+          title: site.i18n.get("teamPage.itTitle", "IT-отдел"),
+          text: site.i18n.get("teamPage.itText", "Сетевые решения и IT-проекты работают как отдельное техническое направление.")
+        },
+        automation: {
+          eyebrow: "Automation",
+          title: "Автоматизация",
+          text: "Специалисты по управлению устройствами, автоматизации и сценарной логике вынесены в отдельное направление."
+        },
+        bms: {
+          eyebrow: "BMS",
+          title: "BMS-направление",
+          text: "Проектирование систем управления зданием выделено как отдельный отдел со своей технической ответственностью."
+        },
+        audio: {
+          eyebrow: "Audio",
+          title: "Направление аудиосистем",
+          text: "Public address, фоновая музыка, голосовые уведомления и конференц-аудио вынесены в отдельный блок."
+        }
+      }
+    };
+    return dictionaries[site.i18n.language] || dictionaries.hy;
+  }
+
+  function renderTeamUnitLink(member) {
+    var e = site.utils.escapeHtml;
+    var localized = site.i18n.teamMember(member);
+    return "" +
+      '<a class="team-unit-link" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
+        "<span>" + e(member.accent) + "</span>" +
+        "<strong>" + e(localized.title || member.title) + "</strong>" +
+      "</a>";
+  }
+
+  function renderTeamUnitPanel(key, members, copy) {
+    var e = site.utils.escapeHtml;
+    var unitCopy = copy[key];
+    if (!unitCopy || !members.length) return "";
+    return "" +
+      '<div class="team-unit-panel team-unit-panel-' + e(key) + ' reveal">' +
+        "<div>" +
+          '<span class="eyebrow">' + e(unitCopy.eyebrow) + "</span>" +
+          "<h2>" + e(unitCopy.title) + "</h2>" +
+          "<p>" + e(unitCopy.text) + "</p>" +
+        "</div>" +
+        '<div class="team-unit-grid">' + members.map(renderTeamUnitLink).join("") + "</div>" +
+      "</div>";
+  }
+
   site.sections.team = function team() {
     var e = site.utils.escapeHtml;
     var director = getMemberById("director") || site.content.team[0];
@@ -302,16 +399,21 @@
       var cardClass = isManager(member) ? "team-card-person team-card-lead" : "team-card-person team-card-worker";
       return '<div class="team-rail-node" style="--team-color: ' + e(member.color) + '">' + renderTeamCard(member, cardClass) + "</div>";
     }).join("");
-    var itCards = specialists.filter(function (member) {
-      return member.department === "IT";
-    }).map(function (member) {
-      var localized = site.i18n.teamMember(member);
-      return "" +
-        '<a class="team-unit-link" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
-          "<span>" + e(member.accent) + "</span>" +
-          "<strong>" + e(localized.title || member.title) + "</strong>" +
-        "</a>";
-    }).join("");
+    var unitCopy = teamUnitCopy();
+    var unitPanels = [
+      renderTeamUnitPanel("it", specialists.filter(function (member) {
+        return member.department === "IT";
+      }), unitCopy),
+      renderTeamUnitPanel("automation", specialists.filter(function (member) {
+        return member.id === "automation-specialist";
+      }), unitCopy),
+      renderTeamUnitPanel("bms", specialists.filter(function (member) {
+        return member.id === "bms-design-specialist";
+      }), unitCopy),
+      renderTeamUnitPanel("audio", specialists.filter(function (member) {
+        return member.id === "audio-systems-specialist";
+      }), unitCopy)
+    ].join("");
 
     return "" +
       site.sections.pageHero({
@@ -342,14 +444,7 @@
               "</div>" +
             "</div>" +
           "</div>" +
-          '<div class="team-unit-panel reveal">' +
-            "<div>" +
-              '<span class="eyebrow">IT</span>' +
-              "<h2>" + e(site.i18n.get("teamPage.itTitle", "IT Department")) + "</h2>" +
-              "<p>" + e(site.i18n.get("teamPage.itText", "Network engineering and IT project delivery work as a separate technical unit.")) + "</p>" +
-            "</div>" +
-            '<div class="team-unit-grid">' + itCards + "</div>" +
-          "</div>" +
+          '<div class="team-unit-stack">' + unitPanels + "</div>" +
         "</div>" +
       "</section>";
   };
@@ -367,6 +462,9 @@
     var workLabel = site.i18n.get("teamDetail.workInfo", "Work information");
     var socialLabel = site.i18n.get("teamDetail.socials", "Social networks");
     var certLabel = site.i18n.get("teamDetail.certificates", "Certificates");
+    var profileClass = member.id === "director"
+      ? "member-profile-card member-profile-director"
+      : "member-profile-card member-profile-person";
 
     return "" +
       site.sections.pageHero({
@@ -381,7 +479,7 @@
       }) +
       '<section class="section team-member-section">' +
         '<div class="container team-member-grid">' +
-          '<aside class="member-profile-card reveal" style="--team-color: ' + e(member.color) + '">' +
+          '<aside class="' + e(profileClass) + ' reveal" style="--team-color: ' + e(member.color) + '">' +
             '<a class="member-back" href="' + e(site.utils.pageUrl("team")) + '">&lt; ' + e(site.i18n.get("detail.back", "Back")) + "</a>" +
             '<div class="member-photo-wrap">' +
               '<img class="member-photo" src="' + e(member.image) + '" alt="' + e(title) + '" loading="lazy">' +

@@ -1,6 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const { execFile } = require("child_process");
 const { URL } = require("url");
 
 const rootDir = __dirname;
@@ -54,11 +55,16 @@ function safeWebPath(urlPath) {
 }
 
 function extensionlessRedirectLocation(requestUrl) {
-  var pathname = requestUrl.pathname.replace(/\/+$/, "") || "/";
+  var originalPathname = requestUrl.pathname || "/";
+  var pathname = originalPathname.replace(/\/+$/, "") || "/";
   var cleanPath = pathname;
 
   if (cleanPath.indexOf("/pages/") === 0) {
     cleanPath = "/" + cleanPath.slice("/pages/".length);
+  }
+
+  if (cleanPath === "/home" && cleanPath !== originalPathname) {
+    return "/home" + requestUrl.search;
   }
 
   if (cleanPath === "/" || cleanPath === "/home") {
@@ -77,7 +83,7 @@ function extensionlessRedirectLocation(requestUrl) {
     return withoutExtension + requestUrl.search;
   }
 
-  if (cleanPath !== pathname) {
+  if (cleanPath !== originalPathname) {
     return cleanPath + requestUrl.search;
   }
 
@@ -321,6 +327,22 @@ function serveWeb(request, response) {
   sendStatic(response, target);
 }
 
+function openBrowser(url) {
+  if (process.env.OPEN_BROWSER !== "1") return;
+
+  var command = "xdg-open";
+  var args = [url];
+
+  if (process.platform === "win32") {
+    command = "cmd";
+    args = ["/c", "start", "", url];
+  } else if (process.platform === "darwin") {
+    command = "open";
+  }
+
+  execFile(command, args, { windowsHide: true }, function () {});
+}
+
 function startServer(portToUse) {
   const server = http.createServer((request, response) => {
     if (serveApi(request, response) === false) {
@@ -329,8 +351,10 @@ function startServer(portToUse) {
   });
 
   server.listen(portToUse, () => {
+    const localUrl = "http://localhost:" + portToUse + "/";
     console.log("Smart Tech web server is running:");
-    console.log("  Web: http://localhost:" + portToUse + "/");
+    console.log("  Web: " + localUrl);
+    openBrowser(localUrl);
   });
 
   server.on("error", (error) => {

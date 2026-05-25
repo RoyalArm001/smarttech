@@ -2,6 +2,14 @@
 
 ## Run
 
+On Windows, double-click:
+
+```text
+Start SmartTech.cmd
+```
+
+It stops old SmartTech local server processes, starts the site, and opens the browser automatically.
+
 ```bash
 npm run dev
 ```
@@ -44,6 +52,54 @@ For Vercel or Cloudflare Pages, use exactly:
 - Start command: leave empty
 
 After build, the hosting platform must publish `dist/`, not the project root and not `web/`.
+
+### Automatic GitHub deployment
+
+This repository includes GitHub Actions workflows that will automatically:
+
+- verify the site builds on every push and pull request to `main`
+- build the static site and publish `dist/` to GitHub Pages from `gh-pages`
+
+If you create a GitHub repository for this project and push the `main` branch, the workflow will produce the `gh-pages` branch automatically.
+
+To use GitHub Pages:
+
+1. Create the GitHub repo and push this project.
+2. In repository settings, enable GitHub Pages and select the `gh-pages` branch at the root.
+
+### Vercel and Cloudflare Pages
+
+For Vercel:
+
+- Build command: `npm run web`
+- Output directory: `dist`
+- Start command: leave empty
+
+For Cloudflare Pages:
+
+- Build command: `npm run web`
+- Output directory: `dist`
+
+Once the project is pushed to GitHub, both hosts can deploy automatically from the repo.
+
+## Google Analytics
+
+This project now includes a placeholder GA4 loader in `web/src/main.js`.
+
+- Replace `G-XXXXXXXXXX` with your real Google Analytics measurement ID.
+- The script will load automatically and send a page view for each page render.
+- If you need more advanced tracking, you can extend `trackGoogleAnalyticsPageView()` in `web/src/main.js`.
+
+## Custom Domain
+
+If you want a real domain:
+
+1. Buy a domain from any registrar.
+2. In Vercel or Cloudflare Pages, add the custom domain to the project.
+3. Update your domain DNS records to the provider’s nameservers or CNAME/A records.
+4. Wait for DNS to propagate and verify the domain inside the host dashboard.
+
+For GitHub Pages, set the custom domain in repository Pages settings and add a `CNAME` file or DNS record as GitHub instructs.
 
 ## Single Source Rule
 
