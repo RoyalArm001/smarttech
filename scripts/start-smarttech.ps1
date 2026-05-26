@@ -44,8 +44,22 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
+if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+  Write-Host "npm was not found. Install Node.js 18 or newer, then run this file again."
+  exit 1
+}
+
 $env:WEB_PORT = "3000"
 $env:OPEN_BROWSER = "1"
+
+Write-Host ""
+Write-Host "Building SmartTech..."
+npm run build
+if ($LASTEXITCODE -ne 0) {
+  Write-Host ""
+  Write-Host "Build failed. Fix the error above, then run this file again."
+  exit $LASTEXITCODE
+}
 
 Write-Host ""
 Write-Host "Starting SmartTech..."

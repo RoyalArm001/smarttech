@@ -18,6 +18,63 @@ fs.rmSync(outputDir, { recursive: true, force: true });
 fs.mkdirSync(outputDir, { recursive: true });
 fs.cpSync(sourceDir, outputDir, { recursive: true });
 
+function envValue(names, fallback) {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value && String(value).trim()) {
+      return String(value).trim();
+    }
+  }
+  return fallback;
+}
+
+function jsString(value) {
+  return "\"" + String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, "\\\"")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029") + "\"";
+}
+
+function writeRuntimeConfig() {
+  const databaseUrl = envValue([
+    "SMARTTECH_FIREBASE_DATABASE_URL",
+    "FIREBASE_DATABASE_URL",
+    "VITE_FIREBASE_DATABASE_URL",
+    "NEXT_PUBLIC_FIREBASE_DATABASE_URL"
+  ], "https://jermukguide-f64ef-default-rtdb.firebaseio.com");
+
+  const statsPath = envValue([
+    "SMARTTECH_FIREBASE_STATS_PATH",
+    "FIREBASE_STATS_PATH",
+    "VITE_FIREBASE_STATS_PATH",
+    "NEXT_PUBLIC_FIREBASE_STATS_PATH"
+  ], "BlogID_201588890086708935/PostID_WebsiteStats");
+
+  const authToken = envValue([
+    "SMARTTECH_FIREBASE_AUTH_TOKEN",
+    "FIREBASE_AUTH_TOKEN",
+    "VITE_FIREBASE_AUTH_TOKEN",
+    "NEXT_PUBLIC_FIREBASE_AUTH_TOKEN"
+  ], "");
+
+  const configFile = path.resolve(outputDir, "src", "core", "runtime-config.js");
+  fs.writeFileSync(configFile, [
+    "(function (window) {",
+    "  window.SmartTechRuntimeConfig = Object.assign({}, window.SmartTechRuntimeConfig, {",
+    "    firebaseDatabaseUrl: " + jsString(databaseUrl) + ",",
+    "    firebaseStatsPath: " + jsString(statsPath) + ",",
+    "    firebaseAuthToken: " + jsString(authToken),
+    "  });",
+    "})(window);",
+    ""
+  ].join("\n"));
+}
+
+writeRuntimeConfig();
+
 const routeAliases = {
   "index": "index",
   "home": "index",

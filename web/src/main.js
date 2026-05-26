@@ -27,6 +27,8 @@
   var uiSettings = readUiSettings();
 
   var googleAnalyticsMeasurementId = "G-XXXXXXXXXX"; // Replace with your GA4 measurement ID
+  var DISABLE_GOOGLE_TRANSLATE = true; // Set to true to disable Google Translate widget for faster performance
+
 
   function initializeGoogleAnalytics() {
     if (!googleAnalyticsMeasurementId || googleAnalyticsMeasurementId.indexOf("G-") !== 0) return;
@@ -99,11 +101,6 @@
 
       return routeFromParts(parts, id);
     }
-  }
-
-  function shouldUseServerApi() {
-    var host = String(window.location.hostname || "").toLowerCase();
-    return host === "localhost" || host === "127.0.0.1" || host === "::1";
   }
 
   function pageMarkup(page) {
@@ -231,14 +228,13 @@
     applyTranslationBoundaries(page);
     setupNavigation();
     setupLanguageSwitcher();
-    enforceHiddenGoogleTranslateUi();
+    if (!DISABLE_GOOGLE_TRANSLATE) enforceHiddenGoogleTranslateUi();
     setupContactForm();
     setupRequestBuilder();
     setupReveal();
     setupFooterYear();
     setupAutoChat();
     setupBackToTop();
-    applyTranslationBoundaries(page);
     setupMetricsAutomation();
     initializeGoogleAnalytics();
     trackGoogleAnalyticsPageView();
@@ -381,6 +377,8 @@
       menuEscHandler = null;
     }
 
+    var menuGeometryFrame = 0;
+
     function syncMobileMenuGeometry() {
       var header = document.getElementById("site-header");
       if (!header || !document.documentElement || !header.getBoundingClientRect) return;
@@ -392,7 +390,17 @@
       document.documentElement.style.setProperty("--smarttech-header-bottom", bottom + "px");
     }
 
-    menuResizeHandler = syncMobileMenuGeometry;
+    function scheduleMobileMenuGeometrySync(event) {
+      if (!panel.classList.contains("is-open")) return;
+      if (menuGeometryFrame) return;
+
+      menuGeometryFrame = window.requestAnimationFrame(function () {
+        menuGeometryFrame = 0;
+        syncMobileMenuGeometry();
+      });
+    }
+
+    menuResizeHandler = scheduleMobileMenuGeometrySync;
     window.addEventListener("resize", menuResizeHandler, { passive: true });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", menuResizeHandler, { passive: true });
@@ -722,9 +730,132 @@
           sendingText: "Почта откроется с подготовленной темой и текстом.",
           mailStatus: "Почта открылась с готовым письмом. Если не открылась, скачайте TXT файл и отправьте его по email.",
           downloadStatus: "TXT файл готов."
+        },
+        be: {
+          title: "Заяўка на сістэму Smart Tech",
+          requestType: "Тып заяўкі",
+          contact: "Кантакт",
+          name: "Імя / кампанія",
+          phone: "Тэлефон",
+          email: "Email",
+          object: "Аб'ект",
+          objectType: "Тып аб'екта",
+          area: "Плошча / пакоі",
+          address: "Адрас",
+          deadline: "Тэрмін",
+          systems: "Выбраныя сістэмы",
+          components: "Прылады / работы",
+          brands: "Брэнды / мадэлі",
+          visit: "Візіт і замер",
+          visitNeeded: "Візіт спецыяліста",
+          visitDate: "Жаданая дата",
+          visitTime: "Жаданы час",
+          visitAccess: "Нататкі для візіту",
+          specialists: "Выбраныя спецыялісты",
+          maintenance: "Патрэбы ў сэрвісе",
+          notes: "Нататкі",
+          yes: "Так",
+          no: "Не",
+          empty: "Не запоўнена",
+          noSystems: "Сістэмы яшчэ не выбраны",
+          noComponents: "Прылада або работа не выбрана",
+          noBrands: "Брэнд або мадэль не выбраны",
+          noSpecialists: "Канкрэтны спецыяліст не выбраны, каманда вызначыць паводле праекта",
+          noMaintenance: "Сэрвісныя работы яшчэ не выбраны",
+          subject: "Заяўка на сістэму Smart Tech",
+          projectSubject: "Новая праектная заяўка Smart Tech",
+          projectRequest: "Новая праектная заяўка / патрэбны замер",
+          readyTitle: "Заяўка будзе сабрана аўтаматычна",
+          readyText: "Выберыце сістэмы і націсніце адправіць. Тэкст ліста будзе сфарміраваны аўтаматычна.",
+          sendingTitle: "Рыхтуем ліст",
+          sendingText: "Пошта адкрыецца з падрыхтаванай тэмай і тэкстам.",
+          mailStatus: "Пошта адкрылася з гатовым лістом. Калі не адкрылася, спампуйце TXT-файл і адпраўце яго па email.",
+          downloadStatus: "TXT-файл гатовы."
+        },
+        fr: {
+          title: "Demande de système Smart Tech",
+          requestType: "Type de demande",
+          contact: "Contact",
+          name: "Nom / entreprise",
+          phone: "Téléphone",
+          email: "Email",
+          object: "Site",
+          objectType: "Type de site",
+          area: "Surface / pièces",
+          address: "Adresse",
+          deadline: "Délai",
+          systems: "Systèmes sélectionnés",
+          components: "Équipements / tâches",
+          brands: "Marques / modèles",
+          visit: "Visite et mesure",
+          visitNeeded: "Visite d'un spécialiste",
+          visitDate: "Date souhaitée",
+          visitTime: "Heure souhaitée",
+          visitAccess: "Notes de visite",
+          specialists: "Spécialistes sélectionnés",
+          maintenance: "Besoins de service",
+          notes: "Notes",
+          yes: "Oui",
+          no: "Non",
+          empty: "Non renseigné",
+          noSystems: "Aucun système sélectionné",
+          noComponents: "Aucun équipement ou travail sélectionné",
+          noBrands: "Aucune marque ou modèle sélectionné",
+          noSpecialists: "Aucun spécialiste précis sélectionné, l'équipe décidera selon le projet",
+          noMaintenance: "Aucune tâche de service sélectionnée",
+          subject: "Demande de système Smart Tech",
+          projectSubject: "Nouvelle demande de projet Smart Tech",
+          projectRequest: "Nouvelle demande de projet / mesure nécessaire",
+          readyTitle: "La demande sera préparée automatiquement",
+          readyText: "Choisissez les systèmes et envoyez. Le texte de l'e-mail sera généré automatiquement.",
+          sendingTitle: "Préparation de l'e-mail",
+          sendingText: "L'application e-mail s'ouvrira avec le sujet et le message préparés.",
+          mailStatus: "L'application e-mail s'est ouverte avec un message prêt. Sinon, téléchargez le fichier TXT et envoyez-le par e-mail.",
+          downloadStatus: "Le fichier TXT est prêt."
+        },
+        ka: {
+          title: "Smart Tech სისტემის განაცხადი",
+          requestType: "განაცხადის ტიპი",
+          contact: "კონტაქტი",
+          name: "სახელი / კომპანია",
+          phone: "ტელეფონი",
+          email: "Email",
+          object: "ობიექტი",
+          objectType: "ობიექტის ტიპი",
+          area: "ფართობი / ოთახები",
+          address: "მისამართი",
+          deadline: "ვადა",
+          systems: "არჩეული სისტემები",
+          components: "მოწყობილობები / სამუშაოები",
+          brands: "ბრენდები / მოდელები",
+          visit: "ვიზიტი და აზომვა",
+          visitNeeded: "სპეციალისტის ვიზიტი",
+          visitDate: "სასურველი თარიღი",
+          visitTime: "სასურველი დრო",
+          visitAccess: "ვიზიტის შენიშვნები",
+          specialists: "არჩეული სპეციალისტები",
+          maintenance: "სერვისის საჭიროებები",
+          notes: "შენიშვნები",
+          yes: "დიახ",
+          no: "არა",
+          empty: "არ არის შევსებული",
+          noSystems: "სისტემები ჯერ არ არის არჩეული",
+          noComponents: "მოწყობილობა ან სამუშაო არ არის არჩეული",
+          noBrands: "ბრენდი ან მოდელი არ არის არჩეული",
+          noSpecialists: "კონკრეტული სპეციალისტი არ არის არჩეული, გუნდი გადაწყვეტს პროექტის მიხედვით",
+          noMaintenance: "სერვისის სამუშაოები ჯერ არ არის არჩეული",
+          subject: "Smart Tech სისტემის განაცხადი",
+          projectSubject: "Smart Tech-ის ახალი პროექტის განაცხადი",
+          projectRequest: "ახალი პროექტის განაცხადი / საჭიროა აზომვა",
+          readyTitle: "განაცხადი ავტომატურად მომზადდება",
+          readyText: "აირჩიეთ სისტემები და დააჭირეთ გაგზავნას. წერილის ტექსტი ავტომატურად შეიქმნება.",
+          sendingTitle: "წერილი მზადდება",
+          sendingText: "ელფოსტის აპი გაიხსნება მომზადებული სათაურითა და ტექსტით.",
+          mailStatus: "ელფოსტის აპი გაიხსნა მომზადებული წერილით. თუ არ გაიხსნა, ჩამოტვირთეთ TXT ფაილი და გააგზავნეთ email-ით.",
+          downloadStatus: "TXT ფაილი მზად არის."
         }
       };
-      return dictionaries[activeUiLanguage()] || dictionaries.hy;
+      return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
     }
 
     function value(name) {
@@ -1146,10 +1277,28 @@
           success: "Заявка получена. Наша команда скоро свяжется с вами.",
           fallback: "Если окно почты не открылось, напишите нам на email, WhatsApp или Viber.",
           error: "Не удалось отправить заявку. Попробуйте еще раз или позвоните нам."
+        },
+        be: {
+          sending: "Адпраўляем заяўку...",
+          success: "Заяўка атрымана. Наша каманда хутка звяжацца з вамі.",
+          fallback: "Калі паштовае акно не адкрылася, напішыце нам на email, WhatsApp або Viber.",
+          error: "Не ўдалося адправіць заяўку. Паспрабуйце яшчэ раз або патэлефануйце нам."
+        },
+        fr: {
+          sending: "Envoi de la demande...",
+          success: "Demande reçue. Notre équipe vous contactera bientôt.",
+          fallback: "Si la fenêtre e-mail ne s'est pas ouverte, contactez-nous par e-mail, WhatsApp ou Viber.",
+          error: "Impossible d'envoyer la demande. Réessayez ou appelez-nous."
+        },
+        ka: {
+          sending: "განაცხადი იგზავნება...",
+          success: "განაცხადი მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ.",
+          fallback: "თუ ელფოსტის ფანჯარა არ გაიხსნა, მოგვწერეთ email-ით, WhatsApp-ით ან Viber-ით.",
+          error: "განაცხადის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან ან დაგვირეკეთ."
         }
       };
       var lang = activeUiLanguage();
-      return (messages[lang] && messages[lang][key]) || messages.hy[key] || "";
+      return (messages[lang] && messages[lang][key]) || messages.en[key] || messages.hy[key] || "";
     }
 
     function setBusy(isBusy) {
@@ -1188,34 +1337,8 @@
 
       status.textContent = feedbackText("sending");
       setBusy(true);
-
-      if (!window.fetch || window.location.protocol === "file:" || !shouldUseServerApi()) {
-        setBusy(false);
-        openEmailFallback(payload);
-        return;
-      }
-
-      fetch("/api/contact", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(function (response) {
-        if (!response.ok) {
-          throw new Error("Contact request failed");
-        }
-        return response.json();
-      }).then(function () {
-        form.reset();
-        status.textContent = feedbackText("success");
-        setBusy(false);
-      }).catch(function () {
-        setBusy(false);
-        try {
-          openEmailFallback(payload);
-        } catch (error) {
-          status.textContent = feedbackText("error");
-        }
-      });
+      setBusy(false);
+      openEmailFallback(payload);
     });
   }
 
@@ -1292,42 +1415,82 @@
     setMetricValue("projects", (site.content.projects || []).length || 0);
   }
 
+  function firebaseMetricsUrl() {
+    var config = window.SmartTechRuntimeConfig || {};
+    var databaseUrl = String(config.firebaseDatabaseUrl || "").trim().replace(/\/+$/g, "");
+    var statsPath = String(config.firebaseStatsPath || "").trim().replace(/^\/+|\/+$/g, "");
+    var authToken = String(config.firebaseAuthToken || "").trim();
+    if (!databaseUrl || !statsPath) return "";
+
+    var encodedPath = statsPath.split("/").filter(Boolean).map(function (part) {
+      return encodeURIComponent(part);
+    }).join("/");
+
+    return databaseUrl + "/" + encodedPath + ".json" + (authToken ? "?auth=" + encodeURIComponent(authToken) : "");
+  }
+
+  function parseFirebaseCounter(text) {
+    var value = Number(String(text || "").replace(/^"|"$/g, ""));
+    return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+  }
+
+  function readFirebaseVisits(url) {
+    return fetch(url, {
+      method: "GET",
+      cache: "no-store"
+    }).then(function (response) {
+      if (!response.ok) {
+        throw new Error("Could not read Firebase counter");
+      }
+      return response.text();
+    }).then(parseFirebaseCounter);
+  }
+
+  function writeFirebaseVisits(url, visits) {
+    return fetch(url, {
+      method: "PUT",
+      cache: "no-store",
+      headers: { "content-type": "text/plain; charset=UTF-8" },
+      body: String(Math.max(0, Math.floor(visits || 0)))
+    }).then(function (response) {
+      if (!response.ok) {
+        throw new Error("Could not write Firebase counter");
+      }
+      return visits;
+    });
+  }
+
+  function setupFirebaseMetrics(recordVisit) {
+    var url = firebaseMetricsUrl();
+    if (!url || !window.fetch) return false;
+
+    readFirebaseVisits(url)
+      .then(function (visits) {
+        setMetricValue("visits", visits);
+        if (!recordVisit) return visits;
+        return writeFirebaseVisits(url, visits + 1).catch(function () {
+          return visits;
+        });
+      })
+      .then(function (visits) {
+        setMetricValue("visits", visits);
+      })
+      .catch(function () {
+        setupStaticMetricsFallback(recordVisit);
+      });
+
+    return true;
+  }
+
   function setupMetricsAutomation() {
     var hasMetrics = document.querySelector("[data-metric-item]");
     if (!hasMetrics) return;
 
     setMetricValue("projects", (site.content.projects || []).length || 0);
-
     var recordVisit = shouldRecordVisitThisSession();
-
-    if (window.location.protocol === "file:" || !window.fetch || !shouldUseServerApi()) {
+    if (!setupFirebaseMetrics(recordVisit)) {
       setupStaticMetricsFallback(recordVisit);
-      return;
     }
-
-    var endpoint = recordVisit ? "/api/metrics/visit" : "/api/metrics";
-    var options = {
-      method: recordVisit ? "POST" : "GET",
-      headers: { Accept: "application/json" }
-    };
-
-    fetch(endpoint, options)
-      .then(function (response) {
-        if (!response.ok) return null;
-        return response.json();
-      })
-      .then(function (payload) {
-        if (!payload || typeof payload !== "object") return;
-        if (typeof payload.visits === "number") {
-          setMetricValue("visits", payload.visits);
-        }
-        if (typeof payload.projects === "number") {
-          setMetricValue("projects", payload.projects);
-        }
-      })
-      .catch(function () {
-        // Metrics are best-effort and should never block render.
-      });
   }
 
   function readUiSettings() {
@@ -1497,20 +1660,19 @@
       ".goog-tooltip"
     ];
 
-    selectors.forEach(function (selector) {
-      document.querySelectorAll(selector).forEach(function (node) {
-        if (node.id !== "smarttech-google-translate") {
-          node.style.display = "none";
-        }
-        node.style.width = "0px";
-        node.style.height = "0px";
-        node.style.maxWidth = "0px";
-        node.style.maxHeight = "0px";
-        node.style.overflow = "hidden";
-        node.style.opacity = "0";
-        node.style.visibility = "hidden";
-        node.style.pointerEvents = "none";
-      });
+    var combinedSelector = selectors.join(", ");
+    document.querySelectorAll(combinedSelector).forEach(function (node) {
+      if (node.id !== "smarttech-google-translate") {
+        node.style.display = "none";
+      }
+      node.style.width = "0px";
+      node.style.height = "0px";
+      node.style.maxWidth = "0px";
+      node.style.maxHeight = "0px";
+      node.style.overflow = "hidden";
+      node.style.opacity = "0";
+      node.style.visibility = "hidden";
+      node.style.pointerEvents = "none";
     });
   }
 
@@ -1535,7 +1697,7 @@
     scheduleTranslateUiCleanup();
     new window.google.translate.TranslateElement({
       pageLanguage: "hy",
-      includedLanguages: "hy,ru,en",
+      includedLanguages: "hy,ru,en,be,fr,ka",
       autoDisplay: false,
       multilanguagePage: true
     }, "smarttech-google-translate");
@@ -1543,6 +1705,8 @@
   }
 
   function loadOnlineTranslate() {
+    // Disabled Google Translate integration for faster site performance.
+    if (DISABLE_GOOGLE_TRANSLATE) return;
     if (window.google && window.google.translate && window.google.translate.TranslateElement) {
       initGoogleTranslate();
       return;
@@ -1568,6 +1732,9 @@
 
   function normalizeLanguageCode(language) {
     var lang = String(language || "").toLowerCase();
+    if (lang.indexOf("be") === 0) return "be";
+    if (lang.indexOf("fr") === 0) return "fr";
+    if (lang.indexOf("ka") === 0) return "ka";
     if (lang.indexOf("ru") === 0) return "ru";
     if (lang.indexOf("en") === 0) return "en";
     return "hy";
@@ -1583,29 +1750,29 @@
     var contactPage = site.utils.pageUrl("contact");
     var dictionaries = {
       hy: {
-        title: "\u0531\u057e\u057f\u0578 \u0579\u0561\u057f",
-        subtitle: "\u0531\u0580\u0561\u0563 \u057a\u0561\u057f\u0561\u057d\u056d\u0561\u0576\u0576\u0565\u0580 Smart Tech-\u056b\u0581",
-        quickLabel: "\u0531\u0580\u0561\u0563 \u0570\u0561\u0580\u0581\u0565\u0580",
-        statusLabel: "\u0531\u056f\u057f\u056b\u057e",
-        openLabel: "\u0532\u0561\u0581\u0565\u056c \u0579\u0561\u057f\u0568",
-        closeLabel: "\u0553\u0561\u056f\u0565\u056c \u0579\u0561\u057f\u0568",
-        hideLabel: "\u0539\u0561\u0584\u0581\u0576\u0565\u056c \u0579\u0561\u057f\u0568",
-        inputPlaceholder: "\u0533\u0580\u0565\u0584 \u0570\u0561\u0580\u0581\u0568...",
-        sendLabel: "\u0548\u0582\u0572\u0561\u0580\u056f\u0565\u056c",
-        typing: "\u0563\u0580\u0578\u0582\u0574 \u0567...",
-        greeting: "\u0532\u0561\u0580\u0587, \u0565\u057d Smart Tech-\u056b \u057e\u056b\u0580\u057f\u0578\u0582\u0561\u056c \u0585\u0563\u0576\u0561\u056f\u0561\u0576\u0576 \u0565\u0574\u0589 \u053f\u0585\u0563\u0576\u0565\u0574 \u056e\u0561\u057c\u0561\u0575\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580\u056b, \u0563\u0576\u0565\u0580\u056b, \u056a\u0561\u0574\u056f\u0565\u057f\u0576\u0565\u0580\u056b \u0587 \u056f\u0561\u057a\u056b \u0570\u0561\u0580\u0581\u0565\u0580\u0578\u057e\u0589",
+        title: "Ավտո չատ",
+        subtitle: "Արագ պատասխաններ Smart Tech-ից",
+        quickLabel: "Արագ հարցեր",
+        statusLabel: "Ակտիվ",
+        openLabel: "Բացել չատը",
+        closeLabel: "Փակել չատը",
+        hideLabel: "Թաքցնել չատը",
+        inputPlaceholder: "Գրեք հարցը...",
+        sendLabel: "Ուղարկել",
+        typing: "գրում է...",
+        greeting: "Բարև, ես Smart Tech-ի վիրտուալ օգնականն եմ։ Կօգնեմ ծառայությունների, գների, ժամկետների և կապի հարցերով։",
         quickIntents: [
-          { id: "services", label: "\u053e\u0561\u057c\u0561\u0575\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580" },
-          { id: "price", label: "\u0533\u0576\u0565\u0580\u056b \u0570\u0561\u0580\u0581" },
-          { id: "timeline", label: "\u053a\u0561\u0574\u056f\u0565\u057f\u0576\u0565\u0580" },
-          { id: "contact", label: "\u053f\u0561\u057a \u0574\u0565\u0566 \u0570\u0565\u057f" },
-          { id: "survey", label: "\u0530\u0580\u057f\u0561\u057e\u0578\u0582" }
+          { id: "services", label: "Ծառայություններ" },
+          { id: "price", label: "Գների հարց" },
+          { id: "timeline", label: "Ժամկետներ" },
+          { id: "contact", label: "Կապ մեզ հետ" },
+          { id: "survey", label: "Նախագծի բրիֆ" }
         ],
-        surveyIntro: "\u0530\u0580\u057f\u0561\u0563\u0565\u0576\u056f\u0561\u0576\u0561 \u0573\u0580\u0578\u0582 \u0564\u0578\u0582\u0584\u057e\u0561\u0574\u0561\u0576\u0561\u0576\u0565\u0576\u0578\u0582\u0569\u0575\u0561\u0574\u0561\u0576 \u0565\u056a \u0561\u0564\u0565\u0572 \u057f\u056b\u0574\u0565\u0574\u0561\u0576\u0561 \u057d\u0565\u0572\u0561\u0576\u0561\u0561\u0576\u061d",
+        surveyIntro: "Եկեք գրանցենք մի քանի հիմնական մանրամասներ, որպեսզի մեր թիմը արագ կապվի ձեզ հետ։",
         surveyQuestions: [
-          { id: "service", label: "\u053a\u0561\u0580\u0561\u056f\u0561\u0581\u0580\u0565\u0574\u0580", question: "\u0538\u057d\u0580\u0561\u057d\u0561\u0575 \u053c\u0561\u0570\u0561\u0576 \u057d\u0561\u0584\u0575\u0561\u0569\u056f\u0561\u0576 \u056d\u0578\u0584\u0561\u0576 \u0565\u0574 \u0565\u0561\u0573\u0574\u0578\u0582 \u0570\u0561\u0580\u057d\u0561\u0574\u0561\u0576\u0561? (\u057e\u0578\u0582. \u057f\u0565\u0631\u0561\u0576\u0561 \u0563\u0561\u0575\u0561\u0571\u0560\u0561\u0574\u0561\u0576\u0561)" },
-          { id: "facility", label: "\u0538\u0561\u057f\u057f\u0561\u057e\u056b\u0580\u0561", question: "\u0538\u0561\u057f\u057f\u0561\u057e\u056b\u0576\u0561\u0576 \u0561\u0572\u0578\u0576\u057f\u0561\u056f\u0574\u0561\u0578\u0582\u0561\u056f\u0578\u0574 \u0565\u0574\u0561\u0571\u0578\u0582\u0561\u0578\u0582\u0574\u0576\u0561?" },
-          { id: "timeline", label: "\u0538\u0561\u0574\u056f\u0565\u057f\u0576\u0565\u0580", question: "\u0535\u057e\u057f\u0561\u0579\u056b\u0576\u0561\u0576 \u0570\u0561\u0578\u057d\u0578\u0572\u0561\u0575\u0561\u0576\u0561\u0576 \u0561\u0574\u057d\u0578\u0561\u056c\u056b\u056f\u0561\u0578\u0582\u0561\u0578\u0582\u0574 \u0565\u0574\u0561\u0571\u0561?" }
+          { id: "service", label: "Ծառայություն", question: "Ո՞ր Smart Tech ծառայության կարիքն ունեք (օրինակ՝ տեսահսկում, ազդանշանային համակարգ, ավտոմատացում)։" },
+          { id: "facility", label: "Օբյեկտ", question: "Ի՞նչ տեսակի օբյեկտ պետք է չափագրենք։" },
+          { id: "timeline", label: "Ժամկետներ", question: "Ե՞րբ կցանկանայիք սկսել ձեր նախագիծը։" }
         ],
         surveySummary: "Ահա գրանցված մանրամասները:",
         surveyReminder: "Ձեր բրիֆը պահպանվել է, և մեր թիմը շուտով կկապվի ձեզ հետ:",
@@ -1615,7 +1782,7 @@
           price: "Ճշգրիտ գինը կախված է օբյեկտից և աշխատանքի ծավալից. կիսվեք համառոտ բրիֆով, և թիմը կպատրաստի հաշվարկը.",
           timeline: "Փոքր նախագծերը սովորաբար ավարտվում են 3-7 օրվա ընթացքում, միջինները՝ 1-3 շաբաթի մեջ. վերջնական ժամկետը հաստատվում է զննման փուլից հետո.",
           contact: "Կարող եք գրել {email}-ին կամ բացել մեր կապի էջը՝ {contactPage}:",
-          fallback: "Շնորհակալություն. գրեք խնդիրը 1-2 նախադասությամբ, և մեր թիմը շուտով կապ կհաստատի ձեզ հետ."
+          fallback: "Շնորհակալություն. գրեք խնդիրը 1-2 նախադասությամբ, և մեր թիմը շուտով կկապվի ձեզ հետ."
         }
       },
       en: {
@@ -1655,35 +1822,45 @@
         }
       },
       ru: {
-        title: "\u0410\u0432\u0442\u043e \u0447\u0430\u0442",
-        subtitle: "\u0411\u044b\u0441\u0442\u0440\u044b\u0435 \u043e\u0442\u0432\u0435\u0442\u044b Smart Tech",
-        quickLabel: "\u0411\u044b\u0441\u0442\u0440\u044b\u0435 \u0432\u043e\u043f\u0440\u043e\u0441\u044b",
-        statusLabel: "\u041e\u043d\u043b\u0430\u0439\u043d",
-        openLabel: "\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
-        closeLabel: "\u0417\u0430\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
-        hideLabel: "\u0421\u043a\u0440\u044b\u0442\u044c \u0447\u0430\u0442",
-        inputPlaceholder: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0432\u043e\u043f\u0440\u043e\u0441...",
-        sendLabel: "\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c",
-        typing: "\u043f\u0435\u0447\u0430\u0442\u0430\u0435\u0442...",
-        greeting: "\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435, \u044f \u0432\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u043e\u043c\u043e\u0449\u043d\u0438\u043a Smart Tech. \u041f\u043e\u043c\u043e\u0433\u0443 \u043f\u043e \u0443\u0441\u043b\u0443\u0433\u0430\u043c, \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u0438, \u0441\u0440\u043e\u043a\u0430\u043c \u0438 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u043c.",
+        title: "Авто чат",
+        subtitle: "Быстрые ответы Smart Tech",
+        quickLabel: "Быстрые вопросы",
+        statusLabel: "Онлайн",
+        openLabel: "Открыть чат",
+        closeLabel: "Закрыть чат",
+        hideLabel: "Скрыть чат",
+        inputPlaceholder: "Напишите вопрос...",
+        sendLabel: "Отправить",
+        typing: "печатает...",
+        greeting: "Здравствуйте, я виртуальный помощник Smart Tech. Помогу по услугам, стоимости, срокам и контактам.",
         quickIntents: [
-          { id: "services", label: "\u0423\u0441\u043b\u0443\u0433\u0438" },
-          { id: "price", label: "\u0421\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c" },
-          { id: "timeline", label: "\u0421\u0440\u043e\u043a\u0438" },
-          { id: "contact", label: "\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u044b" }
+          { id: "services", label: "Услуги" },
+          { id: "price", label: "Стоимость" },
+          { id: "timeline", label: "Сроки" },
+          { id: "contact", label: "Контакты" },
+          { id: "survey", label: "Бриф проекта" }
         ],
+        surveyIntro: "Давайте запишем несколько ключевых деталей, чтобы наша команда могла быстро связаться с вами.",
+        surveyQuestions: [
+          { id: "service", label: "Услуга", question: "Какая услуга Smart Tech вам необходима? (например, видеонаблюдение, сигнализация, автоматизация)" },
+          { id: "facility", label: "Объект", question: "Какой тип объекта необходимо обследовать?" },
+          { id: "timeline", label: "Сроки", question: "Когда вы хотите начать проект?" }
+        ],
+        surveySummary: "Вот детали, которые мы записали:",
+        surveyReminder: "Ваш бриф сохранен, наша команда скоро свяжется с вами.",
+        reminderStatus: "Бриф сохранен",
         replies: {
-          services: "\u041c\u044b \u0432\u044b\u043f\u043e\u043b\u043d\u044f\u0435\u043c \u0432\u0438\u0434\u0435\u043e\u043d\u0430\u0431\u043b\u044e\u0434\u0435\u043d\u0438\u0435, \u043f\u043e\u0436\u0430\u0440\u043d\u044b\u0435 \u0438 \u043e\u0445\u0440\u0430\u043d\u043d\u044b\u0435 \u0441\u0438\u0441\u0442\u0435\u043c\u044b, \u0441\u0435\u0442\u0435\u0432\u044b\u0435 \u0440\u0435\u0448\u0435\u043d\u0438\u044f, \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043c\u043e\u043d\u0442\u0430\u0436 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044e.",
-          price: "\u0422\u043e\u0447\u043d\u0430\u044f \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043e\u0442 \u043e\u0431\u044a\u0435\u043a\u0442\u0430 \u0438 \u043e\u0431\u044a\u0435\u043c\u0430 \u0437\u0430\u0434\u0430\u0447. \u041e\u0442\u043f\u0440\u0430\u0432\u044c\u0442\u0435 \u043a\u0440\u0430\u0442\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435, \u0438 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442 \u0440\u0430\u0441\u0447\u0435\u0442.",
-          timeline: "\u041d\u0435\u0431\u043e\u043b\u044c\u0448\u0438\u0435 \u043f\u0440\u043e\u0435\u043a\u0442\u044b \u043e\u0431\u044b\u0447\u043d\u043e \u0437\u0430\u043d\u0438\u043c\u0430\u044e\u0442 3-7 \u0434\u043d\u0435\u0439, \u0441\u0440\u0435\u0434\u043d\u0438\u0435 \u2014 1-3 \u043d\u0435\u0434\u0435\u043b\u0438. \u0424\u0438\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0440\u043e\u043a \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u0435\u043c \u043f\u043e\u0441\u043b\u0435 \u043e\u0431\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044f.",
-          contact: "\u041c\u043e\u0436\u043d\u043e \u043d\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u043d\u0430 {email}, \u0438\u043b\u0438 \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u043e\u0432: {contactPage}",
-          fallback: "\u0421\u043f\u0430\u0441\u0438\u0431\u043e. \u041e\u043f\u0438\u0448\u0438\u0442\u0435 \u0437\u0430\u0434\u0430\u0447\u0443 \u0432 1-2 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u044f\u0445, \u0438 \u043a\u043e\u043c\u0430\u043d\u0434\u0430 \u0441\u0432\u044f\u0436\u0435\u0442\u0441\u044f \u0441 \u0432\u0430\u043c\u0438 \u0432 \u0431\u043b\u0438\u0436\u0430\u0439\u0448\u0435\u0435 \u0432\u0440\u0435\u043c\u044f."
+          services: "Мы выполняем видеонаблюдение, пожарные и охранные системы, сетевые решения, электромонтаж и автоматизацию.",
+          price: "Точная стоимость зависит от объекта и объема задач. Отправьте краткое описание, и команда подготовит расчет.",
+          timeline: "Небольшие проекты обычно занимают 3-7 дней, средние — 1-3 недели. Финальный срок подтверждаем после обследования.",
+          contact: "Можно написать на {email}, или открыть страницу контактов: {contactPage}",
+          fallback: "Спасибо. Опишите задачу в 1-2 предложениях, и команда свяжется с вами в ближайшее время."
         }
       }
     };
 
     var activeLanguage = normalizeLanguageCode(language);
-    var base = dictionaries[activeLanguage] || dictionaries.hy;
+    var base = dictionaries[activeLanguage] || dictionaries.en || dictionaries.hy;
     var vars = {
       email: emailText,
       contactPage: contactPage
@@ -1720,18 +1897,18 @@
 
     var byLanguage = {
       hy: {
-        services: ["\u056e\u0561\u057c\u0561\u0575", "\u0570\u0561\u0574\u0561\u056f\u0561\u0580\u0563", "\u057f\u0565\u057d\u0561\u0570\u057d\u056f", "\u0561\u0570\u0561\u0566\u0561\u0576\u0563", "\u0570\u0580\u0564\u0565\u0570", "\u0581\u0561\u0576\u0581"],
-        price: ["\u0563\u056b\u0576", "\u0561\u0580\u056a\u0565\u0584", "\u0562\u0575\u0578\u0582\u057b\u0565", "\u0570\u0561\u0577\u057e\u0561\u0580\u056f"],
-        timeline: ["\u056a\u0561\u0574\u056f\u0565\u057f", "\u0585\u0580", "\u0577\u0561\u0562\u0561\u0569", "\u0565\u0580\u0562"],
-        contact: ["\u056f\u0561\u057a", "\u0566\u0561\u0576\u0563", "\u0570\u0565\u057c\u0561\u056d\u0578\u057d", "\u0576\u0561\u0574\u0561\u056f", "\u0567\u056c", "\u0583\u0578\u057d\u057f", "email"],
-        survey: ["\u0570\u0578\u0580\u056f\u0561\u0574", "\u0570\u0561\u0576\u057f\u0561\u057f\u0565\u0576", "\u0562\u0631\u056b\u057f", "\u056a\u0561\u0576\u0561\u056f\u0564", "\u057e\u0561\u0622\u0573\u0561\u0580" ]
+        services: ["ծառայ", "համակարգ", "տեսահսկ", "ահազանգ", "հրդեհ", "ցանց"],
+        price: ["գին", "արժեք", "բյուջե", "հաշվարկ"],
+        timeline: ["ժամկետ", "օր", "շաբաթ", "երբ"],
+        contact: ["կապ", "զանգ", "հեռախոս", "նամակ", "էլ", "փոստ", "email"],
+        survey: ["բրիֆ", "հարցում", "նախագիծ", "չափագրում", "հայտ"]
       },
       ru: {
-        services: ["\u0443\u0441\u043b\u0443\u0433", "\u0441\u0435\u0440\u0432\u0438\u0441", "\u0441\u0438\u0441\u0442\u0435\u043c", "\u0432\u0438\u0434\u0435\u043e", "\u043f\u043e\u0436\u0430\u0440", "\u043e\u0445\u0440\u0430\u043d"],
-        price: ["\u0441\u0442\u043e\u0438\u043c", "\u0446\u0435\u043d\u0430", "\u0431\u044e\u0434\u0436\u0435\u0442", "\u0440\u0430\u0441\u0447\u0435\u0442"],
-        timeline: ["\u0441\u0440\u043e\u043a", "\u0434\u043d\u0435\u0439", "\u043d\u0435\u0434\u0435\u043b", "\u043a\u043e\u0433\u0434\u0430", "\u0432\u0440\u0435\u043c\u044f"],
-        contact: ["\u043a\u043e\u043d\u0442\u0430\u043a\u0442", "\u0442\u0435\u043b\u0435\u0444\u043e\u043d", "\u0437\u0432\u043e\u043d", "\u043f\u043e\u0447\u0442", "email"],
-        survey: ["\u043e\u043f\u0440\u043e\u0441", "\u0431\u0440\u0438\u0444", "\u0437\u0430\u044f\u0432\u043a\u0430", "\u043f\u0440\u043e\u0435\u043a\u0442", "\u043a\u043e\u043d\u0442\u0430\u043a\u0442"]
+        services: ["услуг", "сервис", "систем", "видео", "пожар", "охран"],
+        price: ["стоим", "цена", "бюджет", "расчет"],
+        timeline: ["срок", "дней", "недел", "когда", "время"],
+        contact: ["контакт", "телефон", "звон", "почт", "email"],
+        survey: ["опрос", "бриф", "заявка", "проект", "контакт"]
       },
       en: {
         services: ["service", "services", "solution", "system", "surveillance", "alarm"],

@@ -19,6 +19,14 @@
       },
       image: serviceBase + "fire-security.jpg"
     },
+    alarmPanel: {
+      title: {
+        hy: "Պատրաստի fire alarm call point",
+        en: "Prepared fire alarm call point",
+        ru: "Готовая точка пожарной сигнализации"
+      },
+      image: "https://images.pexels.com/photos/3958649/pexels-photo-3958649.jpeg?auto=compress&cs=tinysrgb&w=1400"
+    },
     network: {
       title: {
         hy: "Կապի և ցանցային համակարգեր",
@@ -26,6 +34,14 @@
         ru: "Системы связи и сети"
       },
       image: serviceBase + "installation_networks.jpg"
+    },
+    serverRack: {
+      title: {
+        hy: "Պատրաստի սերվերային պահարան և patch panel",
+        en: "Prepared server rack and patch panel",
+        ru: "Готовый серверный шкаф и patch panel"
+      },
+      image: "https://images.pexels.com/photos/2881229/pexels-photo-2881229.jpeg?auto=compress&cs=tinysrgb&w=1400"
     },
     electrical: {
       title: {
@@ -67,28 +83,28 @@
       title: "Abovyan 5/5 Hotel (Multi Group)",
       works: ["Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում", "Էլեկտրական տաքացվող հատակներ"],
       images: [jobBase + "abovyan-1.png", jobBase + "abovyan-2.png"],
-      systemImages: [system.alarm, system.access, system.electrical]
+      systemImages: [system.alarmPanel, system.access, system.electrical]
     },
     {
       id: "amiryan",
       title: "Amiryan Business Center",
       works: ["Տեսահսկում", "Մուտքի վերահսկում", "Կառուցվածքային մալուխային համակարգ", "Ներքին լուսավորություն և էլեկտրացանց"],
       images: [jobBase + "amiryan-1.png", jobBase + "amiryan-2.png"],
-      systemImages: [system.cctv, system.access, system.network, system.electrical]
+      systemImages: [system.cctv, system.access, system.serverRack, system.electrical]
     },
     {
       id: "eria",
       title: "Eria Hotel",
       works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Էլեկտրամոնտաժ"],
       images: [jobBase + "eria-1.png"],
-      systemImages: [system.cctv, system.alarm, system.electrical]
+      systemImages: [system.cctv, system.alarmPanel, system.electrical]
     },
     {
       id: "dalan",
       title: "Dalan Technopark",
       works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"],
       images: [jobBase + "dalan-1.webp", jobBase + "dalan-2.png"],
-      systemImages: [system.cctv, system.alarm, system.access]
+      systemImages: [system.cctv, system.alarmPanel, system.access]
     },
     {
       id: "wyndham",
@@ -100,7 +116,7 @@
         jobBase + "wyndham-3.png",
         jobBase + "wyndham-4.png"
       ],
-      systemImages: [system.electrical, system.network, system.cctv, system.alarm, system.access]
+      systemImages: [system.electrical, system.serverRack, system.cctv, system.alarmPanel, system.access]
     },
     {
       id: "only-one",
@@ -112,21 +128,21 @@
         "Alarm անվտանգության համակարգի տեղադրում"
       ],
       images: [jobBase + "only-one-1.png", jobBase + "only-one-2.png", jobBase + "only-one-3.png"],
-      systemImages: [system.cctv, system.access, system.intercom, system.alarm]
+      systemImages: [system.cctv, system.access, system.intercom, system.alarmPanel]
     },
     {
       id: "bidek",
-      title: "Bidek Davtashen Residential Complex",
+      title: "Bedeck Davtashen Residential Complex",
       works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"],
       images: [jobBase + "bidek-1.jpg", jobBase + "bidek-2.jpg", jobBase + "bidek-3.jpg"],
-      systemImages: [system.cctv, system.alarm, system.access]
+      systemImages: [system.cctv, system.alarmPanel, system.access]
     },
     {
       id: "wildberries",
       title: "Wildberries",
       works: ["Էլեկտրամոնտաժ", "Տեսահսկում", "Հրդեհային ազդարարում", "Մուտքի վերահսկում", "Կապի համակարգեր"],
       images: [jobBase + "wildberries-1.png", jobBase + "wildberries-2.png"],
-      systemImages: [system.electrical, system.cctv, system.alarm, system.access, system.network]
+      systemImages: [system.electrical, system.cctv, system.alarmPanel, system.access, system.serverRack]
     }
   ];
 

@@ -2,7 +2,7 @@
   function galleryMarkup(images, title) {
     var e = site.utils.escapeHtml;
     return images.map(function (image, index) {
-      return '<img src="' + e(image) + '" alt="' + e(title) + ' ' + (index + 1) + '" loading="lazy">';
+      return '<img src="' + e(image) + '" alt="' + e(title) + ' ' + (index + 1) + '" loading="lazy" decoding="async">';
     }).join("");
   }
 
@@ -20,7 +20,7 @@
       var title = localTitle(item);
       return "" +
         '<figure class="detail-system-card">' +
-          '<img src="' + e(item.image) + '" alt="' + e(title || ("System " + (index + 1))) + '" loading="lazy">' +
+          '<img src="' + e(item.image) + '" alt="' + e(title || ("System " + (index + 1))) + '" loading="lazy" decoding="async">' +
           "<figcaption>" + e(title) + "</figcaption>" +
         "</figure>";
     }).join("");

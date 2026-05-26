@@ -1,7 +1,7 @@
 (function (site) {
   var storageKey = "smarttech.language";
   var fallbackLanguage = "hy";
-  var availableLanguages = ["hy", "en", "ru"];
+  var availableLanguages = ["hy", "en", "ru", "be", "fr", "ka"];
 
   function normalizeLanguage(language) {
     return availableLanguages.indexOf(language) >= 0 ? language : fallbackLanguage;

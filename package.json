@@ -5,7 +5,9 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
+    "dev": "node scripts/start-local.js",
+    "local": "node scripts/start-local.js",
+    "preview": "node scripts/start-local.js",
     "serve": "node server.js",
     "web": "npm run build",
     "build": "npm run check && node scripts/build-static.js",

@@ -24,7 +24,8 @@ If port 3000 is busy, the server will automatically try the next available port 
 
 ## Notes
 
-The local admin interface has been removed. Edit website content directly in `web/src/content` and `web/pages`.
+This is a static landing website. There is no admin panel, backend, or database.
+Edit website content directly in `web/src/content` and `web/pages`.
 
 ## Check
 
@@ -34,15 +35,25 @@ npm run check
 
 This validates the main Node and client-side JavaScript files for syntax errors.
 
-## Deploy
+## Visit Counter
 
-For Node.js cloud hosting, deploy the whole project root and run:
+The visit counter is read from Firebase Realtime Database during page load.
 
-```bash
-npm start
+Optional cloud build env vars:
+
+- `SMARTTECH_FIREBASE_DATABASE_URL`
+- `SMARTTECH_FIREBASE_STATS_PATH`
+- `SMARTTECH_FIREBASE_AUTH_TOKEN` only if your Firebase rules require it
+
+For a static website, the safest setup is a Firebase rule that allows public read/write only for this one counter node.
+
+Current default path:
+
+```text
+BlogID_201588890086708935/PostID_WebsiteStats
 ```
 
-For a purely static host, deploy the `web/` folder.
+## Deploy
 
 For Vercel or Cloudflare Pages, use exactly:
 

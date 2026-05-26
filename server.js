@@ -6,9 +6,6 @@ const { URL } = require("url");
 
 const rootDir = __dirname;
 const webDir = path.resolve(rootDir, "web");
-const metricsFile = path.resolve(rootDir, ".smarttech-metrics.dat");
-const contactRequestsFile = path.resolve(rootDir, ".smarttech-contact-requests.log");
-const projectsSourceFile = path.resolve(webDir, "src", "content", "projects", "index.js");
 const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
 const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
 
@@ -16,7 +13,6 @@ const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
@@ -90,124 +86,6 @@ function extensionlessRedirectLocation(requestUrl) {
   return null;
 }
 
-function parseJsonBody(request) {
-  return new Promise(function (resolve, reject) {
-    var body = "";
-    request.on("data", function (chunk) {
-      body += chunk.toString();
-      if (body.length > 1e6) {
-        reject(new Error("Request body too large"));
-        request.socket.destroy();
-      }
-    });
-    request.on("end", function () {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (error) {
-        reject(error);
-      }
-    });
-    request.on("error", reject);
-  });
-}
-
-function sendJson(response, body, status) {
-  response.writeHead(status || 200, {
-    "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store"
-  });
-  response.end(JSON.stringify(body));
-}
-
-function sendError(response, status, message) {
-  sendJson(response, { error: message || "Server error" }, status || 500);
-}
-
-function cleanContactField(value, limit) {
-  return String(value || "")
-    .replace(/\r/g, "")
-    .trim()
-    .slice(0, limit || 1000);
-}
-
-function saveContactRequest(payload) {
-  return new Promise(function (resolve, reject) {
-    var line = JSON.stringify(payload) + "\n";
-    fs.appendFile(contactRequestsFile, line, "utf8", function (error) {
-      if (error) reject(error);
-      else resolve();
-    });
-  });
-}
-
-var metricsState = { visits: 0, updatedAt: Date.now() };
-var projectsCountCache = { mtimeMs: 0, count: 0 };
-var metricsPersistTimer = null;
-
-function loadMetricsState() {
-  var defaults = { visits: 0, updatedAt: Date.now() };
-  try {
-    if (!fs.existsSync(metricsFile)) return defaults;
-    var raw = fs.readFileSync(metricsFile, "utf8");
-    raw.split(/\r?\n/).forEach(function (line) {
-      var parts = line.split("=");
-      if (parts.length < 2) return;
-      var key = parts[0].trim();
-      var value = Number(parts.slice(1).join("=").trim());
-      if (!Number.isFinite(value)) return;
-      if (key === "visits") defaults.visits = Math.max(0, Math.floor(value));
-      if (key === "updatedAt") defaults.updatedAt = Math.max(0, Math.floor(value));
-    });
-  } catch (error) {
-    return defaults;
-  }
-  return defaults;
-}
-
-function persistMetricsState() {
-  var body = [
-    "visits=" + String(Math.max(0, Math.floor(metricsState.visits || 0))),
-    "updatedAt=" + String(Math.max(0, Math.floor(metricsState.updatedAt || Date.now())))
-  ].join("\n");
-
-  fs.writeFile(metricsFile, body, function () {});
-}
-
-function scheduleMetricsPersist() {
-  if (metricsPersistTimer) {
-    clearTimeout(metricsPersistTimer);
-  }
-  metricsPersistTimer = setTimeout(function () {
-    metricsPersistTimer = null;
-    persistMetricsState();
-  }, 120);
-}
-
-function readProjectsCount() {
-  try {
-    var stat = fs.statSync(projectsSourceFile);
-    if (projectsCountCache.mtimeMs === stat.mtimeMs && projectsCountCache.count > 0) {
-      return projectsCountCache.count;
-    }
-    var source = fs.readFileSync(projectsSourceFile, "utf8");
-    var count = (source.match(/\bid\s*:\s*(?:"[^"]+"|'[^']+')/g) || []).length;
-    projectsCountCache = { mtimeMs: stat.mtimeMs, count: count };
-    return count;
-  } catch (error) {
-    return projectsCountCache.count || 0;
-  }
-}
-
-function metricsPayload() {
-  return {
-    visits: Math.max(0, Math.floor(metricsState.visits || 0)),
-    projects: readProjectsCount(),
-    updatedAt: Math.max(0, Math.floor(metricsState.updatedAt || Date.now()))
-  };
-}
-
-metricsState = loadMetricsState();
-
 function sendStatic(response, targetPath) {
   fs.readFile(targetPath, (error, file) => {
     if (error) {
@@ -246,57 +124,6 @@ function resolveStaticTarget(targetInfo) {
   }
 
   return direct;
-}
-
-function serveApi(request, response) {
-  var url = new URL(request.url, "http://localhost");
-  var pathName = url.pathname;
-
-  if (pathName === "/api/contact" && request.method === "POST") {
-    return parseJsonBody(request).then(function (body) {
-      var payload = {
-        createdAt: new Date().toISOString(),
-        name: cleanContactField(body.name, 120),
-        phone: cleanContactField(body.phone, 80),
-        email: cleanContactField(body.email, 160),
-        message: cleanContactField(body.message, 3000),
-        source: "website"
-      };
-
-      if (!payload.name || !payload.phone || !payload.message) {
-        return sendError(response, 400, "Name, phone and message are required.");
-      }
-
-      return saveContactRequest(payload).then(function () {
-        sendJson(response, { ok: true });
-      }).catch(function () {
-        sendError(response, 500, "Could not save contact request.");
-      });
-    }).catch(function () {
-      sendError(response, 400, "Invalid JSON body.");
-    });
-  }
-
-  if (pathName === "/api/contact") {
-    return sendError(response, 405, "Method not allowed.");
-  }
-
-  if (pathName === "/api/metrics" && request.method === "GET") {
-    return sendJson(response, metricsPayload());
-  }
-
-  if (pathName === "/api/metrics/visit" && request.method === "POST") {
-    metricsState.visits = Math.max(0, Math.floor(metricsState.visits || 0)) + 1;
-    metricsState.updatedAt = Date.now();
-    scheduleMetricsPersist();
-    return sendJson(response, metricsPayload());
-  }
-
-  if (pathName === "/api/metrics" || pathName === "/api/metrics/visit") {
-    return sendError(response, 405, "Method not allowed.");
-  }
-
-  return false;
 }
 
 function serveWeb(request, response) {
@@ -344,11 +171,7 @@ function openBrowser(url) {
 }
 
 function startServer(portToUse) {
-  const server = http.createServer((request, response) => {
-    if (serveApi(request, response) === false) {
-      serveWeb(request, response);
-    }
-  });
+  const server = http.createServer(serveWeb);
 
   server.listen(portToUse, () => {
     const localUrl = "http://localhost:" + portToUse + "/";

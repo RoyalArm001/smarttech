@@ -259,6 +259,7 @@
   content: "";
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 50%;
+  pointer-events: none;
 }
 
 .team-photo-wrap {
@@ -1965,6 +1966,7 @@ body.ui-theme-dark .team-card.team-card-person {
   width: 118px;
   height: 118px;
   opacity: 0.55;
+  pointer-events: none;
 }
 
 .team-hierarchy .team-manager-node .team-card.team-card-lead .team-card-profile {
@@ -2653,7 +2655,7 @@ body.ui-theme-dark .team-card.team-card-person {
 /* Non-director staff stays visibly round across team views. */
 .team-card.team-card-person:not(.team-card-director),
 .team-card.team-card-specialist:not(.team-card-director) {
-  border-radius: 999px !important;
+  border-radius: 24px !important;
 }
 
 .team-card.team-card-person:not(.team-card-director) .team-photo-wrap,

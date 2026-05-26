@@ -321,11 +321,13 @@ body.ui-theme-dark .language-button {
   color: rgba(255, 255, 255, 0.84);
 }
 
-.nav-toggle,
 .nav-backdrop,
 .mobile-menu-head,
 .mobile-menu-section {
   display: none;
+}
+.desktop-nav-list {
+  display: none !important;
 }
 
 .nav-toggle {
@@ -361,13 +363,53 @@ body.ui-theme-dark .nav-toggle {
   background: linear-gradient(135deg, #0a8f80, #245970);
 }
 
-@media (max-width: 1240px) {
+@media (min-width: 1241px) {
+  .header-inner {
+    gap: 14px;
+    min-height: 78px;
+  }
+
+  .brand {
+    padding: 6px 11px 6px 6px;
+  }
+
+  .desktop-nav-list {
+    gap: 3px;
+    padding: 5px;
+    border-color: rgba(20, 33, 38, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 20px rgba(20, 33, 38, 0.07);
+  }
+
+  .desktop-nav-list .nav-link {
+    padding: 9px 13px;
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+    transform: none;
+  }
+
+  .desktop-nav-list .nav-link:hover,
+  .desktop-nav-list .nav-link:focus-visible {
+    color: var(--teal-dark);
+    background: rgba(8, 123, 112, 0.08);
+    border-color: rgba(8, 123, 112, 0.2);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .desktop-nav-list .nav-link.is-active {
+    border-color: rgba(255, 255, 255, 0.58);
+    box-shadow: 0 5px 14px rgba(8, 123, 112, 0.2);
+  }
+}
+
+@media (max-width: 99999px) {
   body.is-menu-open {
     overflow: hidden;
   }
 
   body.is-menu-open .site-header {
-    z-index: 120;
+    z-index: 150;
   }
 
   .header-inner {
@@ -412,7 +454,7 @@ body.ui-theme-dark .nav-toggle {
   .nav-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 70;
+    z-index: 129;
     display: block;
     border: 0;
     background: rgba(8, 12, 14, 0.36);
@@ -442,9 +484,8 @@ body.ui-theme-dark .nav-toggle {
     max-height: calc(100vh - 96px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    display: grid;
+    row-gap: 14px;
     padding: 18px;
     color: #ffffff;
     background:
@@ -839,7 +880,7 @@ body.ui-theme-dark .nav-toggle {
     right: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
-    z-index: 90 !important;
+    z-index: 140 !important;
     width: 100%;
     max-width: none;
     height: auto;

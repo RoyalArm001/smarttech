@@ -7,7 +7,10 @@
     var labelsByLanguage = {
       hy: { visits: "\u0531\u0575\u0581\u0565\u056c\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580", projects: "\u0546\u0561\u056d\u0561\u0563\u056e\u0565\u0580" },
       ru: { visits: "\u041f\u043e\u0441\u0435\u0449\u0435\u043d\u0438\u044f", projects: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b" },
-      en: { visits: "Visits", projects: "Projects" }
+      en: { visits: "Visits", projects: "Projects" },
+      be: { visits: "Наведванні", projects: "Праекты" },
+      fr: { visits: "Visites", projects: "Projets" },
+      ka: { visits: "ვიზიტები", projects: "პროექტები" }
     };
     var language = site.i18n.language || "hy";
     var metricLabels = labelsByLanguage[language] || labelsByLanguage.hy;

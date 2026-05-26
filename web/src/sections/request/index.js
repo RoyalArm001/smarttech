@@ -124,7 +124,7 @@
         automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"]
       }
     };
-    return dictionaries[language] || dictionaries.hy;
+    return dictionaries[language] || dictionaries.en || dictionaries.hy;
   }
 
   function specialistCatalog(language) {
@@ -157,7 +157,7 @@
         { value: "Audio Systems Specialist", title: "Специалист по аудиосистемам", text: "голосовые оповещения, public address и фоновая музыка" }
       ]
     };
-    return dictionaries[language] || dictionaries.hy;
+    return dictionaries[language] || dictionaries.en || dictionaries.hy;
   }
 
   function languageCopy() {
@@ -398,7 +398,43 @@
       }
     };
 
-    return dictionaries[site.i18n.language] || dictionaries.hy;
+    var language = site.i18n.language;
+    if (!dictionaries[language] && site.content.locales && site.content.locales[language]) {
+      var locale = site.content.locales[language];
+      var copy = Object.assign({}, dictionaries.en);
+      var serviceNames = {
+        "video-surveillance": locale.services["video-surveillance"].title,
+        alarm: locale.services["fire-security"].title,
+        "access-control": locale.services.automation.tags[1],
+        intercom: "Intercom",
+        "audio-systems": locale.services["audio-systems"].title,
+        network: locale.services.networks.title,
+        electrical: locale.services.electrical.title,
+        automation: locale.services.automation.title
+      };
+
+      copy.heroEyebrow = locale.common.proposal;
+      copy.heroTitle = locale.nav.request + " Smart Tech";
+      copy.introEyebrow = locale.nav.request;
+      copy.introTitle = locale.servicesPage.title;
+      copy.contact = locale.contact.title;
+      copy.object = locale.detail.projectType;
+      copy.systems = locale.nav.services;
+      copy.summaryTitle = locale.common.quickContact;
+      copy.name = locale.contact.labels.name;
+      copy.phone = locale.contact.labels.phone;
+      copy.address = locale.contact.labels.address;
+      copy.notes = locale.contact.labels.message;
+      copy.openMail = locale.contact.labels.send;
+      copy.sendProject = locale.common.proposal;
+      copy.subject = locale.nav.request + " Smart Tech";
+      copy.systemsList = copy.systemsList.map(function (item) {
+        return Object.assign({}, item, { title: serviceNames[item.id] || item.title });
+      });
+      return copy;
+    }
+
+    return dictionaries[language] || dictionaries.en || dictionaries.hy;
   }
 
   site.sections.request = function request() {
