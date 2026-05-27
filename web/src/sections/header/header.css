@@ -1,7 +1,7 @@
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 60;
+  z-index: 130;
   isolation: isolate;
   color: var(--ink);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(241, 247, 246, 0.9));
@@ -184,12 +184,13 @@ body.ui-theme-dark .brand img {
   border: 1px solid rgba(20, 33, 38, 0.14);
   border-radius: 999px;
   box-shadow: 0 10px 24px rgba(20, 33, 38, 0.07);
+  z-index: 180;
 }
 
 .header-language-switcher {
   flex: 0 0 auto;
   order: 2;
-  z-index: 82;
+  z-index: 180;
 }
 
 body.ui-theme-dark .language-switcher {
@@ -260,7 +261,7 @@ body.ui-theme-dark .language-switcher {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 95;
+  z-index: 200;
   min-width: 170px;
   display: grid;
   gap: 4px;

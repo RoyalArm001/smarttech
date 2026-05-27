@@ -245,7 +245,7 @@
       managerId: "director",
       order: 15,
       image: "../src/assets/team/audio-systems-specialist.svg",
-      coverImage: "https://images.pexels.com/photos/164938/pexels-photo-164938.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      coverImage: "/images/services/building_management_automation.jpg",
       color: "#38aab8",
       email: "info@smarttechllc.am",
       title: "Աուդիո համակարգերի տեղադրման մասնագետ",

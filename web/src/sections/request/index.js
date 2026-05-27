@@ -463,6 +463,35 @@
       return '<option value="' + e(option) + '">' + e(option) + '</option>';
     }).join("");
 
+    var menuText = {
+      hy: { open: "Բացել ցանկը", confirm: "Հաստատել", none: "Ոչինչ ընտրված չէ", selected: "ընտրված" },
+      en: { open: "Open list", confirm: "Confirm", none: "Nothing selected", selected: "selected" },
+      ru: { open: "Открыть список", confirm: "Подтвердить", none: "Ничего не выбрано", selected: "выбрано" },
+      be: { open: "Адкрыць спіс", confirm: "Пацвердзіць", none: "Нічога не выбрана", selected: "выбрана" },
+      fr: { open: "Ouvrir la liste", confirm: "Confirmer", none: "Rien sélectionné", selected: "sélectionné" },
+      ka: { open: "სიის გახსნა", confirm: "დადასტურება", none: "არაფერია არჩეული", selected: "არჩეულია" }
+    };
+    var menuCopy = menuText[site.i18n.language] || menuText.en;
+
+    function selectionMenu(title, hint, items, modifier, attrs) {
+      return '' +
+        '<div class="request-select-menu ' + e(modifier || "") + '" data-request-menu ' + (attrs || "") + '>' +
+          '<button class="request-select-toggle" type="button" data-request-menu-toggle aria-expanded="false">' +
+            '<span>' +
+              '<strong>' + e(title) + '</strong>' +
+              '<small>' + e(hint || menuCopy.open) + '</small>' +
+            '</span>' +
+            '<em data-request-menu-count>' + e(menuCopy.none) + '</em>' +
+          '</button>' +
+          '<div class="request-select-panel" data-request-menu-panel hidden>' +
+            '<div class="request-select-list">' + items + '</div>' +
+            '<div class="request-select-actions">' +
+              '<button class="button button-primary request-select-confirm" type="button" data-request-menu-confirm>' + e(menuCopy.confirm) + '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
     var catalog = brandCatalog();
     var optionCatalog = systemOptionCatalog(site.i18n.language);
     var systems = copy.systemsList.map(function (item, index) {
@@ -497,18 +526,10 @@
             '<input type="number" min="1" max="999" value="' + e(defaultQty) + '" data-request-qty="' + e(item.id) + '" disabled>' +
           '</label>' +
           '<div class="request-brand-block request-option-block" data-request-option-panel="' + e(item.id) + '">' +
-            '<div class="request-brand-head">' +
-              '<strong>' + e(copy.optionLabel) + '</strong>' +
-              '<small>' + e(copy.optionHint) + '</small>' +
-            '</div>' +
-            '<div class="request-brand-grid">' + optionChips + '</div>' +
+            selectionMenu(copy.optionLabel, copy.optionHint, optionChips, "request-option-menu", 'data-system-menu="' + e(item.id) + '"') +
           '</div>' +
           '<div class="request-brand-block" data-request-brand-panel="' + e(item.id) + '">' +
-            '<div class="request-brand-head">' +
-              '<strong>' + e(copy.brandLabel) + '</strong>' +
-              '<small>' + e(copy.brandHint) + '</small>' +
-            '</div>' +
-            '<div class="request-brand-grid">' + brandChips + '</div>' +
+            selectionMenu(copy.brandLabel, copy.brandHint, brandChips, "request-brand-menu", 'data-system-menu="' + e(item.id) + '"') +
           '</div>' +
         '</article>';
     }).join("");
@@ -680,7 +701,7 @@
                 '</fieldset>' +
                 '<fieldset class="request-fieldset" data-scope-show="service">' +
                   '<legend>' + e(copy.maintenance) + '</legend>' +
-                  '<div class="request-check-grid">' + maintenance + '</div>' +
+                  selectionMenu(copy.maintenance, copy.optionHint, maintenance, "request-maintenance-menu", "") +
                 '</fieldset>' +
                 '<fieldset class="request-fieldset request-visit-fieldset" data-scope-show="audit">' +
                   '<legend>' + e(copy.visit) + '</legend>' +
@@ -707,11 +728,7 @@
                       '<span>' + e(copy.visitAccess) + '</span>' +
                       '<textarea name="visitAccess" rows="3" placeholder="' + e(copy.visitAccessPlaceholder) + '"></textarea>' +
                     '</label>' +
-                    '<div class="request-specialist-head">' +
-                      '<strong>' + e(copy.specialistsTitle) + '</strong>' +
-                      '<small>' + e(copy.specialistsHint) + '</small>' +
-                    '</div>' +
-                    '<div class="request-specialist-grid">' + specialists + '</div>' +
+                    selectionMenu(copy.specialistsTitle, copy.specialistsHint, specialists, "request-specialist-menu", "") +
                   '</div>' +
                 '</fieldset>' +
                 '<div class="request-step-actions">' +

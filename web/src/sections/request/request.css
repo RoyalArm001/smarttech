@@ -373,6 +373,137 @@
   border-top: 1px solid rgba(8, 123, 112, 0.12);
 }
 
+.request-select-menu {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.request-select-toggle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid rgba(8, 123, 112, 0.18);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.78);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.request-select-toggle span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.request-select-toggle strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.request-select-toggle small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.request-select-toggle em {
+  min-width: max-content;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--teal-dark);
+  background: rgba(82, 205, 191, 0.14);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.request-select-toggle::after {
+  width: 9px;
+  height: 9px;
+  content: "";
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: 0.72;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 160ms ease;
+}
+
+.request-select-menu.is-open .request-select-toggle::after {
+  transform: rotate(225deg) translateY(-2px);
+}
+
+.request-select-toggle:hover,
+.request-select-toggle:focus-visible,
+.request-select-menu.is-open .request-select-toggle {
+  outline: 0;
+  border-color: rgba(8, 123, 112, 0.36);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 26px rgba(8, 123, 112, 0.1);
+  transform: translateY(-1px);
+}
+
+.request-select-toggle:disabled {
+  color: rgba(105, 119, 125, 0.58);
+  background: rgba(237, 244, 242, 0.7);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.request-select-panel {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(8, 123, 112, 0.14);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(237, 244, 242, 0.82), rgba(255, 255, 255, 0.9)),
+    #ffffff;
+  box-shadow: 0 18px 38px rgba(20, 33, 38, 0.1);
+  animation: requestStepIn 180ms ease both;
+}
+
+.request-select-panel[hidden] {
+  display: none;
+}
+
+.request-select-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: min(360px, 56vh);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.request-maintenance-menu .request-select-list,
+.request-specialist-menu .request-select-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.request-select-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.request-select-confirm {
+  min-height: 40px;
+  padding: 9px 14px;
+}
+
 .request-system-card:not(.is-selected) .request-brand-block {
   display: none;
 }
@@ -789,7 +920,9 @@ body.ui-theme-dark .request-stepper-item.is-active,
 body.ui-theme-dark .request-scope-intro,
 body.ui-theme-dark .request-visit-panel,
 body.ui-theme-dark .request-visit-toggle,
-body.ui-theme-dark .request-specialist-chip span {
+body.ui-theme-dark .request-specialist-chip span,
+body.ui-theme-dark .request-select-toggle,
+body.ui-theme-dark .request-select-panel {
   background: rgba(20, 32, 37, 0.86);
   border-color: rgba(255, 255, 255, 0.12);
 }
@@ -866,7 +999,9 @@ body.ui-theme-dark .request-option-block {
   .request-choice-row,
   .request-system-grid,
   .request-check-grid,
-  .request-specialist-grid {
+  .request-specialist-grid,
+  .request-maintenance-menu .request-select-list,
+  .request-specialist-menu .request-select-list {
     grid-template-columns: 1fr;
   }
 
@@ -912,6 +1047,16 @@ body.ui-theme-dark .request-option-block {
 
   .request-choice {
     min-height: 96px;
+  }
+
+  .request-select-toggle {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .request-select-toggle em {
+    grid-column: 1 / -1;
+    width: fit-content;
+    min-width: 0;
   }
 
   .request-system-card,

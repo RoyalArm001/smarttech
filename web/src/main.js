@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member"];
+  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -16,6 +16,7 @@
   var onlineLangStorageKey = "smarttech.onlineLang";
   var metricsVisitSessionKey = "smarttech.metrics.visitSession";
   var staticMetricsStorageKey = "smarttech.metrics.staticVisits";
+  var firebaseAuthSessionKey = "smarttech.firebase.anonymousAuth";
   var chatDismissedSessionKey = "smarttech.chat.dismissed";
   var onlineTranslateScriptLoaded = false;
   var googleUiCleanupTimer = null;
@@ -24,6 +25,7 @@
   var menuEscHandler = null;
   var menuResizeHandler = null;
   var autoThemeTimer = null;
+  var firebaseAuthTokenPromise = null;
   var uiSettings = readUiSettings();
 
   var googleAnalyticsMeasurementId = "G-XXXXXXXXXX"; // Replace with your GA4 measurement ID
@@ -122,8 +124,357 @@
     if (page === "team") return site.sections.team();
     if (page === "about") return site.sections.about();
     if (page === "contact") return site.sections.contact();
+    if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
+      return infoPageMarkup(page);
+    }
 
     return site.sections.hero();
+  }
+
+  function infoPageMarkup(page) {
+    var e = site.utils.escapeHtml;
+    var content = infoPageCopy(page);
+    var items = content.items.map(function (item) {
+      return '<li><strong>' + e(item.title) + '</strong><span>' + e(item.text) + '</span></li>';
+    }).join("");
+
+    return [
+      site.sections.pageHero({
+        eyebrow: content.eyebrow,
+        title: content.title,
+        text: content.text,
+        image: site.content.company.heroImages[1],
+        tone: "about"
+      }),
+      '<section class="section info-page-section">',
+        '<div class="container">',
+          '<div class="info-page-panel">',
+            '<ul class="info-page-list">' + items + '</ul>',
+          '</div>',
+        '</div>',
+      '</section>'
+    ].join("");
+  }
+
+  function infoPageCopy(page) {
+    var dictionaries = {
+      hy: {
+        help: {
+          eyebrow: "Օգնություն",
+          title: "Ինչպես օգտվել կայքից",
+          text: "Արագ գտեք ծառայությունները, նախագծերը և կապի տվյալները։",
+          items: [
+            { title: "Ծառայություններ", text: "Ծառայությունների էջում կարող եք տեսնել հիմնական ուղղությունները և յուրաքանչյուր համակարգի նկարագրությունը։" },
+            { title: "Հայտ", text: "Հայտի էջը բացում է պատրաստ նամակ՝ ձեր ընտրած համակարգերով և կոնտակտային տվյալներով։" },
+            { title: "Կապ", text: "Եթե պետք է արագ պատասխան, օգտվեք հեռախոսից, email-ից կամ կոնտակտային էջից։" }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "Հաճախ տրվող հարցեր",
+          text: "Կարճ պատասխաններ Smart Tech-ի ծառայությունների մասին։",
+          items: [
+            { title: "Արդյո՞ք կատարում եք չափագրում", text: "Այո, նախնական քննարկումից հետո կարող ենք կազմակերպել մասնագետի այց և տեխնիկական առաջարկ։" },
+            { title: "Ինչքա՞ն է տևում տեղադրումը", text: "Փոքր աշխատանքները սովորաբար տևում են մի քանի օր, իսկ մեծ նախագծերը գնահատվում են ըստ ծավալի։" },
+            { title: "Կատարո՞ւմ եք սպասարկում", text: "Այո, սպասարկում ենք տեղադրված համակարգերը և օգնում ենք կարգաբերման կամ վերանորոգման հարցերում։" }
+          ]
+        },
+        terms: {
+          eyebrow: "Պայմաններ",
+          title: "Օգտագործման պայմաններ",
+          text: "Այս էջը նկարագրում է կայքի տեղեկատվական օգտագործման հիմնական պայմանները։",
+          items: [
+            { title: "Տեղեկատվական բնույթ", text: "Կայքի բովանդակությունը ներկայացված է ընդհանուր տեղեկատվության համար և չի համարվում վերջնական կոմերցիոն առաջարկ։" },
+            { title: "Գները և ժամկետները", text: "Գները, ապրանքների հասանելիությունը և ժամկետները հաստատվում են անհատական քննարկումից հետո։" },
+            { title: "Կապի ձևեր", text: "Հայտերը ուղարկվում են email-ի կամ հեռախոսային կապի միջոցով։" }
+          ]
+        },
+        privacy: {
+          eyebrow: "Գաղտնիություն",
+          title: "Գաղտնիության քաղաքականություն",
+          text: "Մենք օգտագործում ենք միայն անհրաժեշտ կոնտակտային տվյալները՝ հարցումներին պատասխանելու համար։",
+          items: [
+            { title: "Տվյալների նպատակ", text: "Անունը, հեռախոսը, email-ը և հաղորդագրությունը օգտագործվում են ձեզ հետ կապ հաստատելու համար։" },
+            { title: "Այցելությունների հաշվիչ", text: "Կայքը կարող է պահպանել միայն ընդհանուր այցելությունների թիվը՝ առանց անձնական տվյալների։" },
+            { title: "Երրորդ կողմեր", text: "Մենք չենք վաճառում կամ փոխանցում ձեր կոնտակտային տվյալները գովազդային նպատակներով։" }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "Նշում",
+          title: "Պատասխանատվության սահմանափակում",
+          text: "Կայքում ներկայացված նյութերը կարող են թարմացվել առանց նախնական ծանուցման։",
+          items: [
+            { title: "Նկարներ", text: "Նկարները կարող են լինել նախագծերի, ծառայությունների կամ թեմատիկ ներկայացման համար։" },
+            { title: "Տեխնիկական լուծումներ", text: "Վերջնական լուծումը ընտրվում է օբյեկտի ուսումնասիրությունից և պահանջների ճշտումից հետո։" },
+            { title: "Թարմացումներ", text: "Կայքի բովանդակությունը կարող է փոխվել՝ ծառայությունները և նախագծերը ճիշտ ներկայացնելու համար։" }
+          ]
+        }
+      },
+      en: {
+        help: {
+          eyebrow: "Help",
+          title: "How to use the website",
+          text: "Quickly find services, projects and contact details.",
+          items: [
+            { title: "Services", text: "The services page shows the main directions and descriptions for each system." },
+            { title: "Request", text: "The request page opens a prepared email with your selected systems and contact details." },
+            { title: "Contact", text: "For a quick response, use phone, email or the contact page." }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "Frequently asked questions",
+          text: "Short answers about Smart Tech services.",
+          items: [
+            { title: "Do you provide site surveys?", text: "Yes, after an initial discussion we can arrange a specialist visit and technical proposal." },
+            { title: "How long does installation take?", text: "Small works usually take a few days; larger projects are estimated by scope." },
+            { title: "Do you provide maintenance?", text: "Yes, we maintain installed systems and help with setup or repair." }
+          ]
+        },
+        terms: {
+          eyebrow: "Terms",
+          title: "Terms and rules",
+          text: "This page describes the basic terms for using the website information.",
+          items: [
+            { title: "Informational content", text: "Website content is for general information and is not a final commercial offer." },
+            { title: "Prices and timing", text: "Prices, availability and timing are confirmed after an individual discussion." },
+            { title: "Communication", text: "Requests are sent by email or phone contact." }
+          ]
+        },
+        privacy: {
+          eyebrow: "Privacy",
+          title: "Privacy policy",
+          text: "We use only the contact details needed to answer requests.",
+          items: [
+            { title: "Purpose", text: "Name, phone, email and message are used to contact you about your request." },
+            { title: "Visit counter", text: "The website may store only the total visit count without personal data." },
+            { title: "Third parties", text: "We do not sell or transfer your contact details for advertising purposes." }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "Disclaimer",
+          title: "Disclaimer",
+          text: "Materials on the website may be updated without prior notice.",
+          items: [
+            { title: "Images", text: "Images may represent projects, services or thematic examples." },
+            { title: "Technical solutions", text: "The final solution is selected after site review and requirements clarification." },
+            { title: "Updates", text: "Website content may change to better present services and projects." }
+          ]
+        }
+      },
+      ru: {
+        help: {
+          eyebrow: "Помощь",
+          title: "Как пользоваться сайтом",
+          text: "Быстро найдите услуги, проекты и контакты.",
+          items: [
+            { title: "Услуги", text: "На странице услуг показаны основные направления и описание каждой системы." },
+            { title: "Заявка", text: "Страница заявки открывает готовое письмо с выбранными системами и контактными данными." },
+            { title: "Контакты", text: "Для быстрого ответа используйте телефон, email или страницу контактов." }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "Частые вопросы",
+          text: "Короткие ответы об услугах Smart Tech.",
+          items: [
+            { title: "Делаете ли вы замер?", text: "Да, после первичного обсуждения можем организовать визит специалиста и техническое предложение." },
+            { title: "Сколько длится монтаж?", text: "Небольшие работы обычно занимают несколько дней, крупные проекты оцениваются по объему." },
+            { title: "Есть ли обслуживание?", text: "Да, мы обслуживаем установленные системы и помогаем с настройкой или ремонтом." }
+          ]
+        },
+        terms: {
+          eyebrow: "Условия",
+          title: "Условия и правила",
+          text: "Эта страница описывает основные условия использования информации на сайте.",
+          items: [
+            { title: "Информационный характер", text: "Контент сайта представлен для общей информации и не является финальным коммерческим предложением." },
+            { title: "Цены и сроки", text: "Цены, наличие и сроки подтверждаются после индивидуального обсуждения." },
+            { title: "Связь", text: "Заявки отправляются через email или телефонный контакт." }
+          ]
+        },
+        privacy: {
+          eyebrow: "Конфиденциальность",
+          title: "Политика конфиденциальности",
+          text: "Мы используем только контактные данные, необходимые для ответа на запросы.",
+          items: [
+            { title: "Цель", text: "Имя, телефон, email и сообщение используются для связи по вашей заявке." },
+            { title: "Счетчик посещений", text: "Сайт может хранить только общий счетчик посещений без персональных данных." },
+            { title: "Третьи стороны", text: "Мы не продаем и не передаем ваши контактные данные для рекламы." }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "Примечание",
+          title: "Ограничение ответственности",
+          text: "Материалы сайта могут обновляться без предварительного уведомления.",
+          items: [
+            { title: "Изображения", text: "Изображения могут относиться к проектам, услугам или тематическим примерам." },
+            { title: "Технические решения", text: "Финальное решение выбирается после изучения объекта и уточнения требований." },
+            { title: "Обновления", text: "Контент сайта может меняться для более точного представления услуг и проектов." }
+          ]
+        }
+      },
+      be: {
+        help: {
+          eyebrow: "Дапамога",
+          title: "Як карыстацца сайтам",
+          text: "Хутка знайдзіце паслугі, праекты і кантакты.",
+          items: [
+            { title: "Паслугі", text: "На старонцы паслуг паказаны асноўныя напрамкі і апісанне кожнай сістэмы." },
+            { title: "Заяўка", text: "Старонка заяўкі адкрывае падрыхтаваны ліст з выбранымі сістэмамі і кантактнымі данымі." },
+            { title: "Кантакты", text: "Для хуткага адказу выкарыстоўвайце тэлефон, email або старонку кантактаў." }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "Частыя пытанні",
+          text: "Кароткія адказы пра паслугі Smart Tech.",
+          items: [
+            { title: "Ці робіце вы замер?", text: "Так, пасля першаснага абмеркавання можам арганізаваць візіт спецыяліста і тэхнічную прапанову." },
+            { title: "Колькі доўжыцца мантаж?", text: "Невялікія работы звычайна займаюць некалькі дзён, буйныя праекты ацэньваюцца паводле аб'ёму." },
+            { title: "Ці ёсць абслугоўванне?", text: "Так, мы абслугоўваем усталяваныя сістэмы і дапамагаем з наладай або рамонтам." }
+          ]
+        },
+        terms: {
+          eyebrow: "Умовы",
+          title: "Умовы і правілы",
+          text: "Гэтая старонка апісвае асноўныя ўмовы выкарыстання інфармацыі на сайце.",
+          items: [
+            { title: "Інфармацыйны характар", text: "Кантэнт сайта прадстаўлены для агульнай інфармацыі і не з'яўляецца канчатковай камерцыйнай прапановай." },
+            { title: "Цэны і тэрміны", text: "Цэны, наяўнасць і тэрміны пацвярджаюцца пасля індывідуальнага абмеркавання." },
+            { title: "Сувязь", text: "Заяўкі адпраўляюцца праз email або тэлефонны кантакт." }
+          ]
+        },
+        privacy: {
+          eyebrow: "Прыватнасць",
+          title: "Палітыка прыватнасці",
+          text: "Мы выкарыстоўваем толькі кантактныя даныя, неабходныя для адказу на запыты.",
+          items: [
+            { title: "Мэта", text: "Імя, тэлефон, email і паведамленне выкарыстоўваюцца для сувязі па вашай заяўцы." },
+            { title: "Лічыльнік наведванняў", text: "Сайт можа захоўваць толькі агульны лічыльнік наведванняў без персанальных даных." },
+            { title: "Трэція бакі", text: "Мы не прадаем і не перадаем вашы кантактныя даныя для рэкламы." }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "Заўвага",
+          title: "Абмежаванне адказнасці",
+          text: "Матэрыялы сайта могуць абнаўляцца без папярэдняга паведамлення.",
+          items: [
+            { title: "Выявы", text: "Выявы могуць адносіцца да праектаў, паслуг або тэматычных прыкладаў." },
+            { title: "Тэхнічныя рашэнні", text: "Канчатковае рашэнне выбіраецца пасля вывучэння аб'екта і ўдакладнення патрабаванняў." },
+            { title: "Абнаўленні", text: "Кантэнт сайта можа змяняцца для больш дакладнага прадстаўлення паслуг і праектаў." }
+          ]
+        }
+      },
+      fr: {
+        help: {
+          eyebrow: "Aide",
+          title: "Comment utiliser le site",
+          text: "Retrouvez rapidement les services, les projets et les contacts.",
+          items: [
+            { title: "Services", text: "La page des services présente les principaux domaines et la description de chaque système." },
+            { title: "Demande", text: "La page de demande ouvre un email préparé avec les systèmes sélectionnés et vos coordonnées." },
+            { title: "Contact", text: "Pour une réponse rapide, utilisez le téléphone, l'email ou la page de contact." }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "Questions fréquentes",
+          text: "Réponses courtes sur les services Smart Tech.",
+          items: [
+            { title: "Réalisez-vous une visite technique ?", text: "Oui, après un premier échange nous pouvons organiser la visite d'un spécialiste et une proposition technique." },
+            { title: "Combien de temps dure l'installation ?", text: "Les petits travaux prennent généralement quelques jours; les grands projets sont estimés selon leur volume." },
+            { title: "Assurez-vous la maintenance ?", text: "Oui, nous entretenons les systèmes installés et aidons pour la configuration ou la réparation." }
+          ]
+        },
+        terms: {
+          eyebrow: "Conditions",
+          title: "Conditions et règles",
+          text: "Cette page décrit les conditions de base d'utilisation des informations du site.",
+          items: [
+            { title: "Contenu informatif", text: "Le contenu du site est fourni à titre d'information générale et ne constitue pas une offre commerciale définitive." },
+            { title: "Prix et délais", text: "Les prix, la disponibilité et les délais sont confirmés après un échange individuel." },
+            { title: "Communication", text: "Les demandes sont envoyées par email ou par contact téléphonique." }
+          ]
+        },
+        privacy: {
+          eyebrow: "Confidentialité",
+          title: "Politique de confidentialité",
+          text: "Nous utilisons uniquement les coordonnées nécessaires pour répondre aux demandes.",
+          items: [
+            { title: "Objectif", text: "Le nom, le téléphone, l'email et le message sont utilisés pour vous contacter au sujet de votre demande." },
+            { title: "Compteur de visites", text: "Le site peut conserver uniquement le nombre total de visites, sans données personnelles." },
+            { title: "Tiers", text: "Nous ne vendons pas et ne transmettons pas vos coordonnées à des fins publicitaires." }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "Mentions",
+          title: "Limitation de responsabilité",
+          text: "Les contenus du site peuvent être mis à jour sans préavis.",
+          items: [
+            { title: "Images", text: "Les images peuvent représenter des projets, des services ou des exemples thématiques." },
+            { title: "Solutions techniques", text: "La solution finale est choisie après l'étude du site et la clarification des besoins." },
+            { title: "Mises à jour", text: "Le contenu du site peut évoluer pour présenter plus précisément les services et projets." }
+          ]
+        }
+      },
+      ka: {
+        help: {
+          eyebrow: "დახმარება",
+          title: "როგორ გამოიყენოთ საიტი",
+          text: "სწრაფად იპოვეთ სერვისები, პროექტები და საკონტაქტო ინფორმაცია.",
+          items: [
+            { title: "სერვისები", text: "სერვისების გვერდზე ნაჩვენებია ძირითადი მიმართულებები და თითოეული სისტემის აღწერა." },
+            { title: "განაცხადი", text: "განაცხადის გვერდი ხსნის მომზადებულ წერილს არჩეული სისტემებით და საკონტაქტო მონაცემებით." },
+            { title: "კონტაქტი", text: "სწრაფი პასუხისთვის გამოიყენეთ ტელეფონი, email ან საკონტაქტო გვერდი." }
+          ]
+        },
+        faq: {
+          eyebrow: "FAQ",
+          title: "ხშირად დასმული კითხვები",
+          text: "მოკლე პასუხები Smart Tech-ის სერვისებზე.",
+          items: [
+            { title: "აკეთებთ ობიექტის შეფასებას?", text: "დიახ, პირველადი განხილვის შემდეგ შეგვიძლია სპეციალისტის ვიზიტისა და ტექნიკური შეთავაზების ორგანიზება." },
+            { title: "რამდენ ხანს გრძელდება მონტაჟი?", text: "მცირე სამუშაოები ჩვეულებრივ რამდენიმე დღეს გრძელდება, დიდი პროექტები კი მოცულობის მიხედვით ფასდება." },
+            { title: "გაქვთ მომსახურება?", text: "დიახ, ვემსახურებით დამონტაჟებულ სისტემებს და ვეხმარებით გამართვის ან შეკეთების საკითხებში." }
+          ]
+        },
+        terms: {
+          eyebrow: "წესები",
+          title: "პირობები და წესები",
+          text: "ეს გვერდი აღწერს საიტის ინფორმაციის გამოყენების ძირითად პირობებს.",
+          items: [
+            { title: "საინფორმაციო შინაარსი", text: "საიტის შინაარსი წარმოდგენილია ზოგადი ინფორმაციისთვის და არ არის საბოლოო კომერციული შეთავაზება." },
+            { title: "ფასები და ვადები", text: "ფასები, ხელმისაწვდომობა და ვადები დასტურდება ინდივიდუალური განხილვის შემდეგ." },
+            { title: "კავშირი", text: "განაცხადები იგზავნება email-ით ან სატელეფონო კონტაქტით." }
+          ]
+        },
+        privacy: {
+          eyebrow: "კონფიდენციალურობა",
+          title: "კონფიდენციალურობის პოლიტიკა",
+          text: "ჩვენ ვიყენებთ მხოლოდ იმ საკონტაქტო მონაცემებს, რომლებიც საჭიროა მოთხოვნებზე პასუხისთვის.",
+          items: [
+            { title: "მიზანი", text: "სახელი, ტელეფონი, email და შეტყობინება გამოიყენება თქვენს მოთხოვნაზე დასაკავშირებლად." },
+            { title: "ვიზიტების მრიცხველი", text: "საიტმა შეიძლება შეინახოს მხოლოდ ვიზიტების საერთო რაოდენობა, პერსონალური მონაცემების გარეშე." },
+            { title: "მესამე მხარეები", text: "ჩვენ არ ვყიდით და არ გადავცემთ თქვენს საკონტაქტო მონაცემებს სარეკლამო მიზნებისთვის." }
+          ]
+        },
+        disclaimer: {
+          eyebrow: "შენიშვნა",
+          title: "პასუხისმგებლობის შეზღუდვა",
+          text: "საიტზე არსებული მასალები შეიძლება განახლდეს წინასწარი შეტყობინების გარეშე.",
+          items: [
+            { title: "სურათები", text: "სურათები შეიძლება უკავშირდებოდეს პროექტებს, სერვისებს ან თემატურ მაგალითებს." },
+            { title: "ტექნიკური გადაწყვეტილებები", text: "საბოლოო გადაწყვეტა ირჩევა ობიექტის შესწავლისა და მოთხოვნების დაზუსტების შემდეგ." },
+            { title: "განახლებები", text: "საიტის შინაარსი შეიძლება შეიცვალოს სერვისებისა და პროექტების უფრო ზუსტად წარმოსადგენად." }
+          ]
+        }
+      }
+    };
+
+    var language = site.i18n.language;
+    var dictionary = dictionaries[language] || dictionaries.en;
+    return dictionary[page] || dictionaries.en.help;
   }
 
   function hasNoTranslateAncestor(node) {
@@ -581,6 +932,7 @@
     var systemInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-system]"));
     var maintenanceInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-maintenance]"));
     var specialistInputs = Array.prototype.slice.call(form.querySelectorAll("[data-request-specialist]"));
+    var requestMenus = Array.prototype.slice.call(form.querySelectorAll("[data-request-menu]"));
     var scopePanels = Array.prototype.slice.call(form.querySelectorAll("[data-request-scope-panel]"));
     var scopedBlocks = Array.prototype.slice.call(form.querySelectorAll("[data-scope-show]"));
     var visitInput = form.querySelector("[data-request-visit]");
@@ -926,6 +1278,70 @@
       return !!(visitInput && visitInput.checked);
     }
 
+    function menuCounterCopy() {
+      var dictionaries = {
+        hy: { none: "Ոչինչ ընտրված չէ", selected: "ընտրված" },
+        en: { none: "Nothing selected", selected: "selected" },
+        ru: { none: "Ничего не выбрано", selected: "выбрано" },
+        be: { none: "Нічога не выбрана", selected: "выбрана" },
+        fr: { none: "Rien sélectionné", selected: "sélectionné" },
+        ka: { none: "არაფერია არჩეული", selected: "არჩეულია" }
+      };
+      return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
+    }
+
+    function setRequestMenuOpen(menu, isOpen) {
+      if (!menu) return;
+      var toggle = menu.querySelector("[data-request-menu-toggle]");
+      var panel = menu.querySelector("[data-request-menu-panel]");
+      if (!toggle || !panel || toggle.disabled) {
+        isOpen = false;
+      }
+
+      if (isOpen) {
+        requestMenus.forEach(function (otherMenu) {
+          if (otherMenu !== menu) {
+            setRequestMenuOpen(otherMenu, false);
+          }
+        });
+      }
+
+      menu.classList.toggle("is-open", !!isOpen);
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+      if (panel) {
+        panel.hidden = !isOpen;
+      }
+    }
+
+    function updateRequestMenus() {
+      var labels = menuCounterCopy();
+      requestMenus.forEach(function (menu) {
+        var toggle = menu.querySelector("[data-request-menu-toggle]");
+        var count = menu.querySelector("[data-request-menu-count]");
+        var inputs = Array.prototype.slice.call(menu.querySelectorAll("input[type='checkbox']"));
+        var selected = inputs.filter(function (input) {
+          return input.checked;
+        }).length;
+        var isDisabled = !inputs.length || inputs.every(function (input) {
+          return input.disabled;
+        });
+
+        menu.classList.toggle("has-selection", selected > 0);
+        menu.classList.toggle("is-disabled", isDisabled);
+        if (toggle) {
+          toggle.disabled = isDisabled;
+        }
+        if (count) {
+          count.textContent = selected > 0 ? selected + " " + labels.selected : labels.none;
+        }
+        if (isDisabled) {
+          setRequestMenuOpen(menu, false);
+        }
+      });
+    }
+
     function updateQuantityState() {
       systemInputs.forEach(function (checkbox) {
         var card = checkbox.closest(".request-system-card");
@@ -969,6 +1385,8 @@
         var visitCard = visitInput.closest(".request-visit-toggle");
         if (visitCard) visitCard.classList.toggle("is-selected", visitInput.checked);
       }
+
+      updateRequestMenus();
     }
 
     function syncRequestScope() {
@@ -1162,9 +1580,25 @@
     }
 
     form.addEventListener("click", function (event) {
+      var menuToggle = event.target.closest("[data-request-menu-toggle]");
+      var menuConfirm = event.target.closest("[data-request-menu-confirm]");
       var go = event.target.closest("[data-request-go]");
       var next = event.target.closest("[data-request-next]");
       var prev = event.target.closest("[data-request-prev]");
+
+      if (menuToggle) {
+        event.preventDefault();
+        var menu = menuToggle.closest("[data-request-menu]");
+        setRequestMenuOpen(menu, !(menu && menu.classList.contains("is-open")));
+        return;
+      }
+
+      if (menuConfirm) {
+        event.preventDefault();
+        setRequestMenuOpen(menuConfirm.closest("[data-request-menu]"), false);
+        updateSummary();
+        return;
+      }
 
       if (go) {
         setRequestStep(Number(go.getAttribute("data-request-go") || 0));
@@ -1174,6 +1608,14 @@
       }
       if (prev) {
         setRequestStep(currentRequestStep - 1);
+      }
+    });
+
+    form.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        requestMenus.forEach(function (menu) {
+          setRequestMenuOpen(menu, false);
+        });
       }
     });
 
@@ -1415,11 +1857,11 @@
     setMetricValue("projects", (site.content.projects || []).length || 0);
   }
 
-  function firebaseMetricsUrl() {
+  function firebaseMetricsUrl(authTokenOverride) {
     var config = window.SmartTechRuntimeConfig || {};
     var databaseUrl = String(config.firebaseDatabaseUrl || "").trim().replace(/\/+$/g, "");
     var statsPath = String(config.firebaseStatsPath || "").trim().replace(/^\/+|\/+$/g, "");
-    var authToken = String(config.firebaseAuthToken || "").trim();
+    var authToken = String(authTokenOverride || config.firebaseAuthToken || "").trim();
     if (!databaseUrl || !statsPath) return "";
 
     var encodedPath = statsPath.split("/").filter(Boolean).map(function (part) {
@@ -1427,6 +1869,69 @@
     }).join("/");
 
     return databaseUrl + "/" + encodedPath + ".json" + (authToken ? "?auth=" + encodeURIComponent(authToken) : "");
+  }
+
+  function firebaseApiKey() {
+    var config = window.SmartTechRuntimeConfig || {};
+    return String(config.firebaseApiKey || "").trim();
+  }
+
+  function readCachedFirebaseAuthToken() {
+    try {
+      var cached = JSON.parse(window.sessionStorage.getItem(firebaseAuthSessionKey) || "null");
+      if (cached && cached.idToken && Number(cached.expiresAt) > Date.now() + 60000) {
+        return cached.idToken;
+      }
+    } catch (error) {
+      return "";
+    }
+    return "";
+  }
+
+  function cacheFirebaseAuthToken(idToken, expiresIn) {
+    if (!idToken) return;
+    try {
+      var seconds = Math.max(60, Number(expiresIn || 3600));
+      window.sessionStorage.setItem(firebaseAuthSessionKey, JSON.stringify({
+        idToken: idToken,
+        expiresAt: Date.now() + seconds * 1000
+      }));
+    } catch (error) {
+      // Auth caching is optional.
+    }
+  }
+
+  function firebaseAnonymousAuthToken() {
+    if (!window.fetch) return Promise.resolve("");
+
+    var cached = readCachedFirebaseAuthToken();
+    if (cached) return Promise.resolve(cached);
+
+    if (firebaseAuthTokenPromise) return firebaseAuthTokenPromise;
+
+    var apiKey = firebaseApiKey();
+    if (!apiKey) return Promise.resolve("");
+
+    firebaseAuthTokenPromise = fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + encodeURIComponent(apiKey), {
+      method: "POST",
+      cache: "no-store",
+      headers: { "content-type": "application/json" },
+      body: "{\"returnSecureToken\":true}"
+    }).then(function (response) {
+      if (!response.ok) {
+        throw new Error("Could not create anonymous Firebase session");
+      }
+      return response.json();
+    }).then(function (data) {
+      var idToken = String(data && data.idToken || "").trim();
+      if (!idToken) return "";
+      cacheFirebaseAuthToken(idToken, data.expiresIn);
+      return idToken;
+    }).catch(function () {
+      return "";
+    });
+
+    return firebaseAuthTokenPromise;
   }
 
   function parseFirebaseCounter(text) {
@@ -1469,7 +1974,13 @@
         setMetricValue("visits", visits);
         if (!recordVisit) return visits;
         return writeFirebaseVisits(url, visits + 1).catch(function () {
-          return visits;
+          return firebaseAnonymousAuthToken().then(function (authToken) {
+            var authedUrl = authToken ? firebaseMetricsUrl(authToken) : "";
+            if (!authedUrl) return visits;
+            return writeFirebaseVisits(authedUrl, visits + 1).catch(function () {
+              return visits;
+            });
+          });
         });
       })
       .then(function (visits) {

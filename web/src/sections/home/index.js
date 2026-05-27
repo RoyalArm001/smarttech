@@ -68,7 +68,7 @@
       return "" +
         '<a class="home-bottom-project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
           '<span class="home-bottom-project-image">' +
-            '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="lazy">' +
+            '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="eager" onerror="this.style.opacity=0;this.parentElement.classList.add(\'is-broken\');">' +
           "</span>" +
           '<span class="home-bottom-project-copy">' +
             "<strong>" + e(text.title) + "</strong>" +
@@ -125,6 +125,24 @@
         "</a>";
     }
 
+    function renderHomeTeamChip(member) {
+      var localized = site.i18n.teamMember(member);
+      var title = localized.title || member.title;
+      var role = member.level || member.department || "Specialist";
+
+      return "" +
+        '<a class="home-team-card home-team-chip reveal" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
+          '<span class="home-team-photo">' +
+            '<img src="' + e(member.image) + '" alt="' + e(title) + '" loading="lazy">' +
+            '<small>' + e(member.accent) + "</small>" +
+          "</span>" +
+          '<span class="home-team-copy">' +
+            "<strong>" + e(title) + "</strong>" +
+            "<em>" + e(role) + "</em>" +
+          "</span>" +
+        "</a>";
+    }
+
     var directorCard = director ? renderHomeTeamCard(director, "home-team-director") : "";
     var managerGroups = specialists.filter(isManager).map(function (manager) {
       return {
@@ -148,6 +166,10 @@
     if (unassignedReports.length && managerGroups.length) {
       managerGroups[0].reports = managerGroups[0].reports.concat(unassignedReports);
     }
+
+    var homeTeamRow = (site.content.team || []).slice().sort(sortTeamMembers).map(function (member) {
+      return renderHomeTeamChip(member);
+    }).join("");
 
     var managerCards = managerGroups.map(function (group) {
       var reports = group.reports.map(function (member) {
@@ -245,11 +267,10 @@
             "</div>" +
             '<a class="button" href="' + e(site.utils.pageUrl("team")) + '">' + e(site.i18n.get("common.learnMore", "Դիտել թիմը")) + "</a>" +
           "</div>" +
-          '<div class="home-team-org">' +
-            '<div class="home-team-lead">' + directorCard + "</div>" +
-            '<div class="home-team-line" aria-hidden="true"></div>' +
-            '<div class="home-team-manager-grid">' + managerCards + "</div>" +
-          "</div>" +
+          '<div class="home-team-strip" aria-label="Team specialists">' +
+            '<div class="home-team-track">' + homeTeamRow + '</div>' +
+
+          '</div>' +
         "</div>" +
       "</section>";
   };

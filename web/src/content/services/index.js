@@ -71,12 +71,12 @@
       id: "audio-systems",
       title: "Աուդիո համակարգերի տեղադրում",
       lead: "Ֆոնային երաժշտության, public address, կոնֆերանսային և ձայնային ծանուցման համակարգերի նախագծում, տեղադրում և կարգաբերում։",
-      image: "https://images.pexels.com/photos/164938/pexels-photo-164938.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      image: base + "/images/services/building_management_automation.jpg",
       gallery: [
-        "https://images.pexels.com/photos/164938/pexels-photo-164938.jpeg?auto=compress&cs=tinysrgb&w=1400",
-        "https://images.pexels.com/photos/744318/pexels-photo-744318.jpeg?auto=compress&cs=tinysrgb&w=1400",
         base + "/images/services/building_management_automation.jpg",
-        base + "/images/services/installation_networks.jpg"
+        base + "/images/services/installation_networks.jpg",
+        base + "/images/our-jobs/completed-projects-3.png",
+        base + "/images/our-jobs/completed-projects-4.png"
       ],
       tags: ["Public Address", "Background music", "Conference audio"]
     },

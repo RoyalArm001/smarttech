@@ -8,6 +8,13 @@ const rootDir = __dirname;
 const webDir = path.resolve(rootDir, "web");
 const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
 const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
+const pageShellAliases = {
+  help: "about.html",
+  faq: "about.html",
+  terms: "about.html",
+  privacy: "about.html",
+  disclaimer: "about.html"
+};
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -111,6 +118,10 @@ function resolveStaticTarget(targetInfo) {
   }
 
   const pageRelative = relative.startsWith("pages/") ? relative.slice("pages/".length) : relative;
+  const aliasedPage = pageShellAliases[pageRelative.replace(/\.html$/i, "")];
+  if (aliasedPage) {
+    candidates.push(path.resolve(webDir, "pages", aliasedPage));
+  }
   const pageTarget = path.resolve(webDir, "pages", pageRelative);
   candidates.push(pageTarget);
   if (!path.extname(pageTarget)) {

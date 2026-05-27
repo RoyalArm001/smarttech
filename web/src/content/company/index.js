@@ -1,5 +1,5 @@
 (function (site) {
-  var assetBase = "https://smarttechllc.am";
+  var assetBase = "";
 
   site.content.company = {
     name: "Smart Tech",

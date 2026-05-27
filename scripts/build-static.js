@@ -5,6 +5,38 @@ const rootDir = path.resolve(__dirname, "..");
 const sourceDir = path.resolve(rootDir, "web");
 const outputDir = path.resolve(rootDir, "dist");
 
+function parseEnvLine(line) {
+  const trimmed = String(line || "").trim();
+  if (!trimmed || trimmed.startsWith("#")) return null;
+
+  const equalsIndex = trimmed.indexOf("=");
+  if (equalsIndex <= 0) return null;
+
+  const key = trimmed.slice(0, equalsIndex).trim();
+  let value = trimmed.slice(equalsIndex + 1).trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) return null;
+
+  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+    value = value.slice(1, -1);
+  }
+
+  return { key, value };
+}
+
+function loadEnvFile(fileName) {
+  const filePath = path.resolve(rootDir, fileName);
+  if (!fs.existsSync(filePath)) return;
+
+  fs.readFileSync(filePath, "utf8").split(/\r?\n/).forEach((line) => {
+    const parsed = parseEnvLine(line);
+    if (!parsed || process.env[parsed.key]) return;
+    process.env[parsed.key] = parsed.value;
+  });
+}
+
+loadEnvFile(".env");
+loadEnvFile(".env.local");
+
 function assertInsideRoot(target) {
   const relative = path.relative(rootDir, target);
   if (!relative || relative.startsWith("..") || path.isAbsolute(relative)) {
@@ -53,6 +85,13 @@ function writeRuntimeConfig() {
     "NEXT_PUBLIC_FIREBASE_STATS_PATH"
   ], "BlogID_201588890086708935/PostID_WebsiteStats");
 
+  const apiKey = envValue([
+    "SMARTTECH_FIREBASE_API_KEY",
+    "FIREBASE_API_KEY",
+    "VITE_FIREBASE_API_KEY",
+    "NEXT_PUBLIC_FIREBASE_API_KEY"
+  ], "");
+
   const authToken = envValue([
     "SMARTTECH_FIREBASE_AUTH_TOKEN",
     "FIREBASE_AUTH_TOKEN",
@@ -66,6 +105,7 @@ function writeRuntimeConfig() {
     "  window.SmartTechRuntimeConfig = Object.assign({}, window.SmartTechRuntimeConfig, {",
     "    firebaseDatabaseUrl: " + jsString(databaseUrl) + ",",
     "    firebaseStatsPath: " + jsString(statsPath) + ",",
+    "    firebaseApiKey: " + jsString(apiKey) + ",",
     "    firebaseAuthToken: " + jsString(authToken),
     "  });",
     "})(window);",
@@ -88,7 +128,12 @@ const routeAliases = {
   "team": "team",
   "member": "member",
   "about": "about",
-  "contact": "contact"
+  "contact": "contact",
+  "help": "about",
+  "faq": "about",
+  "terms": "about",
+  "privacy": "about",
+  "disclaimer": "about"
 };
 
 function toRootRelative(html) {

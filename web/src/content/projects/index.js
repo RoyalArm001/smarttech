@@ -25,7 +25,7 @@
         en: "Prepared fire alarm call point",
         ru: "Готовая точка пожарной сигнализации"
       },
-      image: "https://images.pexels.com/photos/3958649/pexels-photo-3958649.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      image: serviceBase + "fire-security.jpg"
     },
     network: {
       title: {
@@ -41,7 +41,7 @@
         en: "Prepared server rack and patch panel",
         ru: "Готовый серверный шкаф и patch panel"
       },
-      image: "https://images.pexels.com/photos/2881229/pexels-photo-2881229.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      image: serviceBase + "installation_networks.jpg"
     },
     electrical: {
       title: {
@@ -65,7 +65,7 @@
         en: "Door access control setup",
         ru: "Настройка контроля доступа дверей"
       },
-      image: "https://images.pexels.com/photos/13007861/pexels-photo-13007861.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      image: serviceBase + "building_management_automation.jpg"
     },
     intercom: {
       title: {
@@ -73,7 +73,7 @@
         en: "Automatic intercom installation and setup",
         ru: "Монтаж и настройка автоматических домофонов"
       },
-      image: "https://images.pexels.com/photos/32268533/pexels-photo-32268533.jpeg?auto=compress&cs=tinysrgb&w=1400"
+      image: jobBase + "only-one-2.png"
     }
   };
 

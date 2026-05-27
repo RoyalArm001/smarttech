@@ -6,7 +6,7 @@
 
 .footer-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 24px;
   align-items: center;
 }
@@ -38,6 +38,10 @@
 .footer-meta {
   display: grid;
   gap: 8px;
+}
+
+.footer-info-links {
+  min-width: 138px;
 }
 
 .footer-links a,
