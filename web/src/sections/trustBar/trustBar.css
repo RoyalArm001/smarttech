@@ -1,0 +1,90 @@
+.trust-band {
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(17, 30, 34, 0.98), rgba(8, 88, 82, 0.92)),
+    var(--panel-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trust-grid {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.trust-item,
+.trust-note {
+  min-height: 112px;
+  padding: 24px;
+  background: rgba(12, 23, 27, 0.84);
+}
+
+.trust-item strong {
+  display: block;
+  color: #7be0d3;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.trust-item span,
+.trust-note span {
+  color: rgba(238, 246, 246, 0.68);
+  font-weight: 700;
+}
+
+.trust-note strong {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+@media (max-width: 760px) {
+  .trust-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 460px) {
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-item,
+  .trust-note {
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .trust-item strong {
+    font-size: 1.55rem;
+  }
+}
+
+.trust-item,
+.trust-note {
+  position: relative;
+  overflow: hidden;
+}
+
+.trust-item::before,
+.trust-note::before {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  content: "";
+  background: linear-gradient(90deg, var(--teal), var(--cyan), var(--amber));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms ease;
+}
+
+.trust-item:hover::before,
+.trust-note:hover::before {
+  transform: scaleX(1);
+}
