@@ -127,6 +127,7 @@ const routeAliases = {
   "partners": "partners",
   "team": "team",
   "member": "member",
+  "licenses": "about",
   "about": "about",
   "contact": "contact",
   "help": "about",

@@ -11,6 +11,7 @@ const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
 const pageShellAliases = {
   help: "about.html",
   faq: "about.html",
+  licenses: "about.html",
   terms: "about.html",
   privacy: "about.html",
   disclaimer: "about.html"
