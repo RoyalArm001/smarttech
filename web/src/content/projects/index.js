@@ -138,6 +138,76 @@
       systemImages: [system.cctv, system.alarmPanel, system.access]
     },
     {
+      id: "pallada-tsaghkadzor",
+      title: "Pallada Tsaghkadzor",
+      works: ["Ավտոմատ հրդեհային ազդարարում", "Տարհանման ծանուցման համակարգ", "Էլեկտրամոնտաժային աշխատանքներ", "BMS"],
+      images: [jobBase + "pallada-tsaghkadzor.png"],
+      systemImages: [system.alarmPanel, system.electrical, system.automation],
+      translations: {
+        en: { title: "Pallada Tsaghkadzor", works: ["Automatic fire alarm", "Evacuation notification system", "Electrical installation works", "BMS"] },
+        ru: { title: "Pallada Tsaghkadzor", works: ["Автоматическая пожарная сигнализация", "Система оповещения и эвакуации", "Электромонтажные работы", "BMS"] },
+        be: { title: "Pallada Tsaghkadzor", works: ["Аўтаматычная пажарная сігналізацыя", "Сістэма апавяшчэння і эвакуацыі", "Электрамантажныя работы", "BMS"] },
+        fr: { title: "Pallada Tsaghkadzor", works: ["Alarme incendie automatique", "Système d'alerte et d'évacuation", "Travaux d'installation électrique", "BMS"] },
+        ka: { title: "Pallada Tsaghkadzor", works: ["ავტომატური ხანძრის სიგნალიზაცია", "ევაკუაციის შეტყობინების სისტემა", "ელექტრომონტაჟის სამუშაოები", "BMS"] }
+      }
+    },
+    {
+      id: "uls-data-center",
+      title: "ULS Data Center",
+      works: ["Ներքին լուսավորություն և ուժային սարքավորումներ", "Ավտոմատ հրդեհային ազդարարում", "Կառուցվածքային մալուխային համակարգ"],
+      images: [jobBase + "uls-data-center.png"],
+      systemImages: [system.electrical, system.alarmPanel, system.serverRack],
+      translations: {
+        en: { title: "ULS Data Center", works: ["Internal lighting and power equipment", "Automatic fire alarm", "Structured cabling system"] },
+        ru: { title: "ULS Data Center", works: ["Внутреннее электроосвещение и силовое оборудование", "Автоматическая пожарная сигнализация", "Структурированная кабельная система"] },
+        be: { title: "ULS Data Center", works: ["Унутранае электраасвятленне і сілавое абсталяванне", "Аўтаматычная пажарная сігналізацыя", "Структураваная кабельная сістэма"] },
+        fr: { title: "ULS Data Center", works: ["Éclairage intérieur et équipements de puissance", "Alarme incendie automatique", "Système de câblage structuré"] },
+        ka: { title: "ULS Data Center", works: ["შიდა განათება და ძალოვანი აღჭურვილობა", "ავტომატური ხანძრის სიგნალიზაცია", "სტრუქტურირებული საკაბელო სისტემა"] }
+      }
+    },
+    {
+      id: "acba-sebastia",
+      title: "ACBA Bank, Sebastia 80",
+      works: ["Ներքին լուսավորության համակարգ", "Ուժային սարքավորումների համակարգ", "Էլեկտրամոնտաժային աշխատանքներ"],
+      images: [jobBase + "acba-sebastia.png"],
+      systemImages: [system.electrical],
+      translations: {
+        en: { title: "ACBA Bank, Sebastia 80", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
+        ru: { title: "ACBA Bank, Себастия 80", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
+        be: { title: "ACBA Bank, Себастыя 80", works: ["Сістэма ўнутранага электраасвятлення", "Сілавое абсталяванне", "Электрамантажныя работы"] },
+        fr: { title: "ACBA Bank, Sebastia 80", works: ["Système d'éclairage intérieur", "Système d'équipements de puissance", "Travaux d'installation électrique"] },
+        ka: { title: "ACBA Bank, Sebastia 80", works: ["შიდა განათების სისტემა", "ძალოვანი აღჭურვილობის სისტემა", "ელექტრომონტაჟის სამუშაოები"] }
+      }
+    },
+    {
+      id: "evocabank",
+      title: "Evocabank",
+      works: ["Ներքին լուսավորության համակարգ", "Ուժային սարքավորումների համակարգ", "Էլեկտրամոնտաժային աշխատանքներ"],
+      images: [jobBase + "evocabank.png"],
+      systemImages: [system.electrical],
+      translations: {
+        en: { title: "Evocabank", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
+        ru: { title: "Evocabank", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
+        be: { title: "Evocabank", works: ["Сістэма ўнутранага электраасвятлення", "Сілавое абсталяванне", "Электрамантажныя работы"] },
+        fr: { title: "Evocabank", works: ["Système d'éclairage intérieur", "Système d'équipements de puissance", "Travaux d'installation électrique"] },
+        ka: { title: "Evocabank", works: ["შიდა განათების სისტემა", "ძალოვანი აღჭურვილობის სისტემა", "ელექტრომონტაჟის სამუშაოები"] }
+      }
+    },
+    {
+      id: "movenpick-hotel",
+      title: "Movenpick Hotel",
+      works: ["Գլխավոր նախագծային ինժեների գործառույթ", "Տեխնիկական համակարգերի համակարգում", "Նախագծային վերահսկում"],
+      images: [jobBase + "movenpick-hotel.png"],
+      systemImages: [system.automation, system.electrical],
+      translations: {
+        en: { title: "Movenpick Hotel", works: ["Chief project engineer function", "Technical systems coordination", "Design supervision"] },
+        ru: { title: "Гостиница Movenpick", works: ["Функция главного инженера проекта", "Координация технических систем", "Проектный контроль"] },
+        be: { title: "Гасцініца Movenpick", works: ["Функцыя галоўнага інжынера праекта", "Каардынацыя тэхнічных сістэм", "Праектны кантроль"] },
+        fr: { title: "Hôtel Movenpick", works: ["Fonction d'ingénieur principal du projet", "Coordination des systèmes techniques", "Supervision de conception"] },
+        ka: { title: "Movenpick Hotel", works: ["მთავარი პროექტის ინჟინრის ფუნქცია", "ტექნიკური სისტემების კოორდინაცია", "პროექტის ზედამხედველობა"] }
+      }
+    },
+    {
       id: "wildberries",
       title: "Wildberries",
       works: ["Էլեկտրամոնտաժ", "Տեսահսկում", "Հրդեհային ազդարարում", "Մուտքի վերահսկում", "Կապի համակարգեր"],

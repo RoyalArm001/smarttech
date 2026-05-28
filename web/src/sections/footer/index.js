@@ -5,12 +5,12 @@
     var contacts = site.content.contacts;
     var nav = site.i18n.get("nav");
     var infoLabels = {
-      hy: { help: "Օգնություն", faq: "FAQ", terms: "Պայմաններ", privacy: "Գաղտնիություն", disclaimer: "Նշում" },
-      en: { help: "Help", faq: "FAQ", terms: "Terms", privacy: "Privacy", disclaimer: "Disclaimer" },
-      ru: { help: "Помощь", faq: "FAQ", terms: "Условия", privacy: "Конфиденциальность", disclaimer: "Примечание" },
-      be: { help: "Дапамога", faq: "FAQ", terms: "Умовы", privacy: "Прыватнасць", disclaimer: "Заўвага" },
-      fr: { help: "Aide", faq: "FAQ", terms: "Conditions", privacy: "Confidentialité", disclaimer: "Mentions" },
-      ka: { help: "დახმარება", faq: "FAQ", terms: "წესები", privacy: "კონფიდენციალურობა", disclaimer: "შენიშვნა" }
+      hy: { help: "Օգնություն", faq: "FAQ", terms: "Պայմաններ", privacy: "Գաղտնիություն", licenses: "Լիցենզիաներ", disclaimer: "Նշում" },
+      en: { help: "Help", faq: "FAQ", terms: "Terms", privacy: "Privacy", licenses: "Licenses", disclaimer: "Disclaimer" },
+      ru: { help: "Помощь", faq: "FAQ", terms: "Условия", privacy: "Конфиденциальность", licenses: "Лицензии", disclaimer: "Примечание" },
+      be: { help: "Дапамога", faq: "FAQ", terms: "Умовы", privacy: "Прыватнасць", licenses: "Ліцэнзіі", disclaimer: "Заўвага" },
+      fr: { help: "Aide", faq: "FAQ", terms: "Conditions", privacy: "Confidentialité", licenses: "Licences", disclaimer: "Mentions" },
+      ka: { help: "დახმარება", faq: "FAQ", terms: "წესები", privacy: "კონფიდენციალურობა", licenses: "ლიცენზიები", disclaimer: "შენიშვნა" }
     };
     var labels = infoLabels[site.i18n.language] || infoLabels.en;
     var logoMarkup = company.logo ? '<img src="' + e(company.logo) + '" alt="Smart Tech logo">' : "";
@@ -41,6 +41,7 @@
           '<a href="' + e(site.utils.pageUrl("faq")) + '">' + e(labels.faq) + '</a>' +
           '<a href="' + e(site.utils.pageUrl("terms")) + '">' + e(labels.terms) + '</a>' +
           '<a href="' + e(site.utils.pageUrl("privacy")) + '">' + e(labels.privacy) + '</a>' +
+          '<a href="' + e(site.utils.pageUrl("licenses")) + '">' + e(labels.licenses) + '</a>' +
           '<a href="' + e(site.utils.pageUrl("disclaimer")) + '">' + e(labels.disclaimer) + '</a>' +
         '</div>' +
         '<div class="footer-meta">' +

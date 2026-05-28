@@ -20,10 +20,32 @@
       assetBase + "/images/home/slide-0.jpg",
       assetBase + "/images/home/slide-1.jpg"
     ],
+    licenseDocuments: (function () {
+      var base = assetBase + "/images/certificates/";
+      var items = [];
+      for (var index = 1; index <= 13; index += 1) {
+        var number = String(index).padStart(2, "0");
+        var title = "Լիցենզիա";
+        if (index === 12) {
+          title = "Շինարարության իրականացում";
+        }
+        if (index === 13) {
+          title = "Լիցենզիայի ներդիր";
+        }
+        items.push({
+          number: index,
+          title: title,
+          alt: title + " " + index,
+          image: base + "license-" + number + ".jpg",
+          thumb: base + "license-" + number + "-thumb.jpg"
+        });
+      }
+      return items;
+    })(),
     stats: [
-      { value: "12+", label: "գործընկեր" },
-      { value: "8", label: "նշանակալի նախագիծ" },
-      { value: "8", label: "հիմնական ծառայություն" }
+      { value: "2012", label: "գործունեության սկիզբ" },
+      { value: "100+", label: "իրականացված նախագիծ" },
+      { value: "88", label: "ինժեներատեխնիկական կազմ" }
     ],
     aboutTitle: "Մեր մասին",
     about: [

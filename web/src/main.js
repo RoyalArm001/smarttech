@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "help", "faq", "terms", "privacy", "disclaimer"];
+  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -10,10 +10,14 @@
   var chatHistoryLimit = 40;
   var chatSurveyState = null;
   var backToTopUi = null;
+  var licenseViewerUi = null;
+  var licenseViewerReady = false;
+  var licenseViewerScale = 1;
+  var licenseViewerDrag = null;
   var routeTransition = null;
   var routeTransitionTimer = null;
   var uiSettingsStorageKey = "smarttech.uiSettings";
-  var onlineLangStorageKey = "smarttech.onlineLang";
+  var onlineLangStorageKey = "smarttech.onlineLang.v3";
   var metricsVisitSessionKey = "smarttech.metrics.visitSession";
   var staticMetricsStorageKey = "smarttech.metrics.staticVisits";
   var firebaseAuthSessionKey = "smarttech.firebase.anonymousAuth";
@@ -124,11 +128,51 @@
     if (page === "team") return site.sections.team();
     if (page === "about") return site.sections.about();
     if (page === "contact") return site.sections.contact();
+    if (page === "licenses") return licensesPageMarkup();
     if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
       return infoPageMarkup(page);
     }
 
     return site.sections.hero();
+  }
+
+  function licensesPageMarkup() {
+    var e = site.utils.escapeHtml;
+    var documents = site.content.company.licenseDocuments || [];
+    var cards = documents.map(function (item) {
+      return '' +
+        '<article class="license-document-card reveal" id="license-' + e(item.number) + '">' +
+          '<a class="license-document-media" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +
+            '<img src="' + e(item.thumb || item.image) + '" alt="' + e(item.alt || item.title) + '" loading="lazy" decoding="async">' +
+          '</a>' +
+          '<div class="license-document-copy">' +
+            '<strong>' + e(item.title) + '</strong>' +
+            '<small>Սեղմեք նկարի վրա՝ մեծ տարբերակը բացելու համար</small>' +
+          '</div>' +
+        '</article>';
+    }).join("");
+
+    return [
+      site.sections.pageHero({
+        eyebrow: "Փաստաթղթեր",
+        title: "Լիցենզիաներ և սերտիֆիկատներ",
+        text: "Smart Tech-ի լիցենզիաների և հաստատող փաստաթղթերի ամբողջական հավաքածուն։",
+        image: (documents[11] && documents[11].image) || site.content.company.heroImages[1],
+        tone: "about"
+      }),
+      '<section class="section licenses-section">',
+        '<div class="container">',
+          '<div class="section-head compact-head licenses-head">',
+            '<div>',
+              '<span class="eyebrow">Լիցենզիաներ</span>',
+              '<h2 class="section-title">Փաստաթղթերի ամբողջական ցանկ</h2>',
+            '</div>',
+            '<p class="section-copy">Այստեղ տեղադրված են բոլոր 13 փաստաթղթերը։ Յուրաքանչյուր քարտից կարող եք բացել մեծ տարբերակը։</p>',
+          '</div>',
+          '<div class="license-document-grid">' + cards + '</div>',
+        '</div>',
+      '</section>'
+    ].join("");
   }
 
   function infoPageMarkup(page) {
@@ -579,6 +623,7 @@
     applyTranslationBoundaries(page);
     setupNavigation();
     setupLanguageSwitcher();
+    setupLicenseViewer();
     if (!DISABLE_GOOGLE_TRANSLATE) enforceHiddenGoogleTranslateUi();
     setupContactForm();
     setupRequestBuilder();
@@ -915,6 +960,187 @@
     };
 
     document.addEventListener("click", languageOutsideClickHandler, true);
+  }
+
+  function ensureLicenseViewer() {
+    if (licenseViewerUi) return licenseViewerUi;
+
+    var host = document.createElement("div");
+    host.className = "license-lightbox";
+    host.hidden = true;
+    host.innerHTML = '' +
+      '<button class="license-lightbox-backdrop" type="button" aria-label="Փակել" data-license-close></button>' +
+      '<section class="license-lightbox-panel" role="dialog" aria-modal="true" aria-label="Լիցենզիայի դիտում">' +
+        '<header class="license-lightbox-head">' +
+          '<strong class="license-lightbox-title"></strong>' +
+          '<div class="license-lightbox-actions">' +
+            '<button class="license-lightbox-button" type="button" aria-label="Փոքրացնել" data-license-zoom-out>-</button>' +
+            '<button class="license-lightbox-button license-lightbox-scale" type="button" aria-label="Վերականգնել չափը" data-license-zoom-reset>100%</button>' +
+            '<button class="license-lightbox-button" type="button" aria-label="Մեծացնել" data-license-zoom-in>+</button>' +
+            '<a class="license-lightbox-button license-lightbox-open" href="javascript:void(0)" target="_blank" rel="noopener">Բացել</a>' +
+            '<button class="license-lightbox-button license-lightbox-close" type="button" aria-label="Փակել" data-license-close>&times;</button>' +
+          '</div>' +
+        '</header>' +
+        '<div class="license-lightbox-stage" data-license-stage>' +
+          '<div class="license-lightbox-canvas">' +
+            '<img class="license-lightbox-image" alt="" data-license-image>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+    document.body.appendChild(host);
+
+    licenseViewerUi = {
+      root: host,
+      stage: host.querySelector("[data-license-stage]"),
+      image: host.querySelector("[data-license-image]"),
+      title: host.querySelector(".license-lightbox-title"),
+      scale: host.querySelector(".license-lightbox-scale"),
+      open: host.querySelector(".license-lightbox-open")
+    };
+
+    host.querySelectorAll("[data-license-close]").forEach(function (button) {
+      button.addEventListener("click", closeLicenseViewer);
+    });
+
+    host.querySelector("[data-license-zoom-in]").addEventListener("click", function () {
+      setLicenseViewerScale(licenseViewerScale + 0.25);
+    });
+
+    host.querySelector("[data-license-zoom-out]").addEventListener("click", function () {
+      setLicenseViewerScale(licenseViewerScale - 0.25);
+    });
+
+    host.querySelector("[data-license-zoom-reset]").addEventListener("click", function () {
+      setLicenseViewerScale(1);
+    });
+
+    licenseViewerUi.stage.addEventListener("wheel", function (event) {
+      if (!licenseViewerUi.root.classList.contains("is-open")) return;
+      if (!event.ctrlKey && licenseViewerScale <= 1) return;
+      event.preventDefault();
+      setLicenseViewerScale(licenseViewerScale + (event.deltaY > 0 ? -0.18 : 0.18));
+    }, { passive: false });
+
+    licenseViewerUi.stage.addEventListener("pointerdown", function (event) {
+      if (licenseViewerScale <= 1) return;
+      licenseViewerDrag = {
+        x: event.clientX,
+        y: event.clientY,
+        left: licenseViewerUi.stage.scrollLeft,
+        top: licenseViewerUi.stage.scrollTop
+      };
+      licenseViewerUi.stage.classList.add("is-dragging");
+      licenseViewerUi.stage.setPointerCapture(event.pointerId);
+    });
+
+    licenseViewerUi.stage.addEventListener("pointermove", function (event) {
+      if (!licenseViewerDrag) return;
+      licenseViewerUi.stage.scrollLeft = licenseViewerDrag.left - (event.clientX - licenseViewerDrag.x);
+      licenseViewerUi.stage.scrollTop = licenseViewerDrag.top - (event.clientY - licenseViewerDrag.y);
+    });
+
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (eventName) {
+      licenseViewerUi.stage.addEventListener(eventName, function () {
+        licenseViewerDrag = null;
+        licenseViewerUi.stage.classList.remove("is-dragging");
+      });
+    });
+
+    window.addEventListener("resize", function () {
+      if (licenseViewerUi && licenseViewerUi.root.classList.contains("is-open")) {
+        setLicenseViewerScale(licenseViewerScale);
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (!licenseViewerUi || !licenseViewerUi.root.classList.contains("is-open")) return;
+      if (event.key === "Escape" || event.key === "Esc") {
+        closeLicenseViewer();
+      } else if (event.key === "+" || event.key === "=") {
+        setLicenseViewerScale(licenseViewerScale + 0.25);
+      } else if (event.key === "-") {
+        setLicenseViewerScale(licenseViewerScale - 0.25);
+      } else if (event.key === "0") {
+        setLicenseViewerScale(1);
+      }
+    });
+
+    return licenseViewerUi;
+  }
+
+  function centerLicenseViewerImage() {
+    if (!licenseViewerUi) return;
+    var stage = licenseViewerUi.stage;
+    stage.scrollLeft = Math.max(0, (stage.scrollWidth - stage.clientWidth) / 2);
+    stage.scrollTop = Math.max(0, (stage.scrollHeight - stage.clientHeight) / 2);
+  }
+
+  function setLicenseViewerScale(scale) {
+    var ui = ensureLicenseViewer();
+    var image = ui.image;
+    var naturalWidth = image.naturalWidth || 1200;
+    var naturalHeight = image.naturalHeight || 850;
+    var stageRect = ui.stage.getBoundingClientRect();
+    var maxWidth = Math.max(280, stageRect.width - 48);
+    var maxHeight = Math.max(220, stageRect.height - 48);
+    var ratio = naturalWidth / Math.max(1, naturalHeight);
+    var fitWidth = Math.min(naturalWidth, maxWidth, maxHeight * ratio);
+
+    licenseViewerScale = Math.max(1, Math.min(4, scale));
+    image.style.width = Math.round(fitWidth * licenseViewerScale) + "px";
+    image.style.height = "auto";
+    ui.scale.textContent = Math.round(licenseViewerScale * 100) + "%";
+    ui.stage.classList.toggle("is-zoomed", licenseViewerScale > 1.01);
+
+    window.setTimeout(centerLicenseViewerImage, 0);
+  }
+
+  function openLicenseViewer(link) {
+    var ui = ensureLicenseViewer();
+    var imageUrl = link.getAttribute("href");
+    var title = link.getAttribute("data-license-title") || link.textContent || "Լիցենզիա";
+    if (!imageUrl) return;
+
+    ui.title.textContent = title;
+    ui.open.href = imageUrl;
+    ui.image.removeAttribute("src");
+    ui.image.alt = title;
+    licenseViewerScale = 1;
+    ui.scale.textContent = "100%";
+    ui.stage.classList.remove("is-zoomed");
+    ui.root.hidden = false;
+    document.body.classList.add("is-license-lightbox-open");
+
+    ui.image.onload = function () {
+      setLicenseViewerScale(1);
+    };
+    ui.image.src = imageUrl;
+
+    window.requestAnimationFrame(function () {
+      ui.root.classList.add("is-open");
+    });
+  }
+
+  function closeLicenseViewer() {
+    if (!licenseViewerUi) return;
+    licenseViewerUi.root.classList.remove("is-open");
+    document.body.classList.remove("is-license-lightbox-open");
+    window.setTimeout(function () {
+      if (licenseViewerUi && !licenseViewerUi.root.classList.contains("is-open")) {
+        licenseViewerUi.root.hidden = true;
+      }
+    }, 180);
+  }
+
+  function setupLicenseViewer() {
+    if (licenseViewerReady) return;
+    licenseViewerReady = true;
+    document.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest ? event.target.closest("[data-license-viewer]") : null;
+      if (!target) return;
+      event.preventDefault();
+      openLicenseViewer(target);
+    });
   }
 
   function setupRequestBuilder() {
@@ -1779,8 +2005,10 @@
 
       status.textContent = feedbackText("sending");
       setBusy(true);
-      setBusy(false);
       openEmailFallback(payload);
+      setTimeout(function () {
+        setBusy(false);
+      }, 500);
     });
   }
 
@@ -2117,19 +2345,15 @@
   }
 
   function getOnlineLanguage() {
-    var cookieValue = decodeURIComponent(readCookie("googtrans") || "");
-    if (cookieValue.indexOf("/hy/") === 0) {
-      return cookieValue.split("/")[2] || "hy";
-    }
     try {
-      return window.localStorage.getItem(onlineLangStorageKey) || "hy";
+      return normalizeLanguageCode(window.localStorage.getItem(onlineLangStorageKey) || "hy");
     } catch (error) {
       return "hy";
     }
   }
 
   function applyOnlineLanguage(lang) {
-    var nextLang = lang || "hy";
+    var nextLang = normalizeLanguageCode(lang || "hy");
     writeTranslateCookie(nextLang);
     try {
       window.localStorage.setItem(onlineLangStorageKey, nextLang);

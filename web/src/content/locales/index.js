@@ -37,9 +37,9 @@
         lead: "Նախագծում, տեղադրում և սպասարկում ենք անվտանգ, կայուն և արդյունավետ համակարգեր՝ բիզնեսի, արդյունաբերության և բնակելի օբյեկտների համար։"
       },
       stats: [
-        { value: "12+", label: "գործընկեր" },
-        { value: "8", label: "նշանակալի նախագիծ" },
-        { value: "8", label: "հիմնական ծառայություն" }
+        { value: "2012", label: "գործունեության սկիզբ" },
+        { value: "100+", label: "իրականացված նախագիծ" },
+        { value: "88", label: "ինժեներատեխնիկական կազմ" }
       ],
       trust: {
         title: "Մեկ թիմ, ամբողջական համակարգ",
@@ -221,9 +221,9 @@
         lead: "We design, install and maintain secure, stable and intelligent engineering systems for business, residential and industrial spaces."
       },
       stats: [
-        { value: "12+", label: "partners" },
-        { value: "8", label: "major projects" },
-        { value: "8", label: "core services" }
+        { value: "2012", label: "started operating" },
+        { value: "100+", label: "completed projects" },
+        { value: "88", label: "engineering staff" }
       ],
       trust: {
         title: "One team, complete system",
@@ -378,9 +378,9 @@
         lead: "Проектируем, устанавливаем и обслуживаем безопасные, стабильные и эффективные системы для бизнеса, промышленности и жилых объектов."
       },
       stats: [
-        { value: "12+", label: "партнеров" },
-        { value: "8", label: "крупных проектов" },
-        { value: "8", label: "основных услуг" }
+        { value: "2012", label: "начало работы" },
+        { value: "100+", label: "реализованных проектов" },
+        { value: "88", label: "инженерно-технический состав" }
       ],
       trust: {
         title: "Одна команда, цельная система",
@@ -663,9 +663,9 @@
       lead: "Мы праектуем, манціруем і абслугоўваем бяспечныя, стабільныя і разумныя інжынерныя сістэмы для бізнесу, жылых і прамысловых аб'ектаў."
     },
     stats: [
-      { value: "12+", label: "партнёраў" },
-      { value: "8", label: "буйных праектаў" },
-      { value: "8", label: "асноўных паслуг" }
+      { value: "2012", label: "пачатак працы" },
+      { value: "100+", label: "рэалізаваных праектаў" },
+      { value: "88", label: "інжынерна-тэхнічны склад" }
     ],
     trust: { title: "Адна каманда, поўная сістэма", text: "праектаванне, мантаж, наладка і абслугоўванне" },
     home: {
@@ -767,7 +767,7 @@
     header: { mobile: { navigation: "Navigation", config: "Paramètres du menu", compact: "Mode compact", motion: "Animations" } },
     common: { consultation: "Laisser une demande", proposal: "Commander le service", viewProjects: "Voir les projets", viewServices: "Voir les services", callNow: "Appeler", quickContact: "Contact rapide", selectedProject: "Projet sélectionné", learnMore: "En savoir plus" },
     hero: { kicker: "Intégrateur de systèmes de sécurité, électriques et intelligents", title: "Smart Tech", lead: "Nous concevons, installons et maintenons des systèmes d'ingénierie sûrs, stables et intelligents pour les espaces professionnels, résidentiels et industriels." },
-    stats: [{ value: "12+", label: "partenaires" }, { value: "8", label: "grands projets" }, { value: "8", label: "services clés" }],
+    stats: [{ value: "2012", label: "début d'activité" }, { value: "100+", label: "projets réalisés" }, { value: "88", label: "équipe technique" }],
     trust: { title: "Une équipe, un système complet", text: "conception, installation, configuration et maintenance" },
     home: { servicesEyebrow: "Domaines", servicesTitle: "Commencez par le système dont votre site a le plus besoin", servicesText: "Nous proposons une conception complète, une installation rapide et un support complet pour les systèmes professionnels.", projectsEyebrow: "Confiance", projectsTitle: "Des réalisations qui montrent notre approche pour chaque site", contactTitle: "Besoin d'une proposition professionnelle ?", contactText: "Notre équipe vous aide à cadrer le bon système et à présenter une solution adaptée à vos besoins." },
     servicesPage: { eyebrow: "Services", title: "Solutions d'ingénierie pour la sécurité et le contrôle efficace", text: "Pour chaque domaine, nous choisissons la bonne classe d'équipement, la structure de câblage et la logique de maintenance." },
@@ -820,7 +820,7 @@
     header: { mobile: { navigation: "ნავიგაცია", config: "მენიუს პარამეტრები", compact: "კომპაქტური რეჟიმი", motion: "ანიმაციები" } },
     common: { consultation: "განაცხადის დატოვება", proposal: "სერვისის შეკვეთა", viewProjects: "პროექტების ნახვა", viewServices: "სერვისების ნახვა", callNow: "დარეკვა", quickContact: "სწრაფი კონტაქტი", selectedProject: "არჩეული პროექტი", learnMore: "მეტის ნახვა" },
     hero: { kicker: "უსაფრთხოების, ელექტრო და ჭკვიანი საინჟინრო სისტემების ინტეგრატორი", title: "Smart Tech", lead: "ვაპროექტებთ, ვამონტაჟებთ და ვემსახურებით უსაფრთხო, სტაბილურ და ჭკვიან საინჟინრო სისტემებს ბიზნესის, საცხოვრებელი და ინდუსტრიული სივრცეებისთვის." },
-    stats: [{ value: "12+", label: "პარტნიორი" }, { value: "8", label: "მნიშვნელოვანი პროექტი" }, { value: "8", label: "ძირითადი სერვისი" }],
+    stats: [{ value: "2012", label: "საქმიანობის დასაწყისი" }, { value: "100+", label: "დასრულებული პროექტი" }, { value: "88", label: "საინჟინრო გუნდი" }],
     trust: { title: "ერთი გუნდი, სრული სისტემა", text: "პროექტირება, მონტაჟი, გამართვა და მომსახურება" },
     home: { servicesEyebrow: "მიმართულებები", servicesTitle: "დაიწყეთ იმ სისტემით, რომელიც თქვენს ობიექტს ყველაზე მეტად სჭირდება", servicesText: "გთავაზობთ სრულ პროექტირებას, სწრაფ მონტაჟს და სრულ მხარდაჭერას ბიზნეს-კლასის სისტემებისთვის.", projectsEyebrow: "ნდობა", projectsTitle: "შესრულებული სამუშაოები, რომლებიც აჩვენებს ჩვენს მიდგომას თითოეულ ობიექტზე", contactTitle: "გჭირდებათ პროფესიული შეთავაზება?", contactText: "ჩვენი გუნდი დაგეხმარებათ სწორი სისტემის განსაზღვრაში და თქვენს საჭიროებებზე მორგებული გადაწყვეტის მომზადებაში." },
     servicesPage: { eyebrow: "სერვისები", title: "საინჟინრო გადაწყვეტილებები უსაფრთხოებისა და ეფექტური მართვისთვის", text: "თითოეული მიმართულებისთვის ვირჩევთ სწორ აღჭურვილობას, საკაბელო სტრუქტურას და მომსახურების ლოგიკას." },

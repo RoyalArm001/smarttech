@@ -1,5 +1,5 @@
 (function (site) {
-  var storageKey = "smarttech.language";
+  var storageKey = "smarttech.language.v3";
   var fallbackLanguage = "hy";
   var availableLanguages = ["hy", "en", "ru", "be", "fr", "ka"];
 
@@ -58,6 +58,9 @@
   function project(baseProject) {
     if (site.i18n.language === fallbackLanguage) {
       return baseProject;
+    }
+    if (baseProject.translations && baseProject.translations[site.i18n.language]) {
+      return Object.assign({}, baseProject, baseProject.translations[site.i18n.language]);
     }
     var translated = get("projects." + baseProject.id, {});
     return Object.assign({}, baseProject, translated);
