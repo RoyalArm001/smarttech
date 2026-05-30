@@ -107,7 +107,7 @@
     if (page === "project") page = "projects";
     if (page === "member") page = "team";
     var nav = site.i18n.get("nav", {});
-    var routes = ["home", "services", "projects", "request", "partners", "team", "about", "contact"];
+    var routes = ["home", "services", "projects", "request", "team", "about", "contact", "partners"];
 
     var navItems = routes.map(function (route) {
       var className = "nav-link notranslate" + (route === page ? " is-active" : "");

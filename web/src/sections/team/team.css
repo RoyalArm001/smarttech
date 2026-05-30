@@ -644,6 +644,7 @@
 
 .team-card {
   transition: transform 220ms ease, box-shadow 220ms ease;
+  touch-action: manipulation;
 }
 
 .team-card::before {
@@ -656,16 +657,25 @@
   transition: transform 520ms ease;
 }
 
-.team-card:hover {
+.team-card:hover,
+.team-card:active,
+.team-card:focus-within,
+.team-card:focus-visible {
   box-shadow: var(--shadow-strong);
   transform: translateY(-7px);
 }
 
-.team-card:hover::before {
+.team-card:hover::before,
+.team-card:active::before,
+.team-card:focus-within::before,
+.team-card:focus-visible::before {
   transform: translateX(130%);
 }
 
-.team-card:hover .team-photo {
+.team-card:hover .team-photo,
+.team-card:active .team-photo,
+.team-card:focus-within .team-photo,
+.team-card:focus-visible .team-photo {
   transform: scale(1.04);
 }
 

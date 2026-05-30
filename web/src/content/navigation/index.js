@@ -3,8 +3,8 @@
     { label: "Գլխավոր", href: "#top" },
     { label: "Ծառայություններ", href: "#services" },
     { label: "Նախագծեր", href: "#projects" },
-    { label: "Գործընկերներ", href: "#partners" },
     { label: "Մեր մասին", href: "#about" },
-    { label: "Կապ", href: "#contact" }
+    { label: "Կապ", href: "#contact" },
+    { label: "Գործընկերներ", href: "#partners" }
   ];
 })(window.SmartTech);

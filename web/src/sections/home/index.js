@@ -85,11 +85,7 @@
     }).join("");
 
     var certificateDocuments = site.content.company.licenseDocuments || [];
-    var featuredCertificates = [12, 13].map(function (number) {
-      return certificateDocuments.find(function (item) {
-        return item.number === number;
-      });
-    }).filter(Boolean);
+    var featuredCertificates = certificateDocuments.slice(0, 2);
     var certificateCards = featuredCertificates.map(function (item) {
       return "" +
         '<a class="home-certificate-card home-certificate-card-featured reveal" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +
@@ -203,7 +199,8 @@
     }).join("");
 
     return "" +
-      '<section class="section home-overview">' +
+      '<div id="top"></div>' +
+      '<section class="section home-overview" id="services">' +
         '<div class="container home-overview-grid">' +
           '<div class="home-overview-copy reveal">' +
             '<span class="eyebrow">' + e(site.i18n.get("home.servicesEyebrow")) + "</span>" +
@@ -239,7 +236,7 @@
           "</div>" +
         "</div>" +
       "</section>" +
-      '<section class="section home-partners-strip">' +
+      '<section class="section home-partners-strip" id="partners">' +
         '<div class="container">' +
           '<div class="section-head compact-head">' +
             "<div>" +
@@ -251,20 +248,7 @@
           '<div class="home-partner-grid">' + partnerLogos + "</div>" +
         "</div>" +
       "</section>" +
-      '<section class="section home-certificates-section">' +
-        '<div class="container">' +
-          '<div class="section-head compact-head">' +
-            "<div>" +
-              '<span class="eyebrow">Լիցենզիաներ</span>' +
-              '<h2 class="section-title">Լիցենզիաներ և սերտիֆիկատներ</h2>' +
-            "</div>" +
-            '<p class="section-copy">Գլխավոր էջում թողել ենք 12-րդ և 13-րդ լիցենզիաները։ Սեղմեք քարտի վրա՝ առանձին էջում բոլոր փաստաթղթերը տեսնելու համար։</p>' +
-            '<a class="button" href="' + e(site.utils.pageUrl("licenses")) + '">Դիտել բոլորը</a>' +
-          "</div>" +
-          '<div class="home-certificate-grid">' + certificateCards + "</div>" +
-        "</div>" +
-      "</section>" +
-      '<section class="home-contact-cta">' +
+      '<section class="home-contact-cta" id="contact">' +
         '<div class="container home-contact-inner reveal">' +
           "<div>" +
             "<h2>" + e(site.i18n.get("home.contactTitle")) + "</h2>" +
@@ -273,7 +257,7 @@
           '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + "</a>" +
         "</div>" +
       "</section>" +
-      '<section class="section home-projects-showcase">' +
+      '<section class="section home-projects-showcase" id="projects">' +
         '<div class="container">' +
           '<div class="section-head compact-head">' +
             "<div>" +
@@ -285,7 +269,7 @@
           '<div class="home-bottom-project-grid">' + homeProjects + "</div>" +
         "</div>" +
       "</section>" +
-      '<section class="section home-team-showcase">' +
+      '<section class="section home-team-showcase" id="about">' +
         '<div class="container">' +
           '<div class="section-head compact-head">' +
             "<div>" +
@@ -298,6 +282,17 @@
             '<div class="home-team-track">' + homeTeamRow + '</div>' +
 
           '</div>' +
+        "</div>" +
+      "</section>" +
+      '<section class="section home-certificates-section">' +
+        '<div class="container">' +
+          '<div class="section-head compact-head">' +
+            "<div>" +
+              '<span class="eyebrow">Լիցենզիաներ</span>' +
+              '<h2 class="section-title">Լիցենզիաներ և սերտիֆիկատներ</h2>' +
+            "</div>" +
+          "</div>" +
+          '<div class="home-certificate-grid">' + certificateCards + "</div>" +
         "</div>" +
       "</section>";
   };

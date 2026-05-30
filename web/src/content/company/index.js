@@ -17,31 +17,25 @@
     heroTitle: "Smart Tech",
     heroLead: "Նախագծում, տեղադրում և սպասարկում ենք անվտանգ, կայուն ու խելացի ինժեներական համակարգեր՝ բիզնես, բնակելի և արտադրական տարածքների համար։",
     heroImages: [
-      assetBase + "/images/home/slide-0.jpg",
-      assetBase + "/images/home/slide-1.jpg"
+      assetBase + "https://smarttechllc.am/images/home/slide-0.jpg",
+      assetBase + "https://smarttechllc.am/images/home/slide-1.jpg"
     ],
-    licenseDocuments: (function () {
-      var base = assetBase + "/images/certificates/";
-      var items = [];
-      for (var index = 1; index <= 13; index += 1) {
-        var number = String(index).padStart(2, "0");
-        var title = "Լիցենզիա";
-        if (index === 12) {
-          title = "Շինարարության իրականացում";
-        }
-        if (index === 13) {
-          title = "Լիցենզիայի ներդիր";
-        }
-        items.push({
-          number: index,
-          title: title,
-          alt: title + " " + index,
-          image: base + "license-" + number + ".jpg",
-          thumb: base + "license-" + number + "-thumb.jpg"
-        });
+    licenseDocuments: [
+      {
+        number: 1,
+        title: "Շինարարության իրականացում",
+        alt: "Շինարարության իրականացման լիցենզիա",
+        image: assetBase + "https://smarttechllc.am/images/certificates/license-12.jpg",
+        thumb: assetBase + "https://smarttechllc.am/images/certificates/license-12.jpg"
+      },
+      {
+        number: 2,
+        title: "Լիցենզիայի ներդիր",
+        alt: "Լիցենզիայի ներդիր",
+        image: assetBase + "https://smarttechllc.am/images/certificates/license-13.jpg",
+        thumb: assetBase + "https://smarttechllc.am/images/certificates/license-13.jpg"
       }
-      return items;
-    })(),
+    ],
     stats: [
       { value: "2012", label: "գործունեության սկիզբ" },
       { value: "100+", label: "իրականացված նախագիծ" },

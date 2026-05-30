@@ -36,7 +36,7 @@
         titleKey: "contact.title",
         text: site.i18n.get("contact.text"),
         textKey: "contact.text",
-        image: site.content.company.assetBase + "/images/message.avif",
+        image: site.content.company.assetBase + "https://smarttechllc.am/images/message.avif",
         tone: "contact"
       }) +
       '<section id="contact" class="section contact-section">' +

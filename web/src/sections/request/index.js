@@ -440,7 +440,7 @@
   site.sections.request = function request() {
     var e = site.utils.escapeHtml;
     var copy = languageCopy();
-    var heroImage = site.content.company.assetBase + "/images/services/building_management_automation.jpg";
+    var heroImage = site.content.company.assetBase + "https://smarttechllc.am/images/services/building_management_automation.jpg";
 
     var requestKinds = ["sale", "service", "audit"];
     var typeCards = copy.requestTypes.map(function (type, index) {

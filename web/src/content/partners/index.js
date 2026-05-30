@@ -1,5 +1,5 @@
 (function (site) {
-  var base = site.content.company.assetBase + "/images/partners/";
+  var base = site.content.company.assetBase + "https://smarttechllc.am/images/partners/";
 
   site.content.partners = [
     { name: "ACBA", logo: base + "acba.png" },
@@ -16,7 +16,7 @@
     { name: "Saber", logo: base + "saber.png" }
   ];
 
-  var techBase = site.content.company.assetBase + "/images/partners/technology/";
+  var techBase = site.content.company.assetBase + "https://smarttechllc.am/images/partners/technology/";
 
   site.content.technologyPartners = [
     { name: "ABB", logo: techBase + "abb.png" },

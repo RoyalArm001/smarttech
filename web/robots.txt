@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
-Host: https://smarttechllc.am
+Host: https://www.smarttechllc.am
 
 # Dynamic detail templates are query-driven and should not be indexed as standalone URLs.
 Disallow: /*?id=
 
-Sitemap: https://smarttechllc.am/sitemap.xml
+Sitemap: https://www.smarttechllc.am/sitemap.xml

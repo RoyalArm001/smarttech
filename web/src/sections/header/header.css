@@ -327,11 +327,9 @@ body.ui-theme-dark .language-button {
 .mobile-menu-section {
   display: none;
 }
-.desktop-nav-list {
-  display: none !important;
-}
 
 .nav-toggle {
+  display: none;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -404,7 +402,7 @@ body.ui-theme-dark .nav-toggle {
   }
 }
 
-@media (max-width: 99999px) {
+@media (max-width: 1240px) {
   body.is-menu-open {
     overflow: hidden;
   }
@@ -852,7 +850,7 @@ body.ui-theme-dark .nav-toggle {
   .header-inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 8px;
     min-height: 64px;
     padding-top: 0;
@@ -865,6 +863,7 @@ body.ui-theme-dark .nav-toggle {
     min-height: 52px;
     justify-content: flex-start;
     padding: 0 16px !important;
+    margin-right: auto;
   }
 
   .brand-title {

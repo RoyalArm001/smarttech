@@ -4,8 +4,55 @@ const path = require("path");
 const { execFile } = require("child_process");
 const { URL } = require("url");
 
+function parseEnvLine(line) {
+  const trimmed = String(line || "").trim();
+  if (!trimmed || trimmed.startsWith("#")) return null;
+  const equalsIndex = trimmed.indexOf("=");
+  if (equalsIndex <= 0) return null;
+  const key = trimmed.slice(0, equalsIndex).trim();
+  let value = trimmed.slice(equalsIndex + 1).trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) return null;
+  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+    value = value.slice(1, -1);
+  }
+  return { key, value };
+}
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  fs.readFileSync(filePath, "utf8").split(/\r?\n/).forEach((line) => {
+    const parsed = parseEnvLine(line);
+    if (!parsed || process.env[parsed.key]) return;
+    process.env[parsed.key] = parsed.value;
+  });
+}
+
+function envValue(names, fallback) {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value && String(value).trim()) {
+      return String(value).trim();
+    }
+  }
+  return fallback;
+}
+
+function jsString(value) {
+  return "\"" + String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, "\\\"")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029") + "\"";
+}
+
 const rootDir = __dirname;
 const webDir = path.resolve(rootDir, "web");
+
+loadEnvFile(path.resolve(rootDir, ".env"));
+loadEnvFile(path.resolve(rootDir, ".env.local"));
+
 const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
 const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
 const pageShellAliases = {
@@ -158,6 +205,47 @@ function serveWeb(request, response) {
   }
 
   let target = resolveStaticTarget(targetInfo);
+
+  if (targetInfo.relative.replace(/\\/g, "/") === "src/core/runtime-config.js") {
+    const databaseUrl = envValue([
+      "SMARTTECH_FIREBASE_DATABASE_URL", "FIREBASE_DATABASE_URL",
+      "VITE_FIREBASE_DATABASE_URL", "NEXT_PUBLIC_FIREBASE_DATABASE_URL"
+    ], "https://jermukguide-f64ef-default-rtdb.firebaseio.com");
+
+    const statsPath = envValue([
+      "SMARTTECH_FIREBASE_STATS_PATH", "FIREBASE_STATS_PATH",
+      "VITE_FIREBASE_STATS_PATH", "NEXT_PUBLIC_FIREBASE_STATS_PATH"
+    ], "BlogID_201588890086708935/PostID_WebsiteStats");
+
+    const apiKey = envValue([
+      "SMARTTECH_FIREBASE_API_KEY", "FIREBASE_API_KEY",
+      "VITE_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_API_KEY"
+    ], "");
+
+    const authToken = envValue([
+      "SMARTTECH_FIREBASE_AUTH_TOKEN", "FIREBASE_AUTH_TOKEN",
+      "VITE_FIREBASE_AUTH_TOKEN", "NEXT_PUBLIC_FIREBASE_AUTH_TOKEN"
+    ], "");
+
+    const configContent = [
+      "(function (window) {",
+      "  window.SmartTechRuntimeConfig = Object.assign({}, window.SmartTechRuntimeConfig, {",
+      "    firebaseDatabaseUrl: " + jsString(databaseUrl) + ",",
+      "    firebaseStatsPath: " + jsString(statsPath) + ",",
+      "    firebaseApiKey: " + jsString(apiKey) + ",",
+      "    firebaseAuthToken: " + jsString(authToken),
+      "  });",
+      "})(window);",
+      ""
+    ].join("\n");
+
+    response.writeHead(200, {
+      "content-type": "application/javascript; charset=utf-8",
+      "cache-control": "no-store"
+    });
+    response.end(configContent);
+    return;
+  }
 
   if (fs.existsSync(target) && fs.statSync(target).isDirectory()) {
     target = path.join(target, "index.html");

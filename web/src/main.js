@@ -128,51 +128,12 @@
     if (page === "team") return site.sections.team();
     if (page === "about") return site.sections.about();
     if (page === "contact") return site.sections.contact();
-    if (page === "licenses") return licensesPageMarkup();
+    if (page === "licenses") return site.sections.about();
     if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
       return infoPageMarkup(page);
     }
 
     return site.sections.hero();
-  }
-
-  function licensesPageMarkup() {
-    var e = site.utils.escapeHtml;
-    var documents = site.content.company.licenseDocuments || [];
-    var cards = documents.map(function (item) {
-      return '' +
-        '<article class="license-document-card reveal" id="license-' + e(item.number) + '">' +
-          '<a class="license-document-media" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +
-            '<img src="' + e(item.thumb || item.image) + '" alt="' + e(item.alt || item.title) + '" loading="lazy" decoding="async">' +
-          '</a>' +
-          '<div class="license-document-copy">' +
-            '<strong>' + e(item.title) + '</strong>' +
-            '<small>Սեղմեք նկարի վրա՝ մեծ տարբերակը բացելու համար</small>' +
-          '</div>' +
-        '</article>';
-    }).join("");
-
-    return [
-      site.sections.pageHero({
-        eyebrow: "Փաստաթղթեր",
-        title: "Լիցենզիաներ և սերտիֆիկատներ",
-        text: "Smart Tech-ի լիցենզիաների և հաստատող փաստաթղթերի ամբողջական հավաքածուն։",
-        image: (documents[11] && documents[11].image) || site.content.company.heroImages[1],
-        tone: "about"
-      }),
-      '<section class="section licenses-section">',
-        '<div class="container">',
-          '<div class="section-head compact-head licenses-head">',
-            '<div>',
-              '<span class="eyebrow">Լիցենզիաներ</span>',
-              '<h2 class="section-title">Փաստաթղթերի ամբողջական ցանկ</h2>',
-            '</div>',
-            '<p class="section-copy">Այստեղ տեղադրված են բոլոր 13 փաստաթղթերը։ Յուրաքանչյուր քարտից կարող եք բացել մեծ տարբերակը։</p>',
-          '</div>',
-          '<div class="license-document-grid">' + cards + '</div>',
-        '</div>',
-      '</section>'
-    ].join("");
   }
 
   function infoPageMarkup(page) {
@@ -1801,8 +1762,17 @@
       }
 
       downloadSummaryFile();
-      return text.slice(0, 1400) +
-        "\n\nFull request is saved in the downloaded TXT file. If it did not download, use the TXT download button on the request page.";
+      var truncationNotes = {
+        hy: "Ամբողջական հայտը պահված է ներբեռնված TXT ֆայլում։ Եթե չի ներբեռնվել, օգտվեք TXT կոճակից հայտի էջում։",
+        en: "Full request is saved in the downloaded TXT file. If it did not download, use the TXT download button on the request page.",
+        ru: "Полная заявка сохранена в загруженном TXT файле. Если файл не загрузился, используйте кнопку TXT на странице заявки.",
+        be: "Поўная заяўка захавана ў загружаным TXT-файле. Калі файл не загрузіўся, выкарыстайце кнопку TXT на старонцы заяўкі.",
+        fr: "La demande complète est enregistrée dans le fichier TXT téléchargé. S'il n'a pas été téléchargé, utilisez le bouton TXT sur la page de demande.",
+        ka: "სრული განაცხადი შენახულია ჩამოტვირთულ TXT ფაილში. თუ ჩამოტვირთვა ვერ მოხდა, გამოიყენეთ TXT ღილაკი განაცხადის გვერდზე."
+      };
+      var lang = activeUiLanguage();
+      var note = truncationNotes[lang] || truncationNotes.en;
+      return text.slice(0, 1400) + "\n\n" + note;
     }
 
     form.addEventListener("click", function (event) {
@@ -2003,7 +1973,6 @@
       event.preventDefault();
       var payload = payloadFromForm();
 
-      status.textContent = feedbackText("sending");
       setBusy(true);
       openEmailFallback(payload);
       setTimeout(function () {
@@ -2039,7 +2008,7 @@
   function setupFooterYear() {
     var year = document.getElementById("footer-year");
     if (year) {
-      year.textContent = "(c) " + new Date().getFullYear() + " Smart Tech LLC";
+      year.textContent = "\u00a9 " + new Date().getFullYear() + " Smart Tech LLC";
     }
   }
 
@@ -2714,8 +2683,9 @@
     chatSurveyState.answers[current.id] = messageText;
     chatSurveyState.step += 1;
 
+    var typingEl;
     if (chatSurveyState.step >= copy.surveyQuestions.length) {
-      var typingEl = showTyping(copy);
+      typingEl = showTyping(copy);
       chatTypingTimer = window.setTimeout(function () {
         if (typingEl && typingEl.parentNode) {
           typingEl.parentNode.removeChild(typingEl);
@@ -2724,7 +2694,7 @@
       }, 700);
     } else {
       var nextQuestion = copy.surveyQuestions[chatSurveyState.step].question;
-      var typingEl = showTyping(copy);
+      typingEl = showTyping(copy);
       chatTypingTimer = window.setTimeout(function () {
         if (typingEl && typingEl.parentNode) {
           typingEl.parentNode.removeChild(typingEl);

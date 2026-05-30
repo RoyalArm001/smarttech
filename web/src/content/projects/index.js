@@ -1,7 +1,7 @@
 (function (site) {
   var base = site.content.company.assetBase;
-  var jobBase = base + "/images/our-jobs/";
-  var serviceBase = base + "/images/services/";
+  var jobBase = base + "https://smarttechllc.am/images/our-jobs/";
+  var serviceBase = base + "https://smarttechllc.am/images/services/";
   var system = {
     cctv: {
       title: {

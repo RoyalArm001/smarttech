@@ -48,7 +48,40 @@ assertInsideRoot(outputDir);
 
 fs.rmSync(outputDir, { recursive: true, force: true });
 fs.mkdirSync(outputDir, { recursive: true });
-fs.cpSync(sourceDir, outputDir, { recursive: true });
+
+function copyDirRecursive(fromDir, toDir) {
+  const entries = fs.readdirSync(fromDir, { withFileTypes: true });
+  fs.mkdirSync(toDir, { recursive: true });
+
+  for (const entry of entries) {
+    const from = path.join(fromDir, entry.name);
+    const to = path.join(toDir, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirRecursive(from, to);
+      continue;
+    }
+
+    if (entry.isSymbolicLink()) {
+      const realPath = fs.realpathSync(from);
+      const stat = fs.statSync(realPath);
+      if (stat.isDirectory()) {
+        copyDirRecursive(realPath, to);
+      } else {
+        fs.mkdirSync(path.dirname(to), { recursive: true });
+        fs.copyFileSync(realPath, to);
+      }
+      continue;
+    }
+
+    if (entry.isFile()) {
+      fs.mkdirSync(path.dirname(to), { recursive: true });
+      fs.copyFileSync(from, to);
+    }
+  }
+}
+
+copyDirRecursive(sourceDir, outputDir);
 
 function envValue(names, fallback) {
   for (const name of names) {

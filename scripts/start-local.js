@@ -1,31 +1,7 @@
-const { spawn, spawnSync } = require("child_process");
+const { spawn } = require("child_process");
 const path = require("path");
 
 const rootDir = path.resolve(__dirname, "..");
-
-function runNode(args) {
-  const result = spawnSync(process.execPath, args, {
-    cwd: rootDir,
-    stdio: "inherit",
-    shell: false
-  });
-
-  if (result.status !== 0) {
-    process.exit(result.status || 1);
-  }
-}
-
-console.log("Preparing SmartTech local preview...");
-
-[
-  "server.js",
-  "web/src/core/namespace.js",
-  "web/src/core/utils.js",
-  "web/src/core/i18n.js",
-  "web/src/main.js"
-].forEach((file) => runNode(["--check", file]));
-
-runNode(["scripts/build-static.js"]);
 
 const env = Object.assign({}, process.env, {
   WEB_PORT: process.env.WEB_PORT || "3000",
