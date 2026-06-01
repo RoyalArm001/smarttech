@@ -276,7 +276,6 @@
     if (page === "home") {
       return [
         site.sections.hero(),
-        site.sections.trustBar(),
         site.sections.home()
       ].join("");
     }
@@ -2599,9 +2598,16 @@
 
   function getOnlineLanguage() {
     try {
+      var queryLanguage = new URLSearchParams(window.location.search).get("lang");
+      if (queryLanguage) {
+        return normalizeLanguageCode(queryLanguage);
+      }
+      if (site.i18n && site.i18n.language) {
+        return normalizeLanguageCode(site.i18n.language);
+      }
       return normalizeLanguageCode(window.localStorage.getItem(onlineLangStorageKey) || "hy");
     } catch (error) {
-      return "hy";
+      return normalizeLanguageCode(site.i18n && site.i18n.language ? site.i18n.language : "hy");
     }
   }
 
@@ -2612,6 +2618,9 @@
       window.localStorage.setItem(onlineLangStorageKey, nextLang);
     } catch (error) {
       // Page still updates with cookie.
+    }
+    if (site.i18n && typeof site.i18n.setLanguage === "function") {
+      site.i18n.setLanguage(nextLang);
     }
     window.location.reload();
   }

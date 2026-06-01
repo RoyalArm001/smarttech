@@ -341,7 +341,7 @@
   }
 
   #site-footer {
-    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(142px + env(safe-area-inset-bottom, 0px));
   }
 
   .back-to-top-button {
@@ -573,7 +573,7 @@ body.ui-theme-dark .mobile-bottom-nav .bottom-nav-item.is-active svg {
 
   #site-main,
   #site-footer {
-    padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(138px + env(safe-area-inset-bottom, 0px));
   }
 
   .back-to-top-button {

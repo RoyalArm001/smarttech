@@ -137,24 +137,6 @@
         "</a>";
     }
 
-    function renderHomeTeamChip(member) {
-      var localized = site.i18n.teamMember(member);
-      var title = localized.title || member.title;
-      var role = member.level || member.department || "Specialist";
-
-      return "" +
-        '<a class="home-team-card home-team-chip reveal" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
-          '<span class="home-team-photo">' +
-            '<img src="' + e(member.image) + '" alt="' + e(title) + '" loading="lazy">' +
-            '<small>' + e(member.accent) + "</small>" +
-          "</span>" +
-          '<span class="home-team-copy">' +
-            "<strong>" + e(title) + "</strong>" +
-            "<em>" + e(role) + "</em>" +
-          "</span>" +
-        "</a>";
-    }
-
     var directorCard = director ? renderHomeTeamCard(director, "home-team-director") : "";
     var managerGroups = specialists.filter(isManager).map(function (manager) {
       return {
@@ -179,24 +161,16 @@
       managerGroups[0].reports = managerGroups[0].reports.concat(unassignedReports);
     }
 
-    var homeTeamRow = (site.content.team || []).slice().sort(sortTeamMembers).map(function (member) {
-      return renderHomeTeamChip(member);
-    }).join("");
-
     var managerCards = managerGroups.map(function (group) {
       var reports = group.reports.map(function (member) {
         return '<span class="home-team-report-node">' + renderHomeTeamCard(member, "home-team-specialist") + "</span>";
       }).join("");
-
-      if (!reports) {
-        reports = '<span class="home-team-empty">' + e(site.i18n.get("teamPage.noReports", "This direction is coordinated by project scope.")) + "</span>";
-      }
+      var hasReports = Boolean(reports);
 
       return "" +
-        '<article class="home-team-group reveal" style="--team-color: ' + e(group.manager.color) + '">' +
+        '<article class="home-team-group ' + (hasReports ? "has-reports" : "is-solo") + ' reveal" style="--team-color: ' + e(group.manager.color) + '">' +
           renderHomeTeamCard(group.manager, "home-team-manager") +
-          '<span class="home-team-branch" aria-hidden="true"></span>' +
-          '<div class="home-team-grid">' + reports + "</div>" +
+          (hasReports ? '<span class="home-team-branch" aria-hidden="true"></span><div class="home-team-grid">' + reports + "</div>" : "") +
         "</article>";
     }).join("");
 
@@ -276,13 +250,15 @@
           '<div class="section-head compact-head">' +
             "<div>" +
               '<span class="eyebrow">' + e(site.i18n.get("teamPage.eyebrow", "Team")) + "</span>" +
-              '<h2 class="section-title">' + e(site.i18n.get("teamPage.title", "Մեր թիմը")) + "</h2>" +
+              '<h2 class="section-title">' + e(site.i18n.get("teamPage.title", "Our team")) + "</h2>" +
+              '<p class="home-team-intro">' + e(site.i18n.get("teamPage.managementText", "Direction comes first, then responsible managers, with specialists grouped directly under each direction.")) + "</p>" +
             "</div>" +
-            '<a class="button" href="' + e(site.utils.pageUrl("team")) + '">' + e(site.i18n.get("common.learnMore", "Դիտել թիմը")) + "</a>" +
+            '<a class="button" href="' + e(site.utils.pageUrl("team")) + '">' + e(site.i18n.get("common.learnMore", "View team")) + "</a>" +
           "</div>" +
-          '<div class="home-team-strip" aria-label="Team specialists">' +
-            '<div class="home-team-track">' + homeTeamRow + '</div>' +
-
+          '<div class="home-team-org" aria-label="' + e(site.i18n.get("teamPage.managementTitle", "Team structure")) + '">' +
+            '<div class="home-team-lead">' + directorCard + "</div>" +
+            '<span class="home-team-line" aria-hidden="true"></span>' +
+            '<div class="home-team-manager-grid">' + managerCards + "</div>" +
           '</div>' +
         "</div>" +
       "</section>" +

@@ -1,58 +1,171 @@
 (function (site) {
   site.sections.trustBar = function trustBar() {
     var e = site.utils.escapeHtml;
-    var localizedStats = site.i18n.get("stats", site.content.company.stats);
-    var statsSource = Array.isArray(localizedStats) ? localizedStats : site.content.company.stats;
-
-    var labelsByLanguage = {
-      hy: { visits: "\u0531\u0575\u0581\u0565\u056c\u0578\u0582\u0569\u0575\u0578\u0582\u0576\u0576\u0565\u0580", projects: "\u0546\u0561\u056d\u0561\u0563\u056e\u0565\u0580" },
-      ru: { visits: "\u041f\u043e\u0441\u0435\u0449\u0435\u043d\u0438\u044f", projects: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b" },
-      en: { visits: "Visits", projects: "Projects" },
-      be: { visits: "Наведванні", projects: "Праекты" },
-      fr: { visits: "Visites", projects: "Projets" },
-      ka: { visits: "ვიზიტები", projects: "პროექტები" }
-    };
     var language = site.i18n.language || "hy";
-    var metricLabels = labelsByLanguage[language] || labelsByLanguage.hy;
-
-    var statsConfig = [
-      {
-        key: "visits",
-        value: "0",
-        label: metricLabels.visits,
-        dynamic: true
+    var copyByLanguage = {
+      hy: {
+        aria: "Smart Tech վստահության ցուցանիշներ",
+        method: "Smart Tech method",
+        noteTitle: "Մեկ թիմ։ Մեկ պատասխանատվություն։",
+        noteText: "Նախագծումից մինչև սպասարկում՝ հստակ շղթայով։",
+        noteMeta: "անվտանգություն • էլեկտրամոնտաժ • ավտոմատացում",
+        items: [
+          {
+            value: "100+",
+            label: "իրականացված լուծումներ",
+            detail: "բիզնես, բնակելի և արտադրական օբյեկտների համար"
+          },
+          {
+            value: "13",
+            label: "ծառայության ուղղություն",
+            detail: "տեսահսկումից մինչև BMS և էլեկտրամոնտաժ"
+          },
+          {
+            value: "24/7",
+            label: "սպասարկման պատրաստություն",
+            detail: "ստուգում, կարգաբերում և հետագա աջակցություն"
+          }
+        ]
       },
-      {
-        key: "projects",
-        value: String((site.content.projects || []).length || 0),
-        label: metricLabels.projects,
-        dynamic: true
+      en: {
+        aria: "Smart Tech trust indicators",
+        method: "Smart Tech method",
+        noteTitle: "One team. One responsibility.",
+        noteText: "From design to support in one clear workflow.",
+        noteMeta: "security • electrical works • automation",
+        items: [
+          {
+            value: "100+",
+            label: "delivered solutions",
+            detail: "for commercial, residential and industrial sites"
+          },
+          {
+            value: "13",
+            label: "service directions",
+            detail: "from CCTV to BMS and electrical installation"
+          },
+          {
+            value: "24/7",
+            label: "support readiness",
+            detail: "inspection, tuning and ongoing technical care"
+          }
+        ]
       },
-      {
-        key: "services",
-        value: statsSource[2] && statsSource[2].value != null ? statsSource[2].value : String((site.content.services || []).length || 0),
-        label: statsSource[2] && statsSource[2].label ? statsSource[2].label : "Services",
-        dynamic: false
+      ru: {
+        aria: "Показатели доверия Smart Tech",
+        method: "Метод Smart Tech",
+        noteTitle: "Одна команда. Одна ответственность.",
+        noteText: "От проекта до обслуживания в единой цепочке.",
+        noteMeta: "безопасность • электромонтаж • автоматизация",
+        items: [
+          {
+            value: "100+",
+            label: "внедренных решений",
+            detail: "для бизнеса, жилых и производственных объектов"
+          },
+          {
+            value: "13",
+            label: "направлений сервиса",
+            detail: "от видеонаблюдения до BMS и электромонтажа"
+          },
+          {
+            value: "24/7",
+            label: "готовность поддержки",
+            detail: "проверка, настройка и дальнейшее сопровождение"
+          }
+        ]
+      },
+      be: {
+        aria: "Паказчыкі даверу Smart Tech",
+        method: "Метад Smart Tech",
+        noteTitle: "Адна каманда. Адна адказнасць.",
+        noteText: "Ад праекта да падтрымкі ў адзінай сістэме.",
+        noteMeta: "бяспека • электрамантаж • аўтаматызацыя",
+        items: [
+          {
+            value: "100+",
+            label: "рэалізаваных рашэнняў",
+            detail: "для бізнесу, жылых і вытворчых аб'ектаў"
+          },
+          {
+            value: "13",
+            label: "кірункаў сэрвісу",
+            detail: "ад відэаназірання да BMS і электрамантажу"
+          },
+          {
+            value: "24/7",
+            label: "гатоўнасць падтрымкі",
+            detail: "праверка, наладка і далейшае суправаджэнне"
+          }
+        ]
+      },
+      fr: {
+        aria: "Indicateurs de confiance Smart Tech",
+        method: "Méthode Smart Tech",
+        noteTitle: "Une équipe. Une responsabilité.",
+        noteText: "De la conception au support dans un flux clair.",
+        noteMeta: "sécurité • électricité • automatisation",
+        items: [
+          {
+            value: "100+",
+            label: "solutions livrées",
+            detail: "pour sites professionnels, résidentiels et industriels"
+          },
+          {
+            value: "13",
+            label: "domaines de service",
+            detail: "de la vidéosurveillance au BMS et aux travaux électriques"
+          },
+          {
+            value: "24/7",
+            label: "support disponible",
+            detail: "contrôle, réglage et accompagnement technique continu"
+          }
+        ]
+      },
+      ka: {
+        aria: "Smart Tech-ის ნდობის მაჩვენებლები",
+        method: "Smart Tech method",
+        noteTitle: "ერთი გუნდი. ერთი პასუხისმგებლობა.",
+        noteText: "პროექტირებიდან მხარდაჭერამდე ერთ პროცესში.",
+        noteMeta: "უსაფრთხოება • ელექტრომონტაჟი • ავტომატიზაცია",
+        items: [
+          {
+            value: "100+",
+            label: "დანერგილი გადაწყვეტა",
+            detail: "ბიზნესის, საცხოვრებელი და საწარმოო ობიექტებისთვის"
+          },
+          {
+            value: "13",
+            label: "სერვისის მიმართულება",
+            detail: "ვიდეომეთვალყურეობიდან BMS-მდე და ელექტრომონტაჟამდე"
+          },
+          {
+            value: "24/7",
+            label: "მხარდაჭერის მზადყოფნა",
+            detail: "შემოწმება, გამართვა და შემდგომი ტექნიკური ზრუნვა"
+          }
+        ]
       }
-    ];
-
-    var stats = statsConfig.map(function (stat) {
-      var itemAttr = stat.dynamic ? ' data-metric-item="' + e(stat.key) + '"' : "";
-      var valueAttr = stat.dynamic ? " data-metric-value" : "";
+    };
+    var copy = copyByLanguage[language] || copyByLanguage.hy;
+    var stats = copy.items.map(function (item, index) {
       return '' +
-        '<div class="trust-item reveal"' + itemAttr + '>' +
-          '<strong' + valueAttr + ">" + e(stat.value) + '</strong>' +
-          '<span>' + e(stat.label) + '</span>' +
+        '<div class="trust-item reveal trust-item-' + (index + 1) + '">' +
+          '<span class="trust-kicker">' + e(String(index + 1).padStart(2, "0")) + '</span>' +
+          '<strong>' + e(item.value) + '</strong>' +
+          '<span>' + e(item.label) + '</span>' +
         '</div>';
     }).join("");
 
     return '' +
-      '<section class="trust-band" aria-label="Smart Tech թվեր">' +
+      '<section class="trust-band" aria-label="' + e(copy.aria) + '">' +
         '<div class="container trust-grid">' +
           stats +
           '<div class="trust-note reveal">' +
-            '<strong>' + e(site.i18n.get("trust.title")) + '</strong>' +
-            '<span>' + e(site.i18n.get("trust.text")) + '</span>' +
+            '<span class="trust-note-kicker">' + e(copy.method) + '</span>' +
+            '<strong>' + e(copy.noteTitle) + '</strong>' +
+            '<span>' + e(copy.noteText) + '</span>' +
           '</div>' +
         '</div>' +
       '</section>';

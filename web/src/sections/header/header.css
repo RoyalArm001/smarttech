@@ -1262,7 +1262,7 @@ body.ui-theme-dark .nav-toggle {
 @media (max-width: 700px) {
   .site-header {
     top: 0;
-    padding-top: max(8px, env(safe-area-inset-top, 0px));
+    padding-top: max(4px, env(safe-area-inset-top, 0px));
     background: linear-gradient(180deg, rgba(248, 252, 251, 0.99), rgba(238, 247, 245, 0.98));
   }
 
@@ -1287,17 +1287,17 @@ body.ui-theme-dark .nav-toggle {
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
-    min-height: 64px;
+    min-height: 58px;
     padding-top: 0;
-    padding-bottom: 8px;
+    padding-bottom: 5px;
   }
 
   .brand {
     width: fit-content;
     max-width: min(42vw, 168px);
-    min-height: 52px;
+    min-height: 48px;
     justify-content: flex-start;
-    padding: 0 16px !important;
+    padding: 0 14px !important;
     margin-right: auto;
   }
 
@@ -1446,8 +1446,8 @@ body.ui-theme-dark .nav-toggle {
 @media (max-width: 390px) {
   .brand {
     max-width: min(38vw, 140px);
-    min-height: 48px;
-    padding: 0 13px !important;
+    min-height: 46px;
+    padding: 0 12px !important;
   }
 
   .brand-title {
@@ -1675,7 +1675,7 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
 
 @media (max-width: 480px) {
   .header-inner {
-    min-height: 64px;
+    min-height: 58px;
     gap: 6px;
   }
 
