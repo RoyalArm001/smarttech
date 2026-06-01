@@ -64,7 +64,7 @@ $techPartners = @(
     "schrack-seconet.png"
 )
 
-$baseUrl = "https://www.smarttechllc.am/images/partners"
+$baseUrl = "https://smarttechllc.am/images/partners"
 
 function Download-Logo($name, $destFolder) {
     $url = "$baseUrl/$name"

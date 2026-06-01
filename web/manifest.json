@@ -4,6 +4,7 @@
   "description": "Անվտանգության, էլեկտրամոնտաժի և խելացի համակարգերի պրոֆեսիոնալ լուծումներ",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
   "background_color": "#101417",
   "theme_color": "#101417",
   "orientation": "portrait-primary",

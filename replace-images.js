@@ -31,8 +31,8 @@ files.forEach(file => {
     // We use a regex with negative lookbehind if supported, but simpler is to replace it generally
     // then fix up any double replacements.
     
-    content = content.replace(/(["'])\/?images\//g, '$1https://www.smarttechllc.am/images/');
-    content = content.replace(/url\(['"]?\/?images\//g, 'url(https://www.smarttechllc.am/images/');
+    content = content.replace(/(["'])\/?images\//g, '$1https://smarttechllc.am/images/');
+    content = content.replace(/url\(['"]?\/?images\//g, 'url(https://smarttechllc.am/images/');
     content = content.replace(/url\(['"]?https:\/\/smarttechllc\.am\/https:\/\/smarttechllc\.am\//g, 'url(https://smarttechllc.am/');
     content = content.replace(/https:\/\/smarttechllc\.am\/https:\/\/smarttechllc\.am\//g, 'https://smarttechllc.am/');
 

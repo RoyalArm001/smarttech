@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 
-# Dynamic detail templates are query-driven and should not be indexed as standalone URLs.
-Disallow: /*?id=
+# Detail pages use noindex meta tags; they must stay crawlable so crawlers can see those tags.
 
 Sitemap: https://www.smarttechllc.am/sitemap.xml

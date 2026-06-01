@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const seo = require("./seo-config");
 
 const rootDir = path.resolve(__dirname, "..");
 const sourceDir = path.resolve(rootDir, "web");
@@ -184,7 +185,7 @@ Object.keys(routeAliases).forEach((route) => {
   }
 
   if (route === "index") {
-    const rootHtml = fs.readFileSync(sourceFile, "utf8");
+    const rootHtml = seo.applySeo(fs.readFileSync(sourceFile, "utf8"), route);
     fs.writeFileSync(path.resolve(outputDir, "index.html"), toRootRelative(rootHtml));
     return;
   }
@@ -192,7 +193,11 @@ Object.keys(routeAliases).forEach((route) => {
   const routeDir = path.resolve(outputDir, route);
   assertInsideRoot(routeDir);
   fs.mkdirSync(routeDir, { recursive: true });
-  fs.copyFileSync(sourceFile, path.resolve(routeDir, "index.html"));
+  const routeHtml = seo.applySeo(fs.readFileSync(sourceFile, "utf8"), route);
+  fs.writeFileSync(path.resolve(routeDir, "index.html"), routeHtml);
 });
+
+fs.writeFileSync(path.resolve(outputDir, "sitemap.xml"), seo.sitemapXml());
+fs.writeFileSync(path.resolve(outputDir, "robots.txt"), seo.robotsTxt());
 
 console.log("Static site prepared in dist/");
