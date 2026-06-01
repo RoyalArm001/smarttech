@@ -1,0 +1,23 @@
+{
+  "name": "smarttech-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node scripts/start-local.js",
+    "local": "node scripts/start-local.js",
+    "preview": "node scripts/start-local.js",
+    "serve": "node server.js",
+    "web": "npm run build",
+    "build": "npm run check && node scripts/build-static.js",
+    "check": "node --check server.js && node --check web/src/main.js && node --check web/src/core/namespace.js && node --check web/src/core/i18n.js && node --check web/src/core/utils.js && node --check web/src/core/runtime-config.js && node --check web/src/sections/header/index.js && node --check web/src/sections/hero/index.js && node --check web/src/sections/services/index.js && node --check web/src/sections/projects/index.js && node --check web/src/sections/team/index.js && node --check web/src/sections/about/index.js && node --check web/src/sections/contact/index.js && node --check web/src/sections/request/index.js && node --check web/src/content/company/index.js && node --check web/src/content/services/index.js && node --check web/src/content/projects/index.js && node --check web/src/content/team/index.js",
+    "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  }
+}

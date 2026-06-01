@@ -1,0 +1,10 @@
+node_modules/
+npm-debug.log*
+.env
+.smarttech-contact-requests.log
+.smarttech-metrics.dat
+dist/
+build/
+
+# Ignore images directory to keep them off git
+web/images/

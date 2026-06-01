@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38aab8"/>
+      <stop offset="100%" stop-color="#345f74"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" rx="28" fill="url(#bg3)"/>
+  <rect x="46" y="46" width="868" height="548" rx="20" fill="none" stroke="#ffffff" stroke-opacity=".38" stroke-width="3"/>
+  <text x="80" y="122" fill="#ffffff" font-size="40" font-family="Arial, sans-serif" font-weight="700">PROJECT DELIVERY CERTIFICATE</text>
+  <text x="80" y="186" fill="#fbe9e5" font-size="28" font-family="Arial, sans-serif">IT Project Management Track</text>
+  <line x1="80" y1="232" x2="880" y2="232" stroke="#ffffff" stroke-opacity=".34" stroke-width="2"/>
+  <text x="80" y="304" fill="#ffffff" font-size="34" font-family="Arial, sans-serif" font-weight="700">PMP Preparation Program</text>
+  <text x="80" y="348" fill="#fdeee9" font-size="24" font-family="Arial, sans-serif">Scope, Budget, Stakeholder and Risk Control</text>
+  <rect x="706" y="418" width="172" height="112" rx="14" fill="#ffffff" fill-opacity=".16" stroke="#ffffff" stroke-opacity=".56" stroke-width="3"/>
+  <text x="738" y="486" fill="#ffffff" font-size="34" font-family="Arial, sans-serif" font-weight="700">PMP</text>
+  <text x="80" y="548" fill="#f9e3de" font-size="22" font-family="Arial, sans-serif">Issued for Smart Tech Program Leadership</text>
+</svg>

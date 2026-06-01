@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Dynamic detail templates are query-driven and should not be indexed as standalone URLs.
+Disallow: /*?id=
+
+Sitemap: https://www.smarttechllc.am/sitemap.xml

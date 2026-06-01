@@ -1,0 +1,26 @@
+{
+  "name": "Smart Tech",
+  "short_name": "SmartTech",
+  "description": "Անվտանգության, էլեկտրամոնտաժի և խելացի համակարգերի պրոֆեսիոնալ լուծումներ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101417",
+  "theme_color": "#101417",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img/smart-tech.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/smart-tech-alt.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "hy",
+  "categories": ["business", "security", "productivity"]
+}
