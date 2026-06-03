@@ -11,7 +11,8 @@
         partners: "Գործընկերներ",
         team: "Մեր թիմը",
         about: "Մեր մասին",
-        contact: "Կապ"
+        contact: "Կապ",
+        request: "Պատվիրել"
       },
       header: {
         mobile: {
@@ -56,7 +57,7 @@
         servicesTitle: "Սկսեք այն համակարգից, որը հիմա կարևոր է ձեր օբյեկտի համար",
         servicesText: "Առաջարկում ենք ամբողջական նախագծում, արագ տեղադրում և լիարժեք սպասարկում՝ բիզնեսի համար։",
         projectsEyebrow: "Վստահություն",
-        projectsTitle: "Իրականացված աշխատանքներ, որոնք ներկայացնում են մեր մոտեցումը",
+        projectsTitle: "Ընթացիկ և ավարտված օբյեկտներ՝ մեր աշխատանքի արդյունքներով",
         contactTitle: "Պրոֆեսիոնալ առաջարկ պետք է՞",
         contactText: "Մեր թիմը օգնում է հաշվարկել անվտանգ համակարգը և ներկայացնել բիզնեսի պահանջներին համապատասխան լուծումներ։"
       },
@@ -67,9 +68,12 @@
       },
       projectsPage: {
         eyebrow: "Նախագծեր",
-        title: "Իրականացված օբյեկտներ, որտեղ համակարգերը պետք է աշխատեն ամեն օր",
-        text: "Բիզնես կենտրոններ, հյուրանոցներ, բնակելի համալիրներ և արտադրական տարածքներ՝ տարբեր միջավայրեր, նույն պահանջը՝ համակարգերը պետք է աշխատեն հուսալի։",
-        completed: "Ավարտված նախագծեր"
+        title: "Օբյեկտներ, որտեղ համակարգերը պետք է աշխատեն ամեն օր",
+        text: "Ցուցադրվում են ընթացիկ տեղադրումներն ու արդեն ավարտված աշխատանքները՝ տեսահսկում, ազդարարում, էլեկտրամոնտաժ, ցանցեր և ավտոմատացում։",
+        current: "Ընթացիկ նախագծեր",
+        currentText: "Այս օբյեկտներում աշխատանքները դեռ ընթացքի մեջ են՝ տեղադրում, կարգավորում կամ հանձնում։",
+        completedList: "Ավարտված նախագծեր",
+        completed: "Ավարտված աշխատանքներից լուսանկարներ"
       },
       partnersPage: {
         eyebrow: "Գործընկերներ",
@@ -80,7 +84,8 @@
         back: "Վերադառնալ",
         serviceType: "Ծառայություն",
         projectType: "Նախագիծ",
-        projectLead: "Իրականացված աշխատանքների հավաքածու՝ ընտրված նկարներով և համակարգերի հիմնական ցուցակով։",
+        projectLead: "Ավարտված աշխատանքների հավաքածու՝ ընտրված նկարներով և իրականացված համակարգերի ցուցակով։",
+        projectLeadCurrent: "Ընթացիկ նախագիծ՝ տեղադրվող և կարգավորվող համակարգերով, ընտրված նկարներով և աշխատանքների ցուցակով։",
         galleryEyebrow: "Օբյեկտի տեսք",
         galleryTitle: "Լուծման կիրառումը իրական միջավայրում",
         galleryText: "Այստեղ երևում է, թե ինչպես է համակարգը տեղավորվում տարածքի մեջ՝ սարքեր, մալուխային ուղիներ, տեղադրման որակ և ընդհանուր արդյունք։",
@@ -209,8 +214,13 @@
         eria: { title: "Eria Hotel", works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Էլեկտրամոնտաժ"] },
         dalan: { title: "Dalan Technopark", works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"] },
         wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["Էլեկտրական համակարգեր", "Կապի համակարգեր", "Տեսահսկում", "Հրդեհային անվտանգություն", "Մուտքի վերահսկում"] },
-        "only-one": { title: "ՕՆլի Վան բնակելի համալիր", works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"] },
-        bidek: { title: "Bedeck Davtashen Residential Complex", works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"] },
+        "only-one": { title: "Only One բնակելի համալիր", works: ["Տեսահսկման սարքերի տեղադրում և ծրագրավորում", "Դռների մուտքի վերահսկման կարգավորում", "Ավտոմատ դոմոֆոնների տեղադրում և կարգավորում", "Ազդարարման անվտանգության համակարգի տեղադրում"] },
+        bidek: { title: "Bidek Davtashen Residential Complex", works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"] },
+        "pallada-tsaghkadzor": { title: "Pallada Tsaghkadzor", works: ["Ավտոմատ հրդեհային ազդարարում", "Տարհանման ծանուցման համակարգ", "Էլեկտրամոնտաժային աշխատանքներ", "BMS"] },
+        "uls-data-center": { title: "ULS Data Center", works: ["Ներքին լուսավորություն և ուժային սարքավորումներ", "Ավտոմատ հրդեհային ազդարարում", "Կառուցվածքային մալուխային համակարգ"] },
+        "acba-sebastia": { title: "ACBA Bank, Sebastia 80", works: ["Ներքին լուսավորության համակարգ", "Ուժային սարքավորումների համակարգ", "Էլեկտրամոնտաժային աշխատանքներ"] },
+        evocabank: { title: "Evocabank", works: ["Ներքին լուսավորության համակարգ", "Ուժային սարքավորումների համակարգ", "Էլեկտրամոնտաժային աշխատանքներ"] },
+        "movenpick-hotel": { title: "Movenpick Hotel", works: ["Գլխավոր նախագծային ինժեների գործառույթ", "Տեխնիկական համակարգերի համակարգում", "Նախագծային վերահսկում"] },
         wildberries: { title: "Wildberries", works: ["Էլեկտրամոնտաժ", "Տեսահսկում", "Հրդեհային ազդարարում", "Մուտքի վերահսկում", "Կապի համակարգեր"] }
       },
       team: {
@@ -228,7 +238,8 @@
         partners: "Partners",
         team: "Team",
         about: "About",
-        contact: "Contact"
+        contact: "Contact",
+        request: "Request"
       },
       header: {
         mobile: {
@@ -273,7 +284,7 @@
         servicesTitle: "Start with the system your facility needs most",
         servicesText: "We offer full design, fast installation and complete support for business-grade systems.",
         projectsEyebrow: "Trust",
-        projectsTitle: "Completed work that shows how we approach each facility",
+        projectsTitle: "Current and completed facilities with our engineering results",
         contactTitle: "Need a professional proposal?",
         contactText: "Our team helps scope the right system and present a solution tailored to your business needs."
       },
@@ -284,9 +295,12 @@
       },
       projectsPage: {
         eyebrow: "Projects",
-        title: "Completed facilities where systems must work every day",
-        text: "Business centers, hotels, residential complexes and industrial spaces: different environments, one requirement: reliable systems.",
-        completed: "Completed projects"
+        title: "Facilities where systems must work every day",
+        text: "We show ongoing installations and delivered projects across video surveillance, alarm, electrical, networks and automation.",
+        current: "Projects in progress",
+        currentText: "These facilities are still under installation, configuration or commissioning.",
+        completedList: "Completed projects",
+        completed: "Photos from completed work"
       },
       partnersPage: {
         eyebrow: "Partners",
@@ -297,7 +311,8 @@
         back: "Back",
         serviceType: "Service",
         projectType: "Project",
-        projectLead: "A collection of completed works with selected images and the main list of systems.",
+        projectLead: "A collection of completed works with selected images and the delivered systems list.",
+        projectLeadCurrent: "An active project with systems being installed and configured, selected photos and the current scope of work.",
         galleryEyebrow: "Site view",
         galleryTitle: "How the solution looks in a real environment",
         galleryText: "These visuals show how the system fits the space: devices, cable routes, installation quality and the final result.",
@@ -370,8 +385,13 @@
         eria: { title: "Eria Hotel", works: ["Video surveillance", "Fire alarm", "Evacuation system", "Electrical installation"] },
         dalan: { title: "Dalan Technopark", works: ["Video surveillance", "Fire alarm", "Evacuation system", "Access control"] },
         wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["Electrical systems", "Communication systems", "Video surveillance", "Fire safety", "Access control"] },
-        "only-one": { title: "Only One Residential Complex", works: ["Video surveillance", "Fire alarm", "Evacuation system", "Access control"] },
-        bidek: { title: "Bedeck Davtashen Residential Complex", works: ["Video surveillance", "Fire alarm", "Evacuation system", "Access control"] },
+        "only-one": { title: "Only One Residential Complex", works: ["CCTV installation and programming", "Door access control setup", "Automatic intercom installation and setup", "Intrusion alarm system installation"] },
+        bidek: { title: "Bidek Davtashen Residential Complex", works: ["Video surveillance", "Fire alarm", "Evacuation system", "Access control"] },
+        "pallada-tsaghkadzor": { title: "Pallada Tsaghkadzor", works: ["Automatic fire alarm", "Evacuation notification system", "Electrical installation works", "BMS"] },
+        "uls-data-center": { title: "ULS Data Center", works: ["Internal lighting and power equipment", "Automatic fire alarm", "Structured cabling system"] },
+        "acba-sebastia": { title: "ACBA Bank, Sebastia 80", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
+        evocabank: { title: "Evocabank", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
+        "movenpick-hotel": { title: "Movenpick Hotel", works: ["Chief project engineer function", "Technical systems coordination", "Design supervision"] },
         wildberries: { title: "Wildberries", works: ["Electrical installation", "Video surveillance", "Fire alarm", "Access control", "Communication systems"] }
       },
       team: {
@@ -396,7 +416,8 @@
         partners: "Партнеры",
         team: "Команда",
         about: "О нас",
-        contact: "Контакты"
+        contact: "Контакты",
+        request: "Заявка"
       },
       header: {
         mobile: {
@@ -441,7 +462,7 @@
         servicesTitle: "Начните с системы, которая сейчас важна вашему объекту",
         servicesText: "Предлагаем полное проектирование, быструю установку и надежное обслуживание для бизнеса.",
         projectsEyebrow: "Доверие",
-        projectsTitle: "Выполненные работы, которые показывают наш подход",
+        projectsTitle: "Текущие и завершенные объекты с нашими инженерными результатами",
         contactTitle: "Нужна профессиональная смета?",
         contactText: "Наша команда поможет рассчитать систему и предложить решение, подходящее вашему бизнесу."
       },
@@ -452,9 +473,12 @@
       },
       projectsPage: {
         eyebrow: "Проекты",
-        title: "Реализованные объекты, где системы должны работать каждый день",
-        text: "Бизнес-центры, отели, жилые комплексы и производственные пространства: разные среды, одно требование: надежные системы.",
-        completed: "Выполненные проекты"
+        title: "Объекты, где системы должны работать каждый день",
+        text: "Показываем текущие монтажи и уже сданные проекты: видеонаблюдение, сигнализация, электромонтаж, сети и автоматизация.",
+        current: "Текущие проекты",
+        currentText: "На этих объектах работы еще продолжаются: монтаж, настройка или сдача систем.",
+        completedList: "Завершенные проекты",
+        completed: "Фото из завершенных работ"
       },
       partnersPage: {
         eyebrow: "Партнеры",
@@ -465,7 +489,8 @@
         back: "Назад",
         serviceType: "Услуга",
         projectType: "Проект",
-        projectLead: "Подборка выполненных работ с выбранными изображениями и основным списком систем.",
+        projectLead: "Подборка завершенных работ с выбранными изображениями и списком реализованных систем.",
+        projectLeadCurrent: "Текущий проект с монтируемыми и настраиваемыми системами, выбранными фото и перечнем выполняемых работ.",
         galleryEyebrow: "Вид объекта",
         galleryTitle: "Как решение выглядит в реальной среде",
         galleryText: "Здесь видно, как система вписывается в пространство: оборудование, кабельные трассы, качество монтажа и итоговый результат.",
@@ -538,8 +563,13 @@
         eria: { title: "Eria Hotel", works: ["Видеонаблюдение", "Пожарная сигнализация", "Система эвакуации", "Электромонтаж"] },
         dalan: { title: "Dalan Technopark", works: ["Видеонаблюдение", "Пожарная сигнализация", "Система эвакуации", "Контроль доступа"] },
         wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["Электрические системы", "Системы связи", "Видеонаблюдение", "Пожарная безопасность", "Контроль доступа"] },
-        "only-one": { title: "ЖК Only One", works: ["Видеонаблюдение", "Пожарная сигнализация", "Система эвакуации", "Контроль доступа"] },
-        bidek: { title: "ЖК Bedeck Davtashen", works: ["Видеонаблюдение", "Пожарная сигнализация", "Система эвакуации", "Контроль доступа"] },
+        "only-one": { title: "ЖК Only One", works: ["Монтаж и программирование CCTV", "Настройка контроля доступа дверей", "Монтаж и настройка автоматических домофонов", "Монтаж охранной сигнализации"] },
+        bidek: { title: "ЖК Bidek Davtashen", works: ["Видеонаблюдение", "Пожарная сигнализация", "Система эвакуации", "Контроль доступа"] },
+        "pallada-tsaghkadzor": { title: "Pallada Tsaghkadzor", works: ["Автоматическая пожарная сигнализация", "Система оповещения и эвакуации", "Электромонтажные работы", "BMS"] },
+        "uls-data-center": { title: "ULS Data Center", works: ["Внутреннее электроосвещение и силовое оборудование", "Автоматическая пожарная сигнализация", "Структурированная кабельная система"] },
+        "acba-sebastia": { title: "ACBA Bank, Себастия 80", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
+        evocabank: { title: "Evocabank", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
+        "movenpick-hotel": { title: "Гостиница Movenpick", works: ["Функция главного инженера проекта", "Координация технических систем", "Проектный контроль"] },
         wildberries: { title: "Wildberries", works: ["Электромонтаж", "Видеонаблюдение", "Пожарная сигнализация", "Контроль доступа", "Системы связи"] }
       },
       team: {
@@ -683,241 +713,6 @@
     return result;
   }
 
-  site.content.locales.be = mergeLocale(site.content.locales.en, {
-    code: "be",
-    label: "BE",
-    name: "Беларуская",
-    nav: {
-      home: "Галоўная",
-      services: "Паслугі",
-      projects: "Праекты",
-      partners: "Партнёры",
-      team: "Каманда",
-      about: "Пра нас",
-      contact: "Кантакты",
-      request: "Заяўка"
-    },
-    header: { mobile: { navigation: "Навігацыя", config: "Налады меню", compact: "Кампактны рэжым", motion: "Анімацыі" } },
-    common: {
-      consultation: "Пакінуць заяўку",
-      proposal: "Замовіць паслугу",
-      viewProjects: "Глядзець праекты",
-      viewServices: "Глядзець паслугі",
-      callNow: "Патэлефанаваць",
-      quickContact: "Хуткі кантакт",
-      searchPlaceholder: "Пошук паслуг, праектаў...",
-      searchNoResults: "Нічога не знойдзена",
-      searchGroupPages: "Старонкі",
-      searchGroupServices: "Паслугі",
-      searchGroupProjects: "Праекты",
-      searchGroupTeam: "Каманда",
-      selectedProject: "Выбраны праект",
-      learnMore: "Даведацца больш"
-    },
-    hero: {
-      kicker: "Інтэгратар сістэм бяспекі, электрыкі і разумнай інжынерыі",
-      title: "Smart Tech",
-      lead: "Мы праектуем, манціруем і абслугоўваем бяспечныя, стабільныя і разумныя інжынерныя сістэмы для бізнесу, жылых і прамысловых аб'ектаў."
-    },
-    stats: [
-      { value: "2012", label: "пачатак працы" },
-      { value: "100+", label: "рэалізаваных праектаў" },
-      { value: "88", label: "інжынерна-тэхнічны склад" }
-    ],
-    trust: { title: "Адна каманда, поўная сістэма", text: "праектаванне, мантаж, наладка і абслугоўванне" },
-    home: {
-      servicesEyebrow: "Напрамкі",
-      servicesTitle: "Пачніце з сістэмы, якая найбольш патрэбна вашаму аб'екту",
-      servicesText: "Мы прапануем поўнае праектаванне, хуткі мантаж і паўнавартасную падтрымку сістэм бізнес-класа.",
-      projectsEyebrow: "Давер",
-      projectsTitle: "Выкананыя работы, якія паказваюць наш падыход да кожнага аб'екта",
-      contactTitle: "Патрэбна прафесійная прапанова?",
-      contactText: "Наша каманда дапаможа вызначыць патрэбную сістэму і падрыхтаваць рашэнне пад задачы вашага бізнесу."
-    },
-    servicesPage: { eyebrow: "Паслугі", title: "Інжынерныя рашэнні для бяспекі і эфектыўнага кіравання", text: "Для кожнага напрамку мы падбіраем правільны клас абсталявання, кабельную структуру і логіку абслугоўвання." },
-    projectsPage: { eyebrow: "Праекты", title: "Рэалізаваныя аб'екты, дзе сістэмы павінны працаваць штодня", text: "Бізнес-цэнтры, гасцініцы, жылыя комплексы і прамысловыя прасторы: розныя ўмовы, адна патрэба: надзейныя сістэмы.", completed: "Завершаныя праекты" },
-    partnersPage: { eyebrow: "Партнёры", title: "Нам давяраюць бізнесы і арганізацыі розных маштабаў", text: "Мы працуем так, каб бяспека, сувязь і кіраванне заставаліся стабільнымі на гады." },
-    detail: {
-      back: "Назад",
-      serviceType: "Паслуга",
-      projectType: "Праект",
-      projectLead: "Падборка выкананых работ з выбранымі выявамі і асноўным спісам сістэм.",
-      galleryEyebrow: "Выгляд аб'екта",
-      galleryTitle: "Як рашэнне выглядае ў рэальным асяроддзі",
-      galleryText: "Тут бачна, як сістэма ўпісваецца ў прастору: абсталяванне, кабельныя трасы, якасць мантажу і вынік.",
-      ctaTitle: "Патрэбна падобнае рашэнне для вашага аб'екта?",
-      ctaText: "Звяжыцеся з намі, і мы абмяркуем правільнае тэхнічнае рашэнне для вашай прасторы.",
-      systemGalleryEyebrow: "Сістэмы",
-      systemGalleryTitle: "Візуалізацыя ўсталяваных сістэм",
-      systemGalleryText: "У гэтым блоку паказаны тэматычныя выявы сістэм, выкананых у праекце. Рэальныя фота аб'екта застаюцца ў асноўнай галерэі вышэй."
-    },
-    teamPage: {
-      eyebrow: "Каманда",
-      title: "Наша каманда за кожнай сістэмай",
-      text: "Кіраванне праектамі, IT-інфраструктура, сістэмы сігналізацыі і электрамантаж маюць асобных спецыялістаў, адказных за якасць і бесперапыннасць.",
-      managementEyebrow: "Кіраванне",
-      managementTitle: "Агульная структура каманды",
-      managementText: "Спачатку ідзе кіраўніцтва, потым адказныя менеджары, а пад кожным менеджарам сабраны спецыялісты яго напрамку.",
-      noReports: "Гэты напрамак каардынуецца паводле аб'ёму праекта."
-    },
-    about: {
-      eyebrow: "Пра нас",
-      title: "Пра нас",
-      paragraphs: [
-        "Smart Tech - прафесійная каманда ў сферы сістэм бяспекі і электрамантажу. Наш досвед дазваляе прапаноўваць якасныя, надзейныя і практычныя рашэнні для кліентаў.",
-        "Нашы каштоўнасці - якасць і надзейнасць. Мы імкнёмся забяспечваць бяспеку і камфорт праз правераныя рашэнні.",
-        "Прафесіяналізм: наша каманда складаецца з кваліфікаваных спецыялістаў, якія пастаянна абнаўляюць веды і навыкі.",
-        "Індывідуальны падыход: кожны кліент унікальны, таму мы праектуем рашэнні, якія дакладна адпавядаюць яго патрэбам."
-      ],
-      values: [
-        { title: "Якасць і надзейнасць", text: "Мы будуем давер ад праектавання да мантажу і далейшай падтрымкі." },
-        { title: "Прафесійная каманда", text: "Нашы спецыялісты маюць высокую кваліфікацыю і працуюць паводле сучасных стандартаў." },
-        { title: "Індывідуальныя рашэнні", text: "Мы ствараем сістэмы пад кожны аб'ект з улікам яго патрабаванняў." }
-      ]
-    },
-    contact: {
-      eyebrow: "Кантакты",
-      title: "Абмяркуем бяспеку і інжынерныя сістэмы вашага аб'екта",
-      text: "Апішыце прастору, патрэбныя сістэмы або праблему, і мы звяжамся з вамі з правільным рашэннем.",
-      labels: { office: "Офіс", main: "Асноўны", store: "Крама", powder: "Парашковае афарбоўванне", address: "Адрас", name: "Імя", phone: "Тэлефон", message: "Паведамленне", send: "Адправіць заяўку", openedEmail: "Паштовая праграма адкрыта." }
-    },
-    footer: { description: "Кампанія па інтэграцыі электрамантажных і ахоўных сістэм" },
-    services: {
-      "video-surveillance": { title: "Сістэмы відэаназірання", lead: "Камеры, рэгістратары і аддалены маніторынг з правільным полем агляду і надзейным архівам.", tags: ["IP-камеры", "NVR/DVR", "Аддалены прагляд"] },
-      "fire-security": { title: "Сістэмы пажарнай бяспекі", lead: "Праектаванне і мантаж сістэм пажарнай сігналізацыі, эвакуацыі і сцэнарыяў бяспекі.", tags: ["Сігналізацыя", "Эвакуацыя", "Сертыфікаваныя прылады"] },
-      networks: { title: "Мантаж сетак", lead: "Структураваная кабельная сістэма, шафы, Wi-Fi-пакрыццё і стабільная ўнутраная сувязь.", tags: ["LAN", "Wi-Fi", "Шафа"] },
-      electrical: { title: "Электрамантажныя работы", lead: "Праектаванне і мантаж электрасетак, асвятлення і зборка размеркавальных шчытоў.", tags: ["Асвятленне", "Шчыты", "Кабельныя трасы"] },
-      automation: { title: "Аўтаматызацыя і разумныя сістэмы", lead: "Рашэнні для кіравання будынкамі, кантролю доступу і інтэграванага кіравання прыладамі.", tags: ["BMS", "Кантроль доступу", "Разумная логіка"] },
-      "audio-systems": { title: "Мантаж аўдыясістэм", lead: "Праектаванне, мантаж і наладка фонавай музыкі, public address, канферэнц-аўдыё і галасавога апавяшчэння.", tags: ["Public Address", "Фонавая музыка", "Канферэнц-аўдыё"] },
-      wacker: { title: "Мантаж сістэм Wacker", lead: "Дакладны мантаж і наладка тэхнічных сістэм паводле патрабаванняў аб'екта.", tags: ["Мантаж", "Наладка", "Сэрвіс"] },
-      "powder-coating": { title: "Парашковае афарбоўванне", lead: "Ахоўнае і эстэтычнае парашковае пакрыццё металічных дэталяў з роўным фінішам.", tags: ["Метал", "Пакрыццё", "Вытворчая якасць"] }
-    },
-    projects: {
-      abovyan: { title: "Гасцініца Abovyan 5/5 (Multi Group)", works: ["Пажарная сігналізацыя", "Сістэма эвакуацыі", "Кантроль доступу", "Электрычныя цёплыя падлогі"] },
-      amiryan: { title: "Бізнес-цэнтр Amiryan", works: ["Відэаназіранне", "Кантроль доступу", "Структураваная кабельная сістэма", "Унутранае асвятленне і электрасетка"] },
-      eria: { title: "Гасцініца Eria", works: ["Відэаназіранне", "Пажарная сігналізацыя", "Сістэма эвакуацыі", "Электрамантаж"] },
-      dalan: { title: "Тэхнапарк Dalan", works: ["Відэаназіранне", "Пажарная сігналізацыя", "Сістэма эвакуацыі", "Кантроль доступу"] },
-      wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["Электрычныя сістэмы", "Сістэмы сувязі", "Відэаназіранне", "Пажарная бяспека", "Кантроль доступу"] },
-      "only-one": { title: "Жылы комплекс Only One", works: ["Мантаж і праграмаванне CCTV-прылад", "Наладка кантролю доступу дзвярэй", "Мантаж і наладка аўтаматычных дамафонаў", "Мантаж ахоўнай alarm-сістэмы"] },
-      bidek: { title: "Жылы комплекс Bedeck Davtashen", works: ["Відэаназіранне", "Пажарная сігналізацыя", "Сістэма эвакуацыі", "Кантроль доступу"] },
-      wildberries: { title: "Wildberries", works: ["Электрамантаж", "Відэаназіранне", "Пажарная сігналізацыя", "Кантроль доступу", "Сістэмы сувязі"] }
-    },
-    team: {
-      director: { title: "Дырэктар", text: "Кіруе праектным напрамкам Smart Tech, каардынацыяй каманд і агульным кантролем якасці." },
-      "it-network-engineer": { title: "IT-інжынер сетак", text: "Праектуе і наладжвае сеткавую інфраструктуру, серверныя падключэнні і бяспечны аддалены доступ." },
-      "it-project-manager": { title: "IT-менеджар праектаў", text: "Каардынуе этапы праекта, тэрміны, працу каманд і камунікацыю з кліентам." },
-      "alarm-system-engineer": { title: "Інжынер сістэм сігналізацыі", text: "Праектуе, усталёўвае і наладжвае сістэмы сігналізацыі, пажарнай бяспекі і эвакуацыі." },
-      "automation-specialist": { title: "Спецыяліст па электрычнай аўтаматызацыі", text: "Стварае рашэнні кіравання, аўтаматызацыі і сцэнарнай працы электрычных прылад." },
-      "bms-design-specialist": { title: "Спецыяліст па праектаванні BMS", text: "Праектуе сістэмы кіравання будынкам, якія аб'ядноўваюць бяспеку, інжынерыю і аўтаматызацыю." },
-      "video-access-control-engineer": { title: "Інжынер відэаназірання і кантролю доступу", text: "Праектуе сістэмы відэаназірання, кантролю доступу і аддаленага маніторынгу са стабільным архівам і бяспечным доступам." },
-      "electrical-installation-engineer": { title: "Інжынер электрамантажу", text: "Адказвае за мантаж электрасетак, размеркавальных шчытоў, асвятлення і кабельных трас." },
-      "audio-systems-specialist": { title: "Спецыяліст па мантажы аўдыясістэм", text: "Праектуе, манціруе і наладжвае сістэмы фонавай музыкі, public address, галасавога апавяшчэння і канферэнц-аўдыё." }
-    }
-  });
-
-  site.content.locales.fr = mergeLocale(site.content.locales.en, {
-    code: "fr",
-    label: "FR",
-    name: "Français",
-    nav: { home: "Accueil", services: "Services", projects: "Projets", partners: "Partenaires", team: "Équipe", about: "À propos", contact: "Contact", request: "Demande" },
-    header: { mobile: { navigation: "Navigation", config: "Paramètres du menu", compact: "Mode compact", motion: "Animations" } },
-    common: { consultation: "Laisser une demande", proposal: "Commander le service", viewProjects: "Voir les projets", viewServices: "Voir les services", callNow: "Appeler", quickContact: "Contact rapide", selectedProject: "Projet sélectionné", learnMore: "En savoir plus", searchPlaceholder: "Rechercher des services, projets...", searchNoResults: "Rien trouvé", searchGroupPages: "Pages", searchGroupServices: "Services", searchGroupProjects: "Projets", searchGroupTeam: "Équipe" },
-    hero: { kicker: "Intégrateur de systèmes de sécurité, électriques et intelligents", title: "Smart Tech", lead: "Nous concevons, installons et maintenons des systèmes d'ingénierie sûrs, stables et intelligents pour les espaces professionnels, résidentiels et industriels." },
-    stats: [{ value: "2012", label: "début d'activité" }, { value: "100+", label: "projets réalisés" }, { value: "88", label: "équipe technique" }],
-    trust: { title: "Une équipe, un système complet", text: "conception, installation, configuration et maintenance" },
-    home: { servicesEyebrow: "Domaines", servicesTitle: "Commencez par le système dont votre site a le plus besoin", servicesText: "Nous proposons une conception complète, une installation rapide et un support complet pour les systèmes professionnels.", projectsEyebrow: "Confiance", projectsTitle: "Des réalisations qui montrent notre approche pour chaque site", contactTitle: "Besoin d'une proposition professionnelle ?", contactText: "Notre équipe vous aide à cadrer le bon système et à présenter une solution adaptée à vos besoins." },
-    servicesPage: { eyebrow: "Services", title: "Solutions d'ingénierie pour la sécurité et le contrôle efficace", text: "Pour chaque domaine, nous choisissons la bonne classe d'équipement, la structure de câblage et la logique de maintenance." },
-    projectsPage: { eyebrow: "Projets", title: "Sites réalisés où les systèmes doivent fonctionner chaque jour", text: "Centres d'affaires, hôtels, complexes résidentiels et espaces industriels : des environnements différents, une même exigence : des systèmes fiables.", completed: "Projets terminés" },
-    partnersPage: { eyebrow: "Partenaires", title: "Des entreprises et organisations de différentes tailles nous font confiance", text: "Nous travaillons pour que la sécurité, la connectivité et le contrôle restent stables pendant des années." },
-    detail: { back: "Retour", serviceType: "Service", projectType: "Projet", projectLead: "Une sélection de travaux réalisés avec des images choisies et la liste principale des systèmes.", galleryEyebrow: "Vue du site", galleryTitle: "Comment la solution s'intègre dans un environnement réel", galleryText: "Ces visuels montrent l'intégration du système dans l'espace : équipements, passages de câbles, qualité d'installation et résultat final.", ctaTitle: "Besoin d'une solution similaire pour votre site ?", ctaText: "Contactez-nous et nous discuterons de la bonne solution technique pour votre espace.", systemGalleryEyebrow: "Systèmes", systemGalleryTitle: "Visuels des systèmes installés", systemGalleryText: "Ce bloc présente des visuels thématiques des systèmes réalisés dans ce projet. Les photos réelles du site restent dans la galerie principale ci-dessus." },
-    teamPage: { eyebrow: "Équipe", title: "Notre équipe derrière chaque système", text: "La gestion de projet, l'infrastructure IT, les systèmes d'alarme et les travaux électriques ont chacun un spécialiste dédié à la qualité et à la continuité.", managementEyebrow: "Gestion", managementTitle: "Structure générale de l'équipe", managementText: "La direction vient d'abord, puis les responsables, avec les spécialistes de chaque domaine regroupés sous leur responsable.", noReports: "Ce domaine est coordonné selon le périmètre du projet." },
-    about: { eyebrow: "À propos", title: "À propos de nous", paragraphs: ["Smart Tech est une équipe professionnelle spécialisée dans les systèmes de sécurité et l'installation électrique. Notre expérience nous permet de fournir des solutions fiables, pratiques et de haute qualité.", "Nos valeurs sont la qualité et la fiabilité. Nous voulons assurer sécurité et confort grâce à des solutions éprouvées.", "Professionnalisme : notre équipe réunit des spécialistes qualifiés qui mettent constamment à jour leurs connaissances et compétences.", "Approche individuelle : chaque client est unique, et nous concevons des solutions parfaitement adaptées à ses besoins."], values: [{ title: "Qualité et fiabilité", text: "Nous construisons la confiance de la conception à l'installation et au support continu." }, { title: "Équipe professionnelle", text: "Nos spécialistes sont qualifiés et travaillent selon les normes modernes." }, { title: "Solutions sur mesure", text: "Nous créons des systèmes adaptés à chaque site selon ses exigences." }] },
-    contact: { eyebrow: "Contact", title: "Discutons de la sécurité et des systèmes d'ingénierie de votre site", text: "Décrivez l'espace, les systèmes nécessaires ou le problème, et nous vous proposerons la bonne solution.", labels: { office: "Bureau", main: "Principal", store: "Magasin", powder: "Peinture poudre", address: "Adresse", name: "Nom", phone: "Téléphone", message: "Message", send: "Envoyer la demande", openedEmail: "Votre application e-mail s'est ouverte." } },
-    footer: { description: "Entreprise d'intégration de systèmes électriques et de sécurité" },
-    services: {
-      "video-surveillance": { title: "Systèmes de vidéosurveillance", lead: "Caméras, enregistreurs et solutions de surveillance à distance avec le bon champ de vision et une archive fiable.", tags: ["Caméras IP", "NVR/DVR", "Vue à distance"] },
-      "fire-security": { title: "Systèmes de sécurité incendie", lead: "Conception et installation de systèmes d'alarme incendie, d'évacuation et de scénarios de sécurité.", tags: ["Alarme", "Évacuation", "Équipements certifiés"] },
-      networks: { title: "Installation de réseaux", lead: "Câblage structuré, baies, couverture Wi-Fi et connectivité interne stable.", tags: ["LAN", "Wi-Fi", "Baie"] },
-      electrical: { title: "Travaux d'installation électrique", lead: "Conception et installation de réseaux électriques, éclairage et assemblage de tableaux de distribution.", tags: ["Éclairage", "Tableaux", "Chemins de câble"] },
-      automation: { title: "Automatisation et systèmes intelligents", lead: "Solutions de gestion de bâtiment, de contrôle d'accès et de contrôle intégré des équipements.", tags: ["BMS", "Contrôle d'accès", "Logique intelligente"] },
-      "audio-systems": { title: "Installation de systèmes audio", lead: "Conception, installation et configuration de musique d'ambiance, public address, audio de conférence et notification vocale.", tags: ["Public Address", "Musique d'ambiance", "Audio conférence"] },
-      wacker: { title: "Installation de systèmes Wacker", lead: "Installation et configuration précises de systèmes techniques selon les exigences du site.", tags: ["Installation", "Configuration", "Service"] },
-      "powder-coating": { title: "Peinture poudre", lead: "Revêtement poudre protecteur et esthétique pour pièces métalliques avec finition uniforme.", tags: ["Métal", "Revêtement", "Qualité de production"] }
-    },
-    projects: {
-      abovyan: { title: "Hôtel Abovyan 5/5 (Multi Group)", works: ["Alarme incendie", "Système d'évacuation", "Contrôle d'accès", "Planchers chauffants électriques"] },
-      amiryan: { title: "Centre d'affaires Amiryan", works: ["Vidéosurveillance", "Contrôle d'accès", "Câblage structuré", "Éclairage intérieur et réseau électrique"] },
-      eria: { title: "Hôtel Eria", works: ["Vidéosurveillance", "Alarme incendie", "Système d'évacuation", "Installation électrique"] },
-      dalan: { title: "Technopark Dalan", works: ["Vidéosurveillance", "Alarme incendie", "Système d'évacuation", "Contrôle d'accès"] },
-      wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["Systèmes électriques", "Systèmes de communication", "Vidéosurveillance", "Sécurité incendie", "Contrôle d'accès"] },
-      "only-one": { title: "Complexe résidentiel Only One", works: ["Installation et programmation d'équipements CCTV", "Configuration du contrôle d'accès des portes", "Installation et configuration d'interphones automatiques", "Installation du système de sécurité alarm"] },
-      bidek: { title: "Complexe résidentiel Bedeck Davtashen", works: ["Vidéosurveillance", "Alarme incendie", "Système d'évacuation", "Contrôle d'accès"] },
-      wildberries: { title: "Wildberries", works: ["Installation électrique", "Vidéosurveillance", "Alarme incendie", "Contrôle d'accès", "Systèmes de communication"] }
-    },
-    team: {
-      director: { title: "Directeur", text: "Dirige l'orientation des projets Smart Tech, la coordination des équipes et le contrôle global de la qualité." },
-      "it-network-engineer": { title: "Ingénieur réseau IT", text: "Conçoit et configure l'infrastructure réseau, la connectivité serveur et l'accès distant sécurisé." },
-      "it-project-manager": { title: "Chef de projet IT", text: "Coordonne les phases du projet, les délais, le travail des équipes et la communication avec le client." },
-      "alarm-system-engineer": { title: "Ingénieur systèmes d'alarme", text: "Conçoit, installe et configure les systèmes d'alarme, de sécurité incendie et d'évacuation." },
-      "automation-specialist": { title: "Spécialiste de l'automatisation électrique", text: "Crée des solutions de contrôle, d'automatisation et de fonctionnement par scénarios pour les équipements électriques." },
-      "bms-design-specialist": { title: "Spécialiste conception BMS", text: "Conçoit des solutions de gestion de bâtiment reliant sécurité, ingénierie et automatisation." },
-      "video-access-control-engineer": { title: "Ingénieur vidéosurveillance et contrôle d'accès", text: "Conçoit des systèmes de vidéosurveillance, de contrôle d'accès et de surveillance à distance avec archive stable et accès sécurisé." },
-      "electrical-installation-engineer": { title: "Ingénieur installation électrique", text: "Gère l'installation des réseaux électriques, tableaux de distribution, éclairage et chemins de câble." },
-      "audio-systems-specialist": { title: "Spécialiste installation audio", text: "Conçoit, installe et configure les systèmes de musique d'ambiance, public address, notification vocale et audio de conférence." }
-    }
-  });
-
-  site.content.locales.ka = mergeLocale(site.content.locales.en, {
-    code: "ka",
-    label: "KA",
-    name: "ქართული",
-    nav: { home: "მთავარი", services: "სერვისები", projects: "პროექტები", partners: "პარტნიორები", team: "გუნდი", about: "ჩვენ შესახებ", contact: "კონტაქტი", request: "განაცხადი" },
-    header: { mobile: { navigation: "ნავიგაცია", config: "მენიუს პარამეტრები", compact: "კომპაქტური რეჟიმი", motion: "ანიმაციები" } },
-    common: { consultation: "განაცხადის დატოვება", proposal: "სერვისის შეკვეთა", viewProjects: "პროექტების ნახვა", viewServices: "სერვისების ნახვა", callNow: "დარეკვა", quickContact: "სწრაფი კონტაქტი", selectedProject: "არჩეული პროექტი", learnMore: "მეტის ნახვა", searchPlaceholder: "მოძებნეთ სერვისები, პროექტები...", searchNoResults: "არაფერი მოიძებნა", searchGroupPages: "გვერდები", searchGroupServices: "სერვისები", searchGroupProjects: "პროექტები", searchGroupTeam: "გუნდი" },
-    hero: { kicker: "უსაფრთხოების, ელექტრო და ჭკვიანი საინჟინრო სისტემების ინტეგრატორი", title: "Smart Tech", lead: "ვაპროექტებთ, ვამონტაჟებთ და ვემსახურებით უსაფრთხო, სტაბილურ და ჭკვიან საინჟინრო სისტემებს ბიზნესის, საცხოვრებელი და ინდუსტრიული სივრცეებისთვის." },
-    stats: [{ value: "2012", label: "საქმიანობის დასაწყისი" }, { value: "100+", label: "დასრულებული პროექტი" }, { value: "88", label: "საინჟინრო გუნდი" }],
-    trust: { title: "ერთი გუნდი, სრული სისტემა", text: "პროექტირება, მონტაჟი, გამართვა და მომსახურება" },
-    home: { servicesEyebrow: "მიმართულებები", servicesTitle: "დაიწყეთ იმ სისტემით, რომელიც თქვენს ობიექტს ყველაზე მეტად სჭირდება", servicesText: "გთავაზობთ სრულ პროექტირებას, სწრაფ მონტაჟს და სრულ მხარდაჭერას ბიზნეს-კლასის სისტემებისთვის.", projectsEyebrow: "ნდობა", projectsTitle: "შესრულებული სამუშაოები, რომლებიც აჩვენებს ჩვენს მიდგომას თითოეულ ობიექტზე", contactTitle: "გჭირდებათ პროფესიული შეთავაზება?", contactText: "ჩვენი გუნდი დაგეხმარებათ სწორი სისტემის განსაზღვრაში და თქვენს საჭიროებებზე მორგებული გადაწყვეტის მომზადებაში." },
-    servicesPage: { eyebrow: "სერვისები", title: "საინჟინრო გადაწყვეტილებები უსაფრთხოებისა და ეფექტური მართვისთვის", text: "თითოეული მიმართულებისთვის ვირჩევთ სწორ აღჭურვილობას, საკაბელო სტრუქტურას და მომსახურების ლოგიკას." },
-    projectsPage: { eyebrow: "პროექტები", title: "დასრულებული ობიექტები, სადაც სისტემები ყოველდღე უნდა მუშაობდეს", text: "ბიზნეს-ცენტრები, სასტუმროები, საცხოვრებელი კომპლექსები და ინდუსტრიული სივრცეები: განსხვავებული გარემო, ერთი მოთხოვნა: საიმედო სისტემები.", completed: "დასრულებული პროექტები" },
-    partnersPage: { eyebrow: "პარტნიორები", title: "ჩვენ გვენდობიან სხვადასხვა მასშტაბის ბიზნესები და ორგანიზაციები", text: "ვმუშაობთ ისე, რომ უსაფრთხოება, კავშირი და მართვა წლების განმავლობაში სტაბილური დარჩეს." },
-    detail: { back: "უკან", serviceType: "სერვისი", projectType: "პროექტი", projectLead: "შესრულებული სამუშაოების კრებული არჩეული ფოტოებით და სისტემების ძირითადი სიით.", galleryEyebrow: "ობიექტის ხედი", galleryTitle: "როგორ ჯდება გადაწყვეტა რეალურ გარემოში", galleryText: "ეს ვიზუალები აჩვენებს, როგორ ერგება სისტემა სივრცეს: მოწყობილობები, საკაბელო გზები, მონტაჟის ხარისხი და საბოლოო შედეგი.", ctaTitle: "გჭირდებათ მსგავსი გადაწყვეტა თქვენი ობიექტისთვის?", ctaText: "დაგვიკავშირდით და განვიხილავთ სწორ ტექნიკურ გადაწყვეტას თქვენი სივრცისთვის.", systemGalleryEyebrow: "სისტემები", systemGalleryTitle: "დამონტაჟებული სისტემების ვიზუალები", systemGalleryText: "ამ ბლოკში ნაჩვენებია პროექტში შესრულებული სისტემების თემატური ვიზუალები. ობიექტის რეალური ფოტოები რჩება მთავარ გალერეაში ზემოთ." },
-    teamPage: { eyebrow: "გუნდი", title: "ჩვენი გუნდი ყოველი სისტემის უკან", text: "პროექტების მართვას, IT ინფრასტრუქტურას, სიგნალიზაციის სისტემებსა და ელექტრო სამუშაოებს ჰყავს საკუთარი სპეციალისტი, რომელიც პასუხისმგებელია ხარისხსა და უწყვეტობაზე.", managementEyebrow: "მართვა", managementTitle: "გუნდის საერთო სტრუქტურა", managementText: "პირველ რიგში არის ხელმძღვანელობა, შემდეგ პასუხისმგებელი მენეჯერები, ხოლო თითოეული მენეჯერის ქვეშ გაერთიანებულია მისი მიმართულების სპეციალისტები.", noReports: "ეს მიმართულება კოორდინირდება პროექტის მოცულობის მიხედვით." },
-    about: { eyebrow: "ჩვენ შესახებ", title: "ჩვენ შესახებ", paragraphs: ["Smart Tech არის პროფესიული გუნდი უსაფრთხოების სისტემებისა და ელექტრომონტაჟის სფეროში. ჩვენი გამოცდილება გვაძლევს საშუალებას მომხმარებლებს მივაწოდოთ ხარისხიანი, საიმედო და პრაქტიკული გადაწყვეტილებები.", "ჩვენი ღირებულებებია ხარისხი და საიმედოობა. ვცდილობთ უზრუნველვყოთ უსაფრთხოება და კომფორტი გამოცდილი გადაწყვეტილებებით.", "პროფესიონალიზმი: ჩვენი გუნდი შედგება კვალიფიციური სპეციალისტებისგან, რომლებიც მუდმივად განაახლებენ ცოდნასა და უნარებს.", "ინდივიდუალური მიდგომა: თითოეული კლიენტი უნიკალურია, ამიტომ ვქმნით გადაწყვეტილებებს, რომლებიც ზუსტად შეესაბამება მის საჭიროებებს."], values: [{ title: "ხარისხი და საიმედოობა", text: "ნდობას ვაშენებთ პროექტირებიდან მონტაჟამდე და შემდგომ მხარდაჭერამდე." }, { title: "პროფესიული გუნდი", text: "ჩვენი სპეციალისტები კვალიფიციურები არიან და თანამედროვე სტანდარტებით მუშაობენ." }, { title: "მორგებული გადაწყვეტილებები", text: "თითოეული ობიექტისთვის ვქმნით სისტემებს მისი მოთხოვნების მიხედვით." }] },
-    contact: { eyebrow: "კონტაქტი", title: "განვიხილოთ თქვენი ობიექტის უსაფრთხოება და საინჟინრო სისტემები", text: "აღწერეთ სივრცე, საჭირო სისტემები ან პრობლემა და ჩვენ დაგიკავშირდებით სწორი გადაწყვეტით.", labels: { office: "ოფისი", main: "მთავარი", store: "მაღაზია", powder: "ფხვნილით შეღებვა", address: "მისამართი", name: "სახელი", phone: "ტელეფონი", message: "შეტყობინება", send: "განაცხადის გაგზავნა", openedEmail: "ელფოსტის აპი გაიხსნა." } },
-    footer: { description: "ელექტრომონტაჟისა და უსაფრთხოების სისტემების ინტეგრაციის კომპანია" },
-    services: {
-      "video-surveillance": { title: "ვიდეოთვალთვალის სისტემები", lead: "კამერები, ჩამწერები და დისტანციური მონიტორინგი სწორი ხედვის არითა და საიმედო არქივით.", tags: ["IP კამერები", "NVR/DVR", "დისტანციური ნახვა"] },
-      "fire-security": { title: "ხანძარსაწინააღმდეგო უსაფრთხოების სისტემები", lead: "ხანძრის სიგნალიზაციის, ევაკუაციისა და უსაფრთხოების სცენარების პროექტირება და მონტაჟი.", tags: ["სიგნალიზაცია", "ევაკუაცია", "სერტიფიცირებული მოწყობილობები"] },
-      networks: { title: "ქსელების მონტაჟი", lead: "სტრუქტურირებული კაბელირება, rack-ები, Wi-Fi დაფარვა და სტაბილური შიდა კავშირი.", tags: ["LAN", "Wi-Fi", "Rack"] },
-      electrical: { title: "ელექტრომონტაჟის სამუშაოები", lead: "ელექტრო ქსელების პროექტირება, მონტაჟი, განათება და გამანაწილებელი ფარების აწყობა.", tags: ["განათება", "ფარები", "საკაბელო გზები"] },
-      automation: { title: "ავტომატიზაცია და ჭკვიანი სისტემები", lead: "შენობის მართვის, წვდომის კონტროლისა და მოწყობილობების ინტეგრირებული მართვის გადაწყვეტილებები.", tags: ["BMS", "წვდომის კონტროლი", "ჭკვიანი ლოგიკა"] },
-      "audio-systems": { title: "აუდიო სისტემების მონტაჟი", lead: "ფონური მუსიკის, public address-ის, საკონფერენციო აუდიოსა და ხმოვანი შეტყობინებების სისტემების პროექტირება, მონტაჟი და გამართვა.", tags: ["Public Address", "ფონური მუსიკა", "საკონფერენციო აუდიო"] },
-      wacker: { title: "Wacker სისტემების მონტაჟი", lead: "ტექნიკური სისტემების ზუსტი მონტაჟი და გამართვა ობიექტის მოთხოვნების მიხედვით.", tags: ["მონტაჟი", "გამართვა", "სერვისი"] },
-      "powder-coating": { title: "ფხვნილით შეღებვა", lead: "ლითონის დეტალების დამცავი და ესთეტიკური ფხვნილის საფარი თანაბარი ფინიშით.", tags: ["ლითონი", "საფარი", "წარმოების ხარისხი"] }
-    },
-    projects: {
-      abovyan: { title: "Abovyan 5/5 სასტუმრო (Multi Group)", works: ["ხანძრის სიგნალიზაცია", "ევაკუაციის სისტემა", "წვდომის კონტროლი", "ელექტრო გათბობის იატაკები"] },
-      amiryan: { title: "Amiryan ბიზნეს ცენტრი", works: ["ვიდეოთვალთვალი", "წვდომის კონტროლი", "სტრუქტურირებული კაბელირება", "შიდა განათება და ელექტრო ქსელი"] },
-      eria: { title: "Eria სასტუმრო", works: ["ვიდეოთვალთვალი", "ხანძრის სიგნალიზაცია", "ევაკუაციის სისტემა", "ელექტრომონტაჟი"] },
-      dalan: { title: "Dalan ტექნოპარკი", works: ["ვიდეოთვალთვალი", "ხანძრის სიგნალიზაცია", "ევაკუაციის სისტემა", "წვდომის კონტროლი"] },
-      wyndham: { title: "Wyndham Grand Tsaghkadzor", works: ["ელექტრო სისტემები", "კომუნიკაციის სისტემები", "ვიდეოთვალთვალი", "ხანძარსაწინააღმდეგო უსაფრთხოება", "წვდომის კონტროლი"] },
-      "only-one": { title: "Only One საცხოვრებელი კომპლექსი", works: ["CCTV მოწყობილობების მონტაჟი და პროგრამირება", "კარების წვდომის კონტროლის გამართვა", "ავტომატური დომოფონების მონტაჟი და გამართვა", "alarm უსაფრთხოების სისტემის მონტაჟი"] },
-      bidek: { title: "Bedeck Davtashen საცხოვრებელი კომპლექსი", works: ["ვიდეოთვალთვალი", "ხანძრის სიგნალიზაცია", "ევაკუაციის სისტემა", "წვდომის კონტროლი"] },
-      wildberries: { title: "Wildberries", works: ["ელექტრომონტაჟი", "ვიდეოთვალთვალი", "ხანძრის სიგნალიზაცია", "წვდომის კონტროლი", "კომუნიკაციის სისტემები"] }
-    },
-    team: {
-      director: { title: "დირექტორი", text: "ხელმძღვანელობს Smart Tech-ის პროექტულ მიმართულებას, გუნდების კოორდინაციას და ხარისხის საერთო კონტროლს." },
-      "it-network-engineer": { title: "IT ქსელების ინჟინერი", text: "აპროექტებს და ამართავს ქსელურ ინფრასტრუქტურას, სერვერულ კავშირებს და უსაფრთხო დისტანციურ წვდომას." },
-      "it-project-manager": { title: "IT პროექტების მენეჯერი", text: "კოორდინაციას უწევს პროექტის ეტაპებს, ვადებს, გუნდების მუშაობას და კლიენტთან კომუნიკაციას." },
-      "alarm-system-engineer": { title: "სიგნალიზაციის სისტემების ინჟინერი", text: "აპროექტებს, ამონტაჟებს და ამართავს სიგნალიზაციის, ხანძარსაწინააღმდეგო და ევაკუაციის სისტემებს." },
-      "automation-specialist": { title: "ელექტრო ავტომატიზაციის სპეციალისტი", text: "ქმნის მართვის, ავტომატიზაციისა და სცენარული მუშაობის გადაწყვეტილებებს ელექტრო მოწყობილობებისთვის." },
-      "bms-design-specialist": { title: "BMS პროექტირების სპეციალისტი", text: "აპროექტებს შენობის მართვის გადაწყვეტილებებს, რომლებიც აერთიანებს უსაფრთხოებას, ინჟინერიასა და ავტომატიზაციას." },
-      "video-access-control-engineer": { title: "ვიდეოთვალთვალისა და წვდომის კონტროლის ინჟინერი", text: "აპროექტებს ვიდეოთვალთვალის, წვდომის კონტროლისა და დისტანციური მონიტორინგის სისტემებს სტაბილური არქივით და უსაფრთხო წვდომით." },
-      "electrical-installation-engineer": { title: "ელექტრომონტაჟის ინჟინერი", text: "პასუხისმგებელია ელექტრო ქსელების, გამანაწილებელი ფარების, განათებისა და საკაბელო გზების მონტაჟზე." },
-      "audio-systems-specialist": { title: "აუდიო სისტემების მონტაჟის სპეციალისტი", text: "აპროექტებს, ამონტაჟებს და ამართავს ფონური მუსიკის, public address-ის, ხმოვანი შეტყობინებისა და საკონფერენციო აუდიოს სისტემებს." }
-    }
-  });
   var polishedServices = {
     hy: {
       "video-surveillance": {
@@ -964,6 +759,11 @@
         title: "Համակարգերի նախագծում",
         lead: "Նախագծում ենք էլեկտրամատակարարման, թույլ հոսանքային, ավտոմատացման, BMS և անվտանգության համակարգերը՝ հաշվարկված ու գործնական լուծմամբ։",
         tags: ["Նախագծում", "Հաշվարկ", "BMS"]
+      },
+      "full-design": {
+        title: "Սիստեմների նախագծում",
+        lead: "Տվյալ տարածքի համար նախագծում ենք համակարգերի ամբողջական լուծումներ՝ ապահովելով արդյունավետություն, ռեզերվ և հեշտ շահագործում։",
+        tags: ["Նախագիծ", "Հաշվարկ", "Ամբողջական համակարգ"]
       },
       "equipment-supply": {
         title: "Սարքավորումների մատակարարում",
@@ -1037,6 +837,11 @@
         lead: "Design of power supply, low-voltage, automation, BMS and security systems with a calculated and practical solution.",
         tags: ["Design", "Calculation", "BMS"]
       },
+      "full-design": {
+        title: "System design",
+        lead: "We design complete system solutions for each facility, ensuring efficiency, redundancy and easy operation.",
+        tags: ["Design", "Calculation", "Complete system"]
+      },
       "equipment-supply": {
         title: "Equipment supply",
         lead: "We work with trusted manufacturers, select the right equipment and deliver it on time without unnecessary cost.",
@@ -1109,6 +914,11 @@
         lead: "Проектируем электроснабжение, слаботочные системы, автоматизацию, BMS и системы безопасности с расчетной и практичной логикой.",
         tags: ["Проектирование", "Расчет", "BMS"]
       },
+      "full-design": {
+        title: "Проектирование систем",
+        lead: "Для каждого объекта проектируем комплексные решения по системам, обеспечивая эффективность, резерв и удобную эксплуатацию.",
+        tags: ["Проектирование", "Расчет", "Комплексная система"]
+      },
       "equipment-supply": {
         title: "Поставка оборудования",
         lead: "Работаем с проверенными производителями, подбираем подходящее оборудование и поставляем его в срок без лишних затрат.",
@@ -1135,222 +945,7 @@
         tags: ["Интерфейсы", "Диспетчеризация", "Управление"]
       }
     },
-    be: {
-      "video-surveillance": {
-        title: "Сістэмы відэаназірання",
-        lead: "IP-камеры, NVR/DVR-рэгістратары, PTZ-рашэнні і аддалены прагляд з правільнымі зонамі агляду, надзейным архівам і бяспечным доступам.",
-        tags: ["IP-камеры", "NVR/DVR", "Аддалены прагляд"]
-      },
-      "fire-security": {
-        title: "Пажарная сігналізацыя і сістэмы бяспекі",
-        lead: "Праектаванне, мантаж і пусканаладачныя работы для пажарнай сігналізацыі, эвакуацыі і сцэнарыяў бяспекі з улікам рызык аб'екта.",
-        tags: ["Пажарная сігналізацыя", "Эвакуацыя", "Сертыфікаваныя прылады"]
-      },
-      networks: {
-        title: "Мантаж сетак і структураванай кабельнай сістэмы",
-        lead: "LAN/Wi-Fi сеткі, стойкі, patch panel і стабільная ўнутраная сувязь з разлічанай прапускной здольнасцю і запасам на пашырэнне.",
-        tags: ["LAN", "Wi-Fi", "Rack"]
-      },
-      electrical: {
-        title: "Электрамантажныя работы",
-        lead: "Праектаванне і мантаж электрычных ліній, асвятлення, размеркавальных шчытоў і кабельных трас з акуратнай і абслугоўваемай структурай.",
-        tags: ["Асвятленне", "Шчыты", "Кабельныя трасы"]
-      },
-      automation: {
-        title: "Аўтаматызацыя і smart-сістэмы",
-        lead: "BMS, кантроль доступу, сцэнарыі кіравання і інтэграцыя прылад, каб будынак быў зручнейшы, бяспечнейшы і больш кіравальны.",
-        tags: ["BMS", "Кантроль доступу", "Smart logic"]
-      },
-      "audio-systems": {
-        title: "Мантаж аўдыясістэм",
-        lead: "Фонавая музыка, Public Address, галасавое апавяшчэнне і канферэнц-аўдыя з правільным занаваннем і збалансаваным гукам.",
-        tags: ["Public Address", "Фонавая музыка", "Канферэнц-аўдыя"]
-      },
-      wacker: {
-        title: "Мантаж сістэм Wacker",
-        lead: "Дакладны мантаж, настройка і абслугоўванне тэхнічных сістэм пад патрабаванні аб'екта і ўмовы эксплуатацыі.",
-        tags: ["Мантаж", "Настройка", "Сэрвіс"]
-      },
-      "powder-coating": {
-        title: "Парашковае афарбоўванне",
-        lead: "Ахоўнае і эстэтычнае парашковае пакрыццё металічных дэталяў з роўным фінішам, трывалай паверхняй і вытворчай якасцю.",
-        tags: ["Метал", "Пакрыццё", "Вытворчая якасць"]
-      },
-      "systems-design": {
-        title: "Праектаванне сістэм",
-        lead: "Праектуем электразабеспячэнне, слабаточныя сістэмы, аўтаматызацыю, BMS і сістэмы бяспекі з разлічанай і практычнай логікай.",
-        tags: ["Праектаванне", "Разлік", "BMS"]
-      },
-      "equipment-supply": {
-        title: "Пастаўка абсталявання",
-        lead: "Працуем з праверанымі вытворцамі, падбіраем патрэбнае абсталяванне і пастаўляем яго своечасова без лішніх выдаткаў.",
-        tags: ["Пастаўка", "Абсталяванне", "Вытворцы"]
-      },
-      installation: {
-        title: "Мантаж",
-        lead: "Манціруем сістэмы электразабеспячэння, відэаназірання, кантролю доступу, аўтаматызацыі, сеткі і слабаточныя сістэмы.",
-        tags: ["Мантаж", "Устаноўка", "Слабаточныя сістэмы"]
-      },
-      "automation-cabinets": {
-        title: "Зборка шафаў аўтаматыкі",
-        lead: "Збіраем шафы аўтаматыкі па праектнай дакументацыі, наладжваем кантролеры і рыхтуем сістэму да эксплуатацыі.",
-        tags: ["Шафы аўтаматыкі", "Праграмаванне", "Зборка"]
-      },
-      "commissioning-programming": {
-        title: "Пусканаладачныя работы і праграмаванне",
-        lead: "Наладжваем, праграмуем і правяраем сумесную працу сістэм, каб аб'ект здаваўся са стабільным і зразумелым кіраваннем.",
-        tags: ["Пусканаладачныя работы", "Праграмаванне", "Настройка"]
-      },
-      interfaces: {
-        title: "Распрацоўка інтэрфейсаў",
-        lead: "Ствараем зразумелыя інтэрфейсы кіравання і дыспетчарызацыі, каб інжынерныя сістэмы было зручна кантраляваць і абслугоўваць.",
-        tags: ["Інтэрфейсы", "Дыспетчарызацыя", "Кіраванне"]
-      }
-    },
-    fr: {
-      "video-surveillance": {
-        title: "Systèmes de vidéosurveillance",
-        lead: "Caméras IP, enregistreurs NVR/DVR, solutions PTZ et supervision à distance avec une couverture juste, une archive fiable et un accès sécurisé.",
-        tags: ["Caméras IP", "NVR/DVR", "Supervision à distance"]
-      },
-      "fire-security": {
-        title: "Alarme incendie et systèmes de sécurité",
-        lead: "Conception, installation et mise en service de l'alarme incendie, de l'évacuation et des scénarios de sécurité selon les risques du site.",
-        tags: ["Alarme incendie", "Évacuation", "Équipements certifiés"]
-      },
-      networks: {
-        title: "Installation réseau et câblage structuré",
-        lead: "Réseaux LAN/Wi-Fi, baies, patch panels et connectivité interne stable avec capacité calculée et réserve d'évolution.",
-        tags: ["LAN", "Wi-Fi", "Baie réseau"]
-      },
-      electrical: {
-        title: "Travaux d'installation électrique",
-        lead: "Conception et installation de lignes électriques, éclairage, tableaux de distribution et chemins de câbles avec une structure propre et maintenable.",
-        tags: ["Éclairage", "Tableaux", "Chemins de câbles"]
-      },
-      automation: {
-        title: "Automatisation et systèmes smart",
-        lead: "BMS, contrôle d'accès, scénarios de pilotage et intégration des équipements pour un bâtiment plus confortable, sûr et maîtrisable.",
-        tags: ["BMS", "Contrôle d'accès", "Smart logic"]
-      },
-      "audio-systems": {
-        title: "Installation de systèmes audio",
-        lead: "Musique d'ambiance, Public Address, annonce vocale et audio de conférence avec zonage correct et son équilibré.",
-        tags: ["Public Address", "Musique d'ambiance", "Audio de conférence"]
-      },
-      wacker: {
-        title: "Installation de systèmes Wacker",
-        lead: "Installation précise, configuration et maintenance de systèmes techniques selon les exigences du site et les conditions d'exploitation.",
-        tags: ["Installation", "Configuration", "Maintenance"]
-      },
-      "powder-coating": {
-        title: "Peinture en poudre",
-        lead: "Revêtement poudre protecteur et esthétique pour pièces métalliques, avec finition uniforme, surface durable et qualité industrielle.",
-        tags: ["Métal", "Revêtement", "Qualité industrielle"]
-      },
-      "systems-design": {
-        title: "Conception de systèmes",
-        lead: "Conception d'alimentation électrique, courants faibles, automatisation, BMS et sécurité avec une solution calculée et pratique.",
-        tags: ["Conception", "Calcul", "BMS"]
-      },
-      "equipment-supply": {
-        title: "Fourniture d'équipements",
-        lead: "Nous travaillons avec des fabricants fiables, choisissons les bons équipements et les livrons à temps sans coûts inutiles.",
-        tags: ["Fourniture", "Équipements", "Fabricants"]
-      },
-      installation: {
-        title: "Installation",
-        lead: "Installation de l'alimentation électrique, de la vidéosurveillance, du contrôle d'accès, de l'automatisation, des réseaux et des courants faibles.",
-        tags: ["Installation", "Montage", "Courants faibles"]
-      },
-      "automation-cabinets": {
-        title: "Assemblage d'armoires d'automatisme",
-        lead: "Assemblage des armoires d'automatisme selon la documentation projet, configuration des contrôleurs et préparation à l'exploitation.",
-        tags: ["Armoires d'automatisme", "Programmation", "Assemblage"]
-      },
-      "commissioning-programming": {
-        title: "Mise en service et programmation",
-        lead: "Configuration, programmation et test du fonctionnement intégré des systèmes avant la remise du site.",
-        tags: ["Mise en service", "Programmation", "Configuration"]
-      },
-      interfaces: {
-        title: "Développement d'interfaces",
-        lead: "Interfaces claires de pilotage et de supervision pour rendre les systèmes techniques faciles à contrôler et à exploiter.",
-        tags: ["Interfaces", "Supervision", "Pilotage"]
-      }
-    },
-    ka: {
-      "video-surveillance": {
-        title: "ვიდეოთვალთვალის სისტემები",
-        lead: "IP კამერები, NVR/DVR ჩამწერები, PTZ გადაწყვეტები და დისტანციური ნახვა სწორი დაფარვით, საიმედო არქივითა და უსაფრთხო წვდომით.",
-        tags: ["IP კამერები", "NVR/DVR", "დისტანციური ნახვა"]
-      },
-      "fire-security": {
-        title: "ხანძრის სიგნალიზაცია და უსაფრთხოების სისტემები",
-        lead: "ხანძრის სიგნალიზაციის, ევაკუაციისა და უსაფრთხოების სცენარების პროექტირება, მონტაჟი და გაშვება ობიექტის რისკების მიხედვით.",
-        tags: ["ხანძრის სიგნალიზაცია", "ევაკუაცია", "სერტიფიცირებული მოწყობილობები"]
-      },
-      networks: {
-        title: "ქსელებისა და სტრუქტურირებული საკაბელო სისტემების მონტაჟი",
-        lead: "LAN/Wi-Fi ქსელები, rack კარადები, patch panel-ები და სტაბილური შიდა კავშირი გათვლილი გამტარობითა და გაფართოების რესურსით.",
-        tags: ["LAN", "Wi-Fi", "Rack"]
-      },
-      electrical: {
-        title: "ელექტრომონტაჟის სამუშაოები",
-        lead: "ელექტრო ხაზების პროექტირება და მონტაჟი, განათება, გამანაწილებელი ფარები და საკაბელო გზები სუფთა და მომსახურებადი სტრუქტურით.",
-        tags: ["განათება", "ფარები", "საკაბელო გზები"]
-      },
-      automation: {
-        title: "ავტომატიზაცია და smart სისტემები",
-        lead: "BMS, წვდომის კონტროლი, მართვის სცენარები და მოწყობილობების ინტეგრაცია, რომ შენობა იყოს უფრო კომფორტული, უსაფრთხო და მართვადი.",
-        tags: ["BMS", "წვდომის კონტროლი", "Smart logic"]
-      },
-      "audio-systems": {
-        title: "აუდიო სისტემების მონტაჟი",
-        lead: "ფონური მუსიკა, Public Address, ხმოვანი შეტყობინება და საკონფერენციო აუდიო სწორი ზონირებითა და დაბალანსებული ხმით.",
-        tags: ["Public Address", "ფონური მუსიკა", "საკონფერენციო აუდიო"]
-      },
-      wacker: {
-        title: "Wacker სისტემების მონტაჟი",
-        lead: "ტექნიკური სისტემების ზუსტი მონტაჟი, გამართვა და მომსახურება ობიექტის მოთხოვნებისა და ექსპლუატაციის პირობების მიხედვით.",
-        tags: ["მონტაჟი", "გამართვა", "სერვისი"]
-      },
-      "powder-coating": {
-        title: "ფხვნილით შეღებვა",
-        lead: "ლითონის დეტალების დამცავი და ესთეტიკური ფხვნილის საფარი თანაბარი ფინიშით, გამძლე ზედაპირითა და საწარმოო ხარისხით.",
-        tags: ["ლითონი", "საფარი", "საწარმოო ხარისხი"]
-      },
-      "systems-design": {
-        title: "სისტემების პროექტირება",
-        lead: "ვაპროექტებთ ელექტრომომარაგებას, დაბალი ძაბვის სისტემებს, ავტომატიზაციას, BMS-სა და უსაფრთხოების სისტემებს გათვლილი და პრაქტიკული ლოგიკით.",
-        tags: ["პროექტირება", "გათვლა", "BMS"]
-      },
-      "equipment-supply": {
-        title: "მოწყობილობების მიწოდება",
-        lead: "ვმუშაობთ სანდო მწარმოებლებთან, ვარჩევთ შესაბამის მოწყობილობებს და ვაწვდით დროულად, ზედმეტი ხარჯების გარეშე.",
-        tags: ["მიწოდება", "მოწყობილობები", "მწარმოებლები"]
-      },
-      installation: {
-        title: "მონტაჟი",
-        lead: "ვამონტაჟებთ ელექტრომომარაგების, ვიდეოთვალთვალის, წვდომის კონტროლის, ავტომატიზაციის, ქსელურ და დაბალი ძაბვის სისტემებს.",
-        tags: ["მონტაჟი", "დაყენება", "დაბალი ძაბვა"]
-      },
-      "automation-cabinets": {
-        title: "ავტომატიკის კარადების აწყობა",
-        lead: "ვაწყობთ ავტომატიკის კარადებს პროექტის დოკუმენტაციის მიხედვით, ვმართავთ კონტროლერებს და ვამზადებთ სისტემას ექსპლუატაციისთვის.",
-        tags: ["ავტომატიკის კარადები", "პროგრამირება", "აწყობა"]
-      },
-      "commissioning-programming": {
-        title: "გაშვება-გამართვა და პროგრამირება",
-        lead: "ვმართავთ, ვაპროგრამებთ და ვამოწმებთ სისტემების ერთობლივ მუშაობას, რათა ობიექტი ჩაბარდეს სტაბილური და გასაგები მართვით.",
-        tags: ["გაშვება-გამართვა", "პროგრამირება", "გამართვა"]
-      },
-      interfaces: {
-        title: "ინტერფეისების განვითარება",
-        lead: "ვქმნით მარტივ მართვისა და დისპეტჩერიზაციის ინტერფეისებს, რომ საინჟინრო სისტემების კონტროლი და გამოყენება იყოს მოსახერხებელი.",
-        tags: ["ინტერფეისები", "დისპეტჩერიზაცია", "მართვა"]
-      }
-    }
+
   };
 
   Object.keys(polishedServices).forEach(function (language) {
@@ -1361,6 +956,8 @@
 
   site.content.locales.hy = mergeLocale(site.content.locales.hy, {
     home: {
+      licensesEyebrow: "Ստուգաթերթ",
+      licensesTitle: "Լիցենզիաներ և սերտիֆիկատներ",
       contactTitle: "Պետք է հստակ տեխնիկական առաջարկ՞",
       contactText: "Նկարագրեք տարածքը, և մենք կհուշենք՝ ինչ համակարգ է պետք, որտեղից սկսել և ինչ փուլերով իրականացնել։"
     },
@@ -1375,6 +972,8 @@
 
   site.content.locales.en = mergeLocale(site.content.locales.en, {
     home: {
+      licensesEyebrow: "Credentials",
+      licensesTitle: "Licenses and certificates",
       contactTitle: "Need a clear technical proposal?",
       contactText: "Tell us about your space, and we will suggest the right system, the best starting point and the implementation steps."
     },
@@ -1389,6 +988,8 @@
 
   site.content.locales.ru = mergeLocale(site.content.locales.ru, {
     home: {
+      licensesEyebrow: "Документы",
+      licensesTitle: "Лицензии и сертификаты",
       contactTitle: "Нужно понятное техническое предложение?",
       contactText: "Опишите объект, и мы подскажем, какая система нужна, с чего начать и по каким этапам ее лучше реализовать."
     },
@@ -1401,47 +1002,6 @@
     }
   });
 
-  site.content.locales.be = mergeLocale(site.content.locales.be, {
-    home: {
-      contactTitle: "Патрэбна зразумелая тэхнічная прапанова?",
-      contactText: "Апішэце аб'ект, і мы падкажам, якая сістэма патрэбна, з чаго пачаць і па якіх этапах яе лепш рэалізаваць."
-    },
-    teamPage: {
-      managementText: "Спачатку паказана кіраўніцтва, затым адказныя менеджары напрамкаў, а ніжэй — спецыялісты кожнага напрамку. Так структура адказнасці чытаецца хутчэй."
-    },
-    detail: {
-      ctaTitle: "Хочаце падобнае рашэнне для вашага аб'екта?",
-      ctaText: "Звяжыцеся з намі, і мы ацэнім аб'ект, рызыкі і прапануем правільны тэхнічны склад сістэм."
-    }
-  });
-
-  site.content.locales.fr = mergeLocale(site.content.locales.fr, {
-    home: {
-      contactTitle: "Besoin d'une proposition technique claire ?",
-      contactText: "Décrivez votre site, et nous vous indiquerons le système adapté, le bon point de départ et les étapes de mise en œuvre."
-    },
-    teamPage: {
-      managementText: "La direction apparaît d'abord, puis les responsables de chaque domaine, suivis des spécialistes associés. La structure des responsabilités devient ainsi plus lisible."
-    },
-    detail: {
-      ctaTitle: "Vous souhaitez une solution similaire pour votre site ?",
-      ctaText: "Contactez-nous : nous évaluerons le site, les risques et la configuration technique adaptée."
-    }
-  });
-
-  site.content.locales.ka = mergeLocale(site.content.locales.ka, {
-    home: {
-      contactTitle: "გჭირდებათ გასაგები ტექნიკური შეთავაზება?",
-      contactText: "აღწერეთ ობიექტი და გეტყვით, რომელი სისტემა სჯობს, საიდან დავიწყოთ და რა ეტაპებით განვახორციელოთ."
-    },
-    teamPage: {
-      managementText: "ზემოთ ნაჩვენებია ხელმძღვანელობა, შემდეგ მიმართულებების პასუხისმგებელი მენეჯერები, ხოლო ქვემოთ — შესაბამისი სპეციალისტები. ასე პასუხისმგებლობის სტრუქტურა უფრო მარტივად იკითხება."
-    },
-    detail: {
-      ctaTitle: "გსურთ მსგავსი გადაწყვეტა თქვენი ობიექტისთვის?",
-      ctaText: "დაგვიკავშირდით და შევაფასებთ ობიექტს, რისკებსა და სისტემების სწორ ტექნიკურ შემადგენლობას."
-    }
-  });
 
   site.content.locales.hy = mergeLocale(site.content.locales.hy, {
     trust: {
@@ -1480,41 +1040,265 @@
     }
   });
 
-  site.content.locales.be = mergeLocale(site.content.locales.be, {
-    trust: {
-      text: "Праектаванне, мантаж, пусканаладачныя работы і абслугоўванне."
+  site.content.locales.hy = mergeLocale(site.content.locales.hy, {
+    home: {
+      servedClientsEyebrow: "Մատուցված ծառայություններ",
+      servedClientsTitle: "Որոշ կազմակերպություններ, որոնց սպասարկել ենք",
+      servedClientsText: "Սրանք գործընկերներ չեն․ ներկայացված են մի քանի կազմակերպություններ, որոնց օբյեկտներում Smart Tech-ը ծառայություններ է մատուցել։",
+      servedClientsButton: "Տեսնել բոլորը"
     },
-    footer: {
-      description: "Кампанія па электрамантажы і інтэграцыі сістэм бяспекі."
+    nav: {
+      partners: "Հաճախորդներ"
+    },
+    partnersPage: {
+      eyebrow: "Մատուցված ծառայություններ",
+      title: "Կազմակերպություններ և բրենդներ, որոնց հետ աշխատել ենք",
+      text: "Այս բաժնում ներկայացված են կազմակերպություններ, որոնց օբյեկտներում ծառայություն ենք մատուցել, և սարքավորումների բրենդներ, որոնք կիրառվել են մեր նախագծերում։"
     }
   });
 
-  site.content.locales.fr = mergeLocale(site.content.locales.fr, {
+  site.content.locales.en = mergeLocale(site.content.locales.en, {
+    home: {
+      servedClientsEyebrow: "Delivered services",
+      servedClientsTitle: "Some organizations we have served",
+      servedClientsText: "These are not formal partners; they are selected organizations where Smart Tech has provided services.",
+      servedClientsButton: "View all"
+    },
+    nav: {
+      partners: "Clients"
+    },
+    partnersPage: {
+      eyebrow: "Delivered services",
+      title: "Organizations and brands we have worked with",
+      text: "This section shows organizations where we provided services and equipment brands used in Smart Tech projects."
+    }
+  });
+
+  site.content.locales.ru = mergeLocale(site.content.locales.ru, {
+    home: {
+      servedClientsEyebrow: "Оказанные услуги",
+      servedClientsTitle: "Некоторые организации, которым мы предоставляли услуги",
+      servedClientsText: "Это не официальные партнёры, а выбранные организации, на объектах которых Smart Tech предоставляла услуги.",
+      servedClientsButton: "Смотреть все"
+    },
+    nav: {
+      partners: "Клиенты"
+    },
+    partnersPage: {
+      eyebrow: "Оказанные услуги",
+      title: "Организации и бренды, с которыми мы работали",
+      text: "В этом разделе представлены организации, которым мы предоставляли услуги, и бренды оборудования, применявшиеся в проектах Smart Tech."
+    }
+  });
+
+  site.content.locales.hy.teamDetail = {
+    level: "Մակարդակ",
+    experience: "Փորձ",
+    workInfo: "Աշխատանքային տեղեկություն",
+    socials: "Սոցիալական ցանցեր",
+    certificates: "Սերտիֆիկատներ",
+    structureEyebrow: "Կառուցվածք",
+    structureTitle: "Թիմի կառուցվածք",
+    itWorkflowTitle: "IT աշխատանքի հերթականություն",
+    itWorkflowSteps: ["Ցանցային աուդիտ", "Ճարտարապետություն", "Տեղադրում", "Մոնիթորինգ"]
+  };
+
+  site.content.locales.en.teamDetail = {
+    level: "Level",
+    experience: "Experience",
+    workInfo: "Work information",
+    socials: "Social networks",
+    certificates: "Certificates",
+    structureEyebrow: "Structure",
+    structureTitle: "Team structure",
+    itWorkflowTitle: "IT workflow",
+    itWorkflowSteps: ["Network audit", "Architecture", "Deployment", "Monitoring"]
+  };
+
+  site.content.locales.ru.teamDetail = {
+    level: "Уровень",
+    experience: "Опыт",
+    workInfo: "Рабочая информация",
+    socials: "Социальные сети",
+    certificates: "Сертификаты",
+    structureEyebrow: "Структура",
+    structureTitle: "Структура команды",
+    itWorkflowTitle: "IT-процесс",
+    itWorkflowSteps: ["Аудит сети", "Архитектура", "Внедрение", "Мониторинг"]
+  };
+
+  site.content.locales.hy.home = Object.assign({}, site.content.locales.hy.home, {
+    featuredLicenses: [
+      { title: "Շինարարության իրականացում", alt: "Շինարարության իրականացման լիցենզիա", image: "/img/certificates/license-12.jpg", thumb: "/img/certificates/license-12.jpg" },
+      { title: "Լիցենզիայի ներդիր", alt: "Լիցենզիայի ներդիր", image: "/img/certificates/license-13.jpg", thumb: "/img/certificates/license-13.jpg" },
+      { title: "Կապի համակարգերի լիցենզիա", alt: "Կապի համակարգերի լիցենզիա", image: "/img/certificates/license-communication.jpg", thumb: "/img/certificates/license-communication.jpg" }
+    ]
+  });
+
+  site.content.locales.en.home = Object.assign({}, site.content.locales.en.home, {
+    featuredLicenses: [
+      { title: "Construction implementation", alt: "Construction implementation license", image: "/img/certificates/license-12.jpg", thumb: "/img/certificates/license-12.jpg" },
+      { title: "License insert", alt: "License insert", image: "/img/certificates/license-13.jpg", thumb: "/img/certificates/license-13.jpg" },
+      { title: "Communication systems license", alt: "Communication systems license", image: "/img/certificates/license-communication.jpg", thumb: "/img/certificates/license-communication.jpg" }
+    ]
+  });
+
+  site.content.locales.ru.home = Object.assign({}, site.content.locales.ru.home, {
+    featuredLicenses: [
+      { title: "Строительная реализация", alt: "Лицензия на строительную реализацию", image: "/img/certificates/license-12.jpg", thumb: "/img/certificates/license-12.jpg" },
+      { title: "Вкладыш лицензии", alt: "Вкладыш лицензии", image: "/img/certificates/license-13.jpg", thumb: "/img/certificates/license-13.jpg" },
+      { title: "Лицензия на системы связи", alt: "Лицензия на системы связи", image: "/img/certificates/license-communication.jpg", thumb: "/img/certificates/license-communication.jpg" }
+    ]
+  });
+
+  site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
+    director: { level: "Executive", experience: "15+ years", workInfo: ["Strategic development and management of core business directions", "Quality, deadlines and client communication oversight across projects", "Coordination of technical teams, procurement and field operations", "Long-term relationships with major clients and serviced organizations"] },
+    "it-network-engineer": { level: "Network Engineering", experience: "8+ years", workInfo: ["LAN/Wi-Fi network design and equipment selection", "Router, switch, firewall and VPN configuration", "Network integration for IP video surveillance and access control", "Monitoring, troubleshooting and documentation"] },
+    "it-project-manager": { level: "Project Delivery", experience: "7+ years", workInfo: ["Project scope, timeline and resource planning", "Coordination of engineering teams, procurement and client communication", "Control of technical documents and change requests", "Quality gates before handover"] },
+    "alarm-system-engineer": { level: "Safety Engineering", experience: "8+ years", workInfo: ["Fire and alarm panel architecture", "Design of sensors, zones and notification routes", "Installation, configuration, testing and handover", "Service and operation documentation"] },
+    "automation-specialist": { level: "Automation Specialist", experience: "6+ years", workInfo: ["Assembly of control panels and automation schematics", "Integration of sensors, relays and controllers", "Configuration of device operating scenarios", "Maintenance and fault diagnostics logic"] },
+    "bms-design-specialist": { level: "BMS Design", experience: "7+ years", workInfo: ["BMS architecture design and equipment selection", "Integration of HVAC, lighting, access and security systems", "Control scenarios and monitoring dashboards", "Design documents and handover packages"] },
+    "video-access-control-engineer": { level: "Security Systems", experience: "7+ years", workInfo: ["Selection of IP cameras, NVR/DVR devices and storage", "Integration of access points, card readers and turnstiles", "Remote viewing, user permissions and notifications", "Coverage calculation, testing and handover documents"] },
+    "audio-systems-specialist": { level: "Audio Systems", experience: "6+ years", workInfo: ["Sound coverage calculation and speaker placement", "Selection of amplifiers, mixers, microphones and zone controllers", "Installation of public address, background music and conference audio", "Tuning, balancing, testing and user handover"] },
+    "electrical-installation-engineer": { level: "Electrical Engineering", experience: "6+ years", workInfo: ["Installation of electrical lines, cable routes and distribution nodes", "Panel assembly, labeling and protective device layout", "Verification of lighting, socket groups and technical power lines", "Measurements, fault diagnostics and technical support at handover"] }
+  });
+
+  site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
+    director: { level: "Руководство", experience: "15+ лет", workInfo: ["Стратегическое развитие и управление основными направлениями компании", "Контроль качества, сроков и работы с клиентами по проектам", "Координация технических команд, закупок и полевых работ", "Долгосрочные отношения с крупными заказчиками и обслуживаемыми организациями"] },
+    "it-network-engineer": { level: "Сетевое проектирование", experience: "8+ лет", workInfo: ["Проектирование LAN/Wi-Fi сетей и подбор оборудования", "Настройка router, switch, firewall и VPN", "Сетевая интеграция IP-видеонаблюдения и контроля доступа", "Мониторинг, troubleshooting и документация"] },
+    "it-project-manager": { level: "Управление проектами", experience: "7+ лет", workInfo: ["Планирование scope, сроков и ресурсов проекта", "Координация инженерных команд, закупок и связи с заказчиком", "Контроль технической документации и изменений", "Контрольные точки качества перед сдачей"] },
+    "alarm-system-engineer": { level: "Инженерия безопасности", experience: "8+ лет", workInfo: ["Архитектура пожарных и охранных панелей", "Проектирование датчиков, зон и маршрутов оповещения", "Монтаж, настройка, тестирование и сдача", "Документация по обслуживанию и эксплуатации"] },
+    "automation-specialist": { level: "Специалист по автоматизации", experience: "6+ лет", workInfo: ["Сборка щитов управления и схем автоматизации", "Интеграция сенсоров, реле и контроллеров", "Настройка сценариев работы оборудования", "Логика обслуживания и диагностики неисправностей"] },
+    "bms-design-specialist": { level: "Проектирование BMS", experience: "7+ лет", workInfo: ["Проектирование архитектуры BMS и подбор оборудования", "Интеграция HVAC, освещения, доступа и безопасности", "Сценарии управления и мониторинговые панели", "Проектная документация и пакеты сдачи"] },
+    "video-access-control-engineer": { level: "Системы безопасности", experience: "7+ лет", workInfo: ["Подбор IP-камер, NVR/DVR и решений хранения", "Интеграция точек доступа, считывателей и турникетов", "Удаленный просмотр, права пользователей и уведомления", "Расчет зон обзора, тестирование и документы сдачи"] },
+    "audio-systems-specialist": { level: "Аудиосистемы", experience: "6+ лет", workInfo: ["Расчет звукового покрытия и размещение динамиков", "Подбор усилителей, микшеров, микрофонов и zone controller", "Монтаж public address, фоновой музыки и конференц-аудио", "Настройка, балансировка, тестирование и передача заказчику"] },
+    "electrical-installation-engineer": { level: "Электромонтаж", experience: "6+ лет", workInfo: ["Монтаж электролиний, кабельных трасс и распределительных узлов", "Сборка щитов, маркировка и размещение защитных автоматов", "Проверка освещения, розеточных групп и технических линий питания", "Замеры, диагностика неисправностей и техподдержка при сдаче"] }
+  });
+
+  site.content.locales.hy = mergeLocale(site.content.locales.hy, {
+    common: {
+      proposal: "Ստանալ կոմերցիոն առաջարկ",
+      requestSurvey: "Պատվիրել չափագրում"
+    },
+    hero: {
+      kicker: "Անվտանգության, էլեկտրամոնտաժի և smart համակարգերի ամբողջական ինժեներական ինտեգրատոր",
+      lead: "Նախագծում, մատակարարում, տեղադրում, ծրագրավորում և սպասարկում ենք համակարգերը մեկ պատասխանատու թիմով՝ բիզնես, հյուրանոցային, բնակելի և արդյունաբերական օբյեկտների համար։"
+    },
+    home: {
+      servicesTitle: "Մենք կատարում ենք ամբողջ ցիկլը՝ չափագրումից մինչև սպասարկում",
+      servicesText: "Յուրաքանչյուր ծառայություն ունի հստակ կազմ, աշխատանքի փուլեր և վերջնական արդյունք, որպեսզի պատվիրատուն հասկանա ինչ է ստանում։",
+      projectsTitle: "Նախագծերը ներկայացվում են հստակ՝ Խնդիր → Լուծում → Արդյունք",
+      contactTitle: "Պետք է արագ ու հաշվարկված տեխնիկական առաջարկ՞",
+      contactText: "Կազմենք չափագրում, հաշվարկենք ռիսկերը և 24 ժամում ներկայացնենք իրականացման ճիշտ սցենարը։"
+    },
     servicesPage: {
-      eyebrow: "Nos services"
+      text: "Յուրաքանչյուր ծառայության քարտում և ներսի էջում հստակ ներկայացված է՝ ինչ է ներառում, ինչ փուլերով է իրականացվում և ինչ արդյունք է ստացվում։"
     },
-    contact: {
-      eyebrow: "Contactez-nous"
+    projectsPage: {
+      text: "Յուրաքանչյուր նախագիծը ներկայացված է պարզ կառուցվածքով՝ ինչ խնդիր կար, ինչ լուծում ներդրվեց և ինչ արդյունք ստացվեց։",
+      storyProblem: "Խնդիր",
+      storySolution: "Լուծում",
+      storyResult: "Արդյունք"
     },
-    trust: {
-      text: "Conception, installation, mise en service et maintenance."
-    },
-    footer: {
-      description: "Entreprise d'installation électrique et d'intégration de systèmes de sécurité."
-    },
-    services: {
-      installation: {
-        title: "Montage et installation"
-      }
+    detail: {
+      serviceScopeTitle: "Ինչ է ներառում ծառայությունը",
+      serviceScopeText: "Այս բաժինը ցույց է տալիս կոնկրետ ծառայության կազմը, իրականացման փուլերը և պատվիրատուի վերջնական արդյունքը։",
+      serviceIncludesTitle: "Ծառայության կազմ",
+      serviceProcessTitle: "Աշխատանքի փուլեր",
+      serviceResultTitle: "Ինչ արդյունք եք ստանում",
+      serviceStepPrefix: "Փուլ",
+      projectStoryTitle: "Նախագծի ամփոփ քարտ",
+      projectStoryText: "Ցույց ենք տալիս օբյեկտը պարզ ձևաչափով՝ խնդիր, կիրառված լուծում և իրական արդյունք։",
+      projectStoryProblem: "Խնդիր",
+      projectStorySolution: "Լուծում",
+      projectStoryResult: "Արդյունք",
+      ctaTitle: "Ցանկանո՞ւմ եք նույնքան հստակ լուծում ձեր օբյեկտի համար",
+      ctaText: "Պատվիրեք չափագրում, և կստանաք քայլային տեխնիկական առաջարկ՝ համակարգերի ճշգրիտ կազմով։"
     }
   });
 
-  site.content.locales.ka = mergeLocale(site.content.locales.ka, {
-    trust: {
-      text: "პროექტირება, მონტაჟი, გაშვება-გამართვა და მომსახურება."
+  site.content.locales.en = mergeLocale(site.content.locales.en, {
+    common: {
+      proposal: "Get commercial proposal",
+      requestSurvey: "Request site survey"
     },
-    footer: {
-      description: "ელექტრომონტაჟისა და უსაფრთხოების სისტემების ინტეგრაციის კომპანია."
+    hero: {
+      kicker: "Full-cycle integrator of security, electrical and smart engineering systems",
+      lead: "We design, supply, install, program and maintain systems through one accountable team for commercial, hospitality, residential and industrial facilities."
+    },
+    home: {
+      servicesTitle: "We handle the full cycle from survey to maintenance",
+      servicesText: "Each service page clearly shows what is included, how delivery works and what result the client receives.",
+      projectsTitle: "Projects are presented clearly: Problem -> Solution -> Result",
+      contactTitle: "Need a fast and calculated technical proposal?",
+      contactText: "We run a survey, evaluate risks and provide a practical implementation scenario within 24 hours."
+    },
+    servicesPage: {
+      text: "Every service card and detail page explains what is included, the delivery stages and the final business outcome."
+    },
+    projectsPage: {
+      text: "Each project is presented in a simple structure: what the challenge was, what we implemented and what result was achieved.",
+      storyProblem: "Problem",
+      storySolution: "Solution",
+      storyResult: "Result"
+    },
+    detail: {
+      serviceScopeTitle: "What this service includes",
+      serviceScopeText: "This section gives a clear view of scope, execution stages and the final outcome for the client.",
+      serviceIncludesTitle: "Service scope",
+      serviceProcessTitle: "Delivery stages",
+      serviceResultTitle: "Result you get",
+      serviceStepPrefix: "Step",
+      projectStoryTitle: "Project brief card",
+      projectStoryText: "We describe the facility in a clear format: problem, implemented solution and real result.",
+      projectStoryProblem: "Problem",
+      projectStorySolution: "Solution",
+      projectStoryResult: "Result",
+      ctaTitle: "Want the same level of clarity for your facility?",
+      ctaText: "Request a site survey and receive a step-by-step technical proposal with the right system package."
     }
   });
+
+  site.content.locales.ru = mergeLocale(site.content.locales.ru, {
+    common: {
+      proposal: "Получить коммерческое предложение",
+      requestSurvey: "Заказать замер объекта"
+    },
+    hero: {
+      kicker: "Интегратор полного цикла: безопасность, электромонтаж и smart-инженерия",
+      lead: "Проектируем, поставляем, монтируем, программируем и обслуживаем системы одной ответственной командой для коммерческих, гостиничных, жилых и промышленных объектов."
+    },
+    home: {
+      servicesTitle: "Ведем полный цикл: от замера до обслуживания",
+      servicesText: "По каждой услуге понятно показано: состав работ, этапы реализации и конечный результат для заказчика.",
+      projectsTitle: "Проекты показаны понятно: Проблема -> Решение -> Результат",
+      contactTitle: "Нужно быстрое и просчитанное техническое предложение?",
+      contactText: "Проведем замер, оценим риски и в течение 24 часов дадим практичный сценарий реализации."
+    },
+    servicesPage: {
+      text: "В каждой услуге и ее детальной странице ясно указано: что входит, как выполняется и какой итог получает клиент."
+    },
+    projectsPage: {
+      text: "Каждый проект описан в простой структуре: какая была задача, какое решение внедрено и какой результат получен.",
+      storyProblem: "Проблема",
+      storySolution: "Решение",
+      storyResult: "Результат"
+    },
+    detail: {
+      serviceScopeTitle: "Что входит в услугу",
+      serviceScopeText: "Этот блок показывает состав услуги, этапы выполнения и финальный результат для заказчика.",
+      serviceIncludesTitle: "Состав услуги",
+      serviceProcessTitle: "Этапы работ",
+      serviceResultTitle: "Какой результат вы получаете",
+      serviceStepPrefix: "Этап",
+      projectStoryTitle: "Краткая карта проекта",
+      projectStoryText: "Показываем объект в понятном формате: проблема, внедренное решение и фактический результат.",
+      projectStoryProblem: "Проблема",
+      projectStorySolution: "Решение",
+      projectStoryResult: "Результат",
+      ctaTitle: "Нужна такая же понятная схема для вашего объекта?",
+      ctaText: "Закажите замер, и мы подготовим поэтапное техническое предложение с точным составом систем."
+    }
+  });
+
 })(window.SmartTech);

@@ -90,101 +90,10 @@
           { step: "04", title: "Настройка", text: "Настраиваем устройства, пользователей, уведомления и удаленный доступ." },
           { step: "05", title: "Сдача", text: "Тестируем, документируем и обеспечиваем дальнейший сервис." }
         ]
-      },
-      be: {
-        eyebrow: "Поўныя магчымасці для бізнесу",
-        title: "Паказваем не адну паслугу, а ўсю сістэмную магчымасць",
-        text: "Smart Tech можа весці аб'ект ад ідэі да здачы: абследаванне, праектаванне, падбор абсталявання, мантаж, праграмаванне, дакументацыя і абслугоўванне.",
-        request: "Скласці заяўку на новы праект",
-        audit: "Замовіць замер",
-        groupsTitle: "Што мы можам зрабіць",
-        marketsTitle: "Для якіх аб'ектаў",
-        brandsTitle: "Брэнды і тэхналогіі",
-        flowTitle: "Этапы работы",
-        groups: [
-          { title: "Праектаванне і кансультацыя", items: ["агляд аб'екта", "замер і ацэнка рызык", "тэхнічнае заданне", "першасны разлік бюджэту", "правільнае размяшчэнне абсталявання"] },
-          { title: "Сістэмы бяспекі", items: ["відэаназіранне і аддалены прагляд", "alarm-бяспека", "пажарная сігналізацыя", "сістэмы эвакуацыі", "кантроль доступу", "дамафоны і аўтаматызацыя дзвярэй"] },
-          { title: "IT-сеткі і сувязь", items: ["LAN і structured cabling", "Wi-Fi-пакрыццё", "rack і patch panel", "switch/router/firewall", "VPN і аддалены доступ", "маніторынг і troubleshooting"] },
-          { title: "Электрамантаж", items: ["кабельныя трасы", "размеркавальныя шчыты", "асвятленне", "лініі сілкавання", "ахоўныя аўтаматы", "UPS і рэзервовае сілкаванне"] },
-          { title: "BMS і аўтаматызацыя", items: ["логіка кіравання будынкам", "сцэнарнае кіраванне", "інтэграцыя HVAC / lighting", "датчыкі і controller-ы", "smart control", "monitoring dashboard"] },
-          { title: "Аўдыя і апавяшчэнне", items: ["public address", "фонавая музыка", "галасавыя апавяшчэнні", "канферэнц-аўдыя", "мікрафоны і zone control", "наладка гуку"] },
-          { title: "Пастаўка і мантаж", items: ["выбар брэндаў", "закупка абсталявання", "кабеліраванне", "мантаж", "праграмаванне", "здача ў эксплуатацыю"] },
-          { title: "Абслугоўванне", items: ["планавы сэрвіс", "дыягностыка няспраўнасцяў", "перапраграмаванне", "пашырэнне сістэм", "дакументацыя", "гарантыйная падтрымка"] }
-        ],
-        markets: ["жылыя комплексы", "бізнес-цэнтры", "гатэлі", "рэстараны і салоны", "склады", "вытворчасці", "крамы", "офісы", "адукацыйныя і медыцынскія прасторы"],
-        flow: [
-          { step: "01", title: "Абследаванне", text: "Разумеем аб'ект, рызыкі, задачы і чаканую нагрузку." },
-          { step: "02", title: "Праект", text: "Рыхтуем схему рашэння, спіс прылад, зоны і кабельныя трасы." },
-          { step: "03", title: "Мантаж", text: "Выконваем акуратны мантаж з улікам рэжыму аб'екта." },
-          { step: "04", title: "Наладка", text: "Наладжваем прылады, карыстальнікаў, апавяшчэнні і аддалены доступ." },
-          { step: "05", title: "Здача", text: "Тэстуем, дакументуем і забяспечваем далейшы сэрвіс." }
-        ]
-      },
-      fr: {
-        eyebrow: "Capacité complète pour le business",
-        title: "Nous montrons une capacité système complète, pas seulement un service isolé",
-        text: "Smart Tech peut accompagner un site de l'idée à la livraison : audit, conception, choix des équipements, installation, programmation, documentation et maintenance.",
-        request: "Créer une demande de nouveau projet",
-        audit: "Demander une mesure",
-        groupsTitle: "Ce que nous pouvons faire",
-        marketsTitle: "Types de sites",
-        brandsTitle: "Marques et technologies",
-        flowTitle: "Étapes de travail",
-        groups: [
-          { title: "Conception et conseil", items: ["étude du site", "mesure et évaluation des risques", "cahier des charges", "estimation initiale du budget", "positionnement des équipements"] },
-          { title: "Systèmes de sécurité", items: ["vidéosurveillance et vue à distance", "sécurité alarm", "alarme incendie", "systèmes d'évacuation", "contrôle d'accès", "interphones et automatisation des portes"] },
-          { title: "Réseaux IT et communication", items: ["LAN et structured cabling", "couverture Wi-Fi", "rack et patch panel", "switch/router/firewall", "VPN et accès distant", "monitoring et troubleshooting"] },
-          { title: "Installation électrique", items: ["chemins de câble", "tableaux de distribution", "éclairage", "lignes d'alimentation", "disjoncteurs de protection", "UPS et alimentation de secours"] },
-          { title: "BMS et automatisation", items: ["logique de gestion du bâtiment", "contrôle par scénarios", "intégration HVAC / lighting", "capteurs et controllers", "smart control", "monitoring dashboard"] },
-          { title: "Audio et notification", items: ["public address", "musique d'ambiance", "notifications vocales", "audio conférence", "microphones et zone control", "réglage du son"] },
-          { title: "Fourniture et installation", items: ["choix des marques", "achat des équipements", "câblage", "installation", "programmation", "mise en service"] },
-          { title: "Maintenance", items: ["service planifié", "diagnostic des pannes", "reprogrammation", "extension des systèmes", "documentation", "support garantie"] }
-        ],
-        markets: ["complexes résidentiels", "centres d'affaires", "hôtels", "restaurants et showrooms", "entrepôts", "sites de production", "magasins", "bureaux", "espaces éducatifs et médicaux"],
-        flow: [
-          { step: "01", title: "Audit", text: "Nous comprenons le site, les risques, les tâches et la charge attendue." },
-          { step: "02", title: "Conception", text: "Nous préparons le schéma de solution, la liste des équipements, les zones et les chemins de câble." },
-          { step: "03", title: "Installation", text: "Nous réalisons une installation propre en respectant le rythme du site." },
-          { step: "04", title: "Configuration", text: "Nous configurons les équipements, les utilisateurs, les alertes et l'accès distant." },
-          { step: "05", title: "Livraison", text: "Nous testons, documentons et assurons le support futur." }
-        ]
-      },
-      ka: {
-        eyebrow: "სრული შესაძლებლობები ბიზნესისთვის",
-        title: "ვაჩვენებთ არა ერთ სერვისს, არამედ სრულ სისტემურ შესაძლებლობას",
-        text: "Smart Tech-ს შეუძლია ობიექტის გაყოლა იდეიდან ჩაბარებამდე: შესწავლა, პროექტირება, აღჭურვილობის შერჩევა, მონტაჟი, პროგრამირება, დოკუმენტაცია და მომსახურება.",
-        request: "ახალი პროექტის განაცხადის შექმნა",
-        audit: "აზომვის შეკვეთა",
-        groupsTitle: "რის გაკეთება შეგვიძლია",
-        marketsTitle: "რომელი ობიექტებისთვის",
-        brandsTitle: "ბრენდები და ტექნოლოგიები",
-        flowTitle: "სამუშაოს ეტაპები",
-        groups: [
-          { title: "პროექტირება და კონსულტაცია", items: ["ობიექტის შესწავლა", "აზომვა და რისკების შეფასება", "ტექნიკური დავალება", "ბიუჯეტის პირველადი გათვლა", "აღჭურვილობის სწორი განლაგება"] },
-          { title: "უსაფრთხოების სისტემები", items: ["ვიდეოთვალთვალი და დისტანციური ნახვა", "alarm უსაფრთხოება", "ხანძრის სიგნალიზაცია", "ევაკუაციის სისტემები", "წვდომის კონტროლი", "დომოფონები და კარების ავტომატიზაცია"] },
-          { title: "IT ქსელები და კავშირი", items: ["LAN და structured cabling", "Wi-Fi დაფარვა", "rack და patch panel", "switch/router/firewall", "VPN და დისტანციური წვდომა", "მონიტორინგი და troubleshooting"] },
-          { title: "ელექტრომონტაჟი", items: ["საკაბელო გზები", "გამანაწილებელი ფარები", "განათება", "კვების ხაზები", "დამცავი ავტომატები", "UPS და სარეზერვო კვება"] },
-          { title: "BMS და ავტომატიზაცია", items: ["შენობის მართვის ლოგიკა", "სცენარული მართვა", "HVAC / lighting ინტეგრაცია", "სენსორები და controller-ები", "smart control", "monitoring dashboard"] },
-          { title: "აუდიო და შეტყობინება", items: ["public address", "ფონური მუსიკა", "ხმოვანი შეტყობინებები", "საკონფერენციო აუდიო", "მიკროფონები და zone control", "ხმის გამართვა"] },
-          { title: "მიწოდება და მონტაჟი", items: ["ბრენდების შერჩევა", "აღჭურვილობის შეძენა", "კაბელირება", "მონტაჟი", "პროგრამირება", "ექსპლუატაციაში ჩაბარება"] },
-          { title: "მომსახურება", items: ["გეგმიური სერვისი", "ხარვეზების დიაგნოსტიკა", "ხელახალი პროგრამირება", "სისტემების გაფართოება", "დოკუმენტაცია", "საგარანტიო მხარდაჭერა"] }
-        ],
-        markets: ["საცხოვრებელი კომპლექსები", "ბიზნეს ცენტრები", "სასტუმროები", "რესტორნები და შოურუმები", "საწყობები", "წარმოებები", "მაღაზიები", "ოფისები", "საგანმანათლებლო და სამედიცინო სივრცეები"],
-        flow: [
-          { step: "01", title: "შესწავლა", text: "ვიგებთ ობიექტს, რისკებს, ამოცანებს და მოსალოდნელ დატვირთვას." },
-          { step: "02", title: "პროექტი", text: "ვამზადებთ გადაწყვეტის სქემას, მოწყობილობების სიას, ზონებს და საკაბელო გზებს." },
-          { step: "03", title: "მონტაჟი", text: "ვახორციელებთ სუფთა მონტაჟს ობიექტის სამუშაო რიტმის გათვალისწინებით." },
-          { step: "04", title: "გამართვა", text: "ვამართავთ მოწყობილობებს, მომხმარებლებს, შეტყობინებებს და დისტანციურ წვდომას." },
-          { step: "05", title: "ჩაბარება", text: "ვტესტავთ, ვამზადებთ დოკუმენტაციას და ვუზრუნველყოფთ შემდგომ სერვისს." }
-        ]
       }
     };
 
-    ["be", "fr", "ka"].forEach(function (language) {
-      dictionaries[language].brands = dictionaries.en.brands;
-    });
-
-    return dictionaries[site.i18n.language] || dictionaries.hy;
+    return site.i18n.pickLanguageDictionary(dictionaries);
   }
 
   function businessShowcase() {
@@ -253,24 +162,112 @@
       "</section>";
   }
 
+  function serviceGroups(language) {
+    var dictionaries = {
+      hy: [
+        {
+          title: "Հիմնական համակարգային ծառայություններ",
+          badge: "Հիմնական",
+          text: "Անվտանգություն, էլեկտրամոնտաժ, ցանցեր և ավտոմատացում՝ օբյեկտի առօրյա աշխատանքի համար։",
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+        },
+        {
+          title: "Իրականացման փուլային ծառայություններ",
+          badge: "Փուլային",
+          text: "Այս ծառայությունները ապահովում են ամբողջ ցիկլը՝ նախագծումից մինչև գործարկում։",
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
+        },
+        {
+          title: "Լրացուցիչ ուղղություններ",
+          badge: "Լրացուցիչ",
+          text: "Սպասարկման և նիշային արտադրական ծառայություններ հատուկ պահանջների համար։",
+          ids: ["wacker", "powder-coating"]
+        }
+      ],
+      en: [
+        {
+          title: "Core engineering services",
+          badge: "Core",
+          text: "Security, electrical, network and automation systems for stable daily facility operations.",
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+        },
+        {
+          title: "Delivery-stage services",
+          badge: "Delivery",
+          text: "These services complete the full cycle from design and supply to commissioning.",
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
+        },
+        {
+          title: "Additional directions",
+          badge: "Additional",
+          text: "Specialized support and production-related services for specific requests.",
+          ids: ["wacker", "powder-coating"]
+        }
+      ],
+      ru: [
+        {
+          title: "Ключевые инженерные услуги",
+          badge: "Основное",
+          text: "Системы безопасности, электромонтаж, сети и автоматизация для стабильной ежедневной работы объекта.",
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+        },
+        {
+          title: "Услуги по этапам реализации",
+          badge: "Этапы",
+          text: "Эти услуги закрывают полный цикл: от проектирования и поставки до пусконаладки.",
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
+        },
+        {
+          title: "Дополнительные направления",
+          badge: "Дополнительно",
+          text: "Нишевые сервисные и производственные работы под отдельные задачи.",
+          ids: ["wacker", "powder-coating"]
+        }
+      ]
+    };
+    return site.i18n.pickLanguageDictionary(dictionaries, language);
+  }
+
   site.sections.services = function services() {
     var e = site.utils.escapeHtml;
-    var cards = site.content.services.map(function (service) {
-      var text = site.i18n.service(service);
-      var tags = text.tags.map(function (tag) {
-        return '<span>' + e(tag) + '</span>';
+    var language = site.i18n.language || "hy";
+    var groups = serviceGroups(language);
+    var serviceById = {};
+    site.content.services.forEach(function (service) {
+      serviceById[service.id] = service;
+    });
+
+    var groupedCards = groups.map(function (group) {
+      var cards = group.ids.map(function (id) {
+        var service = serviceById[id];
+        if (!service) return "";
+        var text = site.i18n.service(service);
+        var tags = (text.tags || []).slice(0, 3).map(function (tag) {
+          return '<span>' + e(tag) + '</span>';
+        }).join("");
+
+        return '' +
+          '<a class="service-card reveal" id="service-' + e(service.id) + '" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
+            '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" loading="lazy">' +
+            '<div class="service-card-body">' +
+              '<span class="service-group-badge">' + e(group.badge || group.title) + '</span>' +
+              '<h3>' + e(text.title) + '</h3>' +
+              '<p>' + e(text.lead) + '</p>' +
+              '<div class="tag-row">' + tags + '</div>' +
+              '<strong class="card-more">' + e(site.i18n.get("common.learnMore")) + '</strong>' +
+            '</div>' +
+          '</a>';
       }).join("");
 
+      if (!cards) return "";
       return '' +
-        '<a class="service-card reveal" id="service-' + e(service.id) + '" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
-          '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" loading="lazy">' +
-          '<div class="service-card-body">' +
-            '<h3>' + e(text.title) + '</h3>' +
-            '<p>' + e(text.lead) + '</p>' +
-            '<div class="tag-row">' + tags + '</div>' +
-            '<strong class="card-more">' + e(site.i18n.get("common.learnMore")) + '</strong>' +
+        '<section class="services-group-block">' +
+          '<div class="services-group-head reveal">' +
+            '<h2>' + e(group.title) + '</h2>' +
+            '<p>' + e(group.text) + '</p>' +
           '</div>' +
-        '</a>';
+          '<div class="services-grid">' + cards + '</div>' +
+        '</section>';
     }).join("");
 
     return '' +
@@ -281,12 +278,15 @@
         titleKey: "servicesPage.title",
         text: site.i18n.get("servicesPage.text"),
         textKey: "servicesPage.text",
+        action: site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal")),
+        actionKey: "common.requestSurvey",
+        href: site.utils.pageUrl("request"),
         image: site.content.services[2] ? site.content.services[2].image : site.content.services[0].image,
         tone: "services"
       }) +
       '<section id="services-content" class="section services-section">' +
         '<div class="container">' +
-          '<div class="services-grid">' + cards + '</div>' +
+          '<div class="services-groups">' + groupedCards + '</div>' +
         '</div>' +
       '</section>' +
       businessShowcase();

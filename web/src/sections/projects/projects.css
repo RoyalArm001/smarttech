@@ -3,6 +3,22 @@
   background: var(--surface);
 }
 
+.projects-section-lead {
+  max-width: 760px;
+  margin: -8px 0 22px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.projects-section .gallery-heading {
+  margin-top: 42px;
+}
+
+.projects-section .gallery-heading:first-of-type {
+  margin-top: 34px;
+}
+
 .featured-project {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 390px;
@@ -25,10 +41,82 @@
   align-self: center;
 }
 
+.project-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.home-bottom-project-card .project-status-badge,
+.project-card .project-status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+}
+
+.project-status-badge.is-current {
+  border-color: rgba(255, 214, 118, 0.62);
+  color: #102224;
+  background: linear-gradient(135deg, #ffe19a, #52cdbf);
+}
+
+.project-status-badge.is-completed {
+  border-color: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(10, 24, 31, 0.56);
+  backdrop-filter: blur(10px);
+}
+
+.featured-project-copy .project-status-badge {
+  position: static;
+  margin-bottom: 12px;
+}
+
 .featured-project-copy h3 {
   margin: 10px 0 18px;
   font-size: 1.9rem;
   line-height: 1.18;
+}
+
+.project-story {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.project-story div {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.project-story dt {
+  margin: 0 0 4px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.project-story dd {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.84rem;
+  line-height: 1.44;
 }
 
 .featured-project-copy ul,
@@ -83,6 +171,11 @@
   padding: 18px;
 }
 
+.project-card .project-story > div,
+.featured-project-copy .project-story > div {
+  padding: 10px 12px;
+}
+
 .project-card h3 {
   min-height: 54px;
   margin: 0 0 12px;
@@ -92,6 +185,10 @@
 
 .project-card li {
   font-size: 0.88rem;
+}
+
+.project-card .project-story {
+  margin-bottom: 12px;
 }
 
 .project-gallery {

@@ -1,4 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+Armenian:wght@500;600;700&family=Outfit:wght@600;700;800&display=swap");
+
 :root {
+  --font-body: "Manrope", "Noto Sans Armenian", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Outfit", "Manrope", "Noto Sans Armenian", "Segoe UI", system-ui, sans-serif;
   --ink: #142126;
   --ink-soft: #33474d;
   --muted: #69777d;
@@ -69,10 +73,9 @@ body {
     linear-gradient(rgba(52, 95, 116, 0.025) 1px, transparent 1px),
     var(--paper);
   background-size: 100% 100%, 100% 100%, 46px 46px, 46px 46px, auto;
-  background-attachment: fixed;
-  font-family: Arial, "Helvetica Neue", sans-serif;
+  font-family: var(--font-body);
   line-height: 1.55;
-  letter-spacing: 0;
+  letter-spacing: 0.01em;
   overflow-x: hidden;
 }
 
@@ -92,14 +95,10 @@ body::before {
     repeating-linear-gradient(115deg, transparent 0 76px, rgba(56, 170, 184, 0.075) 76px 78px, transparent 78px 150px);
   background-size: 64px 64px, 64px 64px, 260px 260px;
   opacity: 0.58;
-  animation: smartTechGridDrift 26s linear infinite;
 }
 
 body::after {
-  background: linear-gradient(105deg, transparent 0 42%, rgba(82, 205, 191, 0.12) 48%, transparent 56%);
-  opacity: 0.72;
-  transform: translateX(-72%);
-  animation: smartTechSignalSweep 8.5s ease-in-out infinite;
+  display: none;
 }
 
 body.ui-theme-dark {
@@ -110,7 +109,6 @@ body.ui-theme-dark {
     linear-gradient(rgba(120, 164, 182, 0.055) 1px, transparent 1px),
     var(--paper);
   background-size: 100% 100%, 100% 100%, 46px 46px, 46px 46px, auto;
-  background-attachment: fixed;
 }
 
 body.ui-theme-dark::before {

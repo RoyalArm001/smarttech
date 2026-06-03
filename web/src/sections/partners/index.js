@@ -2,44 +2,38 @@
   function partnersCopy() {
     var dictionaries = {
       hy: {
-        clientsTitle: "Հաճախորդներ և վստահած կառույցներ",
-        clientsText: "Կայքում պահում ենք այն բրենդները, որոնց օբյեկտներում Smart Tech-ը կատարել է նախագծում, տեղադրում կամ սպասարկում։",
-        techTitle: "Սարքավորումների արտադրող գործընկերներ",
-        techText: "PDF ներկայացման գործընկերների բաժնից ավելացված տեխնոլոգիական բրենդներ՝ անվտանգության, BMS, էլեկտրամոնտաժի, աուդիո և կապի համակարգերի համար։"
+        clientsTitle: "Կազմակերպություններ, որոնց մատուցել ենք ծառայություններ",
+        clientsText: "Այստեղ նշված են ընկերություններ և կառույցներ, որոնց օբյեկտներում Smart Tech-ը կատարել է նախագծում, մոնտաժ, կարգաբերում կամ տեխնիկական սպասարկում։",
+        techTitle: "Կիրառված սարքավորումների բրենդներ",
+        techText: "Սրանք արտադրող բրենդներ են, որոնց սարքավորումներով իրականացվել են անվտանգության, BMS, կապի, էլեկտրամոնտաժի և աուդիո լուծումներ։"
       },
       en: {
-        clientsTitle: "Clients and trusted organizations",
-        clientsText: "The site keeps the brands whose facilities include Smart Tech design, installation or support work.",
-        techTitle: "Equipment manufacturer partners",
-        techText: "Technology brands added from the partner section of the PDF presentation for security, BMS, electrical, audio and communication systems."
+        clientsTitle: "Organizations we have served",
+        clientsText: "These are companies and facilities where Smart Tech has provided design, installation, setup or technical support services.",
+        techTitle: "Equipment brands used in our solutions",
+        techText: "These manufacturer brands are used in security, BMS, communication, electrical and audio system projects delivered by Smart Tech."
       },
       ru: {
-        clientsTitle: "Клиенты и доверившие нам объекты",
-        clientsText: "На сайте сохранены бренды, на объектах которых Smart Tech выполнял проектирование, монтаж или обслуживание.",
-        techTitle: "Партнеры-производители оборудования",
-        techText: "Технологические бренды из раздела партнеров PDF-презентации для систем безопасности, BMS, электромонтажа, аудио и связи."
+        clientsTitle: "Организации, которым мы предоставляли услуги",
+        clientsText: "Здесь указаны компании и объекты, где Smart Tech выполняла проектирование, монтаж, настройку или техническое обслуживание.",
+        techTitle: "Бренды оборудования, применяемые в решениях",
+        techText: "Это производители оборудования для систем безопасности, BMS, связи, электромонтажа и аудио, с которыми реализовывались решения Smart Tech."
       },
       be: {
-        clientsTitle: "Кліенты і арганізацыі, якія нам даверылі",
-        clientsText: "На сайце захаваны брэнды, на аб'ектах якіх Smart Tech выконваў праектаванне, мантаж або абслугоўванне.",
-        techTitle: "Партнёры-вытворцы абсталявання",
-        techText: "Тэхналагічныя брэнды з раздзела партнёраў PDF-прэзентацыі для бяспекі, BMS, электрамантажу, аўдыё і сувязі."
+        clientsTitle: "Арганізацыі, якім мы аказвалі паслугі",
+        clientsText: "Тут пазначаны кампаніі і аб'екты, дзе Smart Tech выконваў праектаванне, мантаж, наладку або тэхнічнае абслугоўванне.",
+        techTitle: "Брэнды абсталявання, выкарыстаныя ў рашэннях",
+        techText: "Гэтыя вытворцы выкарыстоўваюцца ў праектах бяспекі, BMS, сувязі, электрамантажу і аўдыё."
       },
       fr: {
-        clientsTitle: "Clients et organisations de confiance",
-        clientsText: "Le site conserve les marques dont les sites ont bénéficié de la conception, de l'installation ou du support Smart Tech.",
-        techTitle: "Partenaires fabricants d'équipements",
-        techText: "Marques technologiques ajoutées depuis la section partenaires de la présentation PDF pour la sécurité, le BMS, l'électricité, l'audio et les communications."
-      },
-      ka: {
-        clientsTitle: "კლიენტები და სანდო ორგანიზაციები",
-        clientsText: "საიტზე შენახულია ბრენდები, რომელთა ობიექტებზე Smart Tech-მა შეასრულა პროექტირება, მონტაჟი ან მხარდაჭერა.",
-        techTitle: "აღჭურვილობის მწარმოებელი პარტნიორები",
-        techText: "PDF პრეზენტაციის პარტნიორების ნაწილიდან დამატებული ტექნოლოგიური ბრენდები უსაფრთხოების, BMS-ის, ელექტრო, აუდიო და საკომუნიკაციო სისტემებისთვის."
+        clientsTitle: "Organisations auxquelles nous avons fourni des services",
+        clientsText: "Ces entreprises et sites ont bénéficié des services de conception, d'installation, de configuration ou de support technique de Smart Tech.",
+        techTitle: "Marques d'équipements utilisées dans nos solutions",
+        techText: "Ces fabricants sont utilisés dans les projets de sécurité, BMS, communication, électricité et audio livrés par Smart Tech."
       }
     };
 
-    return dictionaries[site.i18n.language] || dictionaries.hy;
+    return site.i18n.pickLanguageDictionary(dictionaries);
   }
 
   site.sections.partners = function partners() {
@@ -48,37 +42,37 @@
 
     function logoGrid(items, extraClass) {
       return items.map(function (partner) {
-        return '' +
+        return "" +
           '<div class="partner-logo ' + e(extraClass || "") + ' reveal">' +
             '<img src="' + e(partner.logo) + '" alt="' + e(partner.name) + '" loading="lazy">' +
-          '</div>';
+          "</div>";
       }).join("");
     }
 
     var logos = logoGrid(site.content.partners || [], "");
     var technologyLogos = logoGrid(site.content.technologyPartners || [], "partner-logo-tech");
 
-    var technologyBlock = technologyLogos ? (
-      '<div class="partner-group partner-group-spaced">' +
-        '<div class="partner-group-head reveal">' +
-          '<h2>' + e(copy.techTitle) + '</h2>' +
-          '<p>' + e(copy.techText) + '</p>' +
-        '</div>' +
-        '<div class="partners-grid partners-grid-tech">' + technologyLogos + '</div>' +
-      '</div>'
-    ) : "";
-
     var clientsBlock = logos ? (
       '<div class="partner-group">' +
         '<div class="partner-group-head reveal">' +
-          '<h2>' + e(copy.clientsTitle) + '</h2>' +
-          '<p>' + e(copy.clientsText) + '</p>' +
-        '</div>' +
-        '<div class="partners-grid">' + logos + '</div>' +
-      '</div>'
+          "<h2>" + e(copy.clientsTitle) + "</h2>" +
+          "<p>" + e(copy.clientsText) + "</p>" +
+        "</div>" +
+        '<div class="partners-grid">' + logos + "</div>" +
+      "</div>"
     ) : "";
 
-    return '' +
+    var technologyBlock = technologyLogos ? (
+      '<div class="partner-group partner-group-spaced">' +
+        '<div class="partner-group-head reveal">' +
+          "<h2>" + e(copy.techTitle) + "</h2>" +
+          "<p>" + e(copy.techText) + "</p>" +
+        "</div>" +
+        '<div class="partners-grid partners-grid-tech">' + technologyLogos + "</div>" +
+      "</div>"
+    ) : "";
+
+    return "" +
       site.sections.pageHero({
         eyebrow: site.i18n.get("partnersPage.eyebrow"),
         eyebrowKey: "partnersPage.eyebrow",
@@ -93,7 +87,7 @@
         '<div class="container">' +
           clientsBlock +
           technologyBlock +
-        '</div>' +
-      '</section>';
+        "</div>" +
+      "</section>";
   };
 })(window.SmartTech);

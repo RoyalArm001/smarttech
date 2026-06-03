@@ -26,18 +26,12 @@
     var footerLabels = {
       hy: { views: "Դիտումներ", socials: "Սոցիալական հղումներ", mail: "Գրել նամակ", info: "Տեղեկատվություն" },
       en: { views: "Views", socials: "Social links", mail: "Send email", info: "Info" },
-      ru: { views: "Просмотры", socials: "Социальные ссылки", mail: "Написать на почту", info: "Инфо" },
-      be: { views: "Прагляды", socials: "Сацыяльныя спасылкі", mail: "Напісаць на пошту", info: "Інфа" },
-      fr: { views: "Vues", socials: "Liens sociaux", mail: "Envoyer un e-mail", info: "Infos" },
-      ka: { views: "ნახვები", socials: "სოციალური ბმულები", mail: "ელფოსტის გაგზავნა", info: "ინფო" }
+      ru: { views: "Просмотры", socials: "Социальные ссылки", mail: "Написать на почту", info: "Инфо" }
     };
     var infoLabels = {
       hy: { help: "Օգնություն", faq: "FAQ", terms: "Պայմաններ", privacy: "Գաղտնիություն", disclaimer: "Նշում" },
       en: { help: "Help", faq: "FAQ", terms: "Terms", privacy: "Privacy", disclaimer: "Disclaimer" },
-      ru: { help: "Помощь", faq: "FAQ", terms: "Условия", privacy: "Конфиденциальность", disclaimer: "Примечание" },
-      be: { help: "Дапамога", faq: "FAQ", terms: "Умовы", privacy: "Прыватнасць", disclaimer: "Заўвага" },
-      fr: { help: "Aide", faq: "FAQ", terms: "Conditions", privacy: "Confidentialité", disclaimer: "Mentions" },
-      ka: { help: "დახმარება", faq: "FAQ", terms: "წესები", privacy: "კონფიდენციალურობა", disclaimer: "შენიშვნა" }
+      ru: { help: "Помощь", faq: "FAQ", terms: "Условия", privacy: "Конфиденциальность", disclaimer: "Примечание" }
     };
     var footerCopy = footerLabels[language] || footerLabels.en;
     var infoCopy = infoLabels[language] || infoLabels.en;

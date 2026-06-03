@@ -1,6 +1,6 @@
 (function (site) {
-  var jobBase = "https://smarttechllc.am/images/our-jobs/";
-  var serviceBase = "https://smarttechllc.am/images/services/";
+  var jobBase = "/img/our-jobs/";
+  var serviceBase = "/img/services/";
   var system = {
     cctv: {
       title: {
@@ -12,9 +12,9 @@
     },
     alarm: {
       title: {
-        hy: "Alarm անվտանգության համակարգ",
-        en: "Alarm security system",
-        ru: "Охранная alarm-система"
+        hy: "Ազդարարման անվտանգության համակարգ",
+        en: "Intrusion alarm security system",
+        ru: "Охранная сигнализация"
       },
       image: serviceBase + "fire-security.jpg"
     },
@@ -119,19 +119,19 @@
     },
     {
       id: "only-one",
-      title: "ՕՆլի Վան բնակելի համալիր",
+      title: "Only One Residential Complex",
       works: [
         "Տեսահսկման սարքերի տեղադրում և ծրագրավորում",
         "Դռների մուտքի վերահսկման կարգավորում",
         "Ավտոմատ դոմոֆոնների տեղադրում և կարգավորում",
-        "Alarm անվտանգության համակարգի տեղադրում"
+        "Ազդարարման անվտանգության համակարգի տեղադրում"
       ],
       images: [jobBase + "only-one-1.png", jobBase + "only-one-2.png", jobBase + "only-one-3.png"],
       systemImages: [system.cctv, system.access, system.intercom, system.alarmPanel]
     },
     {
       id: "bidek",
-      title: "Bedeck Davtashen Residential Complex",
+      title: "Bidek Davtashen Residential Complex",
       works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"],
       images: [jobBase + "bidek-1.jpg", jobBase + "bidek-2.jpg", jobBase + "bidek-3.jpg"],
       systemImages: [system.cctv, system.alarmPanel, system.access]
@@ -145,9 +145,6 @@
       translations: {
         en: { title: "Pallada Tsaghkadzor", works: ["Automatic fire alarm", "Evacuation notification system", "Electrical installation works", "BMS"] },
         ru: { title: "Pallada Tsaghkadzor", works: ["Автоматическая пожарная сигнализация", "Система оповещения и эвакуации", "Электромонтажные работы", "BMS"] },
-        be: { title: "Pallada Tsaghkadzor", works: ["Аўтаматычная пажарная сігналізацыя", "Сістэма апавяшчэння і эвакуацыі", "Электрамантажныя работы", "BMS"] },
-        fr: { title: "Pallada Tsaghkadzor", works: ["Alarme incendie automatique", "Système d'alerte et d'évacuation", "Travaux d'installation électrique", "BMS"] },
-        ka: { title: "Pallada Tsaghkadzor", works: ["ავტომატური ხანძრის სიგნალიზაცია", "ევაკუაციის შეტყობინების სისტემა", "ელექტრომონტაჟის სამუშაოები", "BMS"] }
       }
     },
     {
@@ -159,9 +156,6 @@
       translations: {
         en: { title: "ULS Data Center", works: ["Internal lighting and power equipment", "Automatic fire alarm", "Structured cabling system"] },
         ru: { title: "ULS Data Center", works: ["Внутреннее электроосвещение и силовое оборудование", "Автоматическая пожарная сигнализация", "Структурированная кабельная система"] },
-        be: { title: "ULS Data Center", works: ["Унутранае электраасвятленне і сілавое абсталяванне", "Аўтаматычная пажарная сігналізацыя", "Структураваная кабельная сістэма"] },
-        fr: { title: "ULS Data Center", works: ["Éclairage intérieur et équipements de puissance", "Alarme incendie automatique", "Système de câblage structuré"] },
-        ka: { title: "ULS Data Center", works: ["შიდა განათება და ძალოვანი აღჭურვილობა", "ავტომატური ხანძრის სიგნალიზაცია", "სტრუქტურირებული საკაბელო სისტემა"] }
       }
     },
     {
@@ -173,9 +167,6 @@
       translations: {
         en: { title: "ACBA Bank, Sebastia 80", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
         ru: { title: "ACBA Bank, Себастия 80", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
-        be: { title: "ACBA Bank, Себастыя 80", works: ["Сістэма ўнутранага электраасвятлення", "Сілавое абсталяванне", "Электрамантажныя работы"] },
-        fr: { title: "ACBA Bank, Sebastia 80", works: ["Système d'éclairage intérieur", "Système d'équipements de puissance", "Travaux d'installation électrique"] },
-        ka: { title: "ACBA Bank, Sebastia 80", works: ["შიდა განათების სისტემა", "ძალოვანი აღჭურვილობის სისტემა", "ელექტრომონტაჟის სამუშაოები"] }
       }
     },
     {
@@ -187,9 +178,6 @@
       translations: {
         en: { title: "Evocabank", works: ["Internal lighting system", "Power equipment system", "Electrical installation works"] },
         ru: { title: "Evocabank", works: ["Система внутреннего электроосвещения", "Силовое оборудование", "Электромонтажные работы"] },
-        be: { title: "Evocabank", works: ["Сістэма ўнутранага электраасвятлення", "Сілавое абсталяванне", "Электрамантажныя работы"] },
-        fr: { title: "Evocabank", works: ["Système d'éclairage intérieur", "Système d'équipements de puissance", "Travaux d'installation électrique"] },
-        ka: { title: "Evocabank", works: ["შიდა განათების სისტემა", "ძალოვანი აღჭურვილობის სისტემა", "ელექტრომონტაჟის სამუშაოები"] }
       }
     },
     {
@@ -201,9 +189,6 @@
       translations: {
         en: { title: "Movenpick Hotel", works: ["Chief project engineer function", "Technical systems coordination", "Design supervision"] },
         ru: { title: "Гостиница Movenpick", works: ["Функция главного инженера проекта", "Координация технических систем", "Проектный контроль"] },
-        be: { title: "Гасцініца Movenpick", works: ["Функцыя галоўнага інжынера праекта", "Каардынацыя тэхнічных сістэм", "Праектны кантроль"] },
-        fr: { title: "Hôtel Movenpick", works: ["Fonction d'ingénieur principal du projet", "Coordination des systèmes techniques", "Supervision de conception"] },
-        ka: { title: "Movenpick Hotel", works: ["მთავარი პროექტის ინჟინრის ფუნქცია", "ტექნიკური სისტემების კოორდინაცია", "პროექტის ზედამხედველობა"] }
       }
     },
     {
@@ -214,6 +199,42 @@
       systemImages: [system.electrical, system.cctv, system.alarmPanel, system.access, system.serverRack]
     }
   ];
+
+  var activeProjectIds = ["dalan", "abovyan", "wyndham", "only-one", "bidek", "wildberries"];
+  site.content.featuredProjectId = "wyndham";
+  site.content.activeProjectIds = activeProjectIds;
+  var projectStatusLabels = {
+    current: {
+      hy: "Ընթացիկ",
+      en: "In progress",
+      ru: "В работе"
+    },
+    completed: {
+      hy: "Ավարտված",
+      en: "Completed",
+      ru: "Завершено"
+    }
+  };
+  var originalProjectOrder = {};
+
+  site.content.projects.forEach(function (project, index) {
+    var isCurrent = activeProjectIds.indexOf(project.id) >= 0;
+    originalProjectOrder[project.id] = index;
+    project.status = isCurrent ? "current" : "completed";
+    project.statusLabels = projectStatusLabels[project.status];
+  });
+
+  site.content.projects.sort(function (a, b) {
+    var activeA = activeProjectIds.indexOf(a.id);
+    var activeB = activeProjectIds.indexOf(b.id);
+
+    if (activeA >= 0 || activeB >= 0) {
+      return (activeA >= 0 ? activeA : activeProjectIds.length + originalProjectOrder[a.id]) -
+        (activeB >= 0 ? activeB : activeProjectIds.length + originalProjectOrder[b.id]);
+    }
+
+    return originalProjectOrder[a.id] - originalProjectOrder[b.id];
+  });
 
   site.content.completedGallery = [
     jobBase + "completed-projects-1.png",

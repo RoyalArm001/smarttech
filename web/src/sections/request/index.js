@@ -142,16 +142,6 @@
         network: ["switch", "routeur", "pare-feu", "point d'accès Wi-Fi", "baie rack", "patch panel", "câblage UTP/Fibre", "UPS"],
         electrical: ["chemin de câble", "tableau de distribution", "disjoncteur", "ligne d'éclairage", "ligne de prises", "mise à la terre", "alimentation UPS", "mesures"],
         automation: ["contrôleur BMS", "module KNX", "capteur", "module relais", "automatisation éclairage", "intégration HVAC", "tableau de bord", "programmation de scénarios"]
-      },
-      ka: {
-        "video-surveillance": ["IP კამერა", "PTZ კამერა", "NVR/DVR", "HDD არქივი", "PoE switch", "მონიტორი", "დისტანციური ნახვა", "მოძრაობის შეტყობინებები"],
-        alarm: ["ცენტრალური პანელი", "მოძრაობის სენსორი", "კარის/ფანჯრის სენსორი", "კვამლის სენსორი", "სირენა", "keypad", "GSM/Wi-Fi module", "მობილური შეტყობინებები"],
-        "access-control": ["card reader", "biometric reader", "მაგნიტური საკეტი", "გასვლის ღილაკი", "კარის მიმხურავი", "controller", "turnstile", "თანამშრომლების ბარათები"],
-        intercom: ["შესასვლელი პანელი", "ბინის მონიტორი", "IP intercom", "კარის გახსნის მოდული", "კოდით წვდომა", "მობილური აპი", "მრავალბინიანი სისტემა"],
-        "audio-systems": ["ჭერის დინამიკი", "კედლის დინამიკი", "amplifier", "mixer", "microphone", "zone controller", "ხმოვანი შეტყობინება", "საკონფერენციო აუდიო"],
-        network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
-        electrical: ["საკაბელო გზა", "გამანაწილებელი ფარი", "ავტომატი", "განათების ხაზი", "როზეტების ხაზი", "დამიწება", "UPS კვება", "გაზომვები"],
-        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"]
       }
     };
     return dictionaries[language] || dictionaries.en || dictionaries.hy;
@@ -203,15 +193,6 @@
         { value: "Electrical Installation Engineer", title: "Ingénieur installation électrique", text: "lignes électriques, tableaux et éclairage" },
         { value: "BMS Design Specialist", title: "Spécialiste conception BMS", text: "automatisation et logique de gestion du bâtiment" },
         { value: "Audio Systems Specialist", title: "Spécialiste systèmes audio", text: "notification vocale, public address et musique d'ambiance" }
-      ],
-      ka: [
-        { value: "Project Manager", title: "პროექტის მენეჯერი", text: "პირველადი განხილვა და სამუშაოების დაგეგმვა" },
-        { value: "IT Network Engineer", title: "IT ქსელების ინჟინერი", text: "ქსელები, Wi-Fi, switch/rack გადაწყვეტილებები" },
-        { value: "Video and Access Control Engineer", title: "ვიდეო / წვდომის კონტროლი", text: "CCTV, კარები, დომოფონი, access control" },
-        { value: "Alarm System Engineer", title: "სიგნალიზაციის სისტემების ინჟინერი", text: "alarm, ხანძარსაწინააღმდეგო უსაფრთხოება და დაცვის ზონები" },
-        { value: "Electrical Installation Engineer", title: "ელექტრომონტაჟის ინჟინერი", text: "ელექტრო ხაზები, ფარები და განათება" },
-        { value: "BMS Design Specialist", title: "BMS პროექტირების სპეციალისტი", text: "ავტომატიზაცია და შენობის მართვის ლოგიკა" },
-        { value: "Audio Systems Specialist", title: "აუდიო სისტემების სპეციალისტი", text: "ხმოვანი შეტყობინებები, public address და ფონური მუსიკა" }
       ]
     };
     return dictionaries[language] || dictionaries.en || dictionaries.hy;
@@ -611,84 +592,6 @@
         empty: "Non renseigné",
         noSystems: "Aucun système sélectionné",
         noMaintenance: "Aucune tâche de service sélectionnée"
-      },
-      ka: {
-        heroEyebrow: "გაყიდვა და სერვისი",
-        heroTitle: "შეადგინეთ სისტემის განაცხადი",
-        heroText: "აირჩიეთ სისტემები, რაოდენობა და მომსახურების ტიპი. ელფოსტა გაიხსნება უკვე მომზადებული ტექსტით.",
-        introEyebrow: "განაცხადის კონსტრუქტორი",
-        introTitle: "აირჩიეთ გადაწყვეტა, დანარჩენს ჩვენ დავითვლით",
-        introText: "ეს გვერდი გეხმარებათ სწრაფად შექმნათ პირველადი ტექნიკური დავალება გაყიდვის, მონტაჟის ან სერვისისთვის.",
-        requestType: "განაცხადის ტიპი",
-        requestTypes: [
-          { value: "გაყიდვა და ახალი სისტემა", label: "გაყიდვა", note: "ახალი სისტემის შერჩევა და მონტაჟი" },
-          { value: "სერვისი", label: "სერვისი", note: "არსებული სისტემის შემოწმება ან შეკეთება" },
-          { value: "კონსულტაცია და აუდიტი", label: "აუდიტი", note: "ობიექტის დათვალიერება და ტექნიკური შეთავაზება" }
-        ],
-        contact: "საკონტაქტო მონაცემები",
-        object: "ობიექტის მონაცემები",
-        systems: "სისტემები",
-        visit: "ვიზიტი და აზომვა",
-        visitText: "თუ კლიენტი ჯერ არ არის დარწმუნებული არჩევანში, შეუძლია მოითხოვოს სპეციალისტის ვიზიტი აზომვისა და ტექნიკური შეთავაზებისთვის.",
-        visitNeeded: "საჭიროა სპეციალისტის ვიზიტი",
-        visitNeededNote: "გუნდი შეათანხმებს დროს და სპეციალისტებს",
-        visitDate: "სასურველი თარიღი",
-        visitTime: "სასურველი დრო",
-        visitAccess: "ვიზიტის / აზომვის შენიშვნები",
-        visitAccessPlaceholder: "მაგალითად: შესვლა დაცვიდან არის, წინასწარ დარეკვაა საჭირო, არის გეგმა ან პროექტი",
-        specialistsTitle: "რომელი სპეციალისტებია საჭირო",
-        specialistsHint: "აირჩიეთ კონკრეტული სპეციალისტები ან დატოვეთ ცარიელი, გუნდი თავად გადაწყვეტს",
-        maintenance: "სერვისის სამუშაოები",
-        summaryTitle: "გაგზავნის ცენტრი",
-        summaryText: "შეადგინეთ განაცხადი და შემდეგ გაგზავნეთ. წერილის სათაური და ტექსტი ავტომატურად შეიქმნება.",
-        optionLabel: "რა არის საჭირო სისტემაში",
-        optionHint: "აირჩიეთ მოწყობილობები და სამუშაოები",
-        brandLabel: "სასურველი ბრენდები / მოდელები",
-        brandHint: "აირჩიეთ ერთი ან რამდენიმე",
-        readyTitle: "განაცხადი ავტომატურად მომზადდება",
-        readyText: "გრძელი ტექსტის წინასწარი ნახვა დამალულია. თქვენი არჩევანი დაემატება წერილს გაგზავნისას.",
-        sendingTitle: "წერილი მზადდება",
-        sendingText: "ელფოსტის აპი გაიხსნება მომზადებული სათაურითა და ტექსტით.",
-        name: "სახელი / კომპანია",
-        phone: "ტელეფონი",
-        email: "Email",
-        objectType: "ობიექტის ტიპი",
-        area: "ფართობი ან ოთახების რაოდენობა",
-        address: "მისამართი",
-        deadline: "სასურველი ვადა",
-        notes: "დამატებითი შენიშვნები",
-        objectOptions: ["საცხოვრებელი კომპლექსი", "კერძო სახლი", "ოფისი", "მაღაზია / შოურუმი", "საწყობი / წარმოება", "სხვა"],
-        deadlineOptions: ["სასწრაფო", "1 კვირამდე", "1 თვემდე", "გეგმიური"],
-        systemsList: [
-          { id: "video-surveillance", title: "ვიდეოთვალთვალი", unit: "წერტილი/მოწყობილობა", text: "კამერები, NVR/DVR, დისტანციური ნახვა" },
-          { id: "alarm", title: "Alarm უსაფრთხოება", unit: "ზონა", text: "სენსორები, სირენა, შეტყობინებები" },
-          { id: "access-control", title: "წვდომის კონტროლი", unit: "კარი", text: "ბარათები, კოდები, კარების მართვა" },
-          { id: "intercom", title: "დომოფონი", unit: "ბინა/წერტილი", text: "ავტომატური დომოფონები და გახსნის სისტემები" },
-          { id: "audio-systems", title: "აუდიო სისტემები", unit: "ზონა/დინამიკი", text: "ფონური მუსიკა, public address და ხმოვანი შეტყობინებები" },
-          { id: "network", title: "ქსელები და Wi-Fi", unit: "წერტილი", text: "LAN, rack, Wi-Fi დაფარვა" },
-          { id: "electrical", title: "ელექტრომონტაჟი", unit: "წერტილი", text: "ფარები, კაბელები, განათება" },
-          { id: "automation", title: "BMS / ავტომატიზაცია", unit: "კვანძი", text: "შენობის მართვა და smart logic" }
-        ],
-        maintenanceList: [
-          "გეგმიური მომსახურება",
-          "სასწრაფო შეკეთება",
-          "პროგრამირება / გამართვა",
-          "ტექნიკური აუდიტი და დოკუმენტაცია"
-        ],
-        openMail: "ელფოსტის გახსნა",
-        sendProject: "გაგზავნა როგორც ახალი პროექტი",
-        download: "TXT-ის ჩამოტვირთვა",
-        reset: "გასუფთავება",
-        placeholderName: "მაგალითად: Armen / ABC LLC",
-        placeholderArea: "მაგალითად: 120 მ² ან 8 ოთახი",
-        placeholderAddress: "ქალაქი, ქუჩა, შენობა",
-        placeholderNotes: "აღწერეთ ობიექტი, არსებული სისტემა ან განსაკუთრებული მოთხოვნები",
-        statusMail: "ელფოსტის აპი გაიხსნა მომზადებული წერილით. თუ არ გაიხსნა, ჩამოტვირთეთ TXT ფაილი და გააგზავნეთ email-ით.",
-        statusDownload: "TXT ფაილი მზად არის.",
-        subject: "Smart Tech სისტემის განაცხადი",
-        empty: "არ არის შევსებული",
-        noSystems: "სისტემები ჯერ არ არის არჩეული",
-        noMaintenance: "სერვისის სამუშაოები ჯერ არ არის არჩეული"
       }
     };
 
@@ -738,7 +641,7 @@
   site.sections.request = function request() {
     var e = site.utils.escapeHtml;
     var copy = languageCopy();
-    var heroImage = "https://smarttechllc.am/images/services/building_management_automation.jpg";
+    var heroImage = "/img/services/building_management_automation.jpg";
 
     var requestKinds = ["sale", "service", "audit"];
     var typeCards = copy.requestTypes.map(function (type, index) {
@@ -766,8 +669,7 @@
       en: { open: "Open list", confirm: "Confirm", none: "Nothing selected", selected: "selected" },
       ru: { open: "Открыть список", confirm: "Подтвердить", none: "Ничего не выбрано", selected: "выбрано" },
       be: { open: "Адкрыць спіс", confirm: "Пацвердзіць", none: "Нічога не выбрана", selected: "выбрана" },
-      fr: { open: "Ouvrir la liste", confirm: "Confirmer", none: "Rien sélectionné", selected: "sélectionné" },
-      ka: { open: "სიის გახსნა", confirm: "დადასტურება", none: "არაფერია არჩეული", selected: "არჩეულია" }
+      fr: { open: "Ouvrir la liste", confirm: "Confirmer", none: "Rien sélectionné", selected: "sélectionné" }
     };
     var menuCopy = menuText[site.i18n.language] || menuText.en;
 
@@ -921,20 +823,6 @@
         serviceText: "Choisissez les tâches de service et le système concerné.",
         auditTitle: "Audit et mesure",
         auditText: "Indiquez l'heure de visite, les spécialistes et les détails du site."
-      },
-      ka: {
-        stepType: "ტიპი",
-        stepContact: "მონაცემები",
-        stepScope: "არჩევანი",
-        stepSend: "გაგზავნა",
-        back: "უკან",
-        next: "შემდეგი",
-        saleTitle: "გაყიდვა და ახალი სისტემა",
-        saleText: "აირჩიეთ სისტემები, რაოდენობა, მოწყობილობები და სასურველი ბრენდები.",
-        serviceTitle: "სერვისი",
-        serviceText: "აირჩიეთ სერვისის სამუშაოები და სისტემა, რომელსაც ეხება ამოცანა.",
-        auditTitle: "აუდიტი და აზომვა",
-        auditText: "მიუთითეთ ვიზიტის დრო, სპეციალისტები და ობიექტის მონაცემები."
       }
     };
     var wizard = labels[site.i18n.language] || labels.en || labels.hy;

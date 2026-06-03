@@ -16,9 +16,15 @@
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "devDependencies": {
-    "playwright": "^1.60.0"
+    "playwright": "^1.60.0",
+    "sharp": "^0.34.5"
+  },
+  "dependencies": {
+    "@google/genai": "^2.7.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2"
   }
 }

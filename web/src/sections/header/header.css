@@ -649,66 +649,112 @@ body.ui-theme-dark .language-button {
   /* Desktop dropdown style for the hamburger (3 lines) menu */
   .nav-panel {
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     right: 0;
     left: auto;
-    width: 260px;
+    width: 296px;
     max-width: calc(100vw - 40px);
-    max-height: 65vh;
+    max-height: 76vh;
     overflow-y: auto;
     z-index: 250;
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
-    padding: 6px 0;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(20, 33, 38, 0.18);
+    padding: 12px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px);
-    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+    transform: translateY(-8px) scale(0.985);
+    transform-origin: top right;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(0.22, 0.74, 0.2, 1), visibility 180ms ease;
   }
 
   body.ui-theme-dark .nav-panel {
     background: #142025;
     border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.46);
   }
 
   .nav-panel.is-open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   /* Clean desktop-style list inside the hamburger dropdown */
   .nav-panel .mobile-nav-list.mobile-nav-grid {
-    display: block;
-    padding: 4px 6px;
+    display: grid;
+    gap: 3px;
+    padding: 0;
   }
 
   .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link {
-    display: block;
-    padding: 8px 14px;
-    margin: 1px 4px;
-    border-radius: 8px;
-    font-size: 0.92rem;
-    font-weight: 500;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    margin: 0;
+    border-radius: 13px;
+    font-size: 0.96rem;
+    font-weight: 600;
     color: var(--ink);
     background: transparent;
     border: none;
     text-align: left;
-    transition: background 120ms ease, color 120ms ease;
+    transition: background 160ms ease, color 160ms ease, transform 160ms ease, padding 160ms ease;
   }
 
-  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:hover {
-    background: rgba(10, 168, 150, 0.08);
+  /* Chevron affordance so users see each item is reachable */
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    margin-left: 12px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    opacity: 0.32;
+    transform: rotate(-45deg);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:hover,
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:focus-visible {
+    background: rgba(10, 168, 150, 0.1);
     color: var(--teal-dark);
+    padding-left: 22px;
+  }
+
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:hover::after,
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:focus-visible::after {
+    opacity: 0.85;
+    transform: rotate(-45deg) translate(2px, -2px);
   }
 
   .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link.is-active {
-    background: var(--teal);
-    color: #fff;
-    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--panel-teal), var(--panel-steel));
+    box-shadow: 0 10px 22px rgba(8, 123, 112, 0.24);
+    font-weight: 700;
+  }
+
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link.is-active::after {
+    opacity: 0.9;
+  }
+
+  /* Last item (Request) reads as a call-to-action. */
+  .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:last-child:not(.is-active) {
+    margin-top: 7px;
+    color: var(--teal-dark);
+    background: rgba(10, 168, 150, 0.08);
+    border: 1px solid rgba(10, 168, 150, 0.24);
+  }
+
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-link:last-child:not(.is-active) {
+    color: #58d8c9;
+    background: rgba(82, 205, 191, 0.1);
+    border-color: rgba(82, 205, 191, 0.26);
   }
 
   /* Hide mobile header/logo inside the compact desktop dropdown */
@@ -718,10 +764,10 @@ body.ui-theme-dark .language-button {
 
   /* Style the contact action button nicer in dropdown */
   .nav-panel .mobile-action-btn {
-    margin: 8px 10px 4px;
-    padding: 9px 14px;
-    font-size: 0.9rem;
-    border-radius: 8px;
+    margin: 8px 0 0;
+    padding: 11px 16px;
+    font-size: 0.92rem;
+    border-radius: 13px;
   }
 }
 

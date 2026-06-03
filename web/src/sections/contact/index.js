@@ -4,7 +4,7 @@
     var contacts = site.content.contacts;
     var labels = site.i18n.get("contact.labels");
     var mapUrl = "https://maps.google.com/?ll=" + contacts.map.lat + "," + contacts.map.lng;
-    var phoneLabels = [labels.office, labels.main, labels.store, labels.powder];
+    var phoneLabels = [labels.office, labels.powder, labels.store, labels.main];
     var emails = contacts.emails && contacts.emails.length ? contacts.emails : [contacts.email];
     var formAction = site.utils.mailTo(contacts.email, "Smart Tech contact request", "");
 
@@ -36,7 +36,7 @@
         titleKey: "contact.title",
         text: site.i18n.get("contact.text"),
         textKey: "contact.text",
-        image: "https://smarttechllc.am/images/message.avif",
+        image: "/img/message.avif",
         tone: "contact"
       }) +
       '<section id="contact" class="section contact-section">' +

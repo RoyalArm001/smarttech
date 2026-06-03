@@ -50,9 +50,18 @@
         "</div>";
     }).join("");
 
-    // Show only services starting from the 7th one on the homepage.
-    // The first 6 stay only on the dedicated /services page.
-    var allServicesOnHome = site.content.services.slice(6).map(function (service) {
+    var prioritizedServiceIds = ["video-surveillance", "fire-security", "networks", "electrical", "automation", "systems-design"];
+    var serviceById = {};
+    site.content.services.forEach(function (service) {
+      serviceById[service.id] = service;
+    });
+    var featuredServices = prioritizedServiceIds.map(function (id) {
+      return serviceById[id];
+    }).filter(Boolean);
+    if (!featuredServices.length) {
+      featuredServices = site.content.services.slice(0, 6);
+    }
+    var allServicesOnHome = featuredServices.map(function (service) {
       var text = site.i18n.service(service);
       return "" +
         '<a class="home-service-card reveal" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
@@ -64,11 +73,14 @@
 
     var homeProjects = site.content.projects.map(function (project) {
       var text = site.i18n.project(project);
+      var statusLabels = project.statusLabels || {};
+      var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
       var works = (text.works || project.works || []).slice(0, 3).map(function (work) {
         return "<li>" + e(work) + "</li>";
       }).join("");
       return "" +
         '<a class="home-bottom-project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
+          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
           '<span class="home-bottom-project-image">' +
             '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="eager" onerror="this.style.opacity=0;this.parentElement.classList.add(\'is-broken\');">' +
           "</span>" +
@@ -79,15 +91,30 @@
         "</a>";
     }).join("");
 
-    var partnerLogos = (site.content.partners || []).slice(0, 8).map(function (partner) {
+    var homeClientLogos = (site.content.partners || []).slice(0, 5).map(function (partner) {
       return "" +
         '<a class="home-partner-logo reveal" href="' + e(site.utils.pageUrl("partners")) + '" aria-label="' + e(partner.name) + '">' +
-          '<img src="' + e(partner.logo) + '" alt="' + e(partner.name) + '" loading="lazy">' +
+          '<img src="' + e(partner.logo) + '" alt="' + e(partner.name) + '" loading="lazy" decoding="async">' +
         "</a>";
     }).join("");
 
-    var certificateDocuments = site.content.company.licenseDocuments || [];
-    var featuredCertificates = certificateDocuments.slice(0, 2);
+    var homeClientsSection = homeClientLogos ? "" +
+      '<section class="section home-partners-strip" id="partners">' +
+        '<div class="container">' +
+          '<div class="section-head compact-head">' +
+            "<div>" +
+              '<span class="eyebrow">' + e(site.i18n.get("home.servedClientsEyebrow", "Մատուցված ծառայություններ")) + "</span>" +
+              '<h2 class="section-title">' + e(site.i18n.get("home.servedClientsTitle", "Որոշ կազմակերպություններ, որոնց սպասարկել ենք")) + "</h2>" +
+              '<p class="section-copy">' + e(site.i18n.get("home.servedClientsText", "Սրանք գործընկերներ չեն․ ներկայացված են մի քանի կազմակերպություններ, որոնց օբյեկտներում Smart Tech-ը ծառայություններ է մատուցել։")) + "</p>" +
+            "</div>" +
+            '<a class="button" href="' + e(site.utils.pageUrl("partners")) + '">' + e(site.i18n.get("home.servedClientsButton", "Տեսնել բոլորը")) + "</a>" +
+          "</div>" +
+          '<div class="home-partner-grid">' + homeClientLogos + "</div>" +
+        "</div>" +
+      "</section>" : "";
+
+    var certificateDocuments = site.i18n.get("home.featuredLicenses", site.content.company.licenseDocuments || []);
+    var featuredCertificates = certificateDocuments.slice(0, 3);
     var certificateCards = featuredCertificates.map(function (item) {
       return "" +
         '<a class="home-certificate-card home-certificate-card-featured reveal" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +
@@ -118,7 +145,7 @@
       return !director || member.id !== director.id;
     }).sort(sortTeamMembers);
 
-    function renderHomeTeamCard(member, extraClass) {
+    function renderHomeTeamCard(member, extraClass, showText) {
       var localized = site.i18n.teamMember(member);
       var title = localized.title || member.title;
       var text = localized.text || member.text;
@@ -132,50 +159,28 @@
           '<span class="home-team-copy">' +
             '<span class="home-team-department">' + e(member.department || "Team") + "</span>" +
             "<strong>" + e(title) + "</strong>" +
-            "<em>" + e(text) + "</em>" +
+            (showText ? "<em>" + e(text) + "</em>" : "") +
           "</span>" +
         "</a>";
     }
 
-    var directorCard = director ? renderHomeTeamCard(director, "home-team-director") : "";
-    var managerGroups = specialists.filter(isManager).map(function (manager) {
-      return {
-        manager: manager,
-        reports: specialists.filter(function (member) {
-          return !isManager(member) && member.managerId === manager.id;
-        }).sort(sortTeamMembers)
-      };
-    }).sort(function (a, b) {
-      return sortTeamMembers(a.manager, b.manager);
-    });
-    var usedReports = {};
-    managerGroups.forEach(function (group) {
-      group.reports.forEach(function (member) {
-        usedReports[member.id] = true;
+    var directorCard = director ? renderHomeTeamCard(director, "home-team-director", true) : "";
+    var featuredTeamMembers = specialists.filter(isManager).slice(0, 3);
+    if (featuredTeamMembers.length < 3) {
+      specialists.forEach(function (member) {
+        var alreadyFeatured = featuredTeamMembers.some(function (featuredMember) {
+          return featuredMember.id === member.id;
+        });
+        if (!alreadyFeatured && featuredTeamMembers.length < 3) {
+          featuredTeamMembers.push(member);
+        }
       });
-    });
-    var unassignedReports = specialists.filter(function (member) {
-      return !isManager(member) && !usedReports[member.id];
-    });
-    if (unassignedReports.length && managerGroups.length) {
-      managerGroups[0].reports = managerGroups[0].reports.concat(unassignedReports);
     }
-
-    var managerCards = managerGroups.map(function (group) {
-      var reports = group.reports.map(function (member) {
-        return '<span class="home-team-report-node">' + renderHomeTeamCard(member, "home-team-specialist") + "</span>";
-      }).join("");
-      var hasReports = Boolean(reports);
-
-      return "" +
-        '<article class="home-team-group ' + (hasReports ? "has-reports" : "is-solo") + ' reveal" style="--team-color: ' + e(group.manager.color) + '">' +
-          renderHomeTeamCard(group.manager, "home-team-manager") +
-          (hasReports ? '<span class="home-team-branch" aria-hidden="true"></span><div class="home-team-grid">' + reports + "</div>" : "") +
-        "</article>";
+    var teamPreviewCards = featuredTeamMembers.map(function (member) {
+      return renderHomeTeamCard(member, "home-team-preview-card", false);
     }).join("");
 
     return "" +
-      '<div id="top"></div>' +
       '<section class="section home-overview" id="services">' +
         '<div class="container home-overview-grid">' +
           '<div class="home-overview-copy reveal">' +
@@ -212,25 +217,13 @@
           "</div>" +
         "</div>" +
       "</section>" +
-      '<section class="section home-partners-strip" id="partners">' +
-        '<div class="container">' +
-          '<div class="section-head compact-head">' +
-            "<div>" +
-              '<span class="eyebrow">' + e(site.i18n.get("partnersPage.eyebrow")) + "</span>" +
-              '<h2 class="section-title">' + e(site.i18n.get("home.partnersTitle", site.i18n.get("partnersPage.eyebrow", "Գործընկերները"))) + "</h2>" +
-            "</div>" +
-            '<a class="button" href="' + e(site.utils.pageUrl("partners")) + '">' + e(site.i18n.get("common.learnMore", "View more")) + "</a>" +
-          "</div>" +
-          '<div class="home-partner-grid">' + partnerLogos + "</div>" +
-        "</div>" +
-      "</section>" +
       '<section class="home-contact-cta" id="contact">' +
         '<div class="container home-contact-inner reveal">' +
           "<div>" +
             "<h2>" + e(site.i18n.get("home.contactTitle")) + "</h2>" +
             "<p>" + e(site.i18n.get("home.contactText")) + "</p>" +
           "</div>" +
-          '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.proposal", site.i18n.get("common.consultation"))) + "</a>" +
+          '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", site.i18n.get("common.consultation")))) + "</a>" +
         "</div>" +
       "</section>" +
       '<section class="section home-projects-showcase" id="projects">' +
@@ -245,32 +238,34 @@
           '<div class="home-bottom-project-grid">' + homeProjects + "</div>" +
         "</div>" +
       "</section>" +
+      homeClientsSection +
+      '<section class="section home-certificates-section">' +
+        '<div class="container">' +
+          '<div class="section-head compact-head">' +
+            "<div>" +
+              '<span class="eyebrow">' + e(site.i18n.get("home.licensesEyebrow", "Licenses")) + '</span>' +
+              '<h2 class="section-title">' + e(site.i18n.get("home.licensesTitle", "Licenses and certificates")) + '</h2>' +
+            "</div>" +
+          "</div>" +
+          '<div class="home-certificate-grid">' + certificateCards + "</div>" +
+        "</div>" +
+      "</section>" +
       '<section class="section home-team-showcase" id="about">' +
         '<div class="container">' +
           '<div class="section-head compact-head">' +
             "<div>" +
               '<span class="eyebrow">' + e(site.i18n.get("teamPage.eyebrow", "Team")) + "</span>" +
               '<h2 class="section-title">' + e(site.i18n.get("teamPage.title", "Our team")) + "</h2>" +
-              '<p class="home-team-intro">' + e(site.i18n.get("teamPage.managementText", "Direction comes first, then responsible managers, with specialists grouped directly under each direction.")) + "</p>" +
+              '<p class="home-team-intro">' + e(site.i18n.get("teamPage.text", "Project management, IT infrastructure and engineering systems are coordinated by dedicated specialists.")) + "</p>" +
             "</div>" +
             '<a class="button" href="' + e(site.utils.pageUrl("team")) + '">' + e(site.i18n.get("common.learnMore", "View team")) + "</a>" +
           "</div>" +
-          '<div class="home-team-org" aria-label="' + e(site.i18n.get("teamPage.managementTitle", "Team structure")) + '">' +
-            '<div class="home-team-lead">' + directorCard + "</div>" +
-            '<span class="home-team-line" aria-hidden="true"></span>' +
-            '<div class="home-team-manager-grid">' + managerCards + "</div>" +
-          '</div>' +
-        "</div>" +
-      "</section>" +
-      '<section class="section home-certificates-section">' +
-        '<div class="container">' +
-          '<div class="section-head compact-head">' +
-            "<div>" +
-              '<span class="eyebrow">Լիցենզիաներ</span>' +
-              '<h2 class="section-title">Լիցենզիաներ և սերտիֆիկատներ</h2>' +
+          '<div class="home-team-org home-team-preview" aria-label="' + e(site.i18n.get("teamPage.title", "Our team")) + '">' +
+            '<div class="home-team-lead">' +
+              directorCard +
             "</div>" +
-          "</div>" +
-          '<div class="home-certificate-grid">' + certificateCards + "</div>" +
+            '<div class="home-team-preview-grid">' + teamPreviewCards + "</div>" +
+          '</div>' +
         "</div>" +
       "</section>";
   };

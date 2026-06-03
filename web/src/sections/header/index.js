@@ -1,34 +1,5 @@
 (function (site) {
   function flagSvg(language) {
-    if (language === "be") {
-      return '' +
-        '<svg viewBox="0 0 64 40" role="img" aria-hidden="true">' +
-          '<rect width="64" height="40" fill="#c8313e"></rect>' +
-          '<rect y="27" width="64" height="13" fill="#3f9f4b"></rect>' +
-          '<rect width="9" height="40" fill="#ffffff"></rect>' +
-          '<path d="M1 4h2v2H1zm4 0h2v2H5zM3 8h2v2H3zm-2 4h2v2H1zm4 0h2v2H5zM3 16h2v2H3zm-2 4h2v2H1zm4 0h2v2H5zM3 24h2v2H3zm-2 4h2v2H1zm4 0h2v2H5zM3 32h2v2H3z" fill="#c8313e"></path>' +
-        '</svg>';
-    }
-
-    if (language === "fr") {
-      return '' +
-        '<svg viewBox="0 0 64 40" role="img" aria-hidden="true">' +
-          '<rect width="21.33" height="40" fill="#1f4fa8"></rect>' +
-          '<rect x="21.33" width="21.34" height="40" fill="#ffffff"></rect>' +
-          '<rect x="42.67" width="21.33" height="40" fill="#c93838"></rect>' +
-        '</svg>';
-    }
-
-    if (language === "ka") {
-      return '' +
-        '<svg viewBox="0 0 64 40" role="img" aria-hidden="true">' +
-          '<rect width="64" height="40" fill="#ffffff"></rect>' +
-          '<rect x="27" width="10" height="40" fill="#c93838"></rect>' +
-          '<rect y="15" width="64" height="10" fill="#c93838"></rect>' +
-          '<path d="M12 7h3v4h4v3h-4v4h-3v-4H8v-3h4zm37 0h3v4h4v3h-4v4h-3v-4h-4v-3h4zM12 27h3v4h4v3h-4v4h-3v-4H8v-3h4zm37 0h3v4h4v3h-4v4h-3v-4h-4v-3h4z" fill="#c93838"></path>' +
-        '</svg>';
-    }
-
     if (language === "ru") {
       return '' +
         '<svg viewBox="0 0 64 40" role="img" aria-hidden="true">' +
@@ -117,10 +88,7 @@
     var languageButtons = [
       { code: "hy", short: "AM", label: "Armenian" },
       { code: "ru", short: "RU", label: "Russian" },
-      { code: "en", short: "EN", label: "English" },
-      { code: "be", short: "BE", label: "Belarusian" },
-      { code: "fr", short: "FR", label: "French" },
-      { code: "ka", short: "KA", label: "Georgian" }
+      { code: "en", short: "EN", label: "English" }
     ].map(function (language) {
       return '' +
         '<button class="language-button notranslate" type="button" data-online-lang="' + e(language.code) + '" aria-label="' + e(language.label) + '" translate="no">' +

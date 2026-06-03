@@ -25,15 +25,22 @@
         number: 1,
         title: "Շինարարության իրականացում",
         alt: "Շինարարության իրականացման լիցենզիա",
-        image: "https://smarttechllc.am/images/certificates/license-12.jpg",
-        thumb: "https://smarttechllc.am/images/certificates/license-12.jpg"
+        image: "/img/certificates/license-12.jpg",
+        thumb: "/img/certificates/license-12.jpg"
       },
       {
         number: 2,
         title: "Լիցենզիայի ներդիր",
         alt: "Լիցենզիայի ներդիր",
-        image: "https://smarttechllc.am/images/certificates/license-13.jpg",
-        thumb: "https://smarttechllc.am/images/certificates/license-13.jpg"
+        image: "/img/certificates/license-13.jpg",
+        thumb: "/img/certificates/license-13.jpg"
+      },
+      {
+        number: 3,
+        title: "Կապի համակարգերի լիցենզիա",
+        alt: "Կապի համակարգերի լիցենզիա",
+        image: "/img/certificates/license-communication.jpg",
+        thumb: "/img/certificates/license-communication.jpg"
       }
     ],
     stats: [

@@ -24,7 +24,7 @@ If port 3000 is busy, the server will automatically try the next available port 
 
 ## Notes
 
-This is a static landing website. There is no admin panel, backend, or database.
+This is a mostly static website served by Node.js. The AI chatbot uses the `/api/chat` backend route.
 Edit website content directly in `web/src/content` and `web/pages`.
 
 ## Check
@@ -34,6 +34,20 @@ npm run check
 ```
 
 This validates the main Node and client-side JavaScript files for syntax errors.
+
+## AI Chatbot
+
+The Gemini chatbot is server-only and requires a Node/Express runtime.
+
+Required server env var:
+
+- `GEMINI_API_KEY`
+
+Optional env var:
+
+- `GEMINI_MODEL=gemini-2.5-flash`
+
+Never expose the Gemini key in frontend JavaScript. Static-only hosts can publish the site, but `/api/chat` needs a Node server or an equivalent serverless function.
 
 ## Visit Counter
 
@@ -59,7 +73,7 @@ For Vercel or Cloudflare Pages, use exactly:
 
 - Build command: `npm run web`
 - Output directory: `dist`
-- Node version: 18 or newer
+- Node version: 20 or newer
 - Start command: leave empty
 
 After build, the hosting platform must publish `dist/`, not the project root and not `web/`.

@@ -1,10 +1,12 @@
 (function (site) {
   site.content.navigation = [
-    { label: "Գլխավոր", href: "#top" },
-    { label: "Ծառայություններ", href: "#services" },
-    { label: "Նախագծեր", href: "#projects" },
-    { label: "Մեր մասին", href: "#about" },
-    { label: "Կապ", href: "#contact" },
-    { label: "Գործընկերներ", href: "#partners" }
+    { href: "#top" },
+    { href: "#services" },
+    { href: "#projects" },
+    { href: "#team" },
+    { href: "#partners" },
+    { href: "#about" },
+    { href: "#contact" },
+    { href: "#request" }
   ];
 })(window.SmartTech);

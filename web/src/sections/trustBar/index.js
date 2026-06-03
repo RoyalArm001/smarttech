@@ -122,33 +122,12 @@
             detail: "contrôle, réglage et accompagnement technique continu"
           }
         ]
-      },
-      ka: {
-        aria: "Smart Tech-ის ნდობის მაჩვენებლები",
-        method: "Smart Tech method",
-        noteTitle: "ერთი გუნდი. ერთი პასუხისმგებლობა.",
-        noteText: "პროექტირებიდან მხარდაჭერამდე ერთ პროცესში.",
-        noteMeta: "უსაფრთხოება • ელექტრომონტაჟი • ავტომატიზაცია",
-        items: [
-          {
-            value: "100+",
-            label: "დანერგილი გადაწყვეტა",
-            detail: "ბიზნესის, საცხოვრებელი და საწარმოო ობიექტებისთვის"
-          },
-          {
-            value: "13",
-            label: "სერვისის მიმართულება",
-            detail: "ვიდეომეთვალყურეობიდან BMS-მდე და ელექტრომონტაჟამდე"
-          },
-          {
-            value: "24/7",
-            label: "მხარდაჭერის მზადყოფნა",
-            detail: "შემოწმება, გამართვა და შემდგომი ტექნიკური ზრუნვა"
-          }
-        ]
       }
     };
-    var copy = copyByLanguage[language] || copyByLanguage.hy;
+    var copy = site.i18n.pickLanguageDictionary(copyByLanguage, language);
+    if (copy.items && copy.items[1]) {
+      copy.items[1].value = String((site.content.services || []).length);
+    }
     var stats = copy.items.map(function (item, index) {
       return '' +
         '<div class="trust-item reveal trust-item-' + (index + 1) + '">' +

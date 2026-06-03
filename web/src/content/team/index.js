@@ -19,7 +19,7 @@
         "Ընկերության ռազմավարական զարգացում և հիմնական ուղղությունների կառավարում",
         "Նախագծերի որակի, ժամկետների և հաճախորդների հետ աշխատանքի վերահսկում",
         "Տեխնիկական թիմերի, գնումների և դաշտային աշխատանքի համակարգում",
-        "Գործընկերների և խոշոր պատվիրատուների հետ երկարաժամկետ հարաբերությունների ձևավորում"
+        "Խոշոր պատվիրատուների և սպասարկվող կազմակերպությունների հետ երկարաժամկետ հարաբերությունների ձևավորում"
       ],
       socials: [
         { label: "LinkedIn", href: "https://www.linkedin.com/" },
@@ -177,36 +177,6 @@
         { title: "Systems Design", image: "/src/assets/team/certificates/cert-agile.svg" }
       ]
     },
-    /*
-    {
-      id: "procurement-head",
-      accent: "BUY",
-      department: "Operations",
-      roleLevel: "manager",
-      managerId: "director",
-      order: 13,
-      image: "/src/assets/team/project-manager.svg",
-      coverImage: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1400&q=80",
-      color: "#087b70",
-      email: "info@smarttechllc.am",
-      title: "Գնումների բաժնի ղեկավար",
-      text: "Կառավարում է սարքավորումների գնումները, մատակարարների ընտրությունը և նախագծերի նյութական ապահովումը։",
-      level: "Procurement Lead",
-      experience: "9+ տարի",
-      workInfo: [
-        "Սարքավորումների և նյութերի գնման պլանավորում ըստ նախագծերի",
-        "Մատակարարների հետ բանակցություններ և ժամկետների վերահսկում",
-        "Որակի, երաշխիքների և համատեղելիության ստուգում",
-        "Պահեստի և դաշտային թիմերի մատակարարման համակարգում"
-      ],
-      socials: [
-        { label: "LinkedIn", href: "https://www.linkedin.com/" }
-      ],
-      certificates: [
-        { title: "Procurement Management", image: "/src/assets/team/certificates/cert-pmp.svg" }
-      ]
-    },
-    */
     {
       id: "video-access-control-engineer",
       accent: "CCTV",

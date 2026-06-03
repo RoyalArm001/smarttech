@@ -1,4 +1,4 @@
-﻿(function (site) {
+(function (site) {
   var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
@@ -8,6 +8,9 @@
   var chatTypingTimer = null;
   var chatHistory = [];
   var chatHistoryLimit = 40;
+  var chatQuestionLimit = 10;
+  var chatUserQuestionCount = 0;
+  var chatLimitReached = false;
   var chatSurveyState = null;
   var backToTopUi = null;
   var licenseViewerUi = null;
@@ -38,7 +41,7 @@
   var firebaseAuthTokenPromise = null;
   var uiSettings = readUiSettings();
 
-  var googleAnalyticsMeasurementId = ""; // Set to a real GA4 measurement ID, for example G-ABC123DEF4.
+  var googleAnalyticsMeasurementId = "G-1SC80R2NZE";
   var DISABLE_GOOGLE_TRANSLATE = true; // Set to true to disable Google Translate widget for faster performance
 
   /* Mobile Bottom Navigation (must be defined early, before first render) */
@@ -57,21 +60,21 @@
       type: "link",
       route: "request",
       labelKey: "common.proposal",
-      labels: { hy: "Պատվիրել", en: "Order", ru: "Заказать", be: "Замовіць", fr: "Commander", ka: "შეკვეთა" },
+      labels: { hy: "Պատվիրել", en: "Order", ru: "Заказать" },
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.8h12a1.4 1.4 0 0 1 1.4 1.4v13L17 17.7H6a1.4 1.4 0 0 1-1.4-1.4V6.2A1.4 1.4 0 0 1 6 4.8Z"></path><path d="M8 9h8M8 12.5h5.6"></path></svg>'
     },
     {
       id: "menu",
       type: "button",
       action: "menu",
-      labels: { hy: "Մենյու", en: "Menu", ru: "Меню", be: "Меню", fr: "Menu", ka: "მენიუ" },
+      labels: { hy: "Մենյու", en: "Menu", ru: "Меню" },
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"></path></svg>'
     },
     {
       id: "chat",
       type: "button",
       action: "chat",
-      labels: { hy: "Արագ չատ", en: "Quick chat", ru: "Быстрый чат", be: "Хуткі чат", fr: "Chat rapide", ka: "სწრაფი ჩატი" },
+      labels: { hy: "Արագ չատ", en: "Quick chat", ru: "Быстрый чат" },
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 6.4A6.8 6.8 0 0 1 12 4h1.2a6.4 6.4 0 0 1 6.4 6.4v.5a6.4 6.4 0 0 1-6.4 6.4H11l-4.2 2.4.8-3.7a6.7 6.7 0 0 1-2.4-5.1v-.5Z"></path><path d="m15.8 6.8.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1ZM10 10h3.8M10 13h5.5"></path></svg>'
     },
     {
@@ -79,7 +82,7 @@
       type: "link",
       route: "team",
       activeRoutes: ["team", "member"],
-      labels: { hy: "Պրոֆիլ", en: "Profile", ru: "Профиль", be: "Профіль", fr: "Profil", ka: "პროფილი" },
+      labels: { hy: "Պրոֆիլ", en: "Profile", ru: "Профиль" },
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0"></path></svg>'
     }
   ];
@@ -478,162 +481,6 @@
             { title: "Изображения", text: "Изображения могут относиться к проектам, услугам или тематическим примерам." },
             { title: "Технические решения", text: "Финальное решение выбирается после изучения объекта и уточнения требований." },
             { title: "Обновления", text: "Контент сайта может меняться для более точного представления услуг и проектов." }
-          ]
-        }
-      },
-      be: {
-        help: {
-          eyebrow: "Дапамога",
-          title: "Як карыстацца сайтам",
-          text: "Хутка знайдзіце паслугі, праекты і кантакты.",
-          items: [
-            { title: "Паслугі", text: "На старонцы паслуг паказаны асноўныя напрамкі і апісанне кожнай сістэмы." },
-            { title: "Заяўка", text: "Старонка заяўкі адкрывае падрыхтаваны ліст з выбранымі сістэмамі і кантактнымі данымі." },
-            { title: "Кантакты", text: "Для хуткага адказу выкарыстоўвайце тэлефон, email або старонку кантактаў." }
-          ]
-        },
-        faq: {
-          eyebrow: "FAQ",
-          title: "Частыя пытанні",
-          text: "Кароткія адказы пра паслугі Smart Tech.",
-          items: [
-            { title: "Ці робіце вы замер?", text: "Так, пасля першаснага абмеркавання можам арганізаваць візіт спецыяліста і тэхнічную прапанову." },
-            { title: "Колькі доўжыцца мантаж?", text: "Невялікія работы звычайна займаюць некалькі дзён, буйныя праекты ацэньваюцца паводле аб'ёму." },
-            { title: "Ці ёсць абслугоўванне?", text: "Так, мы абслугоўваем усталяваныя сістэмы і дапамагаем з наладай або рамонтам." }
-          ]
-        },
-        terms: {
-          eyebrow: "Умовы",
-          title: "Умовы і правілы",
-          text: "Гэтая старонка апісвае асноўныя ўмовы выкарыстання інфармацыі на сайце.",
-          items: [
-            { title: "Інфармацыйны характар", text: "Кантэнт сайта прадстаўлены для агульнай інфармацыі і не з'яўляецца канчатковай камерцыйнай прапановай." },
-            { title: "Цэны і тэрміны", text: "Цэны, наяўнасць і тэрміны пацвярджаюцца пасля індывідуальнага абмеркавання." },
-            { title: "Сувязь", text: "Заяўкі адпраўляюцца праз email або тэлефонны кантакт." }
-          ]
-        },
-        privacy: {
-          eyebrow: "Прыватнасць",
-          title: "Палітыка прыватнасці",
-          text: "Мы выкарыстоўваем толькі кантактныя даныя, неабходныя для адказу на запыты.",
-          items: [
-            { title: "Мэта", text: "Імя, тэлефон, email і паведамленне выкарыстоўваюцца для сувязі па вашай заяўцы." },
-            { title: "Лічыльнік наведванняў", text: "Сайт можа захоўваць толькі агульны лічыльнік наведванняў без персанальных даных." },
-            { title: "Трэція бакі", text: "Мы не прадаем і не перадаем вашы кантактныя даныя для рэкламы." }
-          ]
-        },
-        disclaimer: {
-          eyebrow: "Заўвага",
-          title: "Абмежаванне адказнасці",
-          text: "Матэрыялы сайта могуць абнаўляцца без папярэдняга паведамлення.",
-          items: [
-            { title: "Выявы", text: "Выявы могуць адносіцца да праектаў, паслуг або тэматычных прыкладаў." },
-            { title: "Тэхнічныя рашэнні", text: "Канчатковае рашэнне выбіраецца пасля вывучэння аб'екта і ўдакладнення патрабаванняў." },
-            { title: "Абнаўленні", text: "Кантэнт сайта можа змяняцца для больш дакладнага прадстаўлення паслуг і праектаў." }
-          ]
-        }
-      },
-      fr: {
-        help: {
-          eyebrow: "Aide",
-          title: "Comment utiliser le site",
-          text: "Retrouvez rapidement les services, les projets et les contacts.",
-          items: [
-            { title: "Services", text: "La page des services présente les principaux domaines et la description de chaque système." },
-            { title: "Demande", text: "La page de demande ouvre un email préparé avec les systèmes sélectionnés et vos coordonnées." },
-            { title: "Contact", text: "Pour une réponse rapide, utilisez le téléphone, l'email ou la page de contact." }
-          ]
-        },
-        faq: {
-          eyebrow: "FAQ",
-          title: "Questions fréquentes",
-          text: "Réponses courtes sur les services Smart Tech.",
-          items: [
-            { title: "Réalisez-vous une visite technique ?", text: "Oui, après un premier échange nous pouvons organiser la visite d'un spécialiste et une proposition technique." },
-            { title: "Combien de temps dure l'installation ?", text: "Les petits travaux prennent généralement quelques jours; les grands projets sont estimés selon leur volume." },
-            { title: "Assurez-vous la maintenance ?", text: "Oui, nous entretenons les systèmes installés et aidons pour la configuration ou la réparation." }
-          ]
-        },
-        terms: {
-          eyebrow: "Conditions",
-          title: "Conditions et règles",
-          text: "Cette page décrit les conditions de base d'utilisation des informations du site.",
-          items: [
-            { title: "Contenu informatif", text: "Le contenu du site est fourni à titre d'information générale et ne constitue pas une offre commerciale définitive." },
-            { title: "Prix et délais", text: "Les prix, la disponibilité et les délais sont confirmés après un échange individuel." },
-            { title: "Communication", text: "Les demandes sont envoyées par email ou par contact téléphonique." }
-          ]
-        },
-        privacy: {
-          eyebrow: "Confidentialité",
-          title: "Politique de confidentialité",
-          text: "Nous utilisons uniquement les coordonnées nécessaires pour répondre aux demandes.",
-          items: [
-            { title: "Objectif", text: "Le nom, le téléphone, l'email et le message sont utilisés pour vous contacter au sujet de votre demande." },
-            { title: "Compteur de visites", text: "Le site peut conserver uniquement le nombre total de visites, sans données personnelles." },
-            { title: "Tiers", text: "Nous ne vendons pas et ne transmettons pas vos coordonnées à des fins publicitaires." }
-          ]
-        },
-        disclaimer: {
-          eyebrow: "Mentions",
-          title: "Limitation de responsabilité",
-          text: "Les contenus du site peuvent être mis à jour sans préavis.",
-          items: [
-            { title: "Images", text: "Les images peuvent représenter des projets, des services ou des exemples thématiques." },
-            { title: "Solutions techniques", text: "La solution finale est choisie après l'étude du site et la clarification des besoins." },
-            { title: "Mises à jour", text: "Le contenu du site peut évoluer pour présenter plus précisément les services et projets." }
-          ]
-        }
-      },
-      ka: {
-        help: {
-          eyebrow: "დახმარება",
-          title: "როგორ გამოიყენოთ საიტი",
-          text: "სწრაფად იპოვეთ სერვისები, პროექტები და საკონტაქტო ინფორმაცია.",
-          items: [
-            { title: "სერვისები", text: "სერვისების გვერდზე ნაჩვენებია ძირითადი მიმართულებები და თითოეული სისტემის აღწერა." },
-            { title: "განაცხადი", text: "განაცხადის გვერდი ხსნის მომზადებულ წერილს არჩეული სისტემებით და საკონტაქტო მონაცემებით." },
-            { title: "კონტაქტი", text: "სწრაფი პასუხისთვის გამოიყენეთ ტელეფონი, email ან საკონტაქტო გვერდი." }
-          ]
-        },
-        faq: {
-          eyebrow: "FAQ",
-          title: "ხშირად დასმული კითხვები",
-          text: "მოკლე პასუხები Smart Tech-ის სერვისებზე.",
-          items: [
-            { title: "აკეთებთ ობიექტის შეფასებას?", text: "დიახ, პირველადი განხილვის შემდეგ შეგვიძლია სპეციალისტის ვიზიტისა და ტექნიკური შეთავაზების ორგანიზება." },
-            { title: "რამდენ ხანს გრძელდება მონტაჟი?", text: "მცირე სამუშაოები ჩვეულებრივ რამდენიმე დღეს გრძელდება, დიდი პროექტები კი მოცულობის მიხედვით ფასდება." },
-            { title: "გაქვთ მომსახურება?", text: "დიახ, ვემსახურებით დამონტაჟებულ სისტემებს და ვეხმარებით გამართვის ან შეკეთების საკითხებში." }
-          ]
-        },
-        terms: {
-          eyebrow: "წესები",
-          title: "პირობები და წესები",
-          text: "ეს გვერდი აღწერს საიტის ინფორმაციის გამოყენების ძირითად პირობებს.",
-          items: [
-            { title: "საინფორმაციო შინაარსი", text: "საიტის შინაარსი წარმოდგენილია ზოგადი ინფორმაციისთვის და არ არის საბოლოო კომერციული შეთავაზება." },
-            { title: "ფასები და ვადები", text: "ფასები, ხელმისაწვდომობა და ვადები დასტურდება ინდივიდუალური განხილვის შემდეგ." },
-            { title: "კავშირი", text: "განაცხადები იგზავნება email-ით ან სატელეფონო კონტაქტით." }
-          ]
-        },
-        privacy: {
-          eyebrow: "კონფიდენციალურობა",
-          title: "კონფიდენციალურობის პოლიტიკა",
-          text: "ჩვენ ვიყენებთ მხოლოდ იმ საკონტაქტო მონაცემებს, რომლებიც საჭიროა მოთხოვნებზე პასუხისთვის.",
-          items: [
-            { title: "მიზანი", text: "სახელი, ტელეფონი, email და შეტყობინება გამოიყენება თქვენს მოთხოვნაზე დასაკავშირებლად." },
-            { title: "ვიზიტების მრიცხველი", text: "საიტმა შეიძლება შეინახოს მხოლოდ ვიზიტების საერთო რაოდენობა, პერსონალური მონაცემების გარეშე." },
-            { title: "მესამე მხარეები", text: "ჩვენ არ ვყიდით და არ გადავცემთ თქვენს საკონტაქტო მონაცემებს სარეკლამო მიზნებისთვის." }
-          ]
-        },
-        disclaimer: {
-          eyebrow: "შენიშვნა",
-          title: "პასუხისმგებლობის შეზღუდვა",
-          text: "საიტზე არსებული მასალები შეიძლება განახლდეს წინასწარი შეტყობინების გარეშე.",
-          items: [
-            { title: "სურათები", text: "სურათები შეიძლება უკავშირდებოდეს პროექტებს, სერვისებს ან თემატურ მაგალითებს." },
-            { title: "ტექნიკური გადაწყვეტილებები", text: "საბოლოო გადაწყვეტა ირჩევა ობიექტის შესწავლისა და მოთხოვნების დაზუსტების შემდეგ." },
-            { title: "განახლებები", text: "საიტის შინაარსი შეიძლება შეიცვალოს სერვისებისა და პროექტების უფრო ზუსტად წარმოსადგენად." }
           ]
         }
       }
@@ -1474,129 +1321,6 @@
           sendingText: "Почта откроется с подготовленной темой и текстом.",
           mailStatus: "Почта открылась с готовым письмом. Если не открылась, скачайте TXT файл и отправьте его по email.",
           downloadStatus: "TXT файл готов."
-        },
-        be: {
-          title: "Заяўка на сістэму Smart Tech",
-          requestType: "Тып заяўкі",
-          contact: "Кантакт",
-          name: "Імя / кампанія",
-          phone: "Тэлефон",
-          email: "Email",
-          object: "Аб'ект",
-          objectType: "Тып аб'екта",
-          area: "Плошча / пакоі",
-          address: "Адрас",
-          deadline: "Тэрмін",
-          systems: "Выбраныя сістэмы",
-          components: "Прылады / работы",
-          brands: "Брэнды / мадэлі",
-          visit: "Візіт і замер",
-          visitNeeded: "Візіт спецыяліста",
-          visitDate: "Жаданая дата",
-          visitTime: "Жаданы час",
-          visitAccess: "Нататкі для візіту",
-          specialists: "Выбраныя спецыялісты",
-          maintenance: "Патрэбы ў сэрвісе",
-          notes: "Нататкі",
-          yes: "Так",
-          no: "Не",
-          empty: "Не запоўнена",
-          noSystems: "Сістэмы яшчэ не выбраны",
-          noComponents: "Прылада або работа не выбрана",
-          noBrands: "Брэнд або мадэль не выбраны",
-          noSpecialists: "Канкрэтны спецыяліст не выбраны, каманда вызначыць паводле праекта",
-          noMaintenance: "Сэрвісныя работы яшчэ не выбраны",
-          subject: "Заяўка на сістэму Smart Tech",
-          projectSubject: "Новая праектная заяўка Smart Tech",
-          projectRequest: "Новая праектная заяўка / патрэбны замер",
-          readyTitle: "Заяўка будзе сабрана аўтаматычна",
-          readyText: "Выберыце сістэмы і націсніце адправіць. Тэкст ліста будзе сфарміраваны аўтаматычна.",
-          sendingTitle: "Рыхтуем ліст",
-          sendingText: "Пошта адкрыецца з падрыхтаванай тэмай і тэкстам.",
-          mailStatus: "Пошта адкрылася з гатовым лістом. Калі не адкрылася, спампуйце TXT-файл і адпраўце яго па email.",
-          downloadStatus: "TXT-файл гатовы."
-        },
-        fr: {
-          title: "Demande de système Smart Tech",
-          requestType: "Type de demande",
-          contact: "Contact",
-          name: "Nom / entreprise",
-          phone: "Téléphone",
-          email: "Email",
-          object: "Site",
-          objectType: "Type de site",
-          area: "Surface / pièces",
-          address: "Adresse",
-          deadline: "Délai",
-          systems: "Systèmes sélectionnés",
-          components: "Équipements / tâches",
-          brands: "Marques / modèles",
-          visit: "Visite et mesure",
-          visitNeeded: "Visite d'un spécialiste",
-          visitDate: "Date souhaitée",
-          visitTime: "Heure souhaitée",
-          visitAccess: "Notes de visite",
-          specialists: "Spécialistes sélectionnés",
-          maintenance: "Besoins de service",
-          notes: "Notes",
-          yes: "Oui",
-          no: "Non",
-          empty: "Non renseigné",
-          noSystems: "Aucun système sélectionné",
-          noComponents: "Aucun équipement ou travail sélectionné",
-          noBrands: "Aucune marque ou modèle sélectionné",
-          noSpecialists: "Aucun spécialiste précis sélectionné, l'équipe décidera selon le projet",
-          noMaintenance: "Aucune tâche de service sélectionnée",
-          subject: "Demande de système Smart Tech",
-          projectSubject: "Nouvelle demande de projet Smart Tech",
-          projectRequest: "Nouvelle demande de projet / mesure nécessaire",
-          readyTitle: "La demande sera préparée automatiquement",
-          readyText: "Choisissez les systèmes et envoyez. Le texte de l'e-mail sera généré automatiquement.",
-          sendingTitle: "Préparation de l'e-mail",
-          sendingText: "L'application e-mail s'ouvrira avec le sujet et le message préparés.",
-          mailStatus: "L'application e-mail s'est ouverte avec un message prêt. Sinon, téléchargez le fichier TXT et envoyez-le par e-mail.",
-          downloadStatus: "Le fichier TXT est prêt."
-        },
-        ka: {
-          title: "Smart Tech სისტემის განაცხადი",
-          requestType: "განაცხადის ტიპი",
-          contact: "კონტაქტი",
-          name: "სახელი / კომპანია",
-          phone: "ტელეფონი",
-          email: "Email",
-          object: "ობიექტი",
-          objectType: "ობიექტის ტიპი",
-          area: "ფართობი / ოთახები",
-          address: "მისამართი",
-          deadline: "ვადა",
-          systems: "არჩეული სისტემები",
-          components: "მოწყობილობები / სამუშაოები",
-          brands: "ბრენდები / მოდელები",
-          visit: "ვიზიტი და აზომვა",
-          visitNeeded: "სპეციალისტის ვიზიტი",
-          visitDate: "სასურველი თარიღი",
-          visitTime: "სასურველი დრო",
-          visitAccess: "ვიზიტის შენიშვნები",
-          specialists: "არჩეული სპეციალისტები",
-          maintenance: "სერვისის საჭიროებები",
-          notes: "შენიშვნები",
-          yes: "დიახ",
-          no: "არა",
-          empty: "არ არის შევსებული",
-          noSystems: "სისტემები ჯერ არ არის არჩეული",
-          noComponents: "მოწყობილობა ან სამუშაო არ არის არჩეული",
-          noBrands: "ბრენდი ან მოდელი არ არის არჩეული",
-          noSpecialists: "კონკრეტული სპეციალისტი არ არის არჩეული, გუნდი გადაწყვეტს პროექტის მიხედვით",
-          noMaintenance: "სერვისის სამუშაოები ჯერ არ არის არჩეული",
-          subject: "Smart Tech სისტემის განაცხადი",
-          projectSubject: "Smart Tech-ის ახალი პროექტის განაცხადი",
-          projectRequest: "ახალი პროექტის განაცხადი / საჭიროა აზომვა",
-          readyTitle: "განაცხადი ავტომატურად მომზადდება",
-          readyText: "აირჩიეთ სისტემები და დააჭირეთ გაგზავნას. წერილის ტექსტი ავტომატურად შეიქმნება.",
-          sendingTitle: "წერილი მზადდება",
-          sendingText: "ელფოსტის აპი გაიხსნება მომზადებული სათაურითა და ტექსტით.",
-          mailStatus: "ელფოსტის აპი გაიხსნა მომზადებული წერილით. თუ არ გაიხსნა, ჩამოტვირთეთ TXT ფაილი და გააგზავნეთ email-ით.",
-          downloadStatus: "TXT ფაილი მზად არის."
         }
       };
       return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
@@ -1674,10 +1398,7 @@
       var dictionaries = {
         hy: { none: "Ոչինչ ընտրված չէ", selected: "ընտրված" },
         en: { none: "Nothing selected", selected: "selected" },
-        ru: { none: "Ничего не выбрано", selected: "выбрано" },
-        be: { none: "Нічога не выбрана", selected: "выбрана" },
-        fr: { none: "Rien sélectionné", selected: "sélectionné" },
-        ka: { none: "არაფერია არჩეული", selected: "არჩეულია" }
+        ru: { none: "Ничего не выбрано", selected: "выбрано" }
       };
       return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
     }
@@ -1970,10 +1691,7 @@
       var truncationNotes = {
         hy: "Ամբողջական հայտը պահված է ներբեռնված TXT ֆայլում։ Եթե չի ներբեռնվել, օգտվեք TXT կոճակից հայտի էջում։",
         en: "Full request is saved in the downloaded TXT file. If it did not download, use the TXT download button on the request page.",
-        ru: "Полная заявка сохранена в загруженном TXT файле. Если файл не загрузился, используйте кнопку TXT на странице заявки.",
-        be: "Поўная заяўка захавана ў загружаным TXT-файле. Калі файл не загрузіўся, выкарыстайце кнопку TXT на старонцы заяўкі.",
-        fr: "La demande complète est enregistrée dans le fichier TXT téléchargé. S'il n'a pas été téléchargé, utilisez le bouton TXT sur la page de demande.",
-        ka: "სრული განაცხადი შენახულია ჩამოტვირთულ TXT ფაილში. თუ ჩამოტვირთვა ვერ მოხდა, გამოიყენეთ TXT ღილაკი განაცხადის გვერდზე."
+        ru: "Полная заявка сохранена в загруженном TXT файле. Если файл не загрузился, используйте кнопку TXT на странице заявки."
       };
       var lang = activeUiLanguage();
       var note = truncationNotes[lang] || truncationNotes.en;
@@ -2120,24 +1838,6 @@
           success: "Заявка получена. Наша команда скоро свяжется с вами.",
           fallback: "Если окно почты не открылось, напишите нам на email, WhatsApp или Viber.",
           error: "Не удалось отправить заявку. Попробуйте еще раз или позвоните нам."
-        },
-        be: {
-          sending: "Адпраўляем заяўку...",
-          success: "Заяўка атрымана. Наша каманда хутка звяжацца з вамі.",
-          fallback: "Калі паштовае акно не адкрылася, напішыце нам на email, WhatsApp або Viber.",
-          error: "Не ўдалося адправіць заяўку. Паспрабуйце яшчэ раз або патэлефануйце нам."
-        },
-        fr: {
-          sending: "Envoi de la demande...",
-          success: "Demande reçue. Notre équipe vous contactera bientôt.",
-          fallback: "Si la fenêtre e-mail ne s'est pas ouverte, contactez-nous par e-mail, WhatsApp ou Viber.",
-          error: "Impossible d'envoyer la demande. Réessayez ou appelez-nous."
-        },
-        ka: {
-          sending: "განაცხადი იგზავნება...",
-          success: "განაცხადი მიღებულია. ჩვენი გუნდი მალე დაგიკავშირდებათ.",
-          fallback: "თუ ელფოსტის ფანჯარა არ გაიხსნა, მოგვწერეთ email-ით, WhatsApp-ით ან Viber-ით.",
-          error: "განაცხადის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან ან დაგვირეკეთ."
         }
       };
       var lang = activeUiLanguage();
@@ -2694,7 +2394,7 @@
     scheduleTranslateUiCleanup();
     new window.google.translate.TranslateElement({
       pageLanguage: "hy",
-      includedLanguages: "hy,ru,en,be,fr,ka",
+      includedLanguages: "hy,ru,en",
       autoDisplay: false,
       multilanguagePage: true
     }, "smarttech-google-translate");
@@ -2729,9 +2429,6 @@
 
   function normalizeLanguageCode(language) {
     var lang = String(language || "").toLowerCase();
-    if (lang.indexOf("be") === 0) return "be";
-    if (lang.indexOf("fr") === 0) return "fr";
-    if (lang.indexOf("ka") === 0) return "ka";
     if (lang.indexOf("ru") === 0) return "ru";
     if (lang.indexOf("en") === 0) return "en";
     return "hy";
@@ -2741,23 +2438,36 @@
     return normalizeLanguageCode(getOnlineLanguage());
   }
 
+  function normalizeChatLanguageCode(language) {
+    var lang = normalizeLanguageCode(language);
+    return lang === "en" || lang === "ru" ? lang : "hy";
+  }
+
+  function activeChatLanguage() {
+    return normalizeChatLanguageCode(getOnlineLanguage());
+  }
+
   function chatDictionary(language) {
     var contacts = site.content.contacts || {};
     var emailText = contacts.email || "info@smarttechllc.am";
     var contactPage = site.utils.pageUrl("contact");
     var dictionaries = {
       hy: {
-        title: "Ավտո չատ",
-        subtitle: "Արագ պատասխաններ Smart Tech-ից",
+        title: "Արագ չատ",
+        subtitle: "SmartTech-ի օգնականը ձեզ հետ է",
         quickLabel: "Արագ հարցեր",
-        statusLabel: "Ակտիվ",
+        statusLabel: "Ակտիվ · մինչև 10 հարց",
         openLabel: "Բացել չատը",
         closeLabel: "Փակել չատը",
         hideLabel: "Թաքցնել չատը",
-        inputPlaceholder: "Գրեք հարցը...",
+        inputPlaceholder: "Գրեք ձեր հարցը...",
         sendLabel: "Ուղարկել",
+        busyLabel: "Սպասեք",
+        networkError: "Չհաջողվեց կապվել AI օգնականի հետ։ Փորձեք մի փոքր ուշ։",
+        limitReached: "Այս արագ չաթում արդեն օգտագործվել է 10 հարց։ Շարունակելու համար թողեք հեռախոսահամար կամ գրեք info@smarttechllc.am։",
+        limitButton: "Ավարտված",
         typing: "գրում է...",
-        greeting: "Բարև, ես Smart Tech-ի վիրտուալ օգնականն եմ։ Կօգնեմ ծառայությունների, գների, ժամկետների և կապի հարցերով։",
+        greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ կամ ավտոմատացում։",
         quickIntents: [
           { id: "services", label: "Ծառայություններ" },
           { id: "price", label: "Գների հարց" },
@@ -2765,14 +2475,17 @@
           { id: "contact", label: "Կապ մեզ հետ" },
           { id: "survey", label: "Նախագծի բրիֆ" }
         ],
-        surveyIntro: "Եկեք գրանցենք մի քանի հիմնական մանրամասներ, որպեսզի մեր թիմը արագ կապվի ձեզ հետ։",
+        surveyIntro: "Լավ, հավաքենք կարճ բրիֆ՝ մեր մասնագետը արագ կողմնորոշվի։",
         surveyQuestions: [
-          { id: "service", label: "Ծառայություն", question: "Ո՞ր Smart Tech ծառայության կարիքն ունեք (օրինակ՝ տեսահսկում, ազդանշանային համակարգ, ավտոմատացում)։" },
-          { id: "facility", label: "Օբյեկտ", question: "Ի՞նչ տեսակի օբյեկտ պետք է չափագրենք։" },
-          { id: "timeline", label: "Ժամկետներ", question: "Ե՞րբ կցանկանայիք սկսել ձեր նախագիծը։" }
+          { id: "service", label: "Ծառայություն", question: "Ի՞նչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ, թե այլ բան։" },
+          { id: "facility", label: "Օբյեկտ", question: "Ի՞նչ օբյեկտ է՝ բնակարան, գրասենյակ, խանութ, հյուրանոց, պահեստ, թե արտադրամաս։" },
+          { id: "location", label: "Վայր", question: "Ո՞ր քաղաքում կամ հասցեի մոտ է օբյեկտը։" },
+          { id: "size", label: "Ծավալ", question: "Մոտավորապես ինչ չափ է աշխատանքը՝ տարածք, հարկեր կամ սարքերի քանակ։" },
+          { id: "timeline", label: "Ժամկետ", question: "Ե՞րբ եք ուզում սկսել կամ ավարտել աշխատանքը։" },
+          { id: "contact", label: "Կապ", question: "Ո՞ւմ հետ կապվենք։ Գրեք անուն և հեռախոս կամ էլ. հասցե։" }
         ],
         surveySummary: "Ահա գրանցված մանրամասները:",
-        surveyReminder: "Ձեր բրիֆը պահպանվել է, և մեր թիմը շուտով կկապվի ձեզ հետ:",
+        surveyReminder: "Շնորհակալություն։ Տվյալները բավարար են նախնական կապի համար։",
         reminderStatus: "Բրիֆը պահպանված է",
         replies: {
           services: "Մենք առաջարկում ենք տեսահսկման, հրդեհային ու ազդանշանային համակարգեր, ցանցային լուծումներ, էլեկտրական և ավտոմատացման աշխատանքներ.",
@@ -2783,17 +2496,21 @@
         }
       },
       en: {
-        title: "Auto Chat",
-        subtitle: "Fast Smart Tech answers",
+        title: "Quick Chat",
+        subtitle: "SmartTech assistant is here",
         quickLabel: "Quick questions",
-        statusLabel: "Online",
+        statusLabel: "Online · up to 10 questions",
         openLabel: "Open chat",
         closeLabel: "Close chat",
         hideLabel: "Hide chat",
         inputPlaceholder: "Type your question...",
         sendLabel: "Send",
+        busyLabel: "Wait",
+        networkError: "Could not reach the AI assistant. Please try again shortly.",
+        limitReached: "This quick chat has reached the 10-question limit. To continue, leave your phone number or write to info@smarttechllc.am.",
+        limitButton: "Done",
         typing: "typing...",
-        greeting: "Hi, I am Smart Tech virtual assistant. I can help with services, pricing, timeline and contacts.",
+        greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need: CCTV, network, fire alarm, access control, electrical works or automation.",
         quickIntents: [
           { id: "services", label: "Services" },
           { id: "price", label: "Pricing" },
@@ -2801,14 +2518,17 @@
           { id: "contact", label: "Contact" },
           { id: "survey", label: "Project brief" }
         ],
-        surveyIntro: "Let's capture a few key details so our team can follow up quickly.",
+        surveyIntro: "Great, let's collect a short brief so our specialist can understand the request quickly.",
         surveyQuestions: [
-          { id: "service", label: "Service", question: "Which Smart Tech service do you need? (e.g. surveillance, alarm, automation)" },
-          { id: "facility", label: "Facility", question: "What type of location should we survey?" },
-          { id: "timeline", label: "Timeline", question: "When would you like your project to start?" }
+          { id: "service", label: "Service", question: "What solution do you need: CCTV, network, fire alarm, access control, electrical works, automation or something else?" },
+          { id: "facility", label: "Object", question: "What type of place is it: apartment, office, shop, hotel, warehouse or production site?" },
+          { id: "location", label: "Location", question: "Which city or approximate address is the object in?" },
+          { id: "size", label: "Scope", question: "What is the approximate scope: area, floors or number of devices?" },
+          { id: "timeline", label: "Timing", question: "When would you like to start or finish the work?" },
+          { id: "contact", label: "Contact", question: "Who should we contact? Please share a name and phone or email." }
         ],
         surveySummary: "Here is what we have recorded:",
-        surveyReminder: "Your briefing is saved and our team will contact you shortly.",
+        surveyReminder: "Thank you. This is enough for an initial follow-up.",
         reminderStatus: "Brief saved",
         replies: {
           services: "We deliver video surveillance, fire and alarm systems, network solutions, electrical works and automation.",
@@ -2819,17 +2539,21 @@
         }
       },
       ru: {
-        title: "Авто чат",
-        subtitle: "Быстрые ответы Smart Tech",
+        title: "Быстрый чат",
+        subtitle: "Ассистент SmartTech на связи",
         quickLabel: "Быстрые вопросы",
-        statusLabel: "Онлайн",
+        statusLabel: "Онлайн · до 10 вопросов",
         openLabel: "Открыть чат",
         closeLabel: "Закрыть чат",
         hideLabel: "Скрыть чат",
         inputPlaceholder: "Напишите вопрос...",
         sendLabel: "Отправить",
+        busyLabel: "Ждите",
+        networkError: "Не удалось связаться с AI-ассистентом. Попробуйте немного позже.",
+        limitReached: "В этом быстром чате уже использовано 10 вопросов. Чтобы продолжить, оставьте телефон или напишите на info@smarttechllc.am.",
+        limitButton: "Готово",
         typing: "печатает...",
-        greeting: "Здравствуйте, я виртуальный помощник Smart Tech. Помогу по услугам, стоимости, срокам и контактам.",
+        greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж или автоматизация.",
         quickIntents: [
           { id: "services", label: "Услуги" },
           { id: "price", label: "Стоимость" },
@@ -2837,14 +2561,17 @@
           { id: "contact", label: "Контакты" },
           { id: "survey", label: "Бриф проекта" }
         ],
-        surveyIntro: "Давайте запишем несколько ключевых деталей, чтобы наша команда могла быстро связаться с вами.",
+        surveyIntro: "Хорошо, соберем короткий бриф, чтобы специалист быстро понял задачу.",
         surveyQuestions: [
-          { id: "service", label: "Услуга", question: "Какая услуга Smart Tech вам необходима? (например, видеонаблюдение, сигнализация, автоматизация)" },
-          { id: "facility", label: "Объект", question: "Какой тип объекта необходимо обследовать?" },
-          { id: "timeline", label: "Сроки", question: "Когда вы хотите начать проект?" }
+          { id: "service", label: "Услуга", question: "Какое решение нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж, автоматизация или другое?" },
+          { id: "facility", label: "Объект", question: "Какой это объект: квартира, офис, магазин, гостиница, склад или производство?" },
+          { id: "location", label: "Локация", question: "В каком городе или примерно по какому адресу находится объект?" },
+          { id: "size", label: "Объем", question: "Какой примерный объем: площадь, этажи или количество устройств?" },
+          { id: "timeline", label: "Срок", question: "Когда хотите начать или завершить работу?" },
+          { id: "contact", label: "Контакт", question: "С кем связаться? Напишите имя и телефон или email." }
         ],
         surveySummary: "Вот детали, которые мы записали:",
-        surveyReminder: "Ваш бриф сохранен, наша команда скоро свяжется с вами.",
+        surveyReminder: "Спасибо. Этого достаточно для первичной связи.",
         reminderStatus: "Бриф сохранен",
         replies: {
           services: "Мы выполняем видеонаблюдение, пожарные и охранные системы, сетевые решения, электромонтаж и автоматизацию.",
@@ -2853,118 +2580,10 @@
           contact: "Можно написать на {email}, или открыть страницу контактов: {contactPage}",
           fallback: "Спасибо. Опишите задачу в 1-2 предложениях, и команда свяжется с вами в ближайшее время."
         }
-      },
-      be: {
-        title: "Аўта чат",
-        subtitle: "Хуткія адказы Smart Tech",
-        quickLabel: "Хуткія пытанні",
-        statusLabel: "Анлайн",
-        openLabel: "Адкрыць чат",
-        closeLabel: "Закрыць чат",
-        hideLabel: "Схаваць чат",
-        inputPlaceholder: "Напішыце пытанне...",
-        sendLabel: "Адправіць",
-        typing: "піша...",
-        greeting: "Добры дзень, я віртуальны памочнік Smart Tech. Дапамагу з паслугамі, коштам, тэрмінамі і кантактамі.",
-        quickIntents: [
-          { id: "services", label: "Паслугі" },
-          { id: "price", label: "Кошт" },
-          { id: "timeline", label: "Тэрміны" },
-          { id: "contact", label: "Кантакты" },
-          { id: "survey", label: "Брыф праекта" }
-        ],
-        surveyIntro: "Давайце запішам некалькі ключавых дэталяў, каб наша каманда хутка звязалася з вамі.",
-        surveyQuestions: [
-          { id: "service", label: "Паслуга", question: "Якая паслуга Smart Tech вам патрэбна? Напрыклад: відэаназіранне, сігналізацыя, аўтаматызацыя." },
-          { id: "facility", label: "Аб'ект", question: "Які тып аб'екта трэба агледзець?" },
-          { id: "timeline", label: "Тэрміны", question: "Калі вы хочаце пачаць праект?" }
-        ],
-        surveySummary: "Вось дэталі, якія мы запісалі:",
-        surveyReminder: "Ваш брыф захаваны, і наша каманда хутка звяжацца з вамі.",
-        reminderStatus: "Брыф захаваны",
-        replies: {
-          services: "Мы выконваем відэаназіранне, пажарныя і ахоўныя сістэмы, сеткавыя рашэнні, электрамантаж і аўтаматызацыю.",
-          price: "Дакладны кошт залежыць ад аб'екта і аб'ёму задач. Адпраўце кароткі брыф, і каманда падрыхтуе разлік.",
-          timeline: "Невялікія праекты звычайна займаюць 3-7 дзён, сярэднія — 1-3 тыдні. Канчатковы тэрмін пацвярджаем пасля агляду.",
-          contact: "Можна напісаць на {email} або адкрыць старонку кантактаў: {contactPage}",
-          fallback: "Дзякуй. Апішыце задачу ў 1-2 сказах, і каманда хутка звяжацца з вамі."
-        }
-      },
-      fr: {
-        title: "Auto Chat",
-        subtitle: "Réponses rapides Smart Tech",
-        quickLabel: "Questions rapides",
-        statusLabel: "En ligne",
-        openLabel: "Ouvrir le chat",
-        closeLabel: "Fermer le chat",
-        hideLabel: "Masquer le chat",
-        inputPlaceholder: "Écrivez votre question...",
-        sendLabel: "Envoyer",
-        typing: "écrit...",
-        greeting: "Bonjour, je suis l'assistant virtuel de Smart Tech. Je peux aider pour les services, les prix, les délais et les contacts.",
-        quickIntents: [
-          { id: "services", label: "Services" },
-          { id: "price", label: "Prix" },
-          { id: "timeline", label: "Délais" },
-          { id: "contact", label: "Contact" },
-          { id: "survey", label: "Brief projet" }
-        ],
-        surveyIntro: "Notons quelques détails clés afin que notre équipe puisse vous répondre rapidement.",
-        surveyQuestions: [
-          { id: "service", label: "Service", question: "De quel service Smart Tech avez-vous besoin ? Par exemple : vidéosurveillance, alarme, automatisation." },
-          { id: "facility", label: "Site", question: "Quel type de site devons-nous étudier ?" },
-          { id: "timeline", label: "Délais", question: "Quand souhaitez-vous commencer le projet ?" }
-        ],
-        surveySummary: "Voici les détails enregistrés :",
-        surveyReminder: "Votre brief est enregistré et notre équipe vous contactera bientôt.",
-        reminderStatus: "Brief enregistré",
-        replies: {
-          services: "Nous réalisons la vidéosurveillance, les systèmes incendie et d'alarme, les réseaux, les travaux électriques et l'automatisation.",
-          price: "Le prix exact dépend du site et du volume des travaux. Envoyez un court brief et notre équipe préparera une estimation.",
-          timeline: "Les petits projets prennent généralement 3 à 7 jours, les moyens 1 à 3 semaines. Le délai final est confirmé après la visite.",
-          contact: "Vous pouvez écrire à {email} ou ouvrir notre page de contact : {contactPage}",
-          fallback: "Merci. Décrivez votre besoin en 1-2 phrases et notre équipe vous recontactera rapidement."
-        }
-      },
-      ka: {
-        title: "ავტო ჩატი",
-        subtitle: "Smart Tech-ის სწრაფი პასუხები",
-        quickLabel: "სწრაფი კითხვები",
-        statusLabel: "ონლაინ",
-        openLabel: "ჩატის გახსნა",
-        closeLabel: "ჩატის დახურვა",
-        hideLabel: "ჩატის დამალვა",
-        inputPlaceholder: "დაწერეთ კითხვა...",
-        sendLabel: "გაგზავნა",
-        typing: "წერს...",
-        greeting: "გამარჯობა, მე Smart Tech-ის ვირტუალური ასისტენტი ვარ. დაგეხმარებით სერვისების, ფასების, ვადებისა და კონტაქტების საკითხებში.",
-        quickIntents: [
-          { id: "services", label: "სერვისები" },
-          { id: "price", label: "ფასი" },
-          { id: "timeline", label: "ვადები" },
-          { id: "contact", label: "კონტაქტი" },
-          { id: "survey", label: "პროექტის ბრიფი" }
-        ],
-        surveyIntro: "ჩავწეროთ რამდენიმე მთავარი დეტალი, რომ ჩვენი გუნდი სწრაფად დაგიკავშირდეთ.",
-        surveyQuestions: [
-          { id: "service", label: "სერვისი", question: "რომელი Smart Tech სერვისი გჭირდებათ? მაგალითად: ვიდეოთვალთვალი, სიგნალიზაცია, ავტომატიზაცია." },
-          { id: "facility", label: "ობიექტი", question: "რა ტიპის ობიექტი უნდა შევისწავლოთ?" },
-          { id: "timeline", label: "ვადები", question: "როდის გსურთ პროექტის დაწყება?" }
-        ],
-        surveySummary: "აი, ჩაწერილი დეტალები:",
-        surveyReminder: "თქვენი ბრიფი შენახულია და ჩვენი გუნდი მალე დაგიკავშირდებათ.",
-        reminderStatus: "ბრიფი შენახულია",
-        replies: {
-          services: "ვაკეთებთ ვიდეოთვალთვალს, ხანძარსაწინააღმდეგო და alarm სისტემებს, ქსელურ გადაწყვეტებს, ელექტრომონტაჟს და ავტომატიზაციას.",
-          price: "ზუსტი ფასი დამოკიდებულია ობიექტზე და სამუშაოს მოცულობაზე. გაგზავნეთ მოკლე ბრიფი და გუნდი მოამზადებს გათვლას.",
-          timeline: "მცირე პროექტები ჩვეულებრივ სრულდება 3-7 დღეში, საშუალოები — 1-3 კვირაში. საბოლოო ვადას ვადასტურებთ ობიექტის შესწავლის შემდეგ.",
-          contact: "შეგიძლიათ მოგვწეროთ {email}-ზე ან გახსნათ კონტაქტის გვერდი: {contactPage}",
-          fallback: "მადლობა. აღწერეთ ამოცანა 1-2 წინადადებით და ჩვენი გუნდი მალე დაგიკავშირდებათ."
-        }
       }
     };
 
-    var activeLanguage = normalizeLanguageCode(language);
+    var activeLanguage = normalizeChatLanguageCode(language);
     var base = dictionaries[activeLanguage] || dictionaries.en || dictionaries.hy;
     var vars = {
       email: emailText,
@@ -2985,6 +2604,8 @@
       hideLabel: base.hideLabel,
       inputPlaceholder: base.inputPlaceholder,
       sendLabel: base.sendLabel,
+      busyLabel: base.busyLabel || "Սպասեք",
+      networkError: base.networkError || "Չհաջողվեց կապվել AI օգնականի հետ։ Խնդրում ենք փորձել քիչ անց։",
       typing: base.typing,
       greeting: translateTemplate(base.greeting, vars),
       quickIntents: base.quickIntents,
@@ -3022,31 +2643,10 @@
         timeline: ["time", "timeline", "when", "days", "week", "deadline"],
         contact: ["contact", "call", "phone", "email", "message"],
         survey: ["survey", "quote", "brief", "project", "questionnaire", "request", "proposal"]
-      },
-      be: {
-        services: ["паслуг", "сістэм", "відэа", "пажар", "ахоў", "сетк"],
-        price: ["кошт", "цана", "бюджэт", "разлік"],
-        timeline: ["тэрмін", "дзён", "тыдз", "калі", "час"],
-        contact: ["кантакт", "тэлефон", "зван", "пошт", "email"],
-        survey: ["брыф", "заяў", "праект", "замер", "аўдыт"]
-      },
-      fr: {
-        services: ["service", "système", "solution", "vidéo", "alarme", "réseau"],
-        price: ["prix", "coût", "budget", "estimation", "devis"],
-        timeline: ["délai", "temps", "quand", "jour", "semaine"],
-        contact: ["contact", "appel", "téléphone", "email", "message"],
-        survey: ["brief", "demande", "projet", "visite", "audit", "mesure"]
-      },
-      ka: {
-        services: ["სერვის", "სისტემ", "ვიდეო", "alarm", "ქსელ", "უსაფრთხ"],
-        price: ["ფას", "ღირებულ", "ბიუჯეტ", "გათვლ"],
-        timeline: ["ვად", "დღ", "კვირ", "როდის", "დრო"],
-        contact: ["კონტაქტ", "ზარ", "ტელეფონ", "ფოსტ", "email"],
-        survey: ["ბრიფ", "განაცხად", "პროექტ", "აზომ", "აუდიტ"]
       }
     };
 
-    var lang = normalizeLanguageCode(language);
+    var lang = normalizeChatLanguageCode(language);
     var set = byLanguage[lang] || byLanguage.en;
     var fallbackSet = byLanguage.en;
     var intents = ["services", "price", "timeline", "contact", "survey"];
@@ -3218,10 +2818,84 @@
     var typingEl = document.createElement("div");
     typingEl.className = "auto-chat-message auto-chat-message-bot is-typing";
     typingEl.textContent = copy.typing;
+    var dots = document.createElement("span");
+    dots.className = "auto-chat-typing-dots";
+    dots.innerHTML = "<span></span><span></span><span></span>";
+    typingEl.appendChild(dots);
     typingEl.setAttribute("data-translate-id", "chat-typing");
     chatUi.messages.appendChild(typingEl);
     chatUi.messages.scrollTop = chatUi.messages.scrollHeight;
     return typingEl;
+  }
+
+  function removeTyping(typingEl) {
+    if (typingEl && typingEl.parentNode) {
+      typingEl.parentNode.removeChild(typingEl);
+    }
+  }
+
+  function setChatBusy(isBusy, copy) {
+    if (!chatUi) return;
+    chatUi.root.classList.toggle("is-busy", !!isBusy);
+    chatUi.input.disabled = !!isBusy || chatLimitReached;
+    chatUi.send.disabled = !!isBusy || chatLimitReached;
+    chatUi.send.textContent = chatLimitReached ? (copy.limitButton || copy.sendLabel) : isBusy ? (copy.busyLabel || copy.typing) : copy.sendLabel;
+    if (chatUi.quickActions) {
+      chatUi.quickActions.querySelectorAll("button").forEach(function (button) {
+        button.disabled = !!isBusy || chatLimitReached;
+      });
+    }
+  }
+
+  function setChatLimitReached(copy) {
+    chatLimitReached = true;
+    if (!chatUi) return;
+    chatUi.root.classList.add("is-limit-reached");
+    chatUi.input.disabled = true;
+    chatUi.send.disabled = true;
+    chatUi.send.textContent = copy.limitButton || copy.sendLabel;
+  }
+
+  function finishChatTurnIfLimited(copy) {
+    if (chatUserQuestionCount < chatQuestionLimit || chatLimitReached) return;
+    window.setTimeout(function () {
+      appendChatMessage("bot", copy.limitReached);
+      setChatLimitReached(copy);
+    }, 760);
+  }
+
+  function compactChatHistory() {
+    return chatHistory.slice(-6).map(function (entry) {
+      return {
+        role: entry.role === "user" ? "user" : "bot",
+        text: String(entry.text || "").slice(0, 360)
+      };
+    });
+  }
+
+  function requestAiChat(messageText, copy, historySnapshot) {
+    return window.fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: messageText,
+        history: historySnapshot,
+        page: window.location.pathname + window.location.search
+      })
+    }).then(function (response) {
+      return response.json().catch(function () {
+        return {};
+      }).then(function (data) {
+        if (!response.ok) {
+          var error = new Error(data.reply || copy.networkError);
+          error.reply = data.reply || copy.networkError;
+          throw error;
+        }
+        return data;
+      });
+    });
   }
 
   function refreshQuickButtons(copy) {
@@ -3268,18 +2942,49 @@
   }
 
   function handleChatRequest(messageText, intent, copy) {
+    if (chatUi && chatUi.root.classList.contains("is-busy")) return;
+    if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
+      appendChatMessage("bot", copy.limitReached, { skipHistory: true });
+      setChatLimitReached(copy);
+      return;
+    }
+
+    var historySnapshot = compactChatHistory();
+    chatUserQuestionCount += 1;
     appendChatMessage("user", messageText);
 
     if (chatSurveyState && handleChatSurvey(messageText, copy)) {
+      finishChatTurnIfLimited(copy);
       return;
     }
 
     if (intent === "survey") {
       startChatSurvey(copy);
+      finishChatTurnIfLimited(copy);
       return;
     }
 
-    respondByIntent(intent, copy);
+    if (chatTypingTimer) {
+      window.clearTimeout(chatTypingTimer);
+      chatTypingTimer = null;
+    }
+
+    var typingEl = showTyping(copy);
+    setChatBusy(true, copy);
+
+    requestAiChat(messageText, copy, historySnapshot)
+      .then(function (data) {
+        removeTyping(typingEl);
+        appendChatMessage("bot", data.reply || copy.replies[intent] || copy.replies.fallback);
+      })
+      .catch(function (error) {
+        removeTyping(typingEl);
+        appendChatMessage("bot", error.reply || copy.networkError);
+      })
+      .then(function () {
+        setChatBusy(false, copy);
+        finishChatTurnIfLimited(copy);
+      });
   }
 
   function buildChatUi() {
@@ -3303,10 +3008,8 @@
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
         '<div class="auto-chat-messages" aria-live="polite"></div>' +
-        '<p class="auto-chat-quick-label"></p>' +
-        '<div class="auto-chat-actions"></div>' +
         '<form class="auto-chat-form">' +
-          '<input class="auto-chat-input" type="text" autocomplete="off">' +
+          '<input class="auto-chat-input" type="text" autocomplete="off" maxlength="700">' +
           '<button class="auto-chat-send" type="submit"></button>' +
         "</form>" +
       "</section>";
@@ -3321,10 +3024,10 @@
       title: host.querySelector(".auto-chat-title"),
       subtitle: host.querySelector(".auto-chat-subtitle"),
       statusText: host.querySelector(".auto-chat-status-text"),
-      quickLabel: host.querySelector(".auto-chat-quick-label"),
+      quickLabel: null,
       close: host.querySelector(".auto-chat-close"),
       messages: host.querySelector(".auto-chat-messages"),
-      quickActions: host.querySelector(".auto-chat-actions"),
+      quickActions: null,
       form: host.querySelector(".auto-chat-form"),
       input: host.querySelector(".auto-chat-input"),
       send: host.querySelector(".auto-chat-send")
@@ -3342,21 +3045,23 @@
       setChatDismissed(true);
     });
 
-    ui.quickActions.addEventListener("click", function (event) {
-      var button = event.target.closest("button[data-intent]");
-      if (!button) return;
-      var lang = activeUiLanguage();
-      var copy = chatDictionary(lang);
-      var intent = button.getAttribute("data-intent") || "fallback";
-      handleChatRequest(button.textContent || "", intent, copy);
-    });
+    if (ui.quickActions) {
+      ui.quickActions.addEventListener("click", function (event) {
+        var button = event.target.closest("button[data-intent]");
+        if (!button) return;
+        var lang = activeChatLanguage();
+        var copy = chatDictionary(lang);
+        var intent = button.getAttribute("data-intent") || "fallback";
+        handleChatRequest(button.textContent || "", intent, copy);
+      });
+    }
 
     ui.form.addEventListener("submit", function (event) {
       event.preventDefault();
       var value = String(ui.input.value || "").trim();
       if (!value) return;
       ui.input.value = "";
-      var lang = activeUiLanguage();
+      var lang = activeChatLanguage();
       var copy = chatDictionary(lang);
       handleChatRequest(value, chatIntent(value, lang), copy);
     });
@@ -3369,7 +3074,7 @@
       chatUi = buildChatUi();
     }
 
-    var lang = activeUiLanguage();
+    var lang = activeChatLanguage();
     var copy = chatDictionary(lang);
     chatUi.title.textContent = copy.title;
     chatUi.subtitle.textContent = copy.subtitle;
@@ -3380,7 +3085,9 @@
       reminderFlag = false;
     }
     chatUi.statusText.textContent = copy.statusLabel + (reminderFlag && copy.reminderStatus ? " - " + copy.reminderStatus : "");
-    chatUi.quickLabel.textContent = copy.quickLabel;
+    if (chatUi.quickLabel) {
+      chatUi.quickLabel.textContent = copy.quickLabel;
+    }
     chatUi.triggerText.textContent = copy.title;
     chatUi.trigger.setAttribute("aria-label", copy.openLabel);
     chatUi.close.setAttribute("aria-label", copy.closeLabel);
@@ -3395,6 +3102,13 @@
     if (chatLanguage !== lang) {
       chatLanguage = lang;
       chatHistory = [];
+      chatUserQuestionCount = 0;
+      chatLimitReached = false;
+      if (chatUi) {
+        chatUi.root.classList.remove("is-limit-reached");
+        chatUi.input.disabled = false;
+        chatUi.send.disabled = false;
+      }
       if (chatTypingTimer) {
         window.clearTimeout(chatTypingTimer);
         chatTypingTimer = null;
@@ -3402,6 +3116,9 @@
     }
 
     renderChatHistory(copy);
+    if (chatLimitReached) {
+      setChatLimitReached(copy);
+    }
     setChatDismissed(isChatDismissed());
   }
 
@@ -3521,7 +3238,7 @@
       { id: "team", label: nav.team || "Մեր թիմը" },
       { id: "about", label: nav.about || "Մեր մասին" },
       { id: "contact", label: nav.contact || "Կապ" },
-      { id: "partners", label: nav.partners || "Գործընկերներ" }
+      { id: "partners", label: nav.partners || "Հաճախորդներ" }
     ];
     pages.forEach(function (p) {
       searchIndex.push({

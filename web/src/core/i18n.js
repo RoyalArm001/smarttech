@@ -1,7 +1,7 @@
 (function (site) {
   var storageKey = "smarttech.language.v3";
   var fallbackLanguage = "hy";
-  var availableLanguages = ["hy", "en", "ru", "be", "fr", "ka"];
+  var availableLanguages = ["hy", "en", "ru"];
 
   function normalizeLanguage(language) {
     return availableLanguages.indexOf(language) >= 0 ? language : fallbackLanguage;
@@ -40,7 +40,11 @@
   }
 
   function get(path, fallback) {
+    var lang = normalizeLanguage(site.i18n.language);
     var value = getPath(activeDictionary(), path);
+    if (value == null && lang === "ru" && site.content.locales.en) {
+      value = getPath(site.content.locales.en, path);
+    }
     if (value == null) {
       value = getPath(site.content.locales[fallbackLanguage], path);
     }
@@ -51,7 +55,10 @@
     if (site.i18n.language === fallbackLanguage) {
       return baseService;
     }
-    var translated = get("services." + baseService.id, {});
+    var translated = get("services." + baseService.id, null);
+    if (!translated || typeof translated !== "object") {
+      translated = {};
+    }
     return Object.assign({}, baseService, translated);
   }
 
@@ -66,9 +73,33 @@
     return Object.assign({}, baseProject, translated);
   }
 
+  function pickLanguageDictionary(dictionaries, language) {
+    var lang = normalizeLanguage(language || site.i18n.language);
+    if (!dictionaries) return {};
+    if (dictionaries[lang]) return dictionaries[lang];
+    if (lang !== "hy" && dictionaries.en) return dictionaries.en;
+    return dictionaries.hy || dictionaries.en || {};
+  }
+
+  function secondaryLanguageDictionary(dictionaries, language) {
+    var lang = normalizeLanguage(language || site.i18n.language);
+    if (!dictionaries) return {};
+    if (lang === "hy") return dictionaries.en || dictionaries.hy || {};
+    return dictionaries.en || dictionaries.hy || {};
+  }
+
   function teamMember(baseMember) {
+    if (site.i18n.language === fallbackLanguage) {
+      return baseMember;
+    }
     var translated = get("team." + baseMember.id, {});
-    return Object.assign({}, baseMember, translated);
+    var merged = Object.assign({}, baseMember);
+    if (translated.title) merged.title = translated.title;
+    if (translated.text) merged.text = translated.text;
+    if (translated.level) merged.level = translated.level;
+    if (translated.experience) merged.experience = translated.experience;
+    if (translated.workInfo) merged.workInfo = translated.workInfo;
+    return merged;
   }
 
   site.i18n = {
@@ -76,6 +107,8 @@
     languages: availableLanguages,
     get: get,
     setLanguage: setLanguage,
+    pickLanguageDictionary: pickLanguageDictionary,
+    secondaryLanguageDictionary: secondaryLanguageDictionary,
     service: service,
     project: project,
     teamMember: teamMember

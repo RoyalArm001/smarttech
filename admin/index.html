@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="hy">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Smart Tech — Admin Panel</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">ST</div>
+          <div class="brand-text">
+            <strong>Smart Tech</strong>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+
+        <nav class="nav" id="nav">
+          <button class="nav-item is-active" data-view="content" type="button">
+            <span class="nav-icon">✎</span> Բովանդակություն
+          </button>
+          <button class="nav-item" data-view="images" type="button">
+            <span class="nav-icon">🖼</span> Նկարներ
+          </button>
+          <button class="nav-item" data-view="settings" type="button">
+            <span class="nav-icon">⚙</span> Կարգավորումներ
+          </button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <div class="lang-legend">
+            <span class="dot dot-hy"></span> HY · աղբյուր
+            <span class="dot dot-auto"></span> EN / RU / KA · ավտո
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1 id="viewTitle">Բովանդակություն</h1>
+            <p id="viewSubtitle">Գրիր միայն հայերեն — մյուս լեզուները լրացվում են ինքնաշխատ։</p>
+          </div>
+          <div class="topbar-actions">
+            <span class="status-pill" id="apiStatus"><span class="status-dot"></span> Ստուգվում է…</span>
+          </div>
+        </header>
+
+        <!-- CONTENT VIEW -->
+        <section class="view is-active" id="view-content">
+          <div class="editor-grid">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Տեքստի խմբագրում</h2>
+                <select id="fieldSelect" class="select"></select>
+              </div>
+
+              <label class="field-label" for="sourceText">
+                <span class="flag">🇦🇲</span> Հայերեն (աղբյուր)
+              </label>
+              <textarea id="sourceText" class="textarea" rows="5"
+                placeholder="Գրիր տեքստը հայերեն…"></textarea>
+
+              <div class="actions">
+                <button class="btn btn-primary" id="translateBtn" type="button">
+                  <span class="btn-spinner" hidden></span>
+                  <span class="btn-label">⟳ Ավտո-թարգմանել</span>
+                </button>
+                <button class="btn btn-ghost" id="saveBtn" type="button">💾 Պահպանել</button>
+              </div>
+              <p class="hint" id="editorHint"></p>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Թարգմանություններ</h2>
+                <span class="muted">ինքնաշխատ</span>
+              </div>
+              <div class="trans-list" id="transList">
+                <div class="trans-card" data-lang="en">
+                  <div class="trans-head"><span class="flag">🇬🇧</span> English <em>EN</em></div>
+                  <textarea class="textarea trans-area" data-lang="en" rows="3" placeholder="—"></textarea>
+                </div>
+                <div class="trans-card" data-lang="ru">
+                  <div class="trans-head"><span class="flag">🇷🇺</span> Русский <em>RU</em></div>
+                  <textarea class="textarea trans-area" data-lang="ru" rows="3" placeholder="—"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- IMAGES VIEW -->
+        <section class="view" id="view-images">
+          <div class="panel">
+            <div class="panel-head"><h2>Նկարների կառավարում</h2></div>
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-icon">⬆</div>
+              <p><strong>Քաշիր նկարը այստեղ</strong> կամ սեղմիր ընտրելու համար</p>
+              <small>Ավտոմատ կսեղմվի և կփոխարկվի WebP — մինչև ~1600px</small>
+              <input type="file" id="imageInput" accept="image/*" hidden />
+            </div>
+            <p class="hint">Proof-of-concept — upload-ի backend-ը (R2) միանում է հաջորդ քայլում։</p>
+          </div>
+        </section>
+
+        <!-- SETTINGS VIEW -->
+        <section class="view" id="view-settings">
+          <div class="panel">
+            <div class="panel-head"><h2>Կարգավորումներ</h2></div>
+            <ul class="setting-list">
+              <li><strong>Թարգմանության շարժիչ</strong><span>Google Gemini (<code>/api/translate</code>)</span></li>
+              <li><strong>Աղբյուր լեզու</strong><span>Հայերեն (hy)</span></li>
+              <li><strong>Թիրախ լեզուներ</strong><span>EN · RU · KA</span></li>
+              <li><strong>Հոստինգ</strong><span>Cloudflare Pages</span></li>
+            </ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

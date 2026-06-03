@@ -273,12 +273,12 @@
     var e = site.utils.escapeHtml;
     if (member.department !== "IT") return "";
 
-    var steps = [
+    var steps = site.i18n.get("teamDetail.itWorkflowSteps", [
       "Network audit",
       "Architecture",
       "Deployment",
       "Monitoring"
-    ].map(function (step, index) {
+    ]).map(function (step, index) {
       return '<span><strong>' + e("0" + (index + 1)) + "</strong>" + e(step) + "</span>";
     }).join("");
 
@@ -403,31 +403,9 @@
           title: "Pôle systèmes audio",
           text: "Public address, musique d'ambiance, notification vocale et audio de conférence sont regroupés dans leur propre direction."
         }
-      },
-      ka: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "IT განყოფილება"),
-          text: site.i18n.get("teamPage.itText", "ქსელური ინჟინერია და IT პროექტები მუშაობს როგორც ცალკე ტექნიკური ერთეული.")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "ავტომატიზაციის მიმართულება",
-          text: "მოწყობილობების მართვის, ავტომატიზაციისა და სცენარული ლოგიკის სპეციალისტები გამოყოფილია ცალკე მიმართულებად."
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "BMS მიმართულება",
-          text: "შენობის მართვის სისტემების პროექტირება გამოყოფილია ცალკე ბლოკად საკუთარი ტექნიკური პასუხისმგებლობით."
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "აუდიო სისტემების მიმართულება",
-          text: "Public address, ფონური მუსიკა, ხმოვანი შეტყობინება და საკონფერენციო აუდიო გაერთიანებულია ცალკე მიმართულებაში."
-        }
       }
     };
-    return dictionaries[site.i18n.language] || dictionaries.hy;
+    return site.i18n.pickLanguageDictionary(dictionaries);
   }
 
   function renderTeamUnitLink(member) {
@@ -554,8 +532,8 @@
             '<h1 class="member-name">' + e(title) + "</h1>" +
             '<p class="member-role">' + e(description) + "</p>" +
             '<div class="member-meta">' +
-              '<span><strong>' + e(levelLabel) + ":</strong> " + e(member.level || "Senior") + "</span>" +
-              '<span><strong>' + e(expLabel) + ":</strong> " + e(member.experience || "8 years") + "</span>" +
+              '<span><strong>' + e(levelLabel) + ":</strong> " + e(localized.level || member.level || "Senior") + "</span>" +
+              '<span><strong>' + e(expLabel) + ":</strong> " + e(localized.experience || member.experience || "8 years") + "</span>" +
             "</div>" +
             '<div class="member-social-block">' +
               '<h3>' + e(socialLabel) + "</h3>" +
@@ -565,7 +543,7 @@
           '<div class="member-content">' +
             '<article class="member-info-card reveal">' +
               "<h2>" + e(workLabel) + "</h2>" +
-              '<ul class="member-work-list">' + renderWorkInfo(member.workInfo || []) + "</ul>" +
+              '<ul class="member-work-list">' + renderWorkInfo(localized.workInfo || member.workInfo || []) + "</ul>" +
             "</article>" +
             renderDirectorOrgChart(member) +
             renderItWorkflow(member) +
