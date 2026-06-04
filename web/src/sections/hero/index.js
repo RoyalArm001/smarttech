@@ -43,8 +43,17 @@
       return "<li>" + e(item) + "</li>";
     }).join("");
 
+    var heroImage = company.heroImages[0];
+    var heroImgAttrs = site.utils.imageLoadingAttrs({
+      fetchpriority: "high",
+      decoding: "async",
+      width: 1600,
+      height: 900
+    });
+
     return '' +
-      '<section id="top" class="hero" style="--hero-image: url(' + e(company.heroImages[0]) + ')">' +
+      '<section id="top" class="hero">' +
+        '<img class="hero-media" src="' + e(heroImage) + '" alt="" ' + heroImgAttrs + '>' +
         '<div class="hero-overlay">' +
           '<div class="container hero-grid">' +
             '<div class="hero-copy reveal">' +
@@ -60,7 +69,6 @@
               '<span>' + e(heroActionCopy.panelEyebrow) + '</span>' +
               '<strong class="notranslate" translate="no" lang="en" data-no-translate="brand">' + e(company.name) + '</strong>' +
               '<ul class="hero-panel-list">' + panelPoints + '</ul>' +
-              '<a href="' + e(site.utils.pageUrl("services")) + '" data-i18n-key="common.viewServices">' + e(site.i18n.get("common.viewServices")) + '</a>' +
             '</div>' +
           '</div>' +
         '</div>' +

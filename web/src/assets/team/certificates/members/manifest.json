@@ -1,0 +1,192 @@
+{
+  "director": [
+    {
+      "title": "Business Management",
+      "image": "/src/assets/team/certificates/members/director-business-management.svg"
+    },
+    {
+      "title": "Quality Control Leadership",
+      "image": "/src/assets/team/certificates/members/director-quality-control-leadership.svg"
+    }
+  ],
+  "it-network-engineer": [
+    {
+      "title": "Cisco Network Engineering",
+      "image": "/src/assets/team/certificates/members/it-network-engineer-cisco-network-engineering.svg"
+    },
+    {
+      "title": "Network Security Basics",
+      "image": "/src/assets/team/certificates/members/it-network-engineer-network-security-basics.svg"
+    }
+  ],
+  "it-project-manager": [
+    {
+      "title": "Project Management",
+      "image": "/src/assets/team/certificates/members/it-project-manager-project-management.svg"
+    },
+    {
+      "title": "Agile Delivery",
+      "image": "/src/assets/team/certificates/members/it-project-manager-agile-delivery.svg"
+    }
+  ],
+  "alarm-system-engineer": [
+    {
+      "title": "Fire Safety Systems",
+      "image": "/src/assets/team/certificates/members/alarm-system-engineer-fire-safety-systems.svg"
+    },
+    {
+      "title": "Security Systems Compliance",
+      "image": "/src/assets/team/certificates/members/alarm-system-engineer-security-systems-compliance.svg"
+    }
+  ],
+  "automation-specialist": [
+    {
+      "title": "Automation Systems",
+      "image": "/src/assets/team/certificates/members/automation-specialist-automation-systems.svg"
+    },
+    {
+      "title": "Control Panel Engineering",
+      "image": "/src/assets/team/certificates/members/automation-specialist-control-panel-engineering.svg"
+    }
+  ],
+  "bms-design-specialist": [
+    {
+      "title": "Building Management Systems",
+      "image": "/src/assets/team/certificates/members/bms-design-specialist-building-management-systems.svg"
+    },
+    {
+      "title": "Systems Design",
+      "image": "/src/assets/team/certificates/members/bms-design-specialist-systems-design.svg"
+    }
+  ],
+  "video-access-control-engineer": [
+    {
+      "title": "Video Surveillance Systems",
+      "image": "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg"
+    },
+    {
+      "title": "Access Control Integration",
+      "image": "/src/assets/team/certificates/members/video-access-control-engineer-access-control-integration.svg"
+    }
+  ],
+  "audio-systems-specialist": [
+    {
+      "title": "Audio System Installation",
+      "image": "/src/assets/team/certificates/members/audio-systems-specialist-audio-system-installation.svg"
+    },
+    {
+      "title": "Public Address Systems",
+      "image": "/src/assets/team/certificates/members/audio-systems-specialist-public-address-systems.svg"
+    }
+  ],
+  "electrical-installation-engineer": [
+    {
+      "title": "Electrical Installation",
+      "image": "/src/assets/team/certificates/members/electrical-installation-engineer-electrical-installation.svg"
+    },
+    {
+      "title": "Low Voltage Systems",
+      "image": "/src/assets/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg"
+    }
+  ],
+  "it-installation-engineer": [
+    {
+      "title": "Structured Cabling",
+      "image": "/src/assets/team/certificates/members/it-installation-engineer-structured-cabling.svg"
+    },
+    {
+      "title": "Field Installation Standards",
+      "image": "/src/assets/team/certificates/members/it-installation-engineer-field-installation-standards.svg"
+    }
+  ],
+  "it-support-engineer": [
+    {
+      "title": "Network Operations",
+      "image": "/src/assets/team/certificates/members/it-support-engineer-network-operations.svg"
+    },
+    {
+      "title": "IT Service Management",
+      "image": "/src/assets/team/certificates/members/it-support-engineer-it-service-management.svg"
+    }
+  ],
+  "fire-alarm-specialist": [
+    {
+      "title": "Fire Alarm Systems",
+      "image": "/src/assets/team/certificates/members/fire-alarm-specialist-fire-alarm-systems.svg"
+    },
+    {
+      "title": "Evacuation Safety",
+      "image": "/src/assets/team/certificates/members/fire-alarm-specialist-evacuation-safety.svg"
+    }
+  ],
+  "electrical-works-specialist": [
+    {
+      "title": "Project Management",
+      "image": "/src/assets/team/certificates/members/it-project-manager-project-management.svg"
+    },
+    {
+      "title": "Agile Delivery",
+      "image": "/src/assets/team/certificates/members/it-project-manager-agile-delivery.svg"
+    }
+  ],
+  "technical-electrical-specialist": [
+    {
+      "title": "Electrical Installation",
+      "image": "/src/assets/team/certificates/members/electrical-works-specialist-electrical-installation.svg"
+    },
+    {
+      "title": "Panel Assembly",
+      "image": "/src/assets/team/certificates/members/electrical-works-specialist-panel-assembly.svg"
+    }
+  ],
+  "technical-low-voltage-specialist": [
+    {
+      "title": "Structured Cabling",
+      "image": "/src/assets/team/certificates/members/it-installation-engineer-structured-cabling.svg"
+    },
+    {
+      "title": "Video Surveillance Systems",
+      "image": "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg"
+    }
+  ],
+  "technical-commissioning-specialist": [
+    {
+      "title": "Automation Systems",
+      "image": "/src/assets/team/certificates/members/automation-installation-specialist-automation-systems.svg"
+    },
+    {
+      "title": "Building Management Systems",
+      "image": "/src/assets/team/certificates/members/bms-integration-engineer-building-management-systems.svg"
+    }
+  ],
+  "automation-installation-specialist": [
+    {
+      "title": "Automation Systems",
+      "image": "/src/assets/team/certificates/members/automation-installation-specialist-automation-systems.svg"
+    },
+    {
+      "title": "PLC Installation",
+      "image": "/src/assets/team/certificates/members/automation-installation-specialist-plc-installation.svg"
+    }
+  ],
+  "bms-integration-engineer": [
+    {
+      "title": "Building Management Systems",
+      "image": "/src/assets/team/certificates/members/bms-integration-engineer-building-management-systems.svg"
+    },
+    {
+      "title": "HVAC Integration",
+      "image": "/src/assets/team/certificates/members/bms-integration-engineer-hvac-integration.svg"
+    }
+  ],
+  "audio-installation-specialist": [
+    {
+      "title": "Public Address Systems",
+      "image": "/src/assets/team/certificates/members/audio-installation-specialist-public-address-systems.svg"
+    },
+    {
+      "title": "Sound Engineering",
+      "image": "/src/assets/team/certificates/members/audio-installation-specialist-sound-engineering.svg"
+    }
+  ]
+}

@@ -41,8 +41,12 @@
     var links = [];
     var linkClass = className || "member-social-link";
 
+    function socialLabel(type, fallback) {
+      return site.i18n.get("teamDetail.social" + type.charAt(0).toUpperCase() + type.slice(1), fallback);
+    }
+
     if (email) {
-      links.push({ label: "Email", href: emailHref(email), type: "email" });
+      links.push({ label: socialLabel("email", "Email"), href: emailHref(email), type: "email" });
     }
 
     (items || []).forEach(function (item) {
@@ -53,11 +57,16 @@
 
     return links.map(function (item) {
       var type = socialType(item);
+      var label = item.label;
+      if (type === "linkedin") label = socialLabel("linkedin", label);
+      if (type === "telegram") label = socialLabel("telegram", label);
+      if (type === "github") label = socialLabel("github", label);
+      if (type === "email") label = socialLabel("email", label);
       var external = /^mailto:|^tel:/i.test(item.href) ? "" : ' target="_blank" rel="noreferrer"';
       return '' +
-        '<a class="' + e(linkClass) + " " + e(linkClass + "-" + type) + '" href="' + e(item.href) + '"' + external + ' aria-label="' + e(item.label) + '">' +
+        '<a class="' + e(linkClass) + " " + e(linkClass + "-" + type) + '" href="' + e(item.href) + '"' + external + ' aria-label="' + e(label) + '">' +
           socialIcon(type) +
-          "<span>" + e(item.label) + "</span>" +
+          "<span>" + e(label) + "</span>" +
         "</a>";
     }).join("");
   }
@@ -177,7 +186,7 @@
             '<div class="team-mark">' + e(member.accent) + "</div>" +
           "</div>" +
           '<div class="team-card-copy">' +
-            '<span class="team-department">' + e(member.department || "Team") + "</span>" +
+            '<span class="team-department">' + e(localized.department || site.i18n.teamDepartment(member.department)) + "</span>" +
             "<h3>" + e(title) + "</h3>" +
             "<p>" + e(description) + "</p>" +
             '<span class="team-card-action">' + e(site.i18n.get("common.learnMore", "View profile")) + "</span>" +
@@ -200,7 +209,7 @@
           '<a class="member-org-node" href="' + e(site.utils.pageUrl("member", item.id)) + '" style="--team-color: ' + e(item.color) + '">' +
             '<span>' + e(item.accent) + "</span>" +
             "<strong>" + e(localized.title || item.title) + "</strong>" +
-            "<small>" + e(item.department || "") + "</small>" +
+            "<small>" + e(site.i18n.teamDepartment(item.department)) + "</small>" +
           "</a>";
       }).join("");
 
@@ -213,7 +222,7 @@
           '<a class="member-org-node member-org-manager" href="' + e(site.utils.pageUrl("member", manager.id)) + '" style="--team-color: ' + e(manager.color) + '">' +
             '<span>' + e(manager.accent) + "</span>" +
             "<strong>" + e(managerText.title || manager.title) + "</strong>" +
-            "<small>" + e(manager.department || "") + "</small>" +
+            "<small>" + e(site.i18n.teamDepartment(manager.department)) + "</small>" +
           "</a>" +
           '<div class="member-org-child-grid">' + reportNodes + "</div>" +
         "</div>";
@@ -228,7 +237,7 @@
         '<a class="member-org-node" href="' + e(site.utils.pageUrl("member", item.id)) + '" style="--team-color: ' + e(item.color) + '">' +
           '<span>' + e(item.accent) + "</span>" +
           "<strong>" + e(localized.title || item.title) + "</strong>" +
-          "<small>" + e(item.department || "") + "</small>" +
+          "<small>" + e(site.i18n.teamDepartment(item.department)) + "</small>" +
         "</a>";
       }).join("");
     }
@@ -252,6 +261,9 @@
 
   function renderTeamManagerGroup(group) {
     var e = site.utils.escapeHtml;
+    var roleLabel = group.manager.roleLevel === "manager"
+      ? site.i18n.get("teamPage.roleManager", "Department manager")
+      : site.i18n.get("teamPage.roleLead", "Direction lead");
     var reports = group.reports.map(function (member) {
       return '<div class="team-report-node">' + renderTeamCard(member, "team-card-specialist") + "</div>";
     }).join("");
@@ -263,10 +275,52 @@
 
     return "" +
       '<article class="team-manager-column reveal" style="--team-color: ' + e(group.manager.color) + '">' +
+        '<div class="team-manager-meta">' +
+          '<span class="team-department-chip">' + e(site.i18n.teamDepartment(group.manager.department)) + "</span>" +
+          '<span class="team-role-chip">' + e(roleLabel) + "</span>" +
+        "</div>" +
         '<div class="team-manager-head">' + renderTeamCard(group.manager, "team-card-manager") + "</div>" +
+        '<p class="team-manager-caption">' +
+          e(site.i18n.get("teamPage.reportsTitle", "Specialists")) +
+          " · " + e(String(group.reports.length)) +
+        "</p>" +
         '<div class="team-report-branch" aria-hidden="true"></div>' +
         '<div class="' + e(reportGridClass) + '">' + reports + "</div>" +
       "</article>";
+  }
+
+  function renderTeamStats(members, director) {
+    var e = site.utils.escapeHtml;
+    var managers = members.filter(isManager);
+    var specialists = members.filter(function (member) {
+      return member.roleLevel === "specialist";
+    });
+    var departments = {};
+    managers.forEach(function (member) {
+      if (member.department) departments[member.department] = true;
+    });
+
+    var stats = [
+      { value: String(Object.keys(departments).length), label: site.i18n.get("teamPage.statsDepartments", "Departments") },
+      { value: String(managers.length), label: site.i18n.get("teamPage.statsManagers", "Managers / PMs") },
+      { value: String(specialists.length), label: site.i18n.get("teamPage.statsSpecialists", "Specialists") },
+      { value: String(members.length + (director ? 1 : 0)), label: site.i18n.get("teamPage.statsTotal", "Team members") }
+    ];
+
+    return stats.map(function (item) {
+      return "" +
+        '<div class="team-stat-card">' +
+          "<strong>" + e(item.value) + "</strong>" +
+          "<span>" + e(item.label) + "</span>" +
+        "</div>";
+    }).join("");
+  }
+
+  function renderTeamDepartmentsGrid(director) {
+    var groups = getTeamStructure(director).sort(function (a, b) {
+      return sortTeamMembers(a.manager, b.manager);
+    });
+    return groups.map(renderTeamManagerGroup).join("");
   }
 
   function renderItWorkflow(member) {
@@ -285,7 +339,7 @@
     return "" +
       '<article class="member-info-card member-it-card reveal">' +
         '<div>' +
-          '<span class="eyebrow">IT</span>' +
+          '<span class="eyebrow">' + e(site.i18n.get("teamPage.itEyebrow", "IT")) + "</span>" +
           "<h2>" + e(site.i18n.get("teamDetail.itWorkflowTitle", "IT workflow")) + "</h2>" +
         "</div>" +
         '<div class="member-it-flow">' + steps + "</div>" +
@@ -293,119 +347,17 @@
   }
 
   function teamUnitCopy() {
-    var dictionaries = {
-      hy: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "IT բաժին"),
-          text: site.i18n.get("teamPage.itText", "Ցանցային ինժեներիան եւ IT նախագծերի իրականացումը աշխատում են որպես առանձին տեխնիկական միավոր։")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "Automation ուղղություն",
-          text: "Էլեկտրական սարքերի կառավարման, ավտոմատացման եւ սցենարային աշխատանքի մասնագետները առանձնացված են իրենց ուղղությամբ։"
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "BMS ուղղություն",
-          text: "Շենքի կառավարման BMS նախագծումը առանձին բաժին է՝ սեփական տեխնիկական պատասխանատվությամբ։"
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "Աուդիո համակարգերի ուղղություն",
-          text: "Public address, ֆոնային երաժշտություն, ձայնային ծանուցում եւ կոնֆերանսային աուդիո լուծումները առանձնացված են իրենց բաժնում։"
-        }
-      },
-      en: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "IT Department"),
-          text: site.i18n.get("teamPage.itText", "Network engineering and IT project delivery work as a separate technical unit.")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "Automation unit",
-          text: "Device control, automation and scenario programming specialists are shown as their own direction."
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "BMS unit",
-          text: "Building management system design is a separate department with its own technical responsibility."
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "Audio systems unit",
-          text: "Public address, background music, voice notification and conference audio work are shown in their own direction."
-        }
-      },
-      ru: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "IT-отдел"),
-          text: site.i18n.get("teamPage.itText", "Сетевые решения и IT-проекты работают как отдельное техническое направление.")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "Автоматизация",
-          text: "Специалисты по управлению устройствами, автоматизации и сценарной логике вынесены в отдельное направление."
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "BMS-направление",
-          text: "Проектирование систем управления зданием выделено как отдельный отдел со своей технической ответственностью."
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "Направление аудиосистем",
-          text: "Public address, фоновая музыка, голосовые уведомления и конференц-аудио вынесены в отдельный блок."
-        }
-      },
-      be: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "IT-аддзел"),
-          text: site.i18n.get("teamPage.itText", "Сеткавая інжынерыя і IT-праекты працуюць як асобны тэхнічны напрамак.")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "Напрамак аўтаматызацыі",
-          text: "Спецыялісты па кіраванні прыладамі, аўтаматызацыі і сцэнарнай логіцы паказаны асобным напрамкам."
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "BMS-напрамак",
-          text: "Праектаванне сістэм кіравання будынкам выдзелена ў асобны блок з уласнай тэхнічнай адказнасцю."
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "Напрамак аўдыясістэм",
-          text: "Public address, фонавая музыка, галасавыя апавяшчэнні і канферэнц-аўдыя паказаны ў асобным блоку."
-        }
-      },
-      fr: {
-        it: {
-          eyebrow: "IT",
-          title: site.i18n.get("teamPage.itTitle", "Département IT"),
-          text: site.i18n.get("teamPage.itText", "L'ingénierie réseau et les projets IT fonctionnent comme une unité technique séparée.")
-        },
-        automation: {
-          eyebrow: "Automation",
-          title: "Pôle automatisation",
-          text: "Les spécialistes du contrôle des équipements, de l'automatisation et des scénarios sont présentés comme une direction dédiée."
-        },
-        bms: {
-          eyebrow: "BMS",
-          title: "Pôle BMS",
-          text: "La conception des systèmes de gestion de bâtiment est un bloc séparé avec sa propre responsabilité technique."
-        },
-        audio: {
-          eyebrow: "Audio",
-          title: "Pôle systèmes audio",
-          text: "Public address, musique d'ambiance, notification vocale et audio de conférence sont regroupés dans leur propre direction."
-        }
-      }
-    };
-    return site.i18n.pickLanguageDictionary(dictionaries);
+    var units = ["it", "technical", "security", "electrical", "automation", "bms", "audio"];
+    var copy = {};
+    units.forEach(function (key) {
+      var path = "teamPage." + key;
+      copy[key] = {
+        eyebrow: site.i18n.get(path + "Eyebrow", key.toUpperCase()),
+        title: site.i18n.get(path + "Title", ""),
+        text: site.i18n.get(path + "Text", "")
+      };
+    });
+    return copy;
   }
 
   function renderTeamUnitLink(member) {
@@ -433,31 +385,33 @@
       "</div>";
   }
 
+  function renderAllDepartmentPanels(members, copy) {
+    var departmentMap = [
+      { key: "it", department: "IT" },
+      { key: "technical", department: "Technical" },
+      { key: "security", department: "Security" },
+      { key: "electrical", department: "Electrical" },
+      { key: "automation", department: "Automation" },
+      { key: "bms", department: "BMS" },
+      { key: "audio", department: "Audio" }
+    ];
+    return departmentMap.map(function (item) {
+      return renderTeamUnitPanel(item.key, members.filter(function (member) {
+        return member.department === item.department;
+      }), copy);
+    }).join("");
+  }
+
   site.sections.team = function team() {
     var e = site.utils.escapeHtml;
     var director = getMemberById("director") || site.content.team[0];
-    var specialists = orderedTeamMembers().filter(function (member) {
+    var members = orderedTeamMembers().filter(function (member) {
       return !director || member.id !== director.id;
     });
-    var railCards = specialists.map(function (member) {
-      var cardClass = isManager(member) ? "team-card-person team-card-lead" : "team-card-person team-card-worker";
-      return '<div class="team-rail-node" style="--team-color: ' + e(member.color) + '">' + renderTeamCard(member, cardClass) + "</div>";
-    }).join("");
     var unitCopy = teamUnitCopy();
-    var unitPanels = [
-      renderTeamUnitPanel("it", specialists.filter(function (member) {
-        return member.department === "IT";
-      }), unitCopy),
-      renderTeamUnitPanel("automation", specialists.filter(function (member) {
-        return member.id === "automation-specialist";
-      }), unitCopy),
-      renderTeamUnitPanel("bms", specialists.filter(function (member) {
-        return member.id === "bms-design-specialist";
-      }), unitCopy),
-      renderTeamUnitPanel("audio", specialists.filter(function (member) {
-        return member.id === "audio-systems-specialist";
-      }), unitCopy)
-    ].join("");
+    var unitPanels = renderAllDepartmentPanels(members, unitCopy);
+    var departmentGrid = renderTeamDepartmentsGrid(director);
+    var statsMarkup = renderTeamStats(members, director);
 
     return "" +
       site.sections.pageHero({
@@ -478,17 +432,20 @@
               "<h2>" + e(site.i18n.get("teamPage.managementTitle", "General team management")) + "</h2>" +
               "<p>" + e(site.i18n.get("teamPage.managementText", "Managers are shown first, and each direction's specialists are grouped directly below their responsible manager.")) + "</p>" +
             "</div>" +
-            '<div class="team-hierarchy team-carousel">' +
+            '<div class="team-stats-grid reveal">' + statsMarkup + "</div>" +
+            '<div class="team-hierarchy">' +
               renderTeamCard(director, "team-card-director team-card-featured") +
-              '<div class="team-carousel-shell reveal">' +
-                '<div class="team-carousel-track">' +
-                  '<div class="team-carousel-set">' + railCards + "</div>" +
-                  '<div class="team-carousel-set" aria-hidden="true" inert>' + railCards + "</div>" +
-                "</div>" +
-              "</div>" +
+              '<div class="team-tree-connector" aria-hidden="true"></div>' +
+              '<div class="team-departments-grid">' + departmentGrid + "</div>" +
             "</div>" +
           "</div>" +
-          '<div class="team-unit-stack">' + unitPanels + "</div>" +
+          '<div class="team-unit-stack">' +
+            '<div class="team-unit-stack-head reveal">' +
+              "<h2>" + e(site.i18n.get("teamPage.departmentsTitle", "Departments and directions")) + "</h2>" +
+              "<p>" + e(site.i18n.get("teamPage.departmentsText", "Each department has its own manager and attached specialists.")) + "</p>" +
+            "</div>" +
+            unitPanels +
+          "</div>" +
         "</div>" +
       "</section>";
   };
@@ -550,7 +507,7 @@
             renderWorkGallery(member.workImages || []) +
             '<article class="member-info-card reveal">' +
               "<h2>" + e(certLabel) + "</h2>" +
-              '<div class="member-cert-grid">' + renderCertificates(member.certificates || []) + "</div>" +
+              '<div class="member-cert-grid">' + renderCertificates(localized.certificates || member.certificates || []) + "</div>" +
             "</article>" +
           "</div>" +
         "</div>" +

@@ -9,24 +9,52 @@
       totalLabel: "active specialists"
     };
 
-    var employeeGroups = site.i18n.get("home.employeeGroups", []);
-    var fallbackGroups = [
-      {
-        label: site.i18n.get("home.employeeFallback.core", "Core engineering"),
-        value: Math.max(site.content.team.length, 4)
+    var departmentLabels = site.i18n.pickLanguageDictionary({
+      hy: {
+        IT: "IT և ցանցեր",
+        Security: "Անվտանգություն",
+        Technical: "Տեխնիկական համակարգեր",
+        Automation: "Ավտոմատացում",
+        BMS: "BMS նախագծում",
+        Electrical: "Էլեկտրամոնտաժ",
+        Audio: "Աուդիո համակարգեր",
+        Management: "Կառավարում"
       },
-      {
-        label: site.i18n.get("home.employeeFallback.field", "Field operations"),
-        value: Math.max(site.content.team.length * 2, 8)
+      en: {
+        IT: "IT and networks",
+        Security: "Security systems",
+        Technical: "Technical systems",
+        Automation: "Automation",
+        BMS: "BMS design",
+        Electrical: "Electrical works",
+        Audio: "Audio systems",
+        Management: "Management"
       },
-      {
-        label: site.i18n.get("home.employeeFallback.support", "Support and QA"),
-        value: Math.max(site.content.team.length, 5)
+      ru: {
+        IT: "IT и сети",
+        Security: "Системы безопасности",
+        Technical: "Технические системы",
+        Automation: "Автоматизация",
+        BMS: "Проектирование BMS",
+        Electrical: "Электромонтаж",
+        Audio: "Аудиосистемы",
+        Management: "Управление"
       }
-    ];
-    if (!employeeGroups || !employeeGroups.length) {
-      employeeGroups = fallbackGroups;
-    }
+    });
+    var departmentCounts = {};
+    (site.content.team || []).forEach(function (member) {
+      if (!member || member.id === "director") return;
+      var key = member.department || "Team";
+      departmentCounts[key] = (departmentCounts[key] || 0) + 1;
+    });
+    var employeeGroups = Object.keys(departmentCounts).map(function (department) {
+      return {
+        label: departmentLabels[department] || department,
+        value: departmentCounts[department]
+      };
+    }).sort(function (a, b) {
+      return b.value - a.value;
+    });
 
     var maxGroupValue = employeeGroups.reduce(function (max, item) {
       var value = Number(item.value) || 0;
@@ -50,26 +78,151 @@
         "</div>";
     }).join("");
 
-    var prioritizedServiceIds = ["video-surveillance", "fire-security", "networks", "electrical", "automation", "systems-design"];
-    var serviceById = {};
-    site.content.services.forEach(function (service) {
-      serviceById[service.id] = service;
-    });
-    var featuredServices = prioritizedServiceIds.map(function (id) {
-      return serviceById[id];
-    }).filter(Boolean);
-    if (!featuredServices.length) {
-      featuredServices = site.content.services.slice(0, 6);
+    var featuredServices = (site.content.services || []).slice();
+    function serviceHomeOutcome(serviceId) {
+      var outcomes = {
+        "video-surveillance": {
+          hy: "Օբյեկտը մշտական վերահսկման տակ է, արխիվը հուսալի է, արձագանքը՝ արագ։",
+          en: "Your facility stays under continuous monitoring with reliable archive and fast response.",
+          ru: "Объект под постоянным контролем, надежный архив и быстрая реакция."
+        },
+        "fire-security": {
+          hy: "Վաղ հայտնաբերում, պարզ ազդանշում և անվտանգ տարհանում արտակարգ իրավիճակում։",
+          en: "Early detection, clear alerts and safe evacuation in emergency scenarios.",
+          ru: "Раннее обнаружение, понятная сигнализация и безопасная эвакуация."
+        },
+        networks: {
+          hy: "Կայուն կապ, կանխատեսելի արագություն և ցանց, որը հեշտ է ընդլայնել։",
+          en: "Stable connectivity, predictable speed and a network that scales easily.",
+          ru: "Стабильная связь, предсказуемая скорость и легко масштабируемая сеть."
+        },
+        electrical: {
+          hy: "Անվտանգ էլեկտրամատակարարում, կարգավոր սպառում և կայուն աշխատանք ամեն օր։",
+          en: "Safe power distribution, controlled consumption and stable daily operation.",
+          ru: "Безопасное электроснабжение, контролируемое потребление и стабильная работа."
+        },
+        automation: {
+          hy: "Մեկ կենտրոնից կառավարում, ավտոմատ սցենարներ և ավելի ցածր ռիսկեր։",
+          en: "Centralized control, automated scenarios and lower operational risk.",
+          ru: "Централизованное управление, автоматические сценарии и меньше рисков."
+        },
+        "powder-coating": {
+          hy: "Պաշտպանիչ ծածկույթ, հավասար գույն և արտադրական որակի ավարտ։",
+          en: "Protective coating, even color finish and production-grade quality.",
+          ru: "Защитное покрытие, ровный цвет и производственное качество финиша."
+        },
+        wacker: {
+          hy: "Ճշգրիտ տեղադրում, կարգաբերում և կայուն աշխատանք օբյեկտում։",
+          en: "Precise installation, configuration and stable on-site operation.",
+          ru: "Точный монтаж, настройка и стабильная работа на объекте."
+        },
+        "systems-design": {
+          hy: "Ճիշտ հաշվարկ, պարզ փուլեր և նախագիծ, որը չի ստեղծում ավելորդ ծախսեր։",
+          en: "Accurate engineering, clear stages and a design that avoids costly rework.",
+          ru: "Точный расчет, понятные этапы и проект без лишних затрат."
+        },
+        default: {
+          hy: "Մեկ պատասխանատու թիմ՝ նախագծումից մինչև գործարկում և սպասարկում։",
+          en: "One accountable team from design through commissioning and maintenance.",
+          ru: "Одна ответственная команда: от проекта до ввода и обслуживания."
+        }
+      };
+      return site.i18n.pickLanguageDictionary(outcomes[serviceId] || outcomes.default, site.i18n.language);
     }
-    var allServicesOnHome = featuredServices.map(function (service) {
+
+    var powderPhone = ((site.content.contacts || {}).phones || []).find(function (phone) {
+      return String(phone.label || "").indexOf("Փոշեներկ") >= 0 ||
+        String(phone.number || "").indexOf("96424643") >= 0;
+    });
+
+    var mobileHomeFeaturedCount = 3;
+
+    function serviceImageAttrs(options) {
+      return site.utils.imageLoadingAttrs(options || { loading: "lazy" });
+    }
+
+    function renderHomeServicePost(service, index) {
       var text = site.i18n.service(service);
+      var layoutClass = index % 2 === 0 ? "is-media-left" : "is-media-right";
+      var mediaEnter = layoutClass === "is-media-left" ? "from-side-left" : "from-side-right";
+      var bodyEnter = layoutClass === "is-media-left" ? "from-side-right" : "from-side-left";
+      var order = String(index + 1).padStart(2, "0");
+      var benefits = (text.tags || service.tags || []).slice(0, 3);
+      var benefitsHtml = benefits.map(function (benefit) {
+        return "<li>" + e(benefit) + "</li>";
+      }).join("");
+      var powderPhoneLine = service.id === "powder-coating" && powderPhone
+        ? '<p class="home-service-post-phone"><a href="' + e(site.utils.telHref(powderPhone.number)) + '">' +
+            e(site.utils.phoneDisplay(powderPhone.number)) +
+          "</a></p>"
+        : "";
+
       return "" +
-        '<a class="home-service-card reveal" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
-          '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" loading="lazy">' +
-          "<strong>" + e(text.title) + "</strong>" +
-          "<span>" + e(text.lead) + "</span>" +
+        '<article class="home-service-post ' + layoutClass + '">' +
+          '<a class="home-service-post-shell" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
+            '<span class="home-service-post-media reveal-slide ' + mediaEnter + '" data-reveal-delay="0">' +
+              '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ loading: "lazy", fetchpriority: "low", width: 640, height: 400 }) + ">" +
+              '<span class="home-service-post-chip">' + e(order) + "</span>" +
+            "</span>" +
+            '<span class="home-service-post-body reveal-slide ' + bodyEnter + '" data-reveal-delay="180">' +
+              '<span class="home-service-post-kicker">' + e(site.i18n.get("home.servicesBenefitsTitle", "Your benefits")) + "</span>" +
+              "<h3>" + e(text.title) + "</h3>" +
+              '<p class="home-service-post-lead">' + e(text.lead) + "</p>" +
+              (benefitsHtml ? '<ul class="home-service-post-benefits">' + benefitsHtml + "</ul>" : "") +
+              powderPhoneLine +
+              '<p class="home-service-post-outcome">' +
+                "<span>" + e(site.i18n.get("home.servicesOutcomeTitle", "Result")) + "</span> " +
+                e(serviceHomeOutcome(service.id)) +
+              "</p>" +
+              '<span class="home-service-post-cta">' + e(site.i18n.get("home.servicesExplore", site.i18n.get("common.learnMore"))) + "</span>" +
+            "</span>" +
+          "</a>" +
+        "</article>";
+    }
+
+    function renderHomeServiceCatalogCard(service, index) {
+      var text = site.i18n.service(service);
+      var tag = (text.tags || service.tags || [])[0] || "";
+      var order = String(index + 1).padStart(2, "0");
+      var extraClass = service.id === "powder-coating" ? " is-powder" : "";
+
+      return "" +
+        '<a class="home-service-catalog-card reveal' + extraClass + '" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
+          '<span class="home-service-catalog-media">' +
+            '<img data-src="' + e(service.image) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ fetchpriority: "low", width: 320, height: 256, className: "is-deferred-src" }) + ">" +
+            '<span class="home-service-catalog-index">' + e(order) + "</span>" +
+          "</span>" +
+          '<span class="home-service-catalog-body">' +
+            (tag ? '<span class="home-service-catalog-tag">' + e(tag) + "</span>" : "") +
+            "<strong>" + e(text.title) + "</strong>" +
+            '<span class="home-service-catalog-arrow" aria-hidden="true">→</span>' +
+          "</span>" +
         "</a>";
+    }
+
+    var allServicesOnHomeDesktop = featuredServices.map(renderHomeServicePost).join("");
+    var mobileFeaturedServices = featuredServices.slice(0, mobileHomeFeaturedCount);
+    var mobileCatalogServices = featuredServices.slice(mobileHomeFeaturedCount);
+    var mobileFeaturedHtml = mobileFeaturedServices.map(renderHomeServicePost).join("");
+    var mobileCatalogHtml = mobileCatalogServices.map(function (service, index) {
+      return renderHomeServiceCatalogCard(service, mobileHomeFeaturedCount + index);
     }).join("");
+    var mobileCatalogSection = mobileCatalogServices.length
+      ? '<section class="home-service-catalog reveal">' +
+          '<div class="home-service-catalog-head">' +
+            '<span class="eyebrow">' + e(site.i18n.get("home.servicesCatalogEyebrow", "Catalog")) + "</span>" +
+            "<h3>" + e(site.i18n.get("home.servicesCatalogTitle", "More services")) + "</h3>" +
+            "<p>" + e(site.i18n.get("home.servicesCatalogText", "Tap a card to open the full service page.")) + "</p>" +
+          "</div>" +
+          '<div class="home-service-catalog-grid">' + mobileCatalogHtml + "</div>" +
+        "</section>"
+      : "";
+    var allServicesOnHome =
+      '<div class="home-service-stream home-service-stream--desktop">' + allServicesOnHomeDesktop + "</div>" +
+      '<div class="home-service-stream home-service-stream--mobile">' +
+        '<div class="home-service-stream-featured">' + mobileFeaturedHtml + "</div>" +
+        mobileCatalogSection +
+      "</div>";
 
     var homeProjects = site.content.projects.map(function (project) {
       var text = site.i18n.project(project);
@@ -82,7 +235,7 @@
         '<a class="home-bottom-project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
           '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
           '<span class="home-bottom-project-image">' +
-            '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="eager" onerror="this.style.opacity=0;this.parentElement.classList.add(\'is-broken\');">' +
+            '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ loading: "lazy", fetchpriority: "low", width: 480, height: 300 }) + ' onerror="this.style.opacity=0;this.parentElement.classList.add(\'is-broken\');">' +
           "</span>" +
           '<span class="home-bottom-project-copy">' +
             "<strong>" + e(text.title) + "</strong>" +
@@ -157,7 +310,7 @@
             '<small>' + e(member.accent) + "</small>" +
           "</span>" +
           '<span class="home-team-copy">' +
-            '<span class="home-team-department">' + e(member.department || "Team") + "</span>" +
+            '<span class="home-team-department">' + e(localized.department || site.i18n.teamDepartment(member.department)) + "</span>" +
             "<strong>" + e(title) + "</strong>" +
             (showText ? "<em>" + e(text) + "</em>" : "") +
           "</span>" +
@@ -182,14 +335,14 @@
 
     return "" +
       '<section class="section home-overview" id="services">' +
-        '<div class="container home-overview-grid">' +
-          '<div class="home-overview-copy reveal">' +
+        '<div class="container">' +
+          '<div class="home-overview-intro reveal">' +
             '<span class="eyebrow">' + e(site.i18n.get("home.servicesEyebrow")) + "</span>" +
             '<h2 class="section-title">' + e(site.i18n.get("home.servicesTitle")) + "</h2>" +
             '<p>' + e(site.i18n.get("home.servicesText")) + "</p>" +
-            '<a class="button button-primary" href="' + e(site.utils.pageUrl("services")) + '">' + e(site.i18n.get("common.viewServices")) + "</a>" +
+            '<a class="button button-primary" href="' + e(site.utils.pageUrl("services")) + '" data-i18n-key="common.viewServices">' + e(site.i18n.get("common.viewServices")) + "</a>" +
           "</div>" +
-          '<div class="home-service-list">' + allServicesOnHome + "</div>" +
+          '<div class="home-service-stream">' + allServicesOnHome + "</div>" +
         "</div>" +
       "</section>" +
       '<section class="section home-insights">' +

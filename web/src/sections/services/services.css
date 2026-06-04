@@ -48,9 +48,11 @@
 }
 
 .service-card img {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+  object-position: center;
   background: var(--line);
 }
 
@@ -189,8 +191,8 @@
 
 .service-card:hover img,
 .service-card:focus-visible img {
-  filter: saturate(1.12) contrast(1.04);
-  transform: scale(1.045);
+  filter: saturate(1.08) contrast(1.02);
+  transform: scale(1.02);
 }
 
 .card-more::after {

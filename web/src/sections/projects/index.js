@@ -50,6 +50,83 @@
       '</dl>';
   }
 
+  function currentProjectsOrdered(projects) {
+    var activeIds = site.content.activeProjectIds || [];
+    var byId = {};
+    projects.forEach(function (project) {
+      byId[project.id] = project;
+    });
+    var ordered = activeIds.map(function (id) {
+      return byId[id];
+    }).filter(function (project) {
+      return project && project.status === "current";
+    });
+    if (ordered.length) return ordered;
+    return projects.filter(function (project) {
+      return project.status === "current";
+    });
+  }
+
+  function renderFeaturedSlide(project, index) {
+    var e = site.utils.escapeHtml;
+    var text = site.i18n.project(project);
+    var statusLabels = project.statusLabels || {};
+    var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
+    var works = (text.works || []).map(function (work) {
+      return "<li>" + e(work) + "</li>";
+    }).join("");
+    var isActive = index === 0;
+    var slideClass = "featured-project current-project-slide" + (isActive ? " is-active" : "");
+
+    return "" +
+      '<article class="' + slideClass + '" data-current-project-slide role="group" aria-roledescription="slide" aria-hidden="' + (isActive ? "false" : "true") + '">' +
+        '<div class="featured-project-image">' +
+          '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="lazy">' +
+        "</div>" +
+        '<div class="featured-project-copy">' +
+          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
+          '<span class="eyebrow">' + e(site.i18n.get("projectsPage.ongoingHighlight")) + "</span>" +
+          "<h3>" + e(text.title) + "</h3>" +
+          storyMarkup(project, text) +
+          "<ul>" + works + "</ul>" +
+        "</div>" +
+      "</article>";
+  }
+
+  function renderCurrentProjectsCarousel(currentList) {
+    if (!currentList.length) return "";
+
+    var e = site.utils.escapeHtml;
+    var slides = currentList.map(function (project, index) {
+      return renderFeaturedSlide(project, index);
+    }).join("");
+
+    var dots = currentList.map(function (project, index) {
+      var text = site.i18n.project(project);
+      return '<button type="button" class="current-projects-dot' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '" aria-current="' + (index === 0 ? "true" : "false") + '"></button>';
+    }).join("");
+
+    var prevLabel = e(site.i18n.get("projectsPage.carouselPrev", "Previous project"));
+    var nextLabel = e(site.i18n.get("projectsPage.carouselNext", "Next project"));
+
+    return "" +
+      '<div id="current-projects" class="current-projects-carousel reveal" data-current-projects-carousel data-interval="6500">' +
+        '<div class="current-projects-viewport">' +
+          '<div class="current-projects-track">' + slides + "</div>" +
+        "</div>" +
+        '<div class="current-projects-controls">' +
+          '<button type="button" class="current-projects-arrow" data-carousel-prev aria-label="' + prevLabel + '">' +
+            '<span aria-hidden="true">&#8249;</span>' +
+          "</button>" +
+          '<div class="current-projects-dots" role="tablist" aria-label="' + e(site.i18n.get("projectsPage.current")) + '">' + dots + "</div>" +
+          '<button type="button" class="current-projects-arrow" data-carousel-next aria-label="' + nextLabel + '">' +
+            '<span aria-hidden="true">&#8250;</span>' +
+          "</button>" +
+        "</div>" +
+        '<p class="current-projects-progress" data-carousel-progress aria-live="polite"></p>' +
+      "</div>";
+  }
+
   function renderProjectCards(projectList) {
     var e = site.utils.escapeHtml;
     return projectList.map(function (project) {
@@ -76,41 +153,37 @@
   site.sections.projects = function projects() {
     var e = site.utils.escapeHtml;
     var projects = site.content.projects || [];
-    var featuredId = site.content.featuredProjectId || (projects[0] && projects[0].id);
-    var featured = projects.find(function (project) {
-      return project.id === featuredId;
-    }) || projects[0];
-    var featuredText = site.i18n.project(featured);
-    var featuredStatusLabels = featured.statusLabels || {};
-    var featuredStatusText = featuredStatusLabels[site.i18n.language] || featuredStatusLabels.en || featuredStatusLabels.hy || "";
-
-    var featuredWorks = (featuredText.works || []).map(function (work) {
-      return '<li>' + e(work) + '</li>';
-    }).join("");
-
-    var currentProjects = projects.filter(function (project) {
-      return project.status === "current" && project.id !== featured.id;
-    });
+    var currentProjects = currentProjectsOrdered(projects);
+    var heroProject = currentProjects[0] || projects[0];
     var completedProjects = projects.filter(function (project) {
       return project.status === "completed";
     });
 
-    var currentCards = renderProjectCards(currentProjects);
+    var currentCarousel = renderCurrentProjectsCarousel(currentProjects);
     var completedCards = renderProjectCards(completedProjects);
 
     var gallery = (site.content.completedGallery || []).map(function (image, index) {
       return '<img src="' + e(image) + '" alt="Completed project ' + (index + 1) + '" loading="lazy">';
     }).join("");
 
-    var currentHeading = currentProjects.length
-      ? '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.current")) + '</h2>' +
-        '<p class="projects-section-lead">' + e(site.i18n.get("projectsPage.currentText")) + '</p>' +
-        '<div class="projects-grid">' + currentCards + '</div>'
-      : "";
+    var currentHeading = currentProjects.length && !currentCarousel
+      ? '<div id="projects-current-list">' +
+          '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.current")) + '</h2>' +
+          '<p class="projects-section-lead">' + e(site.i18n.get("projectsPage.currentText")) + '</p>' +
+          '<div class="projects-grid">' + renderProjectCards(currentProjects) + '</div>' +
+        "</div>"
+      : currentProjects.length
+        ? '<div class="projects-current-intro">' +
+            '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.current")) + '</h2>' +
+            '<p class="projects-section-lead">' + e(site.i18n.get("projectsPage.currentText")) + '</p>' +
+          "</div>"
+        : "";
 
     var completedHeading = completedProjects.length
-      ? '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completedList")) + '</h2>' +
-        '<div class="projects-grid">' + completedCards + '</div>'
+      ? '<div id="completed-projects">' +
+          '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completedList")) + '</h2>' +
+          '<div class="projects-grid">' + completedCards + '</div>' +
+        "</div>"
       : "";
 
     return '' +
@@ -124,27 +197,16 @@
         action: site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal")),
         actionKey: "common.requestSurvey",
         href: site.utils.pageUrl("request"),
-        image: featured.images[0],
+        image: heroProject.images[0],
         tone: "projects"
       }) +
       '<section id="projects-content" class="section projects-section">' +
         '<div class="container">' +
-          '<article class="featured-project reveal">' +
-            '<div class="featured-project-image">' +
-              '<img src="' + e(featured.images[0]) + '" alt="' + e(featuredText.title) + '">' +
-            '</div>' +
-            '<div class="featured-project-copy">' +
-              '<span class="project-status-badge is-' + e(featured.status || "completed") + '">' + e(featuredStatusText) + '</span>' +
-              '<span class="eyebrow">' + e(site.i18n.get("common.selectedProject")) + '</span>' +
-              '<h3>' + e(featuredText.title) + '</h3>' +
-              storyMarkup(featured, featuredText) +
-              '<ul>' + featuredWorks + '</ul>' +
-            '</div>' +
-          '</article>' +
           currentHeading +
+          currentCarousel +
           completedHeading +
           '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completed")) + '</h2>' +
-          '<div class="project-gallery reveal">' + gallery + '</div>' +
+          '<div id="projects-gallery" class="project-gallery reveal">' + gallery + '</div>' +
         '</div>' +
       '</section>';
   };

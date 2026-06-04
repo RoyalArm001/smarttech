@@ -7,7 +7,7 @@
       roleLevel: "director",
       managerId: null,
       order: 1,
-      image: "/src/assets/team/it-director.svg",
+      image: "/src/assets/team/director.svg",
       coverImage: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
       color: "#0aa896",
       email: "info@smarttechllc.am",
@@ -26,8 +26,8 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Business Management", image: "/src/assets/team/certificates/cert-pmp.svg" },
-        { title: "Quality Control Leadership", image: "/src/assets/team/certificates/cert-agile.svg" }
+        { title: "Business Management", image: "/src/assets/team/certificates/members/director-business-management.svg" },
+        { title: "Quality Control Leadership", image: "/src/assets/team/certificates/members/director-quality-control-leadership.svg" }
       ]
     },
     {
@@ -41,7 +41,7 @@
       coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1400&q=80",
       color: "#345f74",
       email: "info@smarttechllc.am",
-      title: "IT Network Engineer",
+      title: "IT ցանցային ինժեներ",
       text: "Նախագծում և կարգավորում է ցանցային ենթակառուցվածքը, սերվերային կապերը և անվտանգ հեռահար հասանելիությունը։",
       level: "Network Engineering",
       experience: "8+ տարի",
@@ -57,13 +57,13 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Cisco Network Engineering", image: "/src/assets/team/certificates/cert-cloud.svg" },
-        { title: "Network Security Basics", image: "/src/assets/team/certificates/cert-cyber.svg" }
+        { title: "Cisco Network Engineering", image: "/src/assets/team/certificates/members/it-network-engineer-cisco-network-engineering.svg" },
+        { title: "Network Security Basics", image: "/src/assets/team/certificates/members/it-network-engineer-network-security-basics.svg" }
       ]
     },
     {
       id: "it-project-manager",
-      accent: "PM",
+      accent: "ITM",
       department: "IT",
       roleLevel: "manager",
       managerId: "director",
@@ -72,7 +72,7 @@
       coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
       color: "#38aab8",
       email: "info@smarttechllc.am",
-      title: "IT Project Manager",
+      title: "IT նախագծերի մենեջեր",
       text: "Կազմակերպում է IT և անվտանգության նախագծերի փուլերը, ժամկետները, ռիսկերը և հաճախորդի հետ հաղորդակցությունը։",
       level: "Project Delivery",
       experience: "7+ տարի",
@@ -87,13 +87,13 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Project Management", image: "/src/assets/team/certificates/cert-pmp.svg" },
-        { title: "Agile Delivery", image: "/src/assets/team/certificates/cert-agile.svg" }
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Agile Delivery", image: "/src/assets/team/certificates/members/it-project-manager-agile-delivery.svg" }
       ]
     },
     {
       id: "alarm-system-engineer",
-      accent: "ALM",
+      accent: "SEC",
       department: "Security",
       roleLevel: "manager",
       managerId: "director",
@@ -102,7 +102,7 @@
       coverImage: "https://images.unsplash.com/photo-1581092921461-7d65ca45b2c8?auto=format&fit=crop&w=1400&q=80",
       color: "#d8a63a",
       email: "info@smarttechllc.am",
-      title: "Alarm System Engineer",
+      title: "Անվտանգության բաժնի մենեջեր",
       text: "Նախագծում, տեղադրում և կարգավորում է ազդարարող, հրդեհային և տարհանման անվտանգության համակարգերը։",
       level: "Safety Engineering",
       experience: "8+ տարի",
@@ -117,21 +117,22 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Fire Safety Systems", image: "/src/assets/team/certificates/cert-cyber.svg" }
+        { title: "Fire Safety Systems", image: "/src/assets/team/certificates/members/alarm-system-engineer-fire-safety-systems.svg" },
+        { title: "Security Systems Compliance", image: "/src/assets/team/certificates/members/alarm-system-engineer-security-systems-compliance.svg" }
       ]
     },
     {
       id: "automation-specialist",
       accent: "AUT",
       department: "Automation",
-      roleLevel: "lead",
+      roleLevel: "manager",
       managerId: "director",
       order: 13,
       image: "/src/assets/team/electricity-manager.svg",
       coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80",
       color: "#9a7a30",
       email: "info@smarttechllc.am",
-      title: "Էլեկտրական սարքերի ավտոմատացման մասնագետ",
+      title: "Ավտոմատացման բաժնի մենեջեր",
       text: "Կառուցում է էլեկտրական սարքերի կառավարման, ավտոմատացման և սցենարային աշխատանքի լուծումներ։",
       level: "Automation Specialist",
       experience: "6+ տարի",
@@ -145,21 +146,22 @@
         { label: "LinkedIn", href: "https://www.linkedin.com/" }
       ],
       certificates: [
-        { title: "Automation Systems", image: "/src/assets/team/certificates/cert-cloud.svg" }
+        { title: "Automation Systems", image: "/src/assets/team/certificates/members/automation-specialist-automation-systems.svg" },
+        { title: "Control Panel Engineering", image: "/src/assets/team/certificates/members/automation-specialist-control-panel-engineering.svg" }
       ]
     },
     {
       id: "bms-design-specialist",
       accent: "BMS",
       department: "BMS",
-      roleLevel: "lead",
+      roleLevel: "manager",
       managerId: "director",
       order: 14,
       image: "/src/assets/team/project-manager.svg",
       coverImage: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80",
       color: "#4e7890",
       email: "info@smarttechllc.am",
-      title: "BMS Սիստեմի նախագծման մասնագետ",
+      title: "BMS բաժնի մենեջեր",
       text: "Նախագծում է շենքերի կառավարման BMS լուծումները՝ կապելով անվտանգությունը, ինժեներիան և ավտոմատացումը մեկ տրամաբանության մեջ։",
       level: "BMS Design",
       experience: "7+ տարի",
@@ -173,8 +175,8 @@
         { label: "LinkedIn", href: "https://www.linkedin.com/" }
       ],
       certificates: [
-        { title: "Building Management Systems", image: "/src/assets/team/certificates/cert-cloud.svg" },
-        { title: "Systems Design", image: "/src/assets/team/certificates/cert-agile.svg" }
+        { title: "Building Management Systems", image: "/src/assets/team/certificates/members/bms-design-specialist-building-management-systems.svg" },
+        { title: "Systems Design", image: "/src/assets/team/certificates/members/bms-design-specialist-systems-design.svg" }
       ]
     },
     {
@@ -203,22 +205,22 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Video Surveillance Systems", image: "/src/assets/team/certificates/cert-cyber.svg" },
-        { title: "Access Control Integration", image: "/src/assets/team/certificates/cert-cloud.svg" }
+        { title: "Video Surveillance Systems", image: "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg" },
+        { title: "Access Control Integration", image: "/src/assets/team/certificates/members/video-access-control-engineer-access-control-integration.svg" }
       ]
     },
     {
       id: "audio-systems-specialist",
       accent: "AUD",
       department: "Audio",
-      roleLevel: "lead",
+      roleLevel: "manager",
       managerId: "director",
       order: 15,
       image: "/src/assets/team/audio-systems-specialist.svg",
       coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1400&q=80",
       color: "#38aab8",
       email: "info@smarttechllc.am",
-      title: "Աուդիո համակարգերի տեղադրման մասնագետ",
+      title: "Աուդիո բաժնի մենեջեր",
       text: "Նախագծում, տեղադրում և կարգաբերում է ֆոնային երաժշտության, public address, ձայնային ծանուցման և կոնֆերանսային աուդիո համակարգերը։",
       level: "Audio Systems",
       experience: "6+ տարի",
@@ -233,8 +235,8 @@
         { label: "Telegram", href: "https://t.me/" }
       ],
       certificates: [
-        { title: "Audio System Installation", image: "/src/assets/team/certificates/cert-cloud.svg" },
-        { title: "Public Address Systems", image: "/src/assets/team/certificates/cert-agile.svg" }
+        { title: "Audio System Installation", image: "/src/assets/team/certificates/members/audio-systems-specialist-audio-system-installation.svg" },
+        { title: "Public Address Systems", image: "/src/assets/team/certificates/members/audio-systems-specialist-public-address-systems.svg" }
       ]
     },
     {
@@ -248,7 +250,7 @@
       coverImage: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=80",
       color: "#b46f5f",
       email: "info@smarttechllc.am",
-      title: "Էլեկտրամոնտաժային ինժեներ",
+      title: "Էլեկտրամոնտաժի բաժնի մենեջեր",
       text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների որակյալ իրականացման համար։",
       level: "Electrical Engineering",
       experience: "6+ տարի",
@@ -262,8 +264,290 @@
         { label: "LinkedIn", href: "https://www.linkedin.com/" }
       ],
       certificates: [
-        { title: "Electrical Installation", image: "/src/assets/team/certificates/cert-pmp.svg" },
-        { title: "Low Voltage Systems", image: "/src/assets/team/certificates/cert-agile.svg" }
+        { title: "Electrical Installation", image: "/src/assets/team/certificates/members/electrical-installation-engineer-electrical-installation.svg" },
+        { title: "Low Voltage Systems", image: "/src/assets/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg" }
+      ]
+    },
+    {
+      id: "it-installation-engineer",
+      accent: "INS",
+      department: "IT",
+      roleLevel: "specialist",
+      managerId: "it-project-manager",
+      order: 31,
+      image: "/src/assets/team/it-director.svg",
+      coverImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=80",
+      color: "#4f8ea0",
+      email: "info@smarttechllc.am",
+      title: "IT տեղադրման ինժեներ",
+      text: "Իրականացնում է ցանցային, տեսահսկման և սերվերային համակարգերի դաշտային տեղադրումը՝ ըստ նախագծի փաստաթղթերի։",
+      level: "IT Installation",
+      experience: "5+ տարի",
+      workInfo: [
+        "Structured cabling և patch panel մոնտաժ",
+        "Սերվերային rack-երի և սարքերի տեղադրում",
+        "IP տեսախցիկների և NVR-ների դաշտային կապակցում",
+        "Փորձարկում, մարկավորում և հանձնման աջակցություն"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Structured Cabling", image: "/src/assets/team/certificates/members/it-installation-engineer-structured-cabling.svg" },
+        { title: "Field Installation Standards", image: "/src/assets/team/certificates/members/it-installation-engineer-field-installation-standards.svg" }
+      ]
+    },
+    {
+      id: "it-support-engineer",
+      accent: "SUP",
+      department: "IT",
+      roleLevel: "specialist",
+      managerId: "it-project-manager",
+      order: 32,
+      image: "/src/assets/team/it-director.svg",
+      coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+      color: "#5a93a8",
+      email: "info@smarttechllc.am",
+      title: "IT աջակցության ինժեներ",
+      text: "Ապահովում է ցանցերի մոնիթորինգ, troubleshooting և օբյեկտների աշխատանքային կայունությունը։",
+      level: "IT Support",
+      experience: "4+ տարի",
+      workInfo: [
+        "Ցանցի արագության և կապի ստուգում",
+        "VPN, firewall և հեռահար մուտքի աջակցություն",
+        "Սարքերի firmware և կարգավորումների թարմացում",
+        "Ինցիդենտների փաստաթղթավորում"
+      ],
+      socials: [
+        { label: "Telegram", href: "https://t.me/" }
+      ],
+      certificates: [
+        { title: "Network Operations", image: "/src/assets/team/certificates/members/it-support-engineer-network-operations.svg" },
+        { title: "IT Service Management", image: "/src/assets/team/certificates/members/it-support-engineer-it-service-management.svg" }
+      ]
+    },
+    {
+      id: "fire-alarm-specialist",
+      accent: "FIR",
+      department: "Security",
+      roleLevel: "specialist",
+      managerId: "alarm-system-engineer",
+      order: 35,
+      image: "/src/assets/team/alarm-system-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1400&q=80",
+      color: "#c9872f",
+      email: "info@smarttechllc.am",
+      title: "Հրդեհային ազդարարման մասնագետ",
+      text: "Տեղադրում և կարգավորում է հրդեհային ազդարարման սենսորներ, պանելներ և ազդանշման գծեր։",
+      level: "Fire Safety",
+      experience: "5+ տարի",
+      workInfo: [
+        "Հրդեհային պանելների և դետեկտորների մոնտաժ",
+        "Ազդանշման և տարհանման սցենարների կարգավորում",
+        "Փորձարկում և ստուգումների արձանագրում",
+        "Շահագործման հրահանգների պատրաստում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Fire Alarm Systems", image: "/src/assets/team/certificates/members/fire-alarm-specialist-fire-alarm-systems.svg" },
+        { title: "Evacuation Safety", image: "/src/assets/team/certificates/members/fire-alarm-specialist-evacuation-safety.svg" }
+      ]
+    },
+    {
+      id: "electrical-works-specialist",
+      accent: "TPM",
+      department: "Technical",
+      roleLevel: "manager",
+      managerId: "director",
+      order: 16,
+      image: "/src/assets/team/technical-project-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+      color: "#3d8f9b",
+      email: "info@smarttechllc.am",
+      title: "Տեխնիկական համակարգերի նախագծի մենեջեր",
+      text: "Կազմակերպում է տեխնիկական համակարգերի նախագծերի փուլերը, ժամկետները, ռիսկերը և մասնագիտական թիմերի համաձայնեցված աշխատանքը։",
+      level: "Նախագծի կառավարում",
+      experience: "6+ տարի",
+      workInfo: [
+        "Նախագծերի scope, timeline և ռեսուրսների պլանավորում",
+        "Ինժեներական, մոնտաժային և տեղադրման թիմերի համակարգում",
+        "Տեխնիկական փաստաթղթերի և փոփոխությունների վերահսկում",
+        "Հանձնումից առաջ quality gate-երի և ստուգումների կազմակերպում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Agile Delivery", image: "/src/assets/team/certificates/members/it-project-manager-agile-delivery.svg" }
+      ]
+    },
+    {
+      id: "technical-electrical-specialist",
+      accent: "ELE",
+      department: "Technical",
+      roleLevel: "specialist",
+      managerId: "electrical-works-specialist",
+      order: 40,
+      image: "/src/assets/team/electricity-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=80",
+      color: "#c26f5d",
+      email: "info@smarttechllc.am",
+      title: "Էլեկտրամոնտաժի մասնագետ",
+      text: "Կատարում է էլեկտրական գծերի, վահանների, լուսավորության և մալուխային ուղիների դաշտային մոնտաժը։",
+      level: "Electrical Works",
+      experience: "5+ տարի",
+      workInfo: [
+        "Մալուխային գծերի և տեղադրման աշխատանքներ",
+        "Բաշխիչ վահանների հավաքում և մարկավորում",
+        "Լուսավորության և վարդակային խմբերի մոնտաժ",
+        "Չափումներ և անվտանգության ստուգումներ"
+      ],
+      socials: [],
+      certificates: [
+        { title: "Electrical Installation", image: "/src/assets/team/certificates/members/electrical-works-specialist-electrical-installation.svg" },
+        { title: "Panel Assembly", image: "/src/assets/team/certificates/members/electrical-works-specialist-panel-assembly.svg" }
+      ]
+    },
+    {
+      id: "technical-low-voltage-specialist",
+      accent: "LV",
+      department: "Technical",
+      roleLevel: "specialist",
+      managerId: "electrical-works-specialist",
+      order: 41,
+      image: "/src/assets/team/it-director.svg",
+      coverImage: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1400&q=80",
+      color: "#4a8f9f",
+      email: "info@smarttechllc.am",
+      title: "Թույլ հոսանքի համակարգերի մասնագետ",
+      text: "Տեղադրում և կարգավորում է տեսահսկում, ցանցեր, մուտքի վերահսկում և թույլ հոսանքի ինտեգրված լուծումներ։",
+      level: "Low Voltage Systems",
+      experience: "5+ տարի",
+      workInfo: [
+        "Structured cabling և ցանցային տեղադրում",
+        "IP տեսախցիկների, NVR և մուտքի վերահսկման կապակցում",
+        "PoE, patch panel և rack մոնտաժ",
+        "Փորձարկում, մարկավորում և հանձնման աջակցություն"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Structured Cabling", image: "/src/assets/team/certificates/members/it-installation-engineer-structured-cabling.svg" },
+        { title: "Video Surveillance Systems", image: "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg" }
+      ]
+    },
+    {
+      id: "technical-commissioning-specialist",
+      accent: "COM",
+      department: "Technical",
+      roleLevel: "specialist",
+      managerId: "electrical-works-specialist",
+      order: 42,
+      image: "/src/assets/team/electricity-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80",
+      color: "#6b8f4e",
+      email: "info@smarttechllc.am",
+      title: "Գործարկման և հանձնման մասնագետ",
+      text: "Կատարում է համակարգերի ծրագրավորում, փորձարկում, գործարկում և օբյեկտի տեխնիկական հանձնում։",
+      level: "Commissioning",
+      experience: "5+ տարի",
+      workInfo: [
+        "Համակարգերի ստուգում և փորձարկման սցենարներ",
+        "Controller-ների կարգաբերում և ինտեգրված թեստավորում",
+        "Օգտատերերի, ծանուցումների և հեռահար մուտքի կարգավորում",
+        "Հանձնման փաստաթղթեր և շահագործման հրահանգներ"
+      ],
+      socials: [],
+      certificates: [
+        { title: "Automation Systems", image: "/src/assets/team/certificates/members/automation-installation-specialist-automation-systems.svg" },
+        { title: "Building Management Systems", image: "/src/assets/team/certificates/members/bms-integration-engineer-building-management-systems.svg" }
+      ]
+    },
+    {
+      id: "automation-installation-specialist",
+      accent: "PLC",
+      department: "Automation",
+      roleLevel: "specialist",
+      managerId: "automation-specialist",
+      order: 37,
+      image: "/src/assets/team/electricity-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80",
+      color: "#b08b38",
+      email: "info@smarttechllc.am",
+      title: "Ավտոմատացման տեղադրման մասնագետ",
+      text: "Տեղադրում է controller-ներ, սենսորներ և կառավարման վահաններ՝ ըստ նախագծային սխեմաների։",
+      level: "Automation Installation",
+      experience: "4+ տարի",
+      workInfo: [
+        "Ավտոմատիկայի պահարանների հավաքում",
+        "Սենսորների և actuator-ների մոնտաժ",
+        "Սցենարների սկզբնական կարգավորում",
+        "Փորձարկում և սխեմաների փաստաթղթավորում"
+      ],
+      socials: [],
+      certificates: [
+        { title: "Automation Systems", image: "/src/assets/team/certificates/members/automation-installation-specialist-automation-systems.svg" },
+        { title: "PLC Installation", image: "/src/assets/team/certificates/members/automation-installation-specialist-plc-installation.svg" }
+      ]
+    },
+    {
+      id: "bms-integration-engineer",
+      accent: "INT",
+      department: "BMS",
+      roleLevel: "specialist",
+      managerId: "bms-design-specialist",
+      order: 38,
+      image: "/src/assets/team/electricity-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80",
+      color: "#5f7f96",
+      email: "info@smarttechllc.am",
+      title: "BMS ինտեգրման ինժեներ",
+      text: "Կապակցում է HVAC, լուսավորություն, անվտանգություն և կառավարման համակարգերը BMS միասնական տրամաբանության մեջ։",
+      level: "BMS Integration",
+      experience: "5+ տարի",
+      workInfo: [
+        "BMS controller-ների և ինտերֆեյսների կարգավորում",
+        "HVAC և lighting ինտեգրացիա",
+        "Մոնիթորինգի dashboard-ների ձևավորում",
+        "Հանձնման փաստաթղթերի պատրաստում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Building Management Systems", image: "/src/assets/team/certificates/members/bms-integration-engineer-building-management-systems.svg" },
+        { title: "HVAC Integration", image: "/src/assets/team/certificates/members/bms-integration-engineer-hvac-integration.svg" }
+      ]
+    },
+    {
+      id: "audio-installation-specialist",
+      accent: "PA",
+      department: "Audio",
+      roleLevel: "specialist",
+      managerId: "audio-systems-specialist",
+      order: 39,
+      image: "/src/assets/team/audio-systems-specialist.svg",
+      coverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=80",
+      color: "#4f9eae",
+      email: "info@smarttechllc.am",
+      title: "Աուդիո տեղադրման մասնագետ",
+      text: "Տեղադրում է բարձրախոսներ, ուժեղացուցիչներ և zone controller-ներ public address համակարգերի համար։",
+      level: "Audio Installation",
+      experience: "4+ տարի",
+      workInfo: [
+        "Բարձրախոսների և cable route-ների մոնտաժ",
+        "Amplifier և mixer-ների տեղադրում",
+        "Zone-երի և ձայնային ծանուցման կարգավորում",
+        "Ձայնի հավասարակշռում և թեստավորում"
+      ],
+      socials: [],
+      certificates: [
+        { title: "Public Address Systems", image: "/src/assets/team/certificates/members/audio-installation-specialist-public-address-systems.svg" },
+        { title: "Sound Engineering", image: "/src/assets/team/certificates/members/audio-installation-specialist-sound-engineering.svg" }
       ]
     }
   ];

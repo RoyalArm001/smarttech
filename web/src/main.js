@@ -19,6 +19,7 @@
   var licenseViewerDrag = null;
   var routeTransition = null;
   var routeTransitionTimer = null;
+  var currentProjectsCarouselState = null;
   var uiSettingsStorageKey = "smarttech.uiSettings";
   var onlineLangStorageKey = "smarttech.onlineLang.v3";
   var metricsVisitSessionKey = "smarttech.metrics.visitSession";
@@ -40,6 +41,8 @@
   var searchPanelClickHandler = null;
   var firebaseAuthTokenPromise = null;
   var uiSettings = readUiSettings();
+  var mobileLayoutSyncAttached = false;
+  var mobileLayoutFrame = 0;
 
   var googleAnalyticsMeasurementId = "G-1SC80R2NZE";
   var DISABLE_GOOGLE_TRANSLATE = true; // Set to true to disable Google Translate widget for faster performance
@@ -78,12 +81,13 @@
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 6.4A6.8 6.8 0 0 1 12 4h1.2a6.4 6.4 0 0 1 6.4 6.4v.5a6.4 6.4 0 0 1-6.4 6.4H11l-4.2 2.4.8-3.7a6.7 6.7 0 0 1-2.4-5.1v-.5Z"></path><path d="m15.8 6.8.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1ZM10 10h3.8M10 13h5.5"></path></svg>'
     },
     {
-      id: "profile",
+      id: "team",
       type: "link",
       route: "team",
       activeRoutes: ["team", "member"],
-      labels: { hy: "Պրոֆիլ", en: "Profile", ru: "Профиль" },
-      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0"></path></svg>'
+      labelKey: "nav.team",
+      labels: { hy: "Թիմ", en: "Team", ru: "Команда" },
+      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4.5 20v-.6c0-1.9 2.5-3.4 7.5-3.4s7.5 1.5 7.5 3.4V20H4.5Z"></path></svg>'
     }
   ];
 
@@ -220,6 +224,53 @@
     window.gtag("js", new Date());
     window.gtag("config", googleAnalyticsMeasurementId, { page_path: window.location.pathname + window.location.search });
     window.googleAnalyticsInitialized = true;
+  }
+
+  function scheduleGoogleAnalytics() {
+    if (window.googleAnalyticsScheduled) return;
+    window.googleAnalyticsScheduled = true;
+
+    var run = function () {
+      initializeGoogleAnalytics();
+      trackGoogleAnalyticsPageView();
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(run, { timeout: 4000 });
+      return;
+    }
+
+    window.addEventListener("load", run, { once: true });
+  }
+
+  function setupDeferredImages(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var images = scope.querySelectorAll("img[data-src]");
+    if (!images.length) return;
+
+    function activateImage(image) {
+      var source = image.getAttribute("data-src");
+      if (!source || image.getAttribute("src") === source) return;
+      image.setAttribute("src", source);
+      image.removeAttribute("data-src");
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      images.forEach(activateImage);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries, activeObserver) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        activateImage(entry.target);
+        activeObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "240px 0px", threshold: 0.01 });
+
+    images.forEach(function (image) {
+      observer.observe(image);
+    });
   }
 
   function trackGoogleAnalyticsPageView() {
@@ -621,14 +672,19 @@
     setupContactForm();
     setupRequestBuilder();
     setupReveal();
+    setupDeferredImages(main);
+    setupMobileLayoutMetrics();
+    setupCurrentProjectsCarousel();
     setupFooterYear();
     setupAutoChat();
     setupBackToTop();
     setupMobileBottomNav();
     updateMobileBottomNavActive();
     setupMetricsAutomation();
-    initializeGoogleAnalytics();
-    trackGoogleAnalyticsPageView();
+    scheduleGoogleAnalytics();
+    if (window.googleAnalyticsInitialized) {
+      trackGoogleAnalyticsPageView();
+    }
     resetScroll();
 
     if (!firstRenderDone) {
@@ -743,6 +799,62 @@
     });
   }
 
+  function clampHorizontalPageOverflow() {
+    var doc = document.documentElement;
+    var body = document.body;
+    if (!doc || !body) return;
+
+    if (doc.scrollLeft) doc.scrollLeft = 0;
+    if (body.scrollLeft) body.scrollLeft = 0;
+    if (window.scrollX) window.scrollTo(0, window.scrollY || 0);
+  }
+
+  function syncMobileLayoutMetrics() {
+    var doc = document.documentElement;
+    if (!doc) return;
+
+    var viewport = window.visualViewport;
+    var height = viewport && viewport.height ? viewport.height : window.innerHeight;
+    var width = viewport && viewport.width ? viewport.width : window.innerWidth;
+
+    doc.style.setProperty("--app-vh", Math.max(0, Math.round(height)) + "px");
+    doc.style.setProperty("--app-vw", Math.max(0, Math.round(width)) + "px");
+
+    if (width <= 768) {
+      clampHorizontalPageOverflow();
+    }
+
+    var header = document.getElementById("site-header");
+    if (header && header.getBoundingClientRect) {
+      var rect = header.getBoundingClientRect();
+      var headerHeight = Math.max(56, Math.ceil(rect.height));
+      var headerBottom = Math.max(headerHeight, Math.ceil(rect.bottom));
+      doc.style.setProperty("--smarttech-header-height", headerHeight + "px");
+      doc.style.setProperty("--smarttech-header-bottom", headerBottom + "px");
+    }
+  }
+
+  function scheduleMobileLayoutMetrics() {
+    if (mobileLayoutFrame) return;
+    mobileLayoutFrame = window.requestAnimationFrame(function () {
+      mobileLayoutFrame = 0;
+      syncMobileLayoutMetrics();
+    });
+  }
+
+  function setupMobileLayoutMetrics() {
+    scheduleMobileLayoutMetrics();
+    if (mobileLayoutSyncAttached) return;
+    mobileLayoutSyncAttached = true;
+
+    window.addEventListener("resize", scheduleMobileLayoutMetrics, { passive: true });
+    window.addEventListener("orientationchange", scheduleMobileLayoutMetrics, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", scheduleMobileLayoutMetrics, { passive: true });
+      window.visualViewport.addEventListener("scroll", scheduleMobileLayoutMetrics, { passive: true });
+    }
+  }
+
   function setupNavigation() {
     var toggle = document.querySelector(".nav-toggle");
     var panel = document.querySelector(".nav-panel");
@@ -768,36 +880,114 @@
       menuEscHandler = null;
     }
 
-    var menuGeometryFrame = 0;
-
-    function syncMobileMenuGeometry() {
-      var header = document.getElementById("site-header");
-      if (!header || !document.documentElement || !header.getBoundingClientRect) return;
-
-      var rect = header.getBoundingClientRect();
-      var height = Math.max(60, Math.ceil(rect.height));
-      var bottom = Math.max(height, Math.ceil(rect.bottom));
-      document.documentElement.style.setProperty("--smarttech-header-height", height + "px");
-      document.documentElement.style.setProperty("--smarttech-header-bottom", bottom + "px");
-    }
-
-    function scheduleMobileMenuGeometrySync(event) {
+    menuResizeHandler = function () {
       if (!panel.classList.contains("is-open")) return;
-      if (menuGeometryFrame) return;
-
-      menuGeometryFrame = window.requestAnimationFrame(function () {
-        menuGeometryFrame = 0;
-        syncMobileMenuGeometry();
-      });
-    }
-
-    menuResizeHandler = scheduleMobileMenuGeometrySync;
+      scheduleMobileLayoutMetrics();
+    };
     window.addEventListener("resize", menuResizeHandler, { passive: true });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", menuResizeHandler, { passive: true });
       window.visualViewport.addEventListener("scroll", menuResizeHandler, { passive: true });
     }
-    syncMobileMenuGeometry();
+    scheduleMobileLayoutMetrics();
+
+    function isMobileNavSheet() {
+      return window.matchMedia("(max-width: 768px)").matches;
+    }
+
+    function setNavGroupExpanded(group, expand) {
+      var expandButton = group.querySelector(".nav-expand-btn");
+      var submenu = group.querySelector(".nav-submenu");
+      if (!expandButton || !submenu) return;
+      expandButton.setAttribute("aria-expanded", String(expand));
+      group.classList.toggle("is-expanded", expand);
+      submenu.hidden = !expand;
+      submenu.setAttribute("aria-hidden", String(!expand));
+    }
+
+    function collapseNavSubmenus() {
+      panel.querySelectorAll(".nav-item.has-children").forEach(function (group) {
+        setNavGroupExpanded(group, false);
+      });
+    }
+
+    function syncNavSubmenusOnOpen() {
+      var groups = panel.querySelectorAll(".nav-item.has-children");
+      var activeGroup = null;
+
+      groups.forEach(function (group) {
+        if (group.classList.contains("is-route-active")) {
+          activeGroup = group;
+        }
+      });
+
+      groups.forEach(function (group) {
+        if (isMobileNavSheet()) {
+          setNavGroupExpanded(group, group === activeGroup);
+        } else {
+          setNavGroupExpanded(group, group.classList.contains("is-route-active"));
+        }
+      });
+    }
+
+    var menuFocusTrapHandler = null;
+
+    function getMenuFocusables() {
+      return Array.prototype.slice.call(
+        panel.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      ).filter(function (node) {
+        return node.offsetParent !== null || panel.contains(node);
+      });
+    }
+
+    function bindMenuFocusTrap() {
+      if (menuFocusTrapHandler) {
+        document.removeEventListener("keydown", menuFocusTrapHandler);
+        menuFocusTrapHandler = null;
+      }
+      if (!isMobileNavSheet()) return;
+
+      menuFocusTrapHandler = function (event) {
+        if (!panel.classList.contains("is-open") || event.key !== "Tab") return;
+
+        var focusables = getMenuFocusables();
+        if (!focusables.length) return;
+
+        var first = focusables[0];
+        var last = focusables[focusables.length - 1];
+        var active = document.activeElement;
+
+        if (event.shiftKey && active === first) {
+          event.preventDefault();
+          last.focus();
+          return;
+        }
+
+        if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      };
+
+      document.addEventListener("keydown", menuFocusTrapHandler);
+    }
+
+    panel.querySelectorAll(".nav-expand-btn").forEach(function (expandButton) {
+      expandButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var group = expandButton.closest(".nav-item.has-children");
+        if (!group) return;
+        var isExpanded = expandButton.getAttribute("aria-expanded") === "true";
+        var willExpand = !isExpanded;
+        if (willExpand && isMobileNavSheet()) {
+          panel.querySelectorAll(".nav-item.has-children").forEach(function (other) {
+            if (other !== group) setNavGroupExpanded(other, false);
+          });
+        }
+        setNavGroupExpanded(group, willExpand);
+      });
+    });
 
     function setMenuState(isOpen, restoreFocus) {
       panel.classList.toggle("is-open", isOpen);
@@ -809,8 +999,19 @@
       toggle.setAttribute("aria-expanded", String(isOpen));
       panel.setAttribute("aria-hidden", String(!isOpen));
       if (isOpen) {
+        syncNavSubmenusOnOpen();
         window.requestAnimationFrame(syncMobileMenuGeometry);
         panel.scrollTop = 0;
+        bindMenuFocusTrap();
+        window.requestAnimationFrame(function () {
+          var closeButton = panel.querySelector("[data-mobile-menu-close]");
+          var firstLink = panel.querySelector(".mobile-nav-list a, .mobile-nav-list button");
+          if (closeButton) {
+            closeButton.focus();
+          } else if (firstLink) {
+            firstLink.focus();
+          }
+        });
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
         }
@@ -833,6 +1034,10 @@
           document.addEventListener("click", menuOutsideClickHandler, true);
         }, 0);
       } else {
+        if (menuFocusTrapHandler) {
+          document.removeEventListener("keydown", menuFocusTrapHandler);
+          menuFocusTrapHandler = null;
+        }
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
           menuEscHandler = null;
@@ -841,8 +1046,16 @@
           document.removeEventListener("click", menuOutsideClickHandler, true);
           menuOutsideClickHandler = null;
         }
-        if (restoreFocus !== false && document.contains(toggle)) {
-          toggle.focus();
+        if (isMobileNavSheet()) {
+          collapseNavSubmenus();
+        }
+        if (restoreFocus !== false) {
+          var bottomMenuButton = document.querySelector('.mobile-bottom-nav [data-bottom-action="menu"]');
+          if (isMobileNavSheet() && bottomMenuButton) {
+            bottomMenuButton.focus();
+          } else if (document.contains(toggle)) {
+            toggle.focus();
+          }
         }
       }
     }
@@ -864,6 +1077,13 @@
         closeMenu(false);
       });
     }
+
+    panel.querySelectorAll("[data-mobile-menu-close]").forEach(function (closeButton) {
+      closeButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        closeMenu(false);
+      });
+    });
 
     panel.addEventListener("click", function (event) {
       if (event.target.closest("a")) {
@@ -1162,6 +1382,10 @@
     if (!form || !summary) return;
 
     var status = document.getElementById("request-status");
+    var checklist = document.getElementById("request-checklist");
+    var systemsHint = form.querySelector("[data-request-systems-hint]");
+    var maintenanceHint = form.querySelector("[data-request-maintenance-hint]");
+    var systemsGrid = document.getElementById("request-system-grid");
     var downloadButton = document.getElementById("request-download");
     var projectButton = document.getElementById("request-project-submit");
     var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
@@ -1238,7 +1462,21 @@
           sendingTitle: "Պատրաստվում է նամակը",
           sendingText: "Mail ծրագիրը կբացվի արդեն հավաքված վերնագրով եւ տեքստով։",
           mailStatus: "Mail ծրագիրը բացվեց պատրաստ նամակով։ Եթե չի բացվել, ներբեռնեք TXT ֆայլը եւ ուղարկեք email-ով։",
-          downloadStatus: "TXT ֆայլը պատրաստ է։"
+          downloadStatus: "TXT ֆայլը պատրաստ է։",
+          checklistContact: "Կոնտակտ (անուն, հեռախոս)",
+          checklistSystems: "Ընտրված համակարգեր",
+          checklistMaintenance: "Սպասարկման աշխատանքներ",
+          checklistVisit: "Այցելության օր",
+          checklistDone: "լրացված",
+          checklistPending: "պետք է լրացնել",
+          nameRequired: "Լրացրեք անունը կամ ընկերության անվանումը։",
+          phoneRequired: "Լրացրեք հեռախոսահամարը։",
+          phoneInvalid: "Հեռախոսահամարը սխալ է։",
+          systemsRequired: "Ընտրեք առնվազն մեկ համակարգ։",
+          maintenanceRequired: "Ընտրեք առնվազն մեկ սպասարկման աշխատանք։",
+          visitDateRequired: "Նշեք այցելության ցանկալի օրը։",
+          fixErrors: "Լրացրեք նշված դաշտերը, ապա կրկին սեղմեք ուղարկել։",
+          readyComplete: "Հայտը պատրաստ է ուղարկման։ Ստուգեք ամփոփումը եւ սեղմեք «Բացել mail-ը»։"
         },
         en: {
           title: "Smart Tech system request",
@@ -1279,7 +1517,21 @@
           sendingTitle: "Preparing the email",
           sendingText: "The mail app will open with the prepared subject and message.",
           mailStatus: "The mail app opened with a prepared message. If it did not open, download the TXT file and send it by email.",
-          downloadStatus: "TXT file is ready."
+          downloadStatus: "TXT file is ready.",
+          checklistContact: "Contact (name, phone)",
+          checklistSystems: "Selected systems",
+          checklistMaintenance: "Service tasks",
+          checklistVisit: "Visit date",
+          checklistDone: "complete",
+          checklistPending: "required",
+          nameRequired: "Enter your name or company name.",
+          phoneRequired: "Enter your phone number.",
+          phoneInvalid: "Phone number looks invalid.",
+          systemsRequired: "Select at least one system.",
+          maintenanceRequired: "Select at least one service task.",
+          visitDateRequired: "Choose a preferred visit date.",
+          fixErrors: "Complete the highlighted fields, then send again.",
+          readyComplete: "The request is ready to send. Review the summary and tap Open mail."
         },
         ru: {
           title: "Заявка на систему Smart Tech",
@@ -1320,7 +1572,21 @@
           sendingTitle: "Готовим письмо",
           sendingText: "Почта откроется с подготовленной темой и текстом.",
           mailStatus: "Почта открылась с готовым письмом. Если не открылась, скачайте TXT файл и отправьте его по email.",
-          downloadStatus: "TXT файл готов."
+          downloadStatus: "TXT файл готов.",
+          checklistContact: "Контакт (имя, телефон)",
+          checklistSystems: "Выбранные системы",
+          checklistMaintenance: "Сервисные работы",
+          checklistVisit: "Дата визита",
+          checklistDone: "готово",
+          checklistPending: "нужно заполнить",
+          nameRequired: "Укажите имя или название компании.",
+          phoneRequired: "Укажите номер телефона.",
+          phoneInvalid: "Номер телефона выглядит неверно.",
+          systemsRequired: "Выберите хотя бы одну систему.",
+          maintenanceRequired: "Выберите хотя бы одну сервисную работу.",
+          visitDateRequired: "Укажите желаемую дату визита.",
+          fixErrors: "Заполните отмеченные поля и отправьте снова.",
+          readyComplete: "Заявка готова к отправке. Проверьте текст и нажмите «Открыть почту»."
         }
       };
       return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
@@ -1528,11 +1794,174 @@
           checkbox.checked = false;
         });
       }
-      if (kind === "audit") {
-        systemInputs.forEach(function (checkbox) {
-          checkbox.checked = false;
+    }
+
+    function phoneIsValid(raw) {
+      var digits = String(raw || "").replace(/\D/g, "");
+      return digits.length >= 6;
+    }
+
+    function contactIsComplete() {
+      return !!value("clientName") && phoneIsValid(value("clientPhone"));
+    }
+
+    function systemsAreSelected() {
+      return systemInputs.some(function (checkbox) {
+        return checkbox.checked;
+      });
+    }
+
+    function maintenanceIsSelected() {
+      return maintenanceInputs.some(function (checkbox) {
+        return checkbox.checked;
+      });
+    }
+
+    function visitIsComplete() {
+      return !isVisitNeeded() || !!value("visitDate");
+    }
+
+    function clearFieldErrors() {
+      Array.prototype.forEach.call(form.querySelectorAll(".request-field.is-invalid"), function (field) {
+        field.classList.remove("is-invalid");
+      });
+      if (systemsGrid) systemsGrid.classList.remove("is-invalid");
+      if (systemsHint) {
+        systemsHint.hidden = true;
+        systemsHint.textContent = "";
+      }
+      if (maintenanceHint) {
+        maintenanceHint.hidden = true;
+        maintenanceHint.textContent = "";
+      }
+    }
+
+    function markFieldInvalid(name, message) {
+      var field = form.querySelector('[data-request-field="' + name + '"]');
+      if (field) field.classList.add("is-invalid");
+      if (name === "clientName" || name === "clientPhone" || name === "visitDate") {
+        var input = form.elements[name];
+        if (input && input.closest) {
+          var wrap = input.closest(".request-field");
+          if (wrap) wrap.classList.add("is-invalid");
+        }
+      }
+      if (name === "systems" && systemsGrid) {
+        systemsGrid.classList.add("is-invalid");
+        if (systemsHint) {
+          systemsHint.hidden = false;
+          systemsHint.textContent = message;
+        }
+      }
+      if (name === "maintenance" && maintenanceHint) {
+        maintenanceHint.hidden = false;
+        maintenanceHint.textContent = message;
+      }
+      return message;
+    }
+
+    function validateStep(step, showErrors) {
+      var labels = copy();
+      var kind = checkedRequestKind();
+      var errors = [];
+      var targetStep = step;
+
+      if (showErrors) clearFieldErrors();
+
+      if (step === 1) {
+        if (kind === "sale" || kind === "service") {
+          if (!systemsAreSelected()) {
+            errors.push(showErrors ? markFieldInvalid("systems", labels.systemsRequired) : labels.systemsRequired);
+          }
+        }
+        if (kind === "service" && !maintenanceIsSelected()) {
+          errors.push(showErrors ? markFieldInvalid("maintenance", labels.maintenanceRequired) : labels.maintenanceRequired);
+        }
+        if (kind === "audit" && !visitIsComplete()) {
+          errors.push(showErrors ? markFieldInvalid("visitDate", labels.visitDateRequired) : labels.visitDateRequired);
+        }
+      }
+
+      if (step === 2 || step === 3) {
+        if (!value("clientName")) {
+          errors.push(showErrors ? markFieldInvalid("clientName", labels.nameRequired) : labels.nameRequired);
+          targetStep = Math.min(targetStep, 2);
+        }
+        if (!value("clientPhone")) {
+          errors.push(showErrors ? markFieldInvalid("clientPhone", labels.phoneRequired) : labels.phoneRequired);
+          targetStep = Math.min(targetStep, 2);
+        } else if (!phoneIsValid(value("clientPhone"))) {
+          errors.push(showErrors ? markFieldInvalid("clientPhone", labels.phoneInvalid) : labels.phoneInvalid);
+          targetStep = Math.min(targetStep, 2);
+        }
+      }
+
+      if (step === 3) {
+        var scopeErrors = validateStep(1, showErrors);
+        errors = scopeErrors.concat(errors);
+        if (scopeErrors.length) {
+          targetStep = Math.min(targetStep, 1);
+        }
+      }
+
+      return {
+        ok: !errors.length,
+        message: errors[0] || "",
+        step: targetStep
+      };
+    }
+
+    function validateForm(showErrors) {
+      return validateStep(3, showErrors);
+    }
+
+    function updateChecklist() {
+      if (!checklist) return;
+      var labels = copy();
+      var kind = checkedRequestKind();
+      var items = [
+        {
+          key: "contact",
+          label: labels.checklistContact,
+          done: contactIsComplete()
+        }
+      ];
+
+      if (kind === "sale" || kind === "service") {
+        items.push({
+          key: "systems",
+          label: labels.checklistSystems,
+          done: systemsAreSelected()
         });
       }
+      if (kind === "service") {
+        items.push({
+          key: "maintenance",
+          label: labels.checklistMaintenance,
+          done: maintenanceIsSelected()
+        });
+      }
+      if (kind === "audit") {
+        items.push({
+          key: "visit",
+          label: labels.checklistVisit,
+          done: visitIsComplete()
+        });
+      }
+
+      checklist.innerHTML = items.map(function (item) {
+        var stateClass = item.done ? "is-done" : "is-pending";
+        var stateLabel = item.done ? labels.checklistDone : labels.checklistPending;
+        return '' +
+          '<li class="request-checklist-item ' + stateClass + '">' +
+            '<span class="request-checklist-mark" aria-hidden="true"></span>' +
+            '<span class="request-checklist-label">' + item.label + '</span>' +
+            '<span class="request-checklist-state">' + stateLabel + '</span>' +
+          '</li>';
+      }).join("");
+
+      var formReady = validateForm(false).ok;
+      form.classList.toggle("is-ready", formReady);
     }
 
     function setRequestStep(step, shouldScroll) {
@@ -1608,6 +2037,13 @@
     function updateSummary(mode) {
       updateQuantityState();
       summary.value = buildSummary(mode);
+      updateChecklist();
+      var ready = validateForm(false).ok;
+      var labels = copy();
+      var text = document.getElementById("request-submit-text");
+      if (text) {
+        text.textContent = ready ? labels.readyComplete : labels.readyText;
+      }
     }
 
     function scheduleSummaryUpdate() {
@@ -1630,7 +2066,6 @@
     function setSubmitState(mode) {
       var labels = copy();
       var state = document.getElementById("request-submit-state");
-      var title = document.getElementById("request-submit-title");
       var text = document.getElementById("request-submit-text");
       var isSending = mode === "sending";
 
@@ -1638,11 +2073,8 @@
       if (state) {
         state.classList.toggle("is-sending", isSending);
       }
-      if (title) {
-        title.textContent = isSending ? labels.sendingTitle : labels.readyTitle;
-      }
       if (text) {
-        text.textContent = isSending ? labels.sendingText : labels.readyText;
+        text.textContent = isSending ? labels.sendingText : (validateForm(false).ok ? labels.mailStatus : labels.readyText);
       }
     }
 
@@ -1723,6 +2155,14 @@
         setRequestStep(Number(go.getAttribute("data-request-go") || 0));
       }
       if (next) {
+        var validation = validateStep(currentRequestStep, true);
+        if (!validation.ok) {
+          setStatus(validation.message || copy().fixErrors);
+          setRequestStep(validation.step);
+          return;
+        }
+        clearFieldErrors();
+        setStatus("");
         setRequestStep(currentRequestStep + 1);
       }
       if (prev) {
@@ -1738,7 +2178,9 @@
       }
     });
 
-    form.addEventListener("input", function () {
+    form.addEventListener("input", function (event) {
+      var fieldWrap = event.target && event.target.closest ? event.target.closest(".request-field") : null;
+      if (fieldWrap) fieldWrap.classList.remove("is-invalid");
       scheduleSummaryUpdate();
     });
 
@@ -1762,6 +2204,15 @@
     });
 
     function openPreparedMail(mode) {
+      var validation = validateForm(true);
+      if (!validation.ok) {
+        setStatus(validation.message || copy().fixErrors);
+        setRequestStep(validation.step);
+        updateSummary(mode);
+        return;
+      }
+
+      clearFieldErrors();
       updateSummary(mode);
       var labels = copy();
       var subject = emailSubject(labels, mode);
@@ -1786,6 +2237,14 @@
 
     if (downloadButton) {
       downloadButton.addEventListener("click", function () {
+        var validation = validateForm(true);
+        if (!validation.ok) {
+          setStatus(validation.message || copy().fixErrors);
+          setRequestStep(validation.step);
+          updateSummary();
+          return;
+        }
+
         updateSummary();
         setSubmitState("ready");
 
@@ -1886,8 +2345,108 @@
     });
   }
 
+  function teardownCurrentProjectsCarousel() {
+    if (!currentProjectsCarouselState) return;
+    if (typeof currentProjectsCarouselState.stop === "function") {
+      currentProjectsCarouselState.stop();
+    }
+    currentProjectsCarouselState = null;
+  }
+
+  function setupCurrentProjectsCarousel() {
+    teardownCurrentProjectsCarousel();
+
+    var root = document.querySelector("[data-current-projects-carousel]");
+    if (!root) return;
+
+    var slides = Array.prototype.slice.call(root.querySelectorAll("[data-current-project-slide]"));
+    if (!slides.length) return;
+
+    var dots = Array.prototype.slice.call(root.querySelectorAll("[data-carousel-dot]"));
+    var prevButton = root.querySelector("[data-carousel-prev]");
+    var nextButton = root.querySelector("[data-carousel-next]");
+    var progress = root.querySelector("[data-carousel-progress]");
+    var interval = parseInt(root.getAttribute("data-interval") || "6500", 10);
+    var index = 0;
+    var timer = null;
+
+    function progressText(position) {
+      var template = site.i18n.get("projectsPage.carouselProgress", "{current} / {total}");
+      return template
+        .replace("{current}", String(position))
+        .replace("{total}", String(slides.length));
+    }
+
+    function goTo(nextIndex) {
+      index = (nextIndex + slides.length) % slides.length;
+      slides.forEach(function (slide, slideIndex) {
+        var isActive = slideIndex === index;
+        slide.classList.toggle("is-active", isActive);
+        slide.setAttribute("aria-hidden", isActive ? "false" : "true");
+      });
+      dots.forEach(function (dot, dotIndex) {
+        var isActive = dotIndex === index;
+        dot.classList.toggle("is-active", isActive);
+        dot.setAttribute("aria-current", isActive ? "true" : "false");
+      });
+      if (progress) {
+        progress.textContent = progressText(index + 1);
+      }
+    }
+
+    function stopAutoplay() {
+      if (timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      if (!uiSettings.motion || slides.length < 2) return;
+      timer = window.setInterval(function () {
+        goTo(index + 1);
+      }, interval);
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener("click", function () {
+        goTo(index - 1);
+        startAutoplay();
+      });
+    }
+
+    if (nextButton) {
+      nextButton.addEventListener("click", function () {
+        goTo(index + 1);
+        startAutoplay();
+      });
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener("click", function () {
+        var target = parseInt(dot.getAttribute("data-carousel-dot") || "0", 10);
+        goTo(target);
+        startAutoplay();
+      });
+    });
+
+    root.addEventListener("mouseenter", stopAutoplay);
+    root.addEventListener("mouseleave", startAutoplay);
+    root.addEventListener("focusin", stopAutoplay);
+    root.addEventListener("focusout", function (event) {
+      if (!root.contains(event.relatedTarget)) {
+        startAutoplay();
+      }
+    });
+
+    goTo(0);
+    currentProjectsCarouselState = { stop: stopAutoplay, root: root };
+    startAutoplay();
+  }
+
   function setupReveal() {
-    var items = document.querySelectorAll(".reveal");
+    var items = document.querySelectorAll(".reveal, .reveal-slide");
     if (!("IntersectionObserver" in window)) {
       items.forEach(function (item) {
         item.classList.add("is-visible");
@@ -1902,10 +2461,17 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.14 });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
 
-    items.forEach(function (item, index) {
-      item.style.transitionDelay = Math.min(index * 78, 540) + "ms";
+    var revealIndex = 0;
+    items.forEach(function (item) {
+      var customDelay = item.getAttribute("data-reveal-delay");
+      if (customDelay != null && customDelay !== "") {
+        item.style.transitionDelay = customDelay + "ms";
+      } else if (!item.classList.contains("reveal-slide")) {
+        item.style.transitionDelay = Math.min(revealIndex * 78, 540) + "ms";
+        revealIndex += 1;
+      }
       observer.observe(item);
     });
   }
@@ -3157,6 +3723,7 @@
   window.addEventListener("popstate", render);
 
   setupEntryLoader();
+  setupMobileLayoutMetrics();
 
   if (window.location.protocol === "file:") {
     if (!window.location.hash) {

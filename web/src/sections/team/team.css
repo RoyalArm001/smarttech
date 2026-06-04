@@ -64,7 +64,8 @@
   color: var(--muted);
 }
 
-.team-management-grid {
+.team-management-grid,
+.team-departments-grid {
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
@@ -73,7 +74,8 @@
   padding-top: 22px;
 }
 
-.team-management-grid::before {
+.team-management-grid::before,
+.team-departments-grid::before {
   position: absolute;
   top: 0;
   left: 6%;
@@ -84,6 +86,91 @@
     linear-gradient(90deg, transparent, rgba(10, 168, 150, 0.52), rgba(56, 170, 184, 0.42), rgba(216, 166, 58, 0.28), transparent);
   opacity: 0.7;
   box-shadow: 0 0 18px rgba(10, 168, 150, 0.12);
+}
+
+.team-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 auto 8px;
+  width: min(100%, 920px);
+}
+
+.team-stat-card {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(10, 168, 150, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(20, 33, 38, 0.06);
+}
+
+.team-stat-card strong {
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.team-stat-card span {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.team-manager-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-department-chip,
+.team-role-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.team-department-chip {
+  background: rgba(10, 168, 150, 0.12);
+  color: #0f6f64;
+}
+
+.team-role-chip {
+  background: rgba(56, 170, 184, 0.14);
+  color: #2d6f7d;
+}
+
+.team-manager-caption {
+  margin: 0;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.team-unit-stack-head {
+  width: min(100%, 760px);
+  margin: 0 auto 6px;
+  text-align: center;
+}
+
+.team-unit-stack-head h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.45rem, 2.8vw, 2rem);
+}
+
+.team-unit-stack-head p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .team-manager-column {
@@ -519,7 +606,12 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .team-management-grid {
+  .team-management-grid,
+  .team-departments-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .team-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -538,15 +630,22 @@
   }
 
   .team-management-grid,
+  .team-departments-grid,
   .team-report-grid {
     grid-template-columns: 1fr;
   }
 
-  .team-management-grid {
+  .team-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-management-grid,
+  .team-departments-grid {
     padding-top: 18px;
   }
 
-  .team-management-grid::before {
+  .team-management-grid::before,
+  .team-departments-grid::before {
     display: none;
   }
 
@@ -833,28 +932,65 @@
 .member-cert-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.member-cert-grid:has(.member-cert-card:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: min(100%, 520px);
+  margin-inline: auto;
 }
 
 .member-cert-card {
   margin: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border: 1px solid rgba(10, 168, 150, 0.14);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 251, 0.96)),
+    var(--surface);
+  box-shadow: 0 14px 30px rgba(20, 33, 38, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.member-cert-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(20, 33, 38, 0.12);
 }
 
 .member-cert-card img {
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
+  object-position: center;
 }
 
 .member-cert-card figcaption {
-  padding: 10px;
-  color: var(--ink-soft);
-  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 12px 14px;
+  color: var(--ink);
+  font-size: 0.9rem;
   font-weight: 700;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+body.ui-theme-dark .member-cert-card {
+  border-color: rgba(82, 205, 191, 0.2);
+  background:
+    linear-gradient(180deg, rgba(24, 36, 40, 0.96), rgba(18, 28, 32, 0.98)),
+    var(--surface);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
+body.ui-theme-dark .member-cert-card figcaption {
+  color: var(--ink);
 }
 
 .member-work-gallery-card {

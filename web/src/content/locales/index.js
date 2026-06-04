@@ -12,11 +12,19 @@
         team: "Մեր թիմը",
         about: "Մեր մասին",
         contact: "Կապ",
-        request: "Պատվիրել"
+        request: "Պատվիրել",
+        servicesAll: "Բոլոր ծառայությունները",
+        projectsAll: "Բոլորը",
+        projectsCurrent: "Ընթացիկ",
+        projectsCompleted: "Ավարտված",
+        projectsGallery: "Լուսանկարներ",
+        teamAll: "Թիմի էջ",
+        teamMembers: "Մասնագետներ"
       },
       header: {
         mobile: {
           navigation: "Նավիգացիա",
+          close: "Փակել մենյուն",
           config: "Մենյու կարգավորումներ",
           compact: "Կոմպակտ տեսք",
           motion: "Անիմացիաներ"
@@ -56,6 +64,15 @@
         servicesEyebrow: "Ուղղություններ",
         servicesTitle: "Սկսեք այն համակարգից, որը հիմա կարևոր է ձեր օբյեկտի համար",
         servicesText: "Առաջարկում ենք ամբողջական նախագծում, արագ տեղադրում և լիարժեք սպասարկում՝ բիզնեսի համար։",
+        servicesBenefitsTitle: "Ձեր շահը",
+        servicesOutcomeTitle: "Արդյունք՝",
+        servicesExplore: "Դիտել ծառայությունը",
+        servicesCatalogEyebrow: "Կատալոգ",
+        servicesCatalogTitle: "Այլ ծառայություններ",
+        servicesCatalogText: "Բոլոր ուղղությունները մեկ հայեցքով՝ սեղմեք քարտը մանրամասների համար։",
+        additionalServicesTitle: "Լրացուցիչ ծառայություններ",
+        additionalServicesText: "Փոշեներկում և հատուկ մոնտաժային ուղղություններ՝ առանձին հեռախոսահամարով։",
+        additionalServicesBadge: "Լրացուցիչ",
         projectsEyebrow: "Վստահություն",
         projectsTitle: "Ընթացիկ և ավարտված օբյեկտներ՝ մեր աշխատանքի արդյունքներով",
         contactTitle: "Պրոֆեսիոնալ առաջարկ պետք է՞",
@@ -70,6 +87,10 @@
         eyebrow: "Նախագծեր",
         title: "Օբյեկտներ, որտեղ համակարգերը պետք է աշխատեն ամեն օր",
         text: "Ցուցադրվում են ընթացիկ տեղադրումներն ու արդեն ավարտված աշխատանքները՝ տեսահսկում, ազդարարում, էլեկտրամոնտաժ, ցանցեր և ավտոմատացում։",
+        ongoingHighlight: "Ընթացիկ նախագիծ",
+        carouselPrev: "Նախորդ նախագիծ",
+        carouselNext: "Հաջորդ նախագիծ",
+        carouselProgress: "{current} / {total} ընթացիկ",
         current: "Ընթացիկ նախագծեր",
         currentText: "Այս օբյեկտներում աշխատանքները դեռ ընթացքի մեջ են՝ տեղադրում, կարգավորում կամ հանձնում։",
         completedList: "Ավարտված նախագծեր",
@@ -99,7 +120,37 @@
         managementEyebrow: "Կառավարում",
         managementTitle: "Թիմի ընդհանուր կառուցվածք",
         managementText: "Առաջին մակարդակում ղեկավարումն է, հետո պատասխանատու մենեջերները, իսկ յուրաքանչյուր մենեջերի տակ՝ իր ուղղության մասնագետները։",
-        noReports: "Այս ուղղությունը համակարգվում է ըստ նախագծի ծավալի։"
+        noReports: "Այս ուղղությունը համակարգվում է ըստ նախագծի ծավալի։",
+        statsDepartments: "Բաժիններ",
+        statsManagers: "Մենեջերներ",
+        statsSpecialists: "Մասնագետներ",
+        statsTotal: "Թիմի անդամներ",
+        roleManager: "Բաժնի մենեջեր",
+        roleLead: "Ուղղության ղեկավար",
+        reportsTitle: "Մասնագետներ",
+        departmentsTitle: "Բաժիններ և ուղղություններ",
+        departmentsText: "Յուրաքանչյուր բաժին ունի իր մենեջերը և կցված մասնագետները։",
+        itEyebrow: "IT",
+        itTitle: "IT բաժին",
+        itText: "Ցանցային ինժեներիան և IT նախագծերի իրականացումը աշխատում են որպես առանձին տեխնիկական միավոր։",
+        technicalEyebrow: "Տեխնիկական",
+        technicalTitle: "Տեխնիկական համակարգերի ուղղություն",
+        technicalText: "Նախագծի մենեջերը համակարգում է էլեկտրամոնտաժը, թույլ հոսանքի համակարգերը և գործարկումը՝ մեկ նախագծային տրամաբանությամբ։",
+        securityEyebrow: "Անվտանգություն",
+        securityTitle: "Անվտանգության բաժին",
+        securityText: "Տեսահսկում, մուտքի վերահսկում, ազդարարում և հրդեհային համակարգերը աշխատում են մեկ բաժնի մենեջերի ղեկավարությամբ։",
+        electricalEyebrow: "Էլեկտրամոնտաժ",
+        electricalTitle: "Էլեկտրամոնտաժի բաժին",
+        electricalText: "Էլեկտրական գծերի, վահանների և լուսավորության աշխատանքները իրականացվում են բաժնի մենեջերի և մասնագետների կողմից։",
+        automationEyebrow: "Ավտոմատացում",
+        automationTitle: "Ավտոմատացման բաժին",
+        automationText: "Էլեկտրական սարքերի կառավարման, ավտոմատացման և սցենարային աշխատանքի մասնագետները առանձնացված են իրենց բաժնում։",
+        bmsEyebrow: "BMS",
+        bmsTitle: "BMS բաժին",
+        bmsText: "Շենքի կառավարման BMS նախագծումը առանձին բաժին է՝ սեփական տեխնիկական պատասխանատվությամբ։",
+        audioEyebrow: "Աուդիո",
+        audioTitle: "Աուդիո համակարգերի բաժին",
+        audioText: "Public address, ֆոնային երաժշտություն, ձայնային ծանուցում և կոնֆերանսային աուդիո լուծումները առանձինացված են իրենց բաժնում։"
       },
       about: {
         eyebrow: "Մեր մասին",
@@ -234,7 +285,14 @@
       nav: {
         home: "Home",
         services: "Services",
+        servicesAll: "All services",
         projects: "Projects",
+        projectsAll: "All",
+        projectsCurrent: "In progress",
+        projectsCompleted: "Completed",
+        projectsGallery: "Photos",
+        teamAll: "Team page",
+        teamMembers: "Specialists",
         partners: "Partners",
         team: "Team",
         about: "About",
@@ -244,6 +302,7 @@
       header: {
         mobile: {
           navigation: "Navigation",
+          close: "Close menu",
           config: "Menu settings",
           compact: "Compact mode",
           motion: "Animations"
@@ -283,6 +342,15 @@
         servicesEyebrow: "Directions",
         servicesTitle: "Start with the system your facility needs most",
         servicesText: "We offer full design, fast installation and complete support for business-grade systems.",
+        servicesBenefitsTitle: "Your benefit",
+        servicesOutcomeTitle: "Outcome:",
+        servicesExplore: "View service details",
+        servicesCatalogEyebrow: "Catalog",
+        servicesCatalogTitle: "More services",
+        servicesCatalogText: "All directions at a glance — tap a card for full details.",
+        additionalServicesTitle: "Additional services",
+        additionalServicesText: "Powder coating and specialized installation with a dedicated phone line.",
+        additionalServicesBadge: "Additional",
         projectsEyebrow: "Trust",
         projectsTitle: "Current and completed facilities with our engineering results",
         contactTitle: "Need a professional proposal?",
@@ -297,6 +365,10 @@
         eyebrow: "Projects",
         title: "Facilities where systems must work every day",
         text: "We show ongoing installations and delivered projects across video surveillance, alarm, electrical, networks and automation.",
+        ongoingHighlight: "Project in progress",
+        carouselPrev: "Previous project",
+        carouselNext: "Next project",
+        carouselProgress: "{current} / {total} in progress",
         current: "Projects in progress",
         currentText: "These facilities are still under installation, configuration or commissioning.",
         completedList: "Completed projects",
@@ -326,7 +398,37 @@
         managementEyebrow: "Management",
         managementTitle: "General team structure",
         managementText: "Leadership comes first, then responsible managers, with each manager's specialists grouped directly below their direction.",
-        noReports: "This direction is coordinated by project scope."
+        noReports: "This direction is coordinated by project scope.",
+        statsDepartments: "Departments",
+        statsManagers: "Managers",
+        statsSpecialists: "Specialists",
+        statsTotal: "Team members",
+        roleManager: "Department manager",
+        roleLead: "Direction lead",
+        reportsTitle: "Specialists",
+        departmentsTitle: "Departments and directions",
+        departmentsText: "Each department has its own manager and attached specialists.",
+        itEyebrow: "IT",
+        itTitle: "IT Department",
+        itText: "Network engineering and IT project delivery work as a separate technical unit.",
+        technicalEyebrow: "Technical",
+        technicalTitle: "Technical systems direction",
+        technicalText: "The project manager coordinates electrical works, low-voltage systems and commissioning within one project logic.",
+        securityEyebrow: "Security",
+        securityTitle: "Security Department",
+        securityText: "Video surveillance, access control, alarm and fire safety systems work under one department manager.",
+        electricalEyebrow: "Electrical",
+        electricalTitle: "Electrical Department",
+        electricalText: "Power routes, panels and lighting works are delivered by the department manager and specialists.",
+        automationEyebrow: "Automation",
+        automationTitle: "Automation Department",
+        automationText: "Device control, automation and scenario programming specialists are grouped in their own department.",
+        bmsEyebrow: "BMS",
+        bmsTitle: "BMS Department",
+        bmsText: "Building management system design is a separate department with its own technical responsibility.",
+        audioEyebrow: "Audio",
+        audioTitle: "Audio Systems Department",
+        audioText: "Public address, background music, voice notification and conference audio work are shown in their own department."
       },
       about: {
         eyebrow: "About",
@@ -397,12 +499,23 @@
       team: {
         director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
         "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },
-        "it-project-manager": { title: "IT Project Manager", text: "Coordinates project phases, deadlines, team work and communication with the client." },
-        "alarm-system-engineer": { title: "Alarm System Engineer", text: "Designs, installs and configures alarm, fire safety and evacuation systems." },
-        "automation-specialist": { title: "Electrical Automation Specialist", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
-        "bms-design-specialist": { title: "BMS Design Specialist", text: "Designs building management solutions that connect safety, engineering and automation logic." },
-        "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring systems with stable archive and secure access." },
-        "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." }
+        "it-project-manager": { title: "IT Project Manager", text: "Coordinates IT and security project phases, deadlines, risks and client communication." },
+        "it-installation-engineer": { title: "IT Installation Engineer", text: "Delivers field installation of network, CCTV and server systems according to project documents." },
+        "it-support-engineer": { title: "IT Support Engineer", text: "Provides network monitoring, troubleshooting and operational stability for client sites." },
+        "alarm-system-engineer": { title: "Security Department Manager", text: "Designs, installs and configures alarm, fire safety and evacuation systems." },
+        "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring with stable archive and secure access." },
+        "fire-alarm-specialist": { title: "Fire Alarm Specialist", text: "Installs and configures fire alarm sensors, panels and notification lines." },
+        "electrical-installation-engineer": { title: "Electrical Department Manager", text: "Leads electrical network installation, distribution panels, lighting and cable routes." },
+        "electrical-works-specialist": { title: "Technical Systems Project Manager", text: "Coordinates technical systems project phases, deadlines, risks and aligned delivery across engineering teams." },
+        "technical-electrical-specialist": { title: "Electrical Works Specialist", text: "Performs field installation of power lines, panels, lighting and cable routes." },
+        "technical-low-voltage-specialist": { title: "Low Voltage Systems Specialist", text: "Installs and configures CCTV, networks, access control and integrated low-voltage solutions." },
+        "technical-commissioning-specialist": { title: "Commissioning and Handover Specialist", text: "Delivers programming, testing, commissioning and technical handover of integrated systems." },
+        "automation-specialist": { title: "Automation Department Manager", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
+        "automation-installation-specialist": { title: "Automation Installation Specialist", text: "Installs controllers, sensors and control panels according to project schematics." },
+        "bms-design-specialist": { title: "BMS Department Manager", text: "Designs building management solutions that connect safety, engineering and automation logic." },
+        "bms-integration-engineer": { title: "BMS Integration Engineer", text: "Connects HVAC, lighting, security and control systems into unified BMS logic." },
+        "audio-systems-specialist": { title: "Audio Department Manager", text: "Designs, installs and configures background music, public address, voice notification and conference audio." },
+        "audio-installation-specialist": { title: "Audio Installation Specialist", text: "Installs speakers, amplifiers and zone controllers for public address systems." }
       }
     },
     ru: {
@@ -412,7 +525,14 @@
       nav: {
         home: "Главная",
         services: "Услуги",
+        servicesAll: "Все услуги",
         projects: "Проекты",
+        projectsAll: "Все",
+        projectsCurrent: "Текущие",
+        projectsCompleted: "Завершённые",
+        projectsGallery: "Фото",
+        teamAll: "Страница команды",
+        teamMembers: "Специалисты",
         partners: "Партнеры",
         team: "Команда",
         about: "О нас",
@@ -422,6 +542,7 @@
       header: {
         mobile: {
           navigation: "Навигация",
+          close: "Закрыть меню",
           config: "Настройки меню",
           compact: "Компактный режим",
           motion: "Анимации"
@@ -461,6 +582,15 @@
         servicesEyebrow: "Направления",
         servicesTitle: "Начните с системы, которая сейчас важна вашему объекту",
         servicesText: "Предлагаем полное проектирование, быструю установку и надежное обслуживание для бизнеса.",
+        servicesBenefitsTitle: "Ваша выгода",
+        servicesOutcomeTitle: "Результат:",
+        servicesExplore: "Смотреть услугу",
+        servicesCatalogEyebrow: "Каталог",
+        servicesCatalogTitle: "Другие услуги",
+        servicesCatalogText: "Все направления в одном виде — нажмите карточку для подробностей.",
+        additionalServicesTitle: "Дополнительные услуги",
+        additionalServicesText: "Порошковая окраска и специализированный монтаж с отдельным телефоном.",
+        additionalServicesBadge: "Дополнительно",
         projectsEyebrow: "Доверие",
         projectsTitle: "Текущие и завершенные объекты с нашими инженерными результатами",
         contactTitle: "Нужна профессиональная смета?",
@@ -475,6 +605,10 @@
         eyebrow: "Проекты",
         title: "Объекты, где системы должны работать каждый день",
         text: "Показываем текущие монтажи и уже сданные проекты: видеонаблюдение, сигнализация, электромонтаж, сети и автоматизация.",
+        ongoingHighlight: "Текущий проект",
+        carouselPrev: "Предыдущий проект",
+        carouselNext: "Следующий проект",
+        carouselProgress: "{current} / {total} в работе",
         current: "Текущие проекты",
         currentText: "На этих объектах работы еще продолжаются: монтаж, настройка или сдача систем.",
         completedList: "Завершенные проекты",
@@ -504,7 +638,37 @@
         managementEyebrow: "Управление",
         managementTitle: "Общая структура команды",
         managementText: "Сначала показано руководство, затем ответственные менеджеры, а под каждым менеджером — специалисты его направления.",
-        noReports: "Это направление координируется по объему проекта."
+        noReports: "Это направление координируется по объему проекта.",
+        statsDepartments: "Отделы",
+        statsManagers: "Менеджеры",
+        statsSpecialists: "Специалисты",
+        statsTotal: "Участники команды",
+        roleManager: "Руководитель отдела",
+        roleLead: "Руководитель направления",
+        reportsTitle: "Специалисты",
+        departmentsTitle: "Отделы и направления",
+        departmentsText: "У каждого отдела свой менеджер и прикрепленные специалисты.",
+        itEyebrow: "IT",
+        itTitle: "IT-отдел",
+        itText: "Сетевые решения и IT-проекты работают как отдельное техническое направление.",
+        technicalEyebrow: "Технические системы",
+        technicalTitle: "Направление технических систем",
+        technicalText: "Менеджер проекта координирует электромонтаж, слаботочные системы и пусконаладку в единой логике объекта.",
+        securityEyebrow: "Безопасность",
+        securityTitle: "Отдел безопасности",
+        securityText: "Видеонаблюдение, контроль доступа, сигнализация и пожарная безопасность ведутся одним руководителем отдела.",
+        electricalEyebrow: "Электромонтаж",
+        electricalTitle: "Электромонтажный отдел",
+        electricalText: "Силовые линии, щиты и освещение выполняются руководителем отдела и специалистами.",
+        automationEyebrow: "Автоматизация",
+        automationTitle: "Отдел автоматизации",
+        automationText: "Специалисты по управлению устройствами, автоматизации и сценарной логике выделены в отдельный отдел.",
+        bmsEyebrow: "BMS",
+        bmsTitle: "Отдел BMS",
+        bmsText: "Проектирование систем управления зданием выделено как отдельный отдел со своей технической ответственностью.",
+        audioEyebrow: "Аудио",
+        audioTitle: "Отдел аудиосистем",
+        audioText: "Системы оповещения, фоновая музыка, голосовые уведомления и конференц-аудио вынесены в отдельный блок."
       },
       about: {
         eyebrow: "О нас",
@@ -573,45 +737,93 @@
         wildberries: { title: "Wildberries", works: ["Электромонтаж", "Видеонаблюдение", "Пожарная сигнализация", "Контроль доступа", "Системы связи"] }
       },
       team: {
-        "it-project-manager": { title: "IT Project Manager", text: "Координирует этапы проекта, сроки, работу команд и коммуникацию с заказчиком." },
+        director: { title: "Директор", text: "Руководит проектным направлением Smart Tech, координацией команд и общим контролем качества." },
+        "it-network-engineer": { title: "Инженер IT-сетей", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
+        "it-project-manager": { title: "IT-менеджер проектов", text: "Координирует этапы IT и систем безопасности, сроки, риски и коммуникацию с заказчиком." },
+        "it-installation-engineer": { title: "Инженер IT-монтажа", text: "Выполняет полевой монтаж сетей, видеонаблюдения и серверных систем по проектной документации." },
+        "it-support-engineer": { title: "Инженер IT-поддержки", text: "Обеспечивает мониторинг сетей, troubleshooting и стабильную работу объектов." },
+        "alarm-system-engineer": { title: "Руководитель отдела безопасности", text: "Проектирует, устанавливает и настраивает системы сигнализации, пожарной безопасности и эвакуации." },
+        "video-access-control-engineer": { title: "Инженер видеонаблюдения и СКУД", text: "Проектирует видеонаблюдение, контроль доступа и удаленный мониторинг со стабильным архивом." },
+        "fire-alarm-specialist": { title: "Специалист пожарной сигнализации", text: "Монтирует и настраивает датчики, панели и линии пожарной сигнализации." },
+        "electrical-installation-engineer": { title: "Руководитель электромонтажного отдела", text: "Отвечает за монтаж электросетей, щитов, освещения и кабельных трасс." },
+        "electrical-works-specialist": { title: "Менеджер проектов технических систем", text: "Координирует этапы проектов технических систем, сроки, риски и согласованную работу инженерных команд." },
+        "technical-electrical-specialist": { title: "Специалист электромонтажа", text: "Выполняет полевой монтаж силовых линий, щитов, освещения и кабельных трасс." },
+        "technical-low-voltage-specialist": { title: "Специалист слаботочных систем", text: "Монтирует и настраивает видеонаблюдение, сети, СКУД и интегрированные слаботочные решения." },
+        "technical-commissioning-specialist": { title: "Специалист пусконаладки и сдачи", text: "Выполняет программирование, тестирование, ввод в эксплуатацию и техническую сдачу систем." },
+        "automation-specialist": { title: "Руководитель отдела автоматизации", text: "Создает решения управления, автоматизации и сценарной работы электрооборудования." },
+        "automation-installation-specialist": { title: "Специалист монтажа автоматизации", text: "Монтирует контроллеры, датчики и щиты управления по проектным схемам." },
+        "bms-design-specialist": { title: "Руководитель отдела BMS", text: "Проектирует BMS-решения, объединяя безопасность, инженерию и автоматизацию." },
+        "bms-integration-engineer": { title: "Инженер интеграции BMS", text: "Интегрирует HVAC, освещение, безопасность и управление в единую логику BMS." },
+        "audio-systems-specialist": { title: "Руководитель аудио-отдела", text: "Проектирует, монтирует и настраивает фоновую музыку, public address и конференц-аудио." },
+        "audio-installation-specialist": { title: "Специалист монтажа аудио", text: "Монтирует динамики, усилители и zone controller для public address." }
       }
     }
   };
 
   site.content.locales.hy.team = Object.assign({}, site.content.locales.hy.team, {
     director: { title: "Տնօրեն", text: "Ղեկավարում է Smart Tech-ի նախագծային ուղղությունը, թիմերի համագործակցությունը և որակի ընդհանուր վերահսկումը։" },
-    "it-network-engineer": { title: "IT Network Engineer", text: "Նախագծում և կարգավորում է ցանցային ենթակառուցվածքը, սերվերային կապերը և անվտանգ հեռահար հասանելիությունը։" },
-    "it-project-manager": { title: "IT Project Manager", text: "Կազմակերպում է նախագծերի փուլերը, ժամկետները, թիմերի աշխատանքը և պատվիրատուի հետ հաղորդակցությունը։" },
-    "alarm-system-engineer": { title: "Alarm System Engineer", text: "Նախագծում, տեղադրում և կարգավորում է ազդարարման, հրդեհային և տարհանման անվտանգության համակարգերը։" },
-    "automation-specialist": { title: "Էլեկտրական սարքերի ավտոմատացման մասնագետ", text: "Կառուցում է էլեկտրական սարքերի կառավարման, ավտոմատացման և սցենարային աշխատանքի լուծումներ։" },
-    "bms-design-specialist": { title: "BMS սիստեմի նախագծման մասնագետ", text: "Նախագծում է շենքերի կառավարման BMS լուծումները՝ կապելով անվտանգությունը, ինժեներիան և ավտոմատացումը մեկ տրամաբանության մեջ։" },
-    "video-access-control-engineer": { title: "Տեսահսկման և մուտքի վերահսկման ինժեներ", text: "Նախագծում է տեսահսկման, մուտքի վերահսկման և հեռահար դիտարկման համակարգերը՝ կայուն արխիվով և անվտանգ հասանելիությամբ։" },
-    "audio-systems-specialist": { title: "Աուդիո համակարգերի տեղադրման մասնագետ", text: "Նախագծում, տեղադրում և կարգաբերում է ֆոնային երաժշտության, public address, ձայնային ծանուցման և կոնֆերանսային աուդիո համակարգերը։" },
-    "electrical-installation-engineer": { title: "Էլեկտրամոնտաժային ինժեներ", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների համար։" }
+    "it-network-engineer": { title: "IT ցանցային ինժեներ", text: "Նախագծում և կարգավորում է ցանցային ենթակառուցվածքը, սերվերային կապերը և անվտանգ հեռահար հասանելիությունը։" },
+    "it-project-manager": { title: "IT նախագծերի մենեջեր", text: "Կազմակերպում է IT և անվտանգության նախագծերի փուլերը, ժամկետները, ռիսկերը և հաճախորդի հետ հաղորդակցությունը։" },
+    "it-installation-engineer": { title: "IT տեղադրման ինժեներ", text: "Իրականացնում է ցանցային, տեսահսկման և սերվերային համակարգերի դաշտային տեղադրումը՝ ըստ նախագծի փաստաթղթերի։" },
+    "it-support-engineer": { title: "IT աջակցության ինժեներ", text: "Ապահովում է ցանցերի մոնիթորինգ, troubleshooting և օբյեկտների աշխատանքային կայունությունը։" },
+    "alarm-system-engineer": { title: "Անվտանգության բաժնի մենեջեր", text: "Նախագծում, տեղադրում և կարգավորում է ազդարարման, հրդեհային և տարհանման անվտանգության համակարգերը։" },
+    "video-access-control-engineer": { title: "Տեսահսկման և մուտքի վերահսկման ինժեներ", text: "Նախագծում և կարգավորում է տեսահսկման, մուտքի վերահսկման և հեռահար դիտարկման համակարգերը։" },
+    "fire-alarm-specialist": { title: "Հրդեհային ազդարարման մասնագետ", text: "Տեղադրում և կարգավորում է հրդեհային ազդարարման սենսորներ, պանելներ և ազդանշման գծեր։" },
+    "electrical-installation-engineer": { title: "Էլեկտրամոնտաժի բաժնի մենեջեր", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների համար։" },
+    "electrical-works-specialist": { title: "Տեխնիկական համակարգերի նախագծի մենեջեր", text: "Կազմակերպում է տեխնիկական համակարգերի նախագծերի փուլերը, ժամկետները, ռիսկերը և մասնագիտական թիմերի համաձայնեցված աշխատանքը։" },
+    "technical-electrical-specialist": { title: "Էլեկտրամոնտաժի մասնագետ", text: "Կատարում է էլեկտրական գծերի, վահանների, լուսավորության և մալուխային ուղիների դաշտային մոնտաժը։" },
+    "technical-low-voltage-specialist": { title: "Թույլ հոսանքի համակարգերի մասնագետ", text: "Տեղադրում և կարգավորում է տեսահսկում, ցանցեր, մուտքի վերահսկում և թույլ հոսանքի ինտեգրված լուծումներ։" },
+    "technical-commissioning-specialist": { title: "Գործարկման և հանձնման մասնագետ", text: "Կատարում է համակարգերի ծրագրավորում, փորձարկում, գործարկում և օբյեկտի տեխնիկական հանձնում։" },
+    "automation-specialist": { title: "Ավտոմատացման բաժնի մենեջեր", text: "Կառուցում է էլեկտրական սարքերի կառավարման, ավտոմատացման և սցենարային աշխատանքի լուծումներ։" },
+    "automation-installation-specialist": { title: "Ավտոմատացման տեղադրման մասնագետ", text: "Տեղադրում է controller-ներ, սենսորներ և կառավարման վահաններ՝ ըստ նախագծային սխեմաների։" },
+    "bms-design-specialist": { title: "BMS բաժնի մենեջեր", text: "Նախագծում է շենքերի կառավարման BMS լուծումները՝ կապելով անվտանգությունը, ինժեներիան և ավտոմատացումը։" },
+    "bms-integration-engineer": { title: "BMS ինտեգրման ինժեներ", text: "Կապակցում է HVAC, լուսավորություն, անվտանգություն և կառավարման համակարգերը BMS միասնական տրամաբանության մեջ։" },
+    "audio-systems-specialist": { title: "Աուդիո բաժնի մենեջեր", text: "Նախագծում, տեղադրում և կարգաբերում է ֆոնային երաժշտության, public address և կոնֆերանսային աուդիո համակարգերը։" },
+    "audio-installation-specialist": { title: "Աուդիո տեղադրման մասնագետ", text: "Տեղադրում է բարձրախոսներ, ուժեղացուցիչներ և zone controller-ներ public address համակարգերի համար։" }
   });
 
   site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
     director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
     "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },
-    "it-project-manager": { title: "IT Project Manager", text: "Coordinates project phases, deadlines, team work and communication with the client." },
-    "alarm-system-engineer": { title: "Alarm System Engineer", text: "Designs, installs and configures alarm, fire safety and evacuation systems." },
-    "automation-specialist": { title: "Electrical Automation Specialist", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
-    "bms-design-specialist": { title: "BMS Design Specialist", text: "Designs building management solutions that connect safety, engineering and automation logic." },
-    "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring systems with stable archive and secure access." },
-    "audio-systems-specialist": { title: "Audio Systems Installation Specialist", text: "Designs, installs and configures background music, public address, voice notification and conference audio systems." },
-    "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." }
+    "it-project-manager": { title: "IT Project Manager", text: "Coordinates IT and security project phases, deadlines, risks and client communication." },
+    "it-installation-engineer": { title: "IT Installation Engineer", text: "Delivers field installation of network, CCTV and server systems according to project documents." },
+    "it-support-engineer": { title: "IT Support Engineer", text: "Provides network monitoring, troubleshooting and operational stability for client sites." },
+    "alarm-system-engineer": { title: "Security Department Manager", text: "Designs, installs and configures alarm, fire safety and evacuation systems." },
+    "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring with stable archive and secure access." },
+    "fire-alarm-specialist": { title: "Fire Alarm Specialist", text: "Installs and configures fire alarm sensors, panels and notification lines." },
+    "electrical-installation-engineer": { title: "Electrical Department Manager", text: "Leads electrical network installation, distribution panels, lighting and cable routes." },
+    "electrical-works-specialist": { title: "Technical Systems Project Manager", text: "Coordinates technical systems project phases, deadlines, risks and aligned delivery across engineering teams." },
+    "technical-electrical-specialist": { title: "Electrical Works Specialist", text: "Performs field installation of power lines, panels, lighting and cable routes." },
+    "technical-low-voltage-specialist": { title: "Low Voltage Systems Specialist", text: "Installs and configures CCTV, networks, access control and integrated low-voltage solutions." },
+    "technical-commissioning-specialist": { title: "Commissioning and Handover Specialist", text: "Delivers programming, testing, commissioning and technical handover of integrated systems." },
+    "automation-specialist": { title: "Automation Department Manager", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
+    "automation-installation-specialist": { title: "Automation Installation Specialist", text: "Installs controllers, sensors and control panels according to project schematics." },
+    "bms-design-specialist": { title: "BMS Department Manager", text: "Designs building management solutions that connect safety, engineering and automation logic." },
+    "bms-integration-engineer": { title: "BMS Integration Engineer", text: "Connects HVAC, lighting, security and control systems into unified BMS logic." },
+    "audio-systems-specialist": { title: "Audio Department Manager", text: "Designs, installs and configures background music, public address, voice notification and conference audio." },
+    "audio-installation-specialist": { title: "Audio Installation Specialist", text: "Installs speakers, amplifiers and zone controllers for public address systems." }
   });
 
   site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
     director: { title: "Директор", text: "Руководит проектным направлением Smart Tech, координацией команд и общим контролем качества." },
-    "it-network-engineer": { title: "IT Network Engineer", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
-    "it-project-manager": { title: "IT Project Manager", text: "Координирует этапы проекта, сроки, работу команд и коммуникацию с заказчиком." },
-    "alarm-system-engineer": { title: "Alarm System Engineer", text: "Проектирует, устанавливает и настраивает системы сигнализации, пожарной безопасности и эвакуации." },
-    "automation-specialist": { title: "Специалист по автоматизации электрических устройств", text: "Создает решения для управления, автоматизации и сценарной работы электрических устройств." },
-    "bms-design-specialist": { title: "Специалист по проектированию BMS", text: "Проектирует системы управления зданием, объединяя безопасность, инженерию и автоматизацию." },
-    "video-access-control-engineer": { title: "Инженер видеонаблюдения и контроля доступа", text: "Проектирует системы видеонаблюдения, контроля доступа и удаленного мониторинга со стабильным архивом и безопасным доступом." },
-    "audio-systems-specialist": { title: "Специалист по монтажу аудиосистем", text: "Проектирует, устанавливает и настраивает системы фоновой музыки, public address, голосового оповещения и конференц-аудио." },
-    "electrical-installation-engineer": { title: "Инженер электромонтажа", text: "Отвечает за монтаж электрических сетей, распределительных щитов, освещения и кабельных трасс." }
+    "it-network-engineer": { title: "Инженер IT-сетей", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
+    "it-project-manager": { title: "IT-менеджер проектов", text: "Координирует этапы IT и систем безопасности, сроки, риски и коммуникацию с заказчиком." },
+    "it-installation-engineer": { title: "Инженер IT-монтажа", text: "Выполняет полевой монтаж сетей, видеонаблюдения и серверных систем по проектной документации." },
+    "it-support-engineer": { title: "Инженер IT-поддержки", text: "Обеспечивает мониторинг сетей, troubleshooting и стабильную работу объектов." },
+    "alarm-system-engineer": { title: "Руководитель отдела безопасности", text: "Проектирует, устанавливает и настраивает системы сигнализации, пожарной безопасности и эвакуации." },
+    "video-access-control-engineer": { title: "Инженер видеонаблюдения и СКУД", text: "Проектирует видеонаблюдение, контроль доступа и удаленный мониторинг со стабильным архивом." },
+    "fire-alarm-specialist": { title: "Специалист пожарной сигнализации", text: "Монтирует и настраивает датчики, панели и линии пожарной сигнализации." },
+    "electrical-installation-engineer": { title: "Руководитель электромонтажного отдела", text: "Отвечает за монтаж электросетей, щитов, освещения и кабельных трасс." },
+    "electrical-works-specialist": { title: "Менеджер проектов технических систем", text: "Координирует этапы проектов технических систем, сроки, риски и согласованную работу инженерных команд." },
+    "technical-electrical-specialist": { title: "Специалист электромонтажа", text: "Выполняет полевой монтаж силовых линий, щитов, освещения и кабельных трасс." },
+    "technical-low-voltage-specialist": { title: "Специалист слаботочных систем", text: "Монтирует и настраивает видеонаблюдение, сети, СКУД и интегрированные слаботочные решения." },
+    "technical-commissioning-specialist": { title: "Специалист пусконаладки и сдачи", text: "Выполняет программирование, тестирование, ввод в эксплуатацию и техническую сдачу систем." },
+    "automation-specialist": { title: "Руководитель отдела автоматизации", text: "Создает решения управления, автоматизации и сценарной работы электрооборудования." },
+    "automation-installation-specialist": { title: "Специалист монтажа автоматизации", text: "Монтирует контроллеры, датчики и щиты управления по проектным схемам." },
+    "bms-design-specialist": { title: "Руководитель отдела BMS", text: "Проектирует BMS-решения, объединяя безопасность, инженерию и автоматизацию." },
+    "bms-integration-engineer": { title: "Инженер интеграции BMS", text: "Интегрирует HVAC, освещение, безопасность и управление в единую логику BMS." },
+    "audio-systems-specialist": { title: "Руководитель аудио-отдела", text: "Проектирует, монтирует и настраивает фоновую музыку, public address и конференц-аудио." },
+    "audio-installation-specialist": { title: "Специалист монтажа аудио", text: "Монтирует динамики, усилители и zone controller для public address." }
   });
   site.content.locales.hy.projects = Object.assign({}, site.content.locales.hy.projects, {
     "only-one": {
@@ -620,7 +832,7 @@
         "Տեսահսկման սարքերի տեղադրում և ծրագրավորում",
         "Դռների մուտքի վերահսկման կարգավորում",
         "Ավտոմատ դոմոֆոնների տեղադրում և կարգավորում",
-        "Alarm անվտանգության համակարգի տեղադրում"
+        "Ազդարարման անվտանգության համակարգի տեղադրում"
       ]
     }
   });
@@ -738,12 +950,12 @@
       automation: {
         title: "Ավտոմատացում և smart համակարգեր",
         lead: "BMS, մուտքի վերահսկում, կառավարման սցենարներ և սարքերի ինտեգրում՝ շենքը դարձնելու ավելի հարմար, անվտանգ և վերահսկելի։",
-        tags: ["BMS", "Մուտքի վերահսկում", "Smart logic"]
+        tags: ["BMS", "Մուտքի վերահսկում", "Smart կառավարում"]
       },
       "audio-systems": {
         title: "Աուդիո համակարգերի տեղադրում",
-        lead: "Ֆոնային երաժշտություն, Public Address, ձայնային ծանուցում և կոնֆերանսային աուդիո՝ ճիշտ գոտիավորմամբ և հավասարակշռված ձայնով։",
-        tags: ["Public Address", "Ֆոնային երաժշտություն", "Կոնֆերանսային աուդիո"]
+        lead: "Ֆոնային երաժշտություն, PA համակարգ, ձայնային ծանուցում և կոնֆերանսային աուդիո՝ ճիշտ գոտիավորմամբ և հավասարակշռված ձայնով։",
+        tags: ["PA համակարգ", "Ֆոնային երաժշտություն", "Կոնֆերանսային աուդիո"]
       },
       wacker: {
         title: "Wacker համակարգերի տեղադրում",
@@ -1011,9 +1223,39 @@
       description: "Էլեկտրամոնտաժման և անվտանգության համակարգերի ինտեգրման ընկերություն։"
     },
     team: {
-      "it-project-manager": { title: "IT նախագծերի մենեջեր" },
-      "it-network-engineer": { title: "IT ցանցային ինժեներ" },
-      "alarm-system-engineer": { title: "Ազդարարման համակարգերի ինժեներ" }
+      director: { title: "Տնօրեն", text: "Ղեկավարում է Smart Tech-ի նախագծային ուղղությունը, թիմերի համագործակցությունը և որակի ընդհանուր վերահսկումը։" },
+      "it-project-manager": { title: "IT նախագծերի մենեջեր", text: "Կազմակերպում է IT և անվտանգության նախագծերի փուլերը, ժամկետները, ռիսկերը և հաճախորդի հետ հաղորդակցությունը։" },
+      "it-network-engineer": { title: "IT ցանցային ինժեներ", text: "Նախագծում և կարգավորում է ցանցային ենթակառուցվածքը, սերվերային կապերը և անվտանգ հեռահար հասանելիությունը։" },
+      "it-installation-engineer": { title: "IT տեղադրման ինժեներ", text: "Իրականացնում է ցանցային, տեսահսկման և սերվերային համակարգերի դաշտային տեղադրումը։" },
+      "it-support-engineer": { title: "IT աջակցության ինժեներ", text: "Ապահովում է ցանցերի մոնիթորինգ, troubleshooting և օբյեկտների կայուն աշխատանքը։" },
+      "alarm-system-engineer": { title: "Անվտանգության բաժնի մենեջեր", text: "Նախագծում, տեղադրում և կարգավորում է ազդարարման, հրդեհային և տարհանման համակարգերը։" },
+      "video-access-control-engineer": { title: "Տեսահսկման և մուտքի վերահսկման ինժեներ", text: "Նախագծում և կարգավորում է տեսահսկման, մուտքի վերահսկման և հեռահար դիտարկման համակարգերը։" },
+      "fire-alarm-specialist": { title: "Հրդեհային ազդարարման մասնագետ", text: "Տեղադրում և կարգավորում է հրդեհային ազդարարման սենսորներ, պանելներ և ազդանշման գծեր։" },
+      "electrical-installation-engineer": { title: "Էլեկտրամոնտաժի բաժնի մենեջեր", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, վահանների, լուսավորության և մալուխային ուղիների համար։" },
+      "electrical-works-specialist": { title: "Տեխնիկական համակարգերի նախագծի մենեջեր", text: "Կազմակերպում է տեխնիկական համակարգերի նախագծերի փուլերը, ժամկետները, ռիսկերը և մասնագիտական թիմերի համաձայնեցված աշխատանքը։" },
+      "technical-electrical-specialist": { title: "Էլեկտրամոնտաժի մասնագետ", text: "Կատարում է էլեկտրական գծերի, վահանների, լուսավորության և մալուխային ուղիների դաշտային մոնտաժը։" },
+      "technical-low-voltage-specialist": { title: "Թույլ հոսանքի համակարգերի մասնագետ", text: "Տեղադրում և կարգավորում է տեսահսկում, ցանցեր, մուտքի վերահսկում և թույլ հոսանքի ինտեգրված լուծումներ։" },
+      "technical-commissioning-specialist": { title: "Գործարկման և հանձնման մասնագետ", text: "Կատարում է համակարգերի ծրագրավորում, փորձարկում, գործարկում և օբյեկտի տեխնիկական հանձնում։" },
+      "automation-specialist": { title: "Ավտոմատացման բաժնի մենեջեր", text: "Կառուցում է էլեկտրական սարքերի կառավարման, ավտոմատացման և սցենարային աշխատանքի լուծումներ։" },
+      "automation-installation-specialist": { title: "Ավտոմատացման տեղադրման մասնագետ", text: "Տեղադրում է controller-ներ, սենսորներ և կառավարման վահաններ։" },
+      "bms-design-specialist": { title: "BMS բաժնի մենեջեր", text: "Նախագծում է շենքերի կառավարման BMS լուծումները միասնական տրամաբանությամբ։" },
+      "bms-integration-engineer": { title: "BMS ինտեգրման ինժեներ", text: "Կապակցում է HVAC, լուսավորություն, անվտանգություն և կառավարման համակարգերը BMS-ում։" },
+      "audio-systems-specialist": { title: "Աուդիո բաժնի մենեջեր", text: "Նախագծում, տեղադրում և կարգաբերում է ֆոնային, public address և կոնֆերանսային աուդիո համակարգերը։" },
+      "audio-installation-specialist": { title: "Աուդիո տեղադրման մասնագետ", text: "Տեղադրում է բարձրախոսներ, ուժեղացուցիչներ և zone controller-ներ։" }
+    },
+    services: {
+      installation: {
+        lead: "Տեղադրում ենք էլեկտրամատակարարման, ավտոմատացման, տեսահսկման, մուտքի վերահսկման, թույլ հոսանքի համակարգեր և ցանցեր։",
+        tags: ["Տեղադրում", "Մոնտաժ", "Տեսահսկում", "Մուտքի վերահսկում"]
+      },
+      "commissioning-programming": {
+        lead: "Ծրագրավորում և ստուգում ենք ավտոմատացման, տեսահսկման, մուտքի վերահսկման և BMS համակարգերի համաձայնեցված աշխատանքը։",
+        tags: ["Գործարկում", "Ծրագրավորում", "Կարգաբերում"]
+      },
+      "systems-design": {
+        lead: "Նախագծում ենք էլեկտրամատակարարման, թույլ հոսանքային, ավտոմատացման, BMS և անվտանգության համակարգերը՝ հաշվարկված լուծմամբ։",
+        tags: ["Նախագծում", "Հաշվարկ", "BMS"]
+      }
     }
   });
 
@@ -1023,6 +1265,27 @@
     },
     footer: {
       description: "Electrical installation and security systems integration company."
+    },
+    team: {
+      director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
+      "it-project-manager": { title: "IT Project Manager", text: "Coordinates IT and security project phases, deadlines, risks and client communication." },
+      "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },
+      "it-installation-engineer": { title: "IT Installation Engineer", text: "Delivers field installation of network, CCTV and server systems according to project documents." },
+      "it-support-engineer": { title: "IT Support Engineer", text: "Provides network monitoring, troubleshooting and operational stability for client sites." },
+      "alarm-system-engineer": { title: "Security Department Manager", text: "Designs, installs and configures alarm, fire safety and evacuation systems." },
+      "video-access-control-engineer": { title: "Video & Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring with stable archive and secure access." },
+      "fire-alarm-specialist": { title: "Fire Alarm Specialist", text: "Installs and configures fire alarm sensors, panels and notification lines." },
+      "electrical-installation-engineer": { title: "Electrical Department Manager", text: "Leads electrical network installation, distribution panels, lighting and cable routes." },
+      "electrical-works-specialist": { title: "Technical Systems Project Manager", text: "Coordinates technical systems project phases, deadlines, risks and aligned delivery across engineering teams." },
+      "technical-electrical-specialist": { title: "Electrical Works Specialist", text: "Performs field installation of power lines, panels, lighting and cable routes." },
+      "technical-low-voltage-specialist": { title: "Low Voltage Systems Specialist", text: "Installs and configures CCTV, networks, access control and integrated low-voltage solutions." },
+      "technical-commissioning-specialist": { title: "Commissioning and Handover Specialist", text: "Delivers programming, testing, commissioning and technical handover of integrated systems." },
+      "automation-specialist": { title: "Automation Department Manager", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
+      "automation-installation-specialist": { title: "Automation Installation Specialist", text: "Installs controllers, sensors and control panels according to project schematics." },
+      "bms-design-specialist": { title: "BMS Department Manager", text: "Designs building management solutions that connect safety, engineering and automation logic." },
+      "bms-integration-engineer": { title: "BMS Integration Engineer", text: "Connects HVAC, lighting, security and control systems into unified BMS logic." },
+      "audio-systems-specialist": { title: "Audio Department Manager", text: "Designs, installs and configures background music, public address, voice notification and conference audio." },
+      "audio-installation-specialist": { title: "Audio Installation Specialist", text: "Installs speakers, amplifiers and zone controllers for public address systems." }
     }
   });
 
@@ -1034,9 +1297,25 @@
       description: "Компания по электромонтажу и интеграции систем безопасности."
     },
     team: {
-      "it-project-manager": { title: "IT-менеджер проектов" },
-      "it-network-engineer": { title: "Инженер IT-сетей" },
-      "alarm-system-engineer": { title: "Инженер систем сигнализации" }
+      director: { title: "Директор", text: "Руководит проектным направлением Smart Tech, координацией команд и общим контролем качества." },
+      "it-project-manager": { title: "IT-менеджер проектов", text: "Координирует этапы IT и систем безопасности, сроки, риски и коммуникацию с заказчиком." },
+      "it-network-engineer": { title: "Инженер IT-сетей", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
+      "it-installation-engineer": { title: "Инженер IT-монтажа", text: "Выполняет полевой монтаж сетей, видеонаблюдения и серверных систем по проектной документации." },
+      "it-support-engineer": { title: "Инженер IT-поддержки", text: "Обеспечивает мониторинг сетей, troubleshooting и стабильную работу объектов." },
+      "alarm-system-engineer": { title: "Руководитель отдела безопасности", text: "Проектирует, устанавливает и настраивает системы сигнализации, пожарной безопасности и эвакуации." },
+      "video-access-control-engineer": { title: "Инженер видеонаблюдения и СКУД", text: "Проектирует видеонаблюдение, контроль доступа и удаленный мониторинг со стабильным архивом." },
+      "fire-alarm-specialist": { title: "Специалист пожарной сигнализации", text: "Монтирует и настраивает датчики, панели и линии пожарной сигнализации." },
+      "electrical-installation-engineer": { title: "Руководитель электромонтажного отдела", text: "Отвечает за монтаж электросетей, щитов, освещения и кабельных трасс." },
+      "electrical-works-specialist": { title: "Менеджер проектов технических систем", text: "Координирует этапы проектов технических систем, сроки, риски и согласованную работу инженерных команд." },
+      "technical-electrical-specialist": { title: "Специалист электромонтажа", text: "Выполняет полевой монтаж силовых линий, щитов, освещения и кабельных трасс." },
+      "technical-low-voltage-specialist": { title: "Специалист слаботочных систем", text: "Монтирует и настраивает видеонаблюдение, сети, СКУД и интегрированные слаботочные решения." },
+      "technical-commissioning-specialist": { title: "Специалист пусконаладки и сдачи", text: "Выполняет программирование, тестирование, ввод в эксплуатацию и техническую сдачу систем." },
+      "automation-specialist": { title: "Руководитель отдела автоматизации", text: "Создает решения управления, автоматизации и сценарной работы электрооборудования." },
+      "automation-installation-specialist": { title: "Специалист монтажа автоматизации", text: "Монтирует контроллеры, датчики и щиты управления по проектным схемам." },
+      "bms-design-specialist": { title: "Руководитель отдела BMS", text: "Проектирует BMS-решения, объединяя безопасность, инженерию и автоматизацию." },
+      "bms-integration-engineer": { title: "Инженер интеграции BMS", text: "Интегрирует HVAC, освещение, безопасность и управление в единую логику BMS." },
+      "audio-systems-specialist": { title: "Руководитель аудио-отдела", text: "Проектирует, монтирует и настраивает фоновую музыку, public address и конференц-аудио." },
+      "audio-installation-specialist": { title: "Специалист монтажа аудио", text: "Монтирует динамики, усилители и zone controller для public address." }
     }
   });
 
@@ -1097,6 +1376,7 @@
     workInfo: "Աշխատանքային տեղեկություն",
     socials: "Սոցիալական ցանցեր",
     certificates: "Սերտիֆիկատներ",
+    workGallery: "Աշխատանքային լուսանկարներ",
     structureEyebrow: "Կառուցվածք",
     structureTitle: "Թիմի կառուցվածք",
     itWorkflowTitle: "IT աշխատանքի հերթականություն",
@@ -1109,6 +1389,7 @@
     workInfo: "Work information",
     socials: "Social networks",
     certificates: "Certificates",
+    workGallery: "Work photos",
     structureEyebrow: "Structure",
     structureTitle: "Team structure",
     itWorkflowTitle: "IT workflow",
@@ -1121,6 +1402,7 @@
     workInfo: "Рабочая информация",
     socials: "Социальные сети",
     certificates: "Сертификаты",
+    workGallery: "Рабочие фотографии",
     structureEyebrow: "Структура",
     structureTitle: "Структура команды",
     itWorkflowTitle: "IT-процесс",
@@ -1160,7 +1442,17 @@
     "bms-design-specialist": { level: "BMS Design", experience: "7+ years", workInfo: ["BMS architecture design and equipment selection", "Integration of HVAC, lighting, access and security systems", "Control scenarios and monitoring dashboards", "Design documents and handover packages"] },
     "video-access-control-engineer": { level: "Security Systems", experience: "7+ years", workInfo: ["Selection of IP cameras, NVR/DVR devices and storage", "Integration of access points, card readers and turnstiles", "Remote viewing, user permissions and notifications", "Coverage calculation, testing and handover documents"] },
     "audio-systems-specialist": { level: "Audio Systems", experience: "6+ years", workInfo: ["Sound coverage calculation and speaker placement", "Selection of amplifiers, mixers, microphones and zone controllers", "Installation of public address, background music and conference audio", "Tuning, balancing, testing and user handover"] },
-    "electrical-installation-engineer": { level: "Electrical Engineering", experience: "6+ years", workInfo: ["Installation of electrical lines, cable routes and distribution nodes", "Panel assembly, labeling and protective device layout", "Verification of lighting, socket groups and technical power lines", "Measurements, fault diagnostics and technical support at handover"] }
+    "electrical-installation-engineer": { level: "Electrical Engineering", experience: "6+ years", workInfo: ["Installation of electrical lines, cable routes and distribution nodes", "Panel assembly, labeling and protective device layout", "Verification of lighting, socket groups and technical power lines", "Measurements, fault diagnostics and technical support at handover"] },
+    "it-installation-engineer": { level: "IT Installation", experience: "5+ years", workInfo: ["Structured cabling and patch panel installation", "Server rack and device deployment", "Field connection of IP cameras and NVR units", "Testing, labeling and handover support"] },
+    "it-support-engineer": { level: "IT Support", experience: "4+ years", workInfo: ["Network speed and connectivity checks", "VPN, firewall and remote access support", "Device firmware and configuration updates", "Incident documentation"] },
+    "fire-alarm-specialist": { level: "Fire Safety", experience: "5+ years", workInfo: ["Fire panel and detector installation", "Alarm and evacuation scenario configuration", "Testing and inspection records", "Operation manual preparation"] },
+    "electrical-works-specialist": { level: "Project Delivery", experience: "6+ years", workInfo: ["Project scope, timeline and resource planning", "Coordination of engineering, installation and commissioning teams", "Control of technical documents and change requests", "Quality gates and acceptance checks before handover"] },
+    "technical-electrical-specialist": { level: "Electrical Works", experience: "5+ years", workInfo: ["Cable route and installation works", "Distribution panel assembly and labeling", "Lighting and socket group installation", "Measurements and safety checks"] },
+    "technical-low-voltage-specialist": { level: "Low Voltage Systems", experience: "5+ years", workInfo: ["Structured cabling and network installation", "IP camera, NVR and access control field wiring", "PoE, patch panel and rack deployment", "Testing, labeling and handover support"] },
+    "technical-commissioning-specialist": { level: "Commissioning", experience: "5+ years", workInfo: ["System checks and test scenarios", "Controller configuration and integrated testing", "User accounts, alerts and remote access setup", "Handover documents and operation guides"] },
+    "automation-installation-specialist": { level: "Automation Installation", experience: "4+ years", workInfo: ["Automation cabinet assembly", "Sensor and actuator installation", "Initial scenario configuration", "Testing and schematic documentation"] },
+    "bms-integration-engineer": { level: "BMS Integration", experience: "5+ years", workInfo: ["BMS controller and interface configuration", "HVAC and lighting integration", "Monitoring dashboard setup", "Handover documentation preparation"] },
+    "audio-installation-specialist": { level: "Audio Installation", experience: "4+ years", workInfo: ["Speaker and cable route installation", "Amplifier and mixer deployment", "Zone and voice notification configuration", "Sound balancing and testing"] }
   });
 
   site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
@@ -1172,7 +1464,17 @@
     "bms-design-specialist": { level: "Проектирование BMS", experience: "7+ лет", workInfo: ["Проектирование архитектуры BMS и подбор оборудования", "Интеграция HVAC, освещения, доступа и безопасности", "Сценарии управления и мониторинговые панели", "Проектная документация и пакеты сдачи"] },
     "video-access-control-engineer": { level: "Системы безопасности", experience: "7+ лет", workInfo: ["Подбор IP-камер, NVR/DVR и решений хранения", "Интеграция точек доступа, считывателей и турникетов", "Удаленный просмотр, права пользователей и уведомления", "Расчет зон обзора, тестирование и документы сдачи"] },
     "audio-systems-specialist": { level: "Аудиосистемы", experience: "6+ лет", workInfo: ["Расчет звукового покрытия и размещение динамиков", "Подбор усилителей, микшеров, микрофонов и zone controller", "Монтаж public address, фоновой музыки и конференц-аудио", "Настройка, балансировка, тестирование и передача заказчику"] },
-    "electrical-installation-engineer": { level: "Электромонтаж", experience: "6+ лет", workInfo: ["Монтаж электролиний, кабельных трасс и распределительных узлов", "Сборка щитов, маркировка и размещение защитных автоматов", "Проверка освещения, розеточных групп и технических линий питания", "Замеры, диагностика неисправностей и техподдержка при сдаче"] }
+    "electrical-installation-engineer": { level: "Электромонтаж", experience: "6+ лет", workInfo: ["Монтаж электролиний, кабельных трасс и распределительных узлов", "Сборка щитов, маркировка и размещение защитных автоматов", "Проверка освещения, розеточных групп и технических линий питания", "Замеры, диагностика неисправностей и техподдержка при сдаче"] },
+    "it-installation-engineer": { level: "IT-монтаж", experience: "5+ лет", workInfo: ["Монтаж структурированной кабельной системы и patch panel", "Установка серверных стоек и оборудования", "Полевое подключение IP-камер и NVR", "Тестирование, маркировка и поддержка при сдаче"] },
+    "it-support-engineer": { level: "IT-поддержка", experience: "4+ лет", workInfo: ["Проверка скорости и стабильности сети", "Поддержка VPN, firewall и удаленного доступа", "Обновление прошивок и конфигураций", "Документирование инцидентов"] },
+    "fire-alarm-specialist": { level: "Пожарная безопасность", experience: "5+ лет", workInfo: ["Монтаж пожарных панелей и датчиков", "Настройка сценариев сигнализации и эвакуации", "Тестирование и протоколы проверок", "Подготовка инструкций по эксплуатации"] },
+    "electrical-works-specialist": { level: "Управление проектами", experience: "6+ лет", workInfo: ["Планирование scope, сроков и ресурсов проекта", "Координация инженерных, монтажных и пусконаладочных команд", "Контроль технической документации и изменений", "Контрольные точки качества и приемка перед сдачей"] },
+    "technical-electrical-specialist": { level: "Электромонтажные работы", experience: "5+ лет", workInfo: ["Монтаж кабельных линий и трасс", "Сборка и маркировка распределительных щитов", "Монтаж освещения и розеточных групп", "Замеры и проверки безопасности"] },
+    "technical-low-voltage-specialist": { level: "Слаботочные системы", experience: "5+ лет", workInfo: ["Структурированная кабельная система и сети", "Монтаж IP-камер, NVR и СКУД", "PoE, patch panel и rack", "Тестирование, маркировка и сдача"] },
+    "technical-commissioning-specialist": { level: "Пусконаладка", experience: "5+ лет", workInfo: ["Проверки и тестовые сценарии", "Настройка контроллеров и комплексное тестирование", "Пользователи, уведомления и удаленный доступ", "Документы сдачи и инструкции"] },
+    "automation-installation-specialist": { level: "Монтаж автоматизации", experience: "4+ лет", workInfo: ["Сборка шкафов автоматики", "Монтаж датчиков и исполнительных механизмов", "Первичная настройка сценариев", "Тестирование и документирование схем"] },
+    "bms-integration-engineer": { level: "Интеграция BMS", experience: "5+ лет", workInfo: ["Настройка контроллеров и интерфейсов BMS", "Интеграция HVAC и освещения", "Формирование мониторинговых панелей", "Подготовка документов сдачи"] },
+    "audio-installation-specialist": { level: "Монтаж аудио", experience: "4+ лет", workInfo: ["Монтаж динамиков и кабельных трасс", "Установка усилителей и микшеров", "Настройка зон и голосовых оповещений", "Балансировка звука и тестирование"] }
   });
 
   site.content.locales.hy = mergeLocale(site.content.locales.hy, {
@@ -1185,8 +1487,19 @@
       lead: "Նախագծում, մատակարարում, տեղադրում, ծրագրավորում և սպասարկում ենք համակարգերը մեկ պատասխանատու թիմով՝ բիզնես, հյուրանոցային, բնակելի և արդյունաբերական օբյեկտների համար։"
     },
     home: {
+      insightsEyebrow: "Թիմի կառուցվածք",
+      insightsTitle: "Մասնագետներն ըստ ուղղությունների",
+      insightsText: "Գծապատկերում ցուցադրված է թիմի իրական բաշխումը ըստ մասնագիտացման ուղղությունների։",
+      chartTitle: "Մասնագետներ ըստ ուղղության",
+      employeeTotalLabel: "մասնագետ",
       servicesTitle: "Մենք կատարում ենք ամբողջ ցիկլը՝ չափագրումից մինչև սպասարկում",
       servicesText: "Յուրաքանչյուր ծառայություն ունի հստակ կազմ, աշխատանքի փուլեր և վերջնական արդյունք, որպեսզի պատվիրատուն հասկանա ինչ է ստանում։",
+      servicesBenefitsTitle: "Ձեր շահը",
+      servicesOutcomeTitle: "Արդյունք՝",
+      servicesExplore: "Դիտել ծառայությունը",
+      servicesCatalogEyebrow: "Կատալոգ",
+      servicesCatalogTitle: "Այլ ծառայություններ",
+      servicesCatalogText: "Բոլոր ուղղությունները մեկ հայեցքով՝ սեղմեք քարտը մանրամասների համար։",
       projectsTitle: "Նախագծերը ներկայացվում են հստակ՝ Խնդիր → Լուծում → Արդյունք",
       contactTitle: "Պետք է արագ ու հաշվարկված տեխնիկական առաջարկ՞",
       contactText: "Կազմենք չափագրում, հաշվարկենք ռիսկերը և 24 ժամում ներկայացնենք իրականացման ճիշտ սցենարը։"
@@ -1227,8 +1540,19 @@
       lead: "We design, supply, install, program and maintain systems through one accountable team for commercial, hospitality, residential and industrial facilities."
     },
     home: {
+      insightsEyebrow: "Team structure",
+      insightsTitle: "Specialists by direction",
+      insightsText: "The chart shows the real distribution of our engineering team by specialization.",
+      chartTitle: "Specialists by direction",
+      employeeTotalLabel: "specialists",
       servicesTitle: "We handle the full cycle from survey to maintenance",
       servicesText: "Each service page clearly shows what is included, how delivery works and what result the client receives.",
+      servicesBenefitsTitle: "Your benefit",
+      servicesOutcomeTitle: "Outcome:",
+      servicesExplore: "View service details",
+      servicesCatalogEyebrow: "Catalog",
+      servicesCatalogTitle: "More services",
+      servicesCatalogText: "All directions at a glance — tap a card for full details.",
       projectsTitle: "Projects are presented clearly: Problem -> Solution -> Result",
       contactTitle: "Need a fast and calculated technical proposal?",
       contactText: "We run a survey, evaluate risks and provide a practical implementation scenario within 24 hours."
@@ -1269,8 +1593,19 @@
       lead: "Проектируем, поставляем, монтируем, программируем и обслуживаем системы одной ответственной командой для коммерческих, гостиничных, жилых и промышленных объектов."
     },
     home: {
+      insightsEyebrow: "Структура команды",
+      insightsTitle: "Специалисты по направлениям",
+      insightsText: "На графике показано реальное распределение инженерной команды по специализациям.",
+      chartTitle: "Специалисты по направлению",
+      employeeTotalLabel: "специалистов",
       servicesTitle: "Ведем полный цикл: от замера до обслуживания",
       servicesText: "По каждой услуге понятно показано: состав работ, этапы реализации и конечный результат для заказчика.",
+      servicesBenefitsTitle: "Ваша выгода",
+      servicesOutcomeTitle: "Результат:",
+      servicesExplore: "Смотреть услугу",
+      servicesCatalogEyebrow: "Каталог",
+      servicesCatalogTitle: "Другие услуги",
+      servicesCatalogText: "Все направления в одном виде — нажмите карточку для подробностей.",
       projectsTitle: "Проекты показаны понятно: Проблема -> Решение -> Результат",
       contactTitle: "Нужно быстрое и просчитанное техническое предложение?",
       contactText: "Проведем замер, оценим риски и в течение 24 часов дадим практичный сценарий реализации."
@@ -1298,6 +1633,168 @@
       projectStoryResult: "Результат",
       ctaTitle: "Нужна такая же понятная схема для вашего объекта?",
       ctaText: "Закажите замер, и мы подготовим поэтапное техническое предложение с точным составом систем."
+    }
+  });
+
+  var teamDepartmentsHy = {
+    Management: "Կառավարում",
+    IT: "IT բաժին",
+    Security: "Անվտանգության բաժին",
+    Technical: "Տեխնիկական բաժին",
+    Electrical: "Էլեկտրամոնտաժի բաժին",
+    Automation: "Ավտոմատացման բաժին",
+    BMS: "BMS բաժին",
+    Audio: "Աուդիո բաժին",
+    Team: "Թիմ"
+  };
+
+  var teamDepartmentsEn = {
+    Management: "Management",
+    IT: "IT Department",
+    Security: "Security Department",
+    Technical: "Technical Department",
+    Electrical: "Electrical Department",
+    Automation: "Automation Department",
+    BMS: "BMS Department",
+    Audio: "Audio Department",
+    Team: "Team"
+  };
+
+  var teamDepartmentsRu = {
+    Management: "Управление",
+    IT: "IT-отдел",
+    Security: "Отдел безопасности",
+    Technical: "Технический отдел",
+    Electrical: "Электромонтажный отдел",
+    Automation: "Отдел автоматизации",
+    BMS: "Отдел BMS",
+    Audio: "Аудио-отдел",
+    Team: "Команда"
+  };
+
+  var teamCertificateTitlesHy = {
+    "business-management": "Բիզնես կառավարում",
+    "quality-control-leadership": "Որակի վերահսկման ղեկավարություն",
+    "cisco-network-engineering": "Cisco ցանցային ինժեներություն",
+    "network-security-basics": "Ցանցային անվտանգության հիմունքներ",
+    "project-management": "Նախագծերի կառավարում",
+    "agile-delivery": "Agile իրականացում",
+    "fire-safety-systems": "Հրդեհային անվտանգության համակարգեր",
+    "security-systems-compliance": "Անվտանգության համակարգերի համապատասխանություն",
+    "automation-systems": "Ավտոմատացման համակարգեր",
+    "control-panel-engineering": "Կառավարման վահանների ինժեներություն",
+    "building-management-systems": "Շենքերի կառավարման համակարգեր",
+    "systems-design": "Համակարգերի նախագծում",
+    "video-surveillance-systems": "Տեսահսկման համակարգեր",
+    "access-control-integration": "Մուտքի վերահսկման ինտեգրացիա",
+    "audio-system-installation": "Աուդիո համակարգերի տեղադրում",
+    "public-address-systems": "Ձայնային ծանուցման համակարգեր",
+    "electrical-installation": "Էլեկտրամոնտաժ",
+    "low-voltage-systems": "Թույլ հոսանքի համակարգեր",
+    "structured-cabling": "Կառուցվածքային մալուխային ցանց",
+    "field-installation-standards": "Դաշտային տեղադրման ստանդարտներ",
+    "network-operations": "Ցանցային գործառույթներ",
+    "it-service-management": "IT սպասարկման կառավարում",
+    "fire-alarm-systems": "Հրդեհային ազդարարման համակարգեր",
+    "evacuation-safety": "Տարհանման անվտանգություն",
+    "panel-assembly": "Վահանների հավաքում",
+    "plc-installation": "PLC տեղադրում",
+    "hvac-integration": "HVAC ինտեգրացիա",
+    "sound-engineering": "Ձայնային ինժեներություն"
+  };
+
+  var teamCertificateTitlesEn = {
+    "business-management": "Business Management",
+    "quality-control-leadership": "Quality Control Leadership",
+    "cisco-network-engineering": "Cisco Network Engineering",
+    "network-security-basics": "Network Security Basics",
+    "project-management": "Project Management",
+    "agile-delivery": "Agile Delivery",
+    "fire-safety-systems": "Fire Safety Systems",
+    "security-systems-compliance": "Security Systems Compliance",
+    "automation-systems": "Automation Systems",
+    "control-panel-engineering": "Control Panel Engineering",
+    "building-management-systems": "Building Management Systems",
+    "systems-design": "Systems Design",
+    "video-surveillance-systems": "Video Surveillance Systems",
+    "access-control-integration": "Access Control Integration",
+    "audio-system-installation": "Audio System Installation",
+    "public-address-systems": "Public Address Systems",
+    "electrical-installation": "Electrical Installation",
+    "low-voltage-systems": "Low Voltage Systems",
+    "structured-cabling": "Structured Cabling",
+    "field-installation-standards": "Field Installation Standards",
+    "network-operations": "Network Operations",
+    "it-service-management": "IT Service Management",
+    "fire-alarm-systems": "Fire Alarm Systems",
+    "evacuation-safety": "Evacuation Safety",
+    "panel-assembly": "Panel Assembly",
+    "plc-installation": "PLC Installation",
+    "hvac-integration": "HVAC Integration",
+    "sound-engineering": "Sound Engineering"
+  };
+
+  var teamCertificateTitlesRu = {
+    "business-management": "Управление бизнесом",
+    "quality-control-leadership": "Руководство контролем качества",
+    "cisco-network-engineering": "Сетевое проектирование Cisco",
+    "network-security-basics": "Основы сетевой безопасности",
+    "project-management": "Управление проектами",
+    "agile-delivery": "Agile-реализация",
+    "fire-safety-systems": "Системы пожарной безопасности",
+    "security-systems-compliance": "Соответствие систем безопасности",
+    "automation-systems": "Системы автоматизации",
+    "control-panel-engineering": "Проектирование щитов управления",
+    "building-management-systems": "Системы управления зданием",
+    "systems-design": "Проектирование систем",
+    "video-surveillance-systems": "Системы видеонаблюдения",
+    "access-control-integration": "Интеграция контроля доступа",
+    "audio-system-installation": "Монтаж аудиосистем",
+    "public-address-systems": "Системы оповещения",
+    "electrical-installation": "Электромонтаж",
+    "low-voltage-systems": "Слаботочные системы",
+    "structured-cabling": "Структурированная кабельная система",
+    "field-installation-standards": "Стандарты полевого монтажа",
+    "network-operations": "Сетевые операции",
+    "it-service-management": "Управление IT-сервисом",
+    "fire-alarm-systems": "Системы пожарной сигнализации",
+    "evacuation-safety": "Безопасность эвакуации",
+    "panel-assembly": "Сборка щитов",
+    "plc-installation": "Монтаж PLC",
+    "hvac-integration": "Интеграция HVAC",
+    "sound-engineering": "Звукорежиссура"
+  };
+
+  site.content.locales.hy = mergeLocale(site.content.locales.hy, {
+    teamDepartments: teamDepartmentsHy,
+    teamCertificateTitles: teamCertificateTitlesHy,
+    teamDetail: {
+      socialEmail: "Էլ․ փոստ",
+      socialLinkedin: "LinkedIn",
+      socialTelegram: "Telegram",
+      socialGithub: "GitHub"
+    }
+  });
+
+  site.content.locales.en = mergeLocale(site.content.locales.en, {
+    teamDepartments: teamDepartmentsEn,
+    teamCertificateTitles: teamCertificateTitlesEn,
+    teamDetail: {
+      socialEmail: "Email",
+      socialLinkedin: "LinkedIn",
+      socialTelegram: "Telegram",
+      socialGithub: "GitHub"
+    }
+  });
+
+  site.content.locales.ru = mergeLocale(site.content.locales.ru, {
+    teamDepartments: teamDepartmentsRu,
+    teamCertificateTitles: teamCertificateTitlesRu,
+    teamDetail: {
+      socialEmail: "Email",
+      socialLinkedin: "LinkedIn",
+      socialTelegram: "Telegram",
+      socialGithub: "GitHub"
     }
   });
 

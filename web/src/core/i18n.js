@@ -88,17 +88,56 @@
     return dictionaries.en || dictionaries.hy || {};
   }
 
-  function teamMember(baseMember) {
-    if (site.i18n.language === fallbackLanguage) {
-      return baseMember;
+  function certificateTitleKey(title) {
+    return String(title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function localizeCertificates(baseMember, translated) {
+    if (!baseMember || !baseMember.certificates || !baseMember.certificates.length) {
+      return baseMember ? baseMember.certificates : [];
     }
-    var translated = get("team." + baseMember.id, {});
+
+    return baseMember.certificates.map(function (certificate, index) {
+      var next = Object.assign({}, certificate);
+      if (translated.certificates && translated.certificates[index] && translated.certificates[index].title) {
+        next.title = translated.certificates[index].title;
+        return next;
+      }
+
+      var localizedTitle = get("teamCertificateTitles." + certificateTitleKey(certificate.title), "");
+      if (localizedTitle) {
+        next.title = localizedTitle;
+      }
+      return next;
+    });
+  }
+
+  function teamDepartment(department) {
+    var key = String(department || "Team").trim();
+    return get("teamDepartments." + key, department || "Team");
+  }
+
+  function teamMember(baseMember) {
+    if (!baseMember) return baseMember;
+
+    var translated = site.i18n.language === fallbackLanguage
+      ? {}
+      : get("team." + baseMember.id, {});
     var merged = Object.assign({}, baseMember);
+
     if (translated.title) merged.title = translated.title;
     if (translated.text) merged.text = translated.text;
     if (translated.level) merged.level = translated.level;
     if (translated.experience) merged.experience = translated.experience;
     if (translated.workInfo) merged.workInfo = translated.workInfo;
+    if (translated.department) merged.department = translated.department;
+
+    merged.department = teamDepartment(translated.department || baseMember.department);
+    merged.certificates = localizeCertificates(baseMember, translated);
+
     return merged;
   }
 
@@ -111,6 +150,7 @@
     secondaryLanguageDictionary: secondaryLanguageDictionary,
     service: service,
     project: project,
-    teamMember: teamMember
+    teamMember: teamMember,
+    teamDepartment: teamDepartment
   };
 })(window.SmartTech);

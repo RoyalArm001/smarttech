@@ -11,7 +11,7 @@
     var phoneLinks = contacts.phones.map(function (phone, index) {
       return '' +
         '<a class="contact-line" href="' + e(site.utils.telHref(phone.number)) + '">' +
-          '<span>' + e(phoneLabels[index] || phone.label) + '</span>' +
+          '<span>' + e(phone.label || phoneLabels[index] || "") + '</span>' +
           '<strong>' + e(site.utils.phoneDisplay(phone.number)) + '</strong>' +
         '</a>';
     }).join("");

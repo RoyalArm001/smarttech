@@ -74,16 +74,86 @@
     if (page === "service") page = "services";
     if (page === "project") page = "projects";
     if (page === "member") page = "team";
-    // Use the official navigation data so the hamburger menu stays in sync
-    var navData = site.content.navigation || [];
-    var navItems = navData.map(function (item) {
-      var route = item.href.replace("#", "");
+
+    var activeDetailId = "";
+    if (window.location.search) {
+      try {
+        activeDetailId = new URLSearchParams(window.location.search).get("id") || "";
+      } catch (error) {
+        activeDetailId = "";
+      }
+    }
+
+    function navRouteFromItem(item) {
+      var route = String(item.href || "").replace("#", "");
       if (route === "top" || route === "/top") route = "home";
-      var className = "nav-link notranslate" + (route === page ? " is-active" : "");
-      var href = site.utils.pageUrl(route);
-      var label = item.label || site.i18n.get("nav." + route, route);
-      return '<a class="' + className + '" href="' + e(href) + '" translate="no">' + e(label) + '</a>';
-    }).join("");
+      return route;
+    }
+
+    function isChildNavActive(childHref) {
+      if (!childHref) return false;
+      var path = window.location.pathname.replace(/\/+$/g, "") || "/";
+      var hash = window.location.hash || "";
+      var childUrl;
+      try {
+        childUrl = new URL(childHref, window.location.origin);
+      } catch (error) {
+        return false;
+      }
+      var childPath = childUrl.pathname.replace(/\/+$/g, "") || "/";
+      var childHash = childUrl.hash || "";
+      if (childPath !== path) return false;
+      if (childHash) return hash === childHash;
+      if (page === "service" || page === "project" || page === "member") {
+        return childHref.indexOf("id=" + encodeURIComponent(activeDetailId)) >= 0;
+      }
+      return path === childPath && !childHash;
+    }
+
+    function renderNavItems() {
+      var navData = site.content.navigation || [];
+      return navData.map(function (item) {
+        var route = navRouteFromItem(item);
+        var href = site.utils.pageUrl(route);
+        var label = item.label || site.i18n.get("nav." + route, route);
+        var children = (item.submenu || item.children) && typeof site.content.buildNavChildren === "function"
+          ? site.content.buildNavChildren(route) || []
+          : [];
+        var parentActive = route === page ||
+          (page === "service" && route === "services") ||
+          (page === "project" && route === "projects") ||
+          (page === "member" && route === "team");
+        var childActive = children.some(function (child) {
+          return isChildNavActive(child.href);
+        });
+        var parentClass = "nav-link notranslate nav-link-parent" +
+          (parentActive || childActive ? " is-active" : "");
+
+        if (!children.length) {
+          return '<a class="' + parentClass.replace(" nav-link-parent", "") + '" href="' + e(href) + '" translate="no">' + e(label) + "</a>";
+        }
+
+        var submenuId = "nav-submenu-" + e(route);
+        var sublinks = children.map(function (child) {
+          var childLabel = child.label || site.i18n.get(child.labelKey || "", child.labelKey || "");
+          var subClass = "nav-sublink notranslate" + (isChildNavActive(child.href) ? " is-active" : "");
+          return '<a class="' + subClass + '" href="' + e(child.href) + '" translate="no">' + e(childLabel) + "</a>";
+        }).join("");
+
+        return "" +
+          '<div class="nav-item has-children' + (parentActive || childActive ? " is-route-active" : "") + '" data-nav-item="' + e(route) + '">' +
+            '<div class="nav-item-head">' +
+              '<a class="' + parentClass + '" href="' + e(href) + '" translate="no">' + e(label) + "</a>" +
+              '<button class="nav-expand-btn" type="button" aria-expanded="false" aria-controls="' + submenuId + '" aria-label="' + e(label) + '">' +
+                '<span class="nav-expand-icon" aria-hidden="true"></span>' +
+              "</button>" +
+            "</div>" +
+            '<div class="nav-submenu" id="' + submenuId + '" hidden>' + sublinks + "</div>" +
+          "</div>";
+      }).join("");
+    }
+
+    var navItems = renderNavItems();
 
     var languageButtons = [
       { code: "hy", short: "AM", label: "Armenian" },
@@ -111,6 +181,14 @@
     }
 
     var headerLanguageSwitcher = renderLanguageSwitcher("header-language-switcher");
+    var contacts = site.content.contacts || {};
+    var primaryPhone = contacts.phones && contacts.phones[0] ? contacts.phones[0].number : "";
+    var mobileMenuCloseLabel = site.i18n.get("header.mobile.close", "Close menu");
+    var mobileMenuActions = "" +
+      '<div class="mobile-menu-actions">' +
+        '<a class="mobile-menu-action mobile-menu-action-call" href="tel:' + e(primaryPhone.replace(/\s+/g, "")) + '">' + e(site.i18n.get("common.callNow", "Call now")) + "</a>" +
+        '<a class="mobile-menu-action mobile-menu-action-request" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.consultation", "Leave a request")) + "</a>" +
+      "</div>";
 
     // Theme toggle (day/night) placed in topbar next to language switcher
     var themeToggle = '<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle day/night mode" title="Day / Night mode"></button>';
@@ -123,14 +201,21 @@
         '</a>' +
         '<button class="nav-backdrop" type="button" aria-label="Close menu"></button>' +
         '<nav id="main-menu-panel" class="nav-panel notranslate" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Main menu" translate="no">' +
-          '<div class="desktop-nav-list mobile-nav-list notranslate" translate="no">' + navItems + '</div>' +
+          '<div class="mobile-menu-sheet-top">' +
+            '<span class="mobile-menu-handle" aria-hidden="true"></span>' +
+          '</div>' +
           '<div class="mobile-menu-head ' + (hasLogo ? "" : "mobile-menu-head-no-logo") + '">' +
             brandLogo +
             '<span class="mobile-brand-title notranslate" translate="no" lang="en">' + e(brandTitle) + '</span>' +
+            '<button type="button" class="mobile-menu-close" data-mobile-menu-close aria-label="' + e(mobileMenuCloseLabel) + '">' +
+              '<span aria-hidden="true"></span>' +
+            "</button>" +
+            '<p class="mobile-menu-toolbar-title notranslate" translate="no">' + e(site.i18n.get("header.mobile.navigation", "Navigation")) + '</p>' +
           '</div>' +
           '<div class="mobile-menu-section mobile-menu-nav">' +
             '<div class="mobile-nav-list mobile-nav-grid notranslate" translate="no">' + navItems + '</div>' +
           '</div>' +
+          mobileMenuActions +
         '</nav>' +
         '<div class="header-actions">' +
           '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-menu-panel">' +

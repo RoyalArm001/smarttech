@@ -768,7 +768,8 @@
 }
 
 .request-summary {
-  min-height: 390px;
+  min-height: 220px;
+  max-height: 320px;
   padding: 14px;
   resize: vertical;
   color: #dff8f5;
@@ -782,17 +783,101 @@
   white-space: pre-wrap;
 }
 
-.request-summary-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  min-height: 0;
+.request-required {
+  color: #c45a4a;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.request-field-hint {
+  margin: 0 0 10px;
+  color: #b44b3d;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.request-field.is-invalid input,
+.request-field.is-invalid select,
+.request-field.is-invalid textarea,
+.request-system-grid.is-invalid {
+  border-color: #d86a58;
+  box-shadow: 0 0 0 3px rgba(216, 106, 88, 0.16);
+}
+
+.request-checklist-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.request-checklist-title,
+.request-preview-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.request-preview-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.request-preview-block {
+  display: grid;
+  gap: 8px;
+}
+
+.request-checklist {
+  display: grid;
+  gap: 8px;
+  margin: 0;
   padding: 0;
-  border: 0;
-  margin: -1px;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
+  list-style: none;
+}
+
+.request-checklist-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(8, 123, 112, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 0.84rem;
+}
+
+.request-checklist-item.is-done {
+  border-color: rgba(8, 123, 112, 0.24);
+}
+
+.request-checklist-item.is-pending {
+  border-color: rgba(216, 106, 88, 0.34);
+  background: rgba(255, 244, 241, 0.9);
+}
+
+.request-checklist-mark {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #d86a58;
+}
+
+.request-checklist-item.is-done .request-checklist-mark {
+  background: var(--teal);
+}
+
+.request-checklist-label {
+  font-weight: 800;
+}
+
+.request-checklist-state {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.request-layout.is-ready .request-summary {
+  border-color: rgba(82, 205, 191, 0.42);
 }
 
 .request-submit-state {
@@ -835,6 +920,37 @@
   height: 100%;
   background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   animation: requestPanelSweep 5.6s ease-in-out infinite;
+}
+
+.request-submit-state.is-compact {
+  min-height: auto;
+  padding: 12px 14px;
+  color: var(--ink-soft);
+  background: rgba(237, 244, 242, 0.72);
+  border-color: rgba(8, 123, 112, 0.16);
+}
+
+.request-submit-state.is-compact::before,
+.request-submit-state.is-compact::after,
+.request-submit-state.is-compact .request-submit-icon {
+  display: none;
+}
+
+.request-submit-state.is-compact p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.request-layout.is-ready .request-submit-state.is-compact {
+  color: var(--teal-dark);
+  border-color: rgba(8, 123, 112, 0.24);
+  background: rgba(82, 205, 191, 0.12);
+}
+
+.request-layout.is-ready .request-submit-state.is-compact p {
+  color: var(--teal-dark);
 }
 
 .request-submit-icon,

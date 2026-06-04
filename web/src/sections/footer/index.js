@@ -36,8 +36,13 @@
     var footerCopy = footerLabels[language] || footerLabels.en;
     var infoCopy = infoLabels[language] || infoLabels.en;
     var logoSrc = company.logo || "/img/smart-tech.png";
+    var powderService = (site.content.services || []).find(function (service) {
+      return service.id === "powder-coating";
+    });
+    var powderLabel = powderService ? site.i18n.service(powderService).title : "Փոշեներկում";
     var quickLinks = [
       { href: site.utils.pageUrl("services"), label: nav.services },
+      { href: site.utils.pageUrl("service", "powder-coating"), label: powderLabel },
       { href: site.utils.pageUrl("projects"), label: nav.projects },
       { href: site.utils.pageUrl("request"), label: nav.request || site.i18n.get("common.proposal", "Request") },
       { href: site.utils.pageUrl("team"), label: nav.team },

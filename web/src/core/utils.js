@@ -32,6 +32,33 @@
       "&body=" + encodeURIComponent(body || "");
   }
 
+  function imageLoadingAttrs(options) {
+    options = options || {};
+    var attrs = [];
+    if (options.loading) {
+      attrs.push('loading="' + options.loading + '"');
+    }
+    if (options.fetchpriority) {
+      attrs.push('fetchpriority="' + options.fetchpriority + '"');
+    }
+    if (options.decoding !== false) {
+      attrs.push('decoding="async"');
+    }
+    if (options.width) {
+      attrs.push('width="' + String(options.width) + '"');
+    }
+    if (options.height) {
+      attrs.push('height="' + String(options.height) + '"');
+    }
+    if (options.sizes) {
+      attrs.push('sizes="' + escapeHtml(options.sizes) + '"');
+    }
+    if (options.className) {
+      attrs.push('class="' + escapeHtml(options.className) + '"');
+    }
+    return attrs.join(" ");
+  }
+
   function pageUrl(page, id) {
     if (window.location.protocol === "file:") {
       if (page === "home") return "#home";
@@ -46,6 +73,7 @@
   }
 
   site.utils.escapeHtml = escapeHtml;
+  site.utils.imageLoadingAttrs = imageLoadingAttrs;
   site.utils.phoneDisplay = phoneDisplay;
   site.utils.telHref = telHref;
   site.utils.mailTo = mailTo;

@@ -319,6 +319,174 @@
       "</section>";
   }
 
+  function serviceApproachMarkup(id) {
+    if (id === "video-surveillance") return "";
+    var e = site.utils.escapeHtml;
+    var language = site.i18n.language || "hy";
+    var service = site.content.services.find(function (item) {
+      return item.id === id;
+    });
+    if (!service) return "";
+    var scope = perServiceScope(id, language);
+    var images = service.gallery && service.gallery.length ? service.gallery : [service.image];
+    var header = site.i18n.pickLanguageDictionary({
+      hy: {
+        eyebrow: "Տեղադրում և կազմ",
+        title: "Ինչ ենք տեղադրում և ինչպես ենք աշխատում",
+        text: "Յուրաքանչյուր փուլում աշխատում ենք կոնկրետ սարքերի, մալուխային ուղիների և կարգաբերումների վրա, որպեսզի համակարգը հանձնվի կայուն և հասկանալի։"
+      },
+      en: {
+        eyebrow: "Installation and scope",
+        title: "What we install and how we deliver",
+        text: "At each stage we work on specific devices, cable routes and configuration so the system is handed over stable and clear."
+      },
+      ru: {
+        eyebrow: "Монтаж и состав",
+        title: "Что устанавливаем и как выполняем работу",
+        text: "На каждом этапе работаем с конкретными устройствами, трассами и настройкой, чтобы система была сдана стабильной и понятной."
+      }
+    }, language);
+    var cards = scope.stages.slice(0, 4).map(function (stage, index) {
+      return {
+        title: stage,
+        text: scope.includes[index] || scope.includes[0] || "",
+        image: images[index] || images[0] || service.image
+      };
+    });
+    var cardMarkup = cards.map(function (card, index) {
+      return "" +
+        '<article class="cctv-device-card cctv-device-card-' + (index + 1) + '">' +
+          '<span class="cctv-card-photo" style="background-image: url(&quot;' + e(card.image) + '&quot;)">' +
+            '<img src="' + e(card.image) + '" alt="' + e(card.title) + '" loading="lazy" decoding="async">' +
+          "</span>" +
+          "<div>" +
+            "<span>" + e(String(index + 1).padStart(2, "0")) + "</span>" +
+            "<h3>" + e(card.title) + "</h3>" +
+            "<p>" + e(card.text) + "</p>" +
+          "</div>" +
+        "</article>";
+    }).join("");
+
+    return "" +
+      '<section class="cctv-showcase service-approach-showcase reveal">' +
+        '<div class="cctv-showcase-head">' +
+          '<span class="eyebrow">' + e(header.eyebrow) + "</span>" +
+          "<h2>" + e(header.title) + "</h2>" +
+          "<p>" + e(header.text) + "</p>" +
+        "</div>" +
+        '<div class="cctv-device-grid">' + cardMarkup + "</div>" +
+      "</section>";
+  }
+
+  function serviceEquipmentBadges(id) {
+    var badges = {
+      "systems-design": ["PLAN", "CAD", "LOAD", "BOQ"],
+      "equipment-supply": ["RACK", "NET", "CCTV", "BMS"],
+      installation: ["TRAY", "FIX", "BOX", "TEST"],
+      "automation-cabinets": ["PLC", "MCB", "RELAY", "IO"],
+      "commissioning-programming": ["CTRL", "HMI", "SENS", "APP"],
+      interfaces: ["UI", "MAP", "ALRT", "WEB"],
+      "video-surveillance": ["IP", "NVR", "PoE", "APP"],
+      "fire-security": ["FIRE", "FACP", "SND", "MCP"],
+      networks: ["LAN", "RACK", "Wi-Fi", "TEST"],
+      electrical: ["DB", "MCB", "LINE", "LUX"],
+      automation: ["BMS", "SENS", "ACS", "HVAC"],
+      "full-design": ["PLAN", "LOW", "PWR", "DOC"],
+      "audio-systems": ["SPK", "AMP", "MIC", "ZONE"],
+      wacker: ["KIT", "CTRL", "LINE", "SET"],
+      "powder-coating": ["PREP", "GUN", "OVEN", "QC"]
+    };
+    return badges[id] || ["01", "02", "03", "04"];
+  }
+
+  function serviceEquipmentMarkup(id, tags) {
+    var e = site.utils.escapeHtml;
+    var language = site.i18n.language || "hy";
+    var scope = serviceScopeByCategory(id, tags || []);
+    var badges = serviceEquipmentBadges(id);
+    var copy = site.i18n.pickLanguageDictionary({
+      hy: {
+        eyebrow: "Տեղադրվող սարքեր",
+        title: "Ինչ սարքերից է կազմվում լուծումը",
+        text: "Ցուցադրում ենք հիմնական հանգույցները՝ սարքեր, կապեր և գործարկման տրամաբանություն։ Վերջնական կազմը միշտ ընտրվում է օբյեկտի չափագրումից հետո։",
+        diagramTitle: "Համակարգի տրամաբանություն",
+        core: "SmartTech համակարգ",
+        node: "Հանգույց",
+        flowTitle: "Ինչպես է կառուցվում"
+      },
+      en: {
+        eyebrow: "Installed equipment",
+        title: "What the solution is built from",
+        text: "We show the main nodes: devices, connections and commissioning logic. The final set is selected after the site survey.",
+        diagramTitle: "System logic",
+        core: "SmartTech system",
+        node: "Node",
+        flowTitle: "How it is built"
+      },
+      ru: {
+        eyebrow: "Устанавливаемое оборудование",
+        title: "Из каких устройств состоит решение",
+        text: "Показываем основные узлы: устройства, подключения и логику запуска. Финальный состав подбирается после обследования объекта.",
+        diagramTitle: "Логика системы",
+        core: "SmartTech система",
+        node: "Узел",
+        flowTitle: "Как строится"
+      }
+    }, language);
+    var items = scope.includes.slice(0, 4).map(function (item, index) {
+      return {
+        title: item,
+        text: scope.stages[index] || scope.stages[0] || "",
+        badge: badges[index] || String(index + 1).padStart(2, "0")
+      };
+    });
+    var nodeMarkup = items.map(function (item, index) {
+      return "" +
+        '<article class="equipment-node equipment-node-' + (index + 1) + '">' +
+          '<span class="equipment-node-badge notranslate" translate="no">' + e(item.badge) + "</span>" +
+          "<div>" +
+            '<span class="equipment-node-kicker">' + e(copy.node) + " " + e(String(index + 1).padStart(2, "0")) + "</span>" +
+            "<h3>" + e(item.title) + "</h3>" +
+            "<p>" + e(item.text) + "</p>" +
+          "</div>" +
+        "</article>";
+    }).join("");
+    var diagramDots = items.map(function (item, index) {
+      return "" +
+        '<span class="equipment-diagram-dot equipment-diagram-dot-' + (index + 1) + '">' +
+          '<b class="notranslate" translate="no">' + e(item.badge) + "</b>" +
+        "</span>";
+    }).join("");
+    var flowMarkup = scope.stages.slice(0, 4).map(function (stage, index) {
+      return "" +
+        '<span class="equipment-flow-step">' +
+          '<b>' + e(String(index + 1).padStart(2, "0")) + "</b>" +
+          e(stage) +
+        "</span>";
+    }).join("");
+
+    return "" +
+      '<section class="equipment-showcase reveal">' +
+        '<div class="equipment-showcase-head">' +
+          '<span class="eyebrow">' + e(copy.eyebrow) + "</span>" +
+          "<h2>" + e(copy.title) + "</h2>" +
+          "<p>" + e(copy.text) + "</p>" +
+        "</div>" +
+        '<div class="equipment-showcase-shell">' +
+          '<div class="equipment-diagram" aria-label="' + e(copy.diagramTitle) + '">' +
+            '<span class="equipment-diagram-grid"></span>' +
+            '<strong>' + e(copy.core) + "</strong>" +
+            diagramDots +
+          "</div>" +
+          '<div class="equipment-node-grid">' + nodeMarkup + "</div>" +
+        "</div>" +
+        '<div class="equipment-flow">' +
+          "<strong>" + e(copy.flowTitle) + "</strong>" +
+          '<div>' + flowMarkup + "</div>" +
+        "</div>" +
+      "</section>";
+  }
+
   function perServiceScope(id, language) {
     var dictionaries = {
       hy: {
@@ -581,8 +749,8 @@
       "automation-cabinets": "delivery",
       "commissioning-programming": "delivery",
       interfaces: "delivery",
-      wacker: "additional",
-      "powder-coating": "additional"
+      wacker: "delivery",
+      "powder-coating": "delivery"
     };
     var category = categoryById[id] || "delivery";
     var dictionaries = {
@@ -786,6 +954,60 @@
       "</section>";
   }
 
+  function projectAgendaMarkup(project, works) {
+    var e = site.utils.escapeHtml;
+    var language = site.i18n.language || "hy";
+    var copy = site.i18n.pickLanguageDictionary({
+      hy: {
+        eyebrow: "Կատարված աշխատանքներ",
+        title: "Ինչ է իրականացվել օբյեկտում",
+        text: "Այս հատվածում ներկայացված է օբյեկտում կատարված աշխատանքների ամբողջական օրակարգը՝ առանց նկարների, պարզ և կետերով։",
+        sectorLabel: "Կատարման հատված",
+        itemLabel: "Աշխատանք"
+      },
+      en: {
+        eyebrow: "Delivered works",
+        title: "What was implemented on site",
+        text: "This section lists the complete work scope delivered at the facility, without photos, in a clear agenda format.",
+        sectorLabel: "Work area",
+        itemLabel: "Work"
+      },
+      ru: {
+        eyebrow: "Выполненные работы",
+        title: "Что было реализовано на объекте",
+        text: "В этом разделе показан полный перечень выполненных работ без фотографий, в понятном формате списка.",
+        sectorLabel: "Участок работ",
+        itemLabel: "Работа"
+      }
+    }, language);
+    var sector = localTitle({ title: project.sector });
+    var itemMarkup = (works || []).map(function (item, index) {
+      return "" +
+        '<article class="project-agenda-card">' +
+          '<span>' + e(copy.itemLabel) + " " + e(String(index + 1).padStart(2, "0")) + "</span>" +
+          "<h3>" + e(item) + "</h3>" +
+        "</article>";
+    }).join("");
+
+    return "" +
+      '<section class="project-agenda reveal">' +
+        '<div class="section-head project-agenda-head">' +
+          "<div>" +
+            '<span class="eyebrow">' + e(copy.eyebrow) + "</span>" +
+            '<h2 class="section-title">' + e(copy.title) + "</h2>" +
+          "</div>" +
+          '<p class="section-copy">' + e(copy.text) + "</p>" +
+        "</div>" +
+        (sector ? (
+          '<div class="project-agenda-sector">' +
+            '<span>' + e(copy.sectorLabel) + "</span>" +
+            "<strong>" + e(sector) + "</strong>" +
+          "</div>"
+        ) : "") +
+        '<div class="project-agenda-grid">' + itemMarkup + "</div>" +
+      "</section>";
+  }
+
   function currentProjectBanner(project) {
     if (!project || project.status !== "current") return "";
     var e = site.utils.escapeHtml;
@@ -854,11 +1076,29 @@
     var e = site.utils.escapeHtml;
     var heroImage = images[0] || data.image || "";
     var systemGallery = systemGalleryMarkup(systemItems || []);
-    var serviceShowcase = id === "video-surveillance" ? videoSurveillanceShowcaseMarkup() : "";
+    var serviceShowcase = id === "video-surveillance" ? videoSurveillanceShowcaseMarkup() : serviceApproachMarkup(id);
     var galleryCopy = detailGalleryCopy(kind, id);
     var serviceScope = kind === "service" ? serviceScopeMarkup(id, chips || []) : "";
+    var serviceEquipment = kind === "service" ? serviceEquipmentMarkup(id, chips || []) : "";
     var projectStory = kind === "project" ? projectStoryMarkup(data, chips || []) : "";
+    var projectAgenda = kind === "project" ? projectAgendaMarkup(data, chips || []) : "";
     var activeBanner = kind === "project" ? currentProjectBanner(data) : "";
+    var gallerySection = kind === "service" ? "" +
+      '<section class="detail-gallery-section reveal">' +
+        '<div class="section-head">' +
+          "<div>" +
+            '<span class="eyebrow">' + e(galleryCopy.eyebrow) + "</span>" +
+            '<h2 class="section-title">' + e(galleryCopy.title) + "</h2>" +
+          "</div>" +
+          '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
+        "</div>" +
+        '<div class="detail-gallery">' + galleryMarkup(images, title) + "</div>" +
+        '<aside class="detail-gallery-suggestion">' +
+          '<span>' + e(galleryCopy.eyebrow) + "</span>" +
+          '<p>' + e(galleryCopy.suggestion) + "</p>" +
+          '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
+        "</aside>" +
+      "</section>" : "";
 
     return "" +
       '<section class="detail-page">' +
@@ -874,20 +1114,8 @@
         '<div class="container detail-body">' +
           activeBanner +
           projectStory +
-          '<div class="section-head">' +
-            "<div>" +
-              '<span class="eyebrow">' + e(galleryCopy.eyebrow) + "</span>" +
-              '<h2 class="section-title">' + e(galleryCopy.title) + "</h2>" +
-            "</div>" +
-            '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
-          "</div>" +
-          '<div class="detail-gallery reveal">' + galleryMarkup(images, title) + "</div>" +
-          '<aside class="detail-gallery-suggestion reveal">' +
-            '<span>' + e(galleryCopy.eyebrow) + "</span>" +
-            '<p>' + e(galleryCopy.suggestion) + "</p>" +
-            '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
-          "</aside>" +
           serviceScope +
+          serviceEquipment +
           serviceShowcase +
           (systemGallery ? (
             '<div class="section-head detail-system-head">' +
@@ -899,6 +1127,8 @@
             "</div>" +
             '<div class="detail-system-grid reveal">' + systemGallery + "</div>"
           ) : "") +
+          projectAgenda +
+          gallerySection +
           '<div class="detail-cta reveal">' +
             "<div>" +
               "<h2>" + e(site.i18n.get("detail.ctaTitle")) + "</h2>" +

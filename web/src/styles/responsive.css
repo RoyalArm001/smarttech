@@ -90,7 +90,7 @@
     width: 100%;
   }
 
-  .home-service-card,
+  .home-service-post,
   .home-bottom-project-card,
   .home-team-card,
   .home-team-director,
@@ -129,6 +129,8 @@
   .request-specialist-grid,
   .request-brand-grid,
   .team-management-grid,
+  .team-departments-grid,
+  .team-stats-grid,
   .team-report-grid,
   .member-org-grid,
   .member-org-groups,
@@ -664,5 +666,155 @@ body.ui-theme-dark .mobile-bottom-nav .bottom-nav-item.is-active svg {
   .mobile-bottom-nav .bottom-nav-icon {
     width: 20px;
     height: 20px;
+  }
+}
+
+/* Mobile Safari, in-app browsers, and small phones — stable scale & proportions */
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  body {
+    min-height: var(--app-vh, var(--app-min-height));
+  }
+
+  .site-header .container,
+  .section > .container,
+  .home-overview > .container,
+  #site-footer > .container {
+    box-sizing: border-box;
+    width: min(100% - 22px, var(--container));
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #site-footer {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .site-header {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* 100vw is wider than the layout viewport on mobile Safari and causes a right-side gap. */
+  .site-search {
+    left: max(12px, env(safe-area-inset-left, 0px));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    width: auto;
+    max-width: none;
+    transform: translateY(-4px);
+  }
+
+  .site-search.is-open {
+    transform: translateY(0);
+  }
+
+  .auto-chat-shell {
+    max-width: calc(var(--app-vw, 100%) - 24px);
+  }
+
+  .nav-panel,
+  .nav-backdrop {
+    max-width: 100%;
+  }
+
+  #site-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: calc(var(--app-vh, 100svh) - var(--smarttech-header-bottom, 70px));
+  }
+
+  .section-title,
+  .hero-title,
+  .hero-lead,
+  .home-service-post-body h3,
+  .home-service-catalog-body strong,
+  .button,
+  .service-card h3,
+  .project-card strong {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .hero-grid,
+  .home-service-post-shell,
+  .home-service-stream,
+  .home-service-catalog,
+  .home-service-catalog-grid,
+  .home-service-catalog-card,
+  .home-bottom-project-grid,
+  .services-grid,
+  .button-row,
+  .header-inner,
+  .nav-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .home-service-catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .button,
+  .nav-toggle,
+  .language-toggle,
+  .mobile-bottom-nav .bottom-nav-item,
+  a.button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  img,
+  video,
+  svg,
+  iframe {
+    max-width: 100%;
+  }
+
+  .hero-media {
+    max-width: none;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    body {
+      min-height: -webkit-fill-available;
+    }
+
+    #site-main {
+      min-height: calc(var(--app-vh, -webkit-fill-available) - var(--smarttech-header-bottom, 70px));
+    }
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero {
+    min-height: min(56vh, calc(var(--app-vh, 100svh) * 0.72));
+  }
+
+  .hero-overlay {
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: 28px;
+  }
+
+  .nav-panel.is-open {
+    max-height: min(88dvh, calc(var(--app-vh, 100dvh) - var(--smarttech-header-bottom, 64px) - 12px));
   }
 }

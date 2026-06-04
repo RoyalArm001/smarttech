@@ -34,6 +34,14 @@
       },
       image: serviceBase + "installation_networks.jpg"
     },
+    audio: {
+      title: {
+        hy: "Ամբողջական աուդիո համակարգի տեղադրում",
+        en: "Complete audio system installation",
+        ru: "Монтаж полной аудиосистемы"
+      },
+      image: serviceBase + "audio_systems.jpg"
+    },
     serverRack: {
       title: {
         hy: "Պատրաստի սերվերային պահարան և patch panel",
@@ -135,6 +143,27 @@
       works: ["Տեսահսկում", "Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում"],
       images: [jobBase + "bidek-1.jpg", jobBase + "bidek-2.jpg", jobBase + "bidek-3.jpg"],
       systemImages: [system.cctv, system.alarmPanel, system.access]
+    },
+    {
+      id: "moselle-armenia",
+      title: "Moselle Armenia Wellness & Medical SPA",
+      works: ["Medical SPA բուժական հատվածում կատարված աշխատանքներ", "UTP մալուխի մոնտաժ", "Կապի մալուխային համակարգի կառուցում", "Ամբողջական աուդիո համակարգի տեղադրում"],
+      images: [
+        jobBase + "moselle-medical-hydromassage.png",
+        jobBase + "moselle-medical-laboratory.png",
+        jobBase + "moselle-medical-electrotherapy.png",
+        jobBase + "moselle-medical-massage.png"
+      ],
+      systemImages: [system.network, system.audio],
+      sector: {
+        hy: "Բուժական / Medical SPA հատված",
+        en: "Medical / SPA section",
+        ru: "Медицинский / SPA сектор"
+      },
+      translations: {
+        en: { title: "Moselle Armenia Wellness & Medical SPA", works: ["Works in the Medical SPA section", "UTP cable installation", "Communication cabling system build-out", "Complete audio system installation"] },
+        ru: { title: "Moselle Armenia Wellness & Medical SPA", works: ["Работы в медицинском SPA-секторе", "Монтаж UTP-кабеля", "Построение кабельной системы связи", "Монтаж полной аудиосистемы"] },
+      }
     },
     {
       id: "pallada-tsaghkadzor",

@@ -19,7 +19,8 @@
           { title: "BMS եւ ավտոմատացում", items: ["շենքի կառավարման logic", "սցենարային կառավարում", "HVAC / lighting ինտեգրում", "սենսորներ եւ controller-ներ", "smart control", "մոնիթորինգ dashboard"] },
           { title: "Աուդիո եւ ծանուցում", items: ["public address", "ֆոնային երաժշտություն", "ձայնային ծանուցում", "կոնֆերանսային աուդիո", "միկրոֆոններ եւ zone control", "ձայնի կարգաբերում"] },
           { title: "Մատակարարում եւ տեղադրում", items: ["ֆիրմաների ընտրություն", "սարքավորումների գնում", "մալուխավորում", "մոնտաժ", "ծրագրավորում", "օգտագործման հանձնում"] },
-          { title: "Սպասարկում", items: ["պլանային սպասարկում", "անսարքության հայտնաբերում", "վերածրագրավորում", "համակարգերի ընդլայնում", "փաստաթղթավորում", "երաշխիքային աջակցություն"] }
+          { title: "Սպասարկում", items: ["պլանային սպասարկում", "անսարքության հայտնաբերում", "վերածրագրավորում", "համակարգերի ընդլայնում", "փաստաթղթավորում", "երաշխիքային աջակցություն"] },
+          { title: "Փոշեներկում", items: ["մետաղի նախապատրաստում", "փոշի կիրառում", "ջեռոցում", "RAL գունային ընտրություն", "որակի ստուգում", "փաթեթավորում"] }
         ],
         markets: ["բնակելի համալիրներ", "բիզնես կենտրոններ", "հյուրանոցներ", "ռեստորաններ եւ սրահներ", "պահեստներ", "արտադրամասեր", "խանութներ", "գրասենյակներ", "կրթական եւ բժշկական տարածքներ"],
         brands: ["ABB", "JUNG", "Huawei", "Eaton", "Schneider Electric", "HDL", "Zennio", "Extron", "Yealink", "BEG", "Yamaha", "Hikvision", "Zyxel", "Gira", "Beckhoff", "Carrier", "Siemens", "Legrand", "Honeywell", "Helvar", "Interra", "Sharp", "WAGO", "OBO Bettermann", "Polycom", "Phoenix Contact", "iRidium mobile", "VOLA", "Ekinex", "Schrack Seconet"],
@@ -49,7 +50,8 @@
           { title: "BMS and automation", items: ["building management logic", "scenario control", "HVAC / lighting integration", "sensors and controllers", "smart control", "monitoring dashboard"] },
           { title: "Audio and notification", items: ["public address", "background music", "voice alerts", "conference audio", "microphones and zone control", "sound tuning"] },
           { title: "Supply and installation", items: ["brand selection", "equipment purchase", "cabling", "installation", "programming", "handover"] },
-          { title: "Maintenance", items: ["scheduled service", "fault diagnostics", "reprogramming", "system expansion", "documentation", "warranty support"] }
+          { title: "Maintenance", items: ["scheduled service", "fault diagnostics", "reprogramming", "system expansion", "documentation", "warranty support"] },
+          { title: "Powder coating", items: ["metal preparation", "powder application", "curing", "RAL color selection", "quality control", "packaging"] }
         ],
         markets: ["residential complexes", "business centers", "hotels", "restaurants and showrooms", "warehouses", "production facilities", "stores", "offices", "education and medical spaces"],
         brands: ["ABB", "JUNG", "Huawei", "Eaton", "Schneider Electric", "HDL", "Zennio", "Extron", "Yealink", "BEG", "Yamaha", "Hikvision", "Zyxel", "Gira", "Beckhoff", "Carrier", "Siemens", "Legrand", "Honeywell", "Helvar", "Interra", "Sharp", "WAGO", "OBO Bettermann", "Polycom", "Phoenix Contact", "iRidium mobile", "VOLA", "Ekinex", "Schrack Seconet"],
@@ -79,7 +81,8 @@
           { title: "BMS и автоматизация", items: ["логика управления зданием", "сценарное управление", "интеграция HVAC / lighting", "сенсоры и контроллеры", "smart control", "monitoring dashboard"] },
           { title: "Аудио и оповещение", items: ["public address", "фоновая музыка", "голосовые оповещения", "конференц-аудио", "микрофоны и zone control", "настройка звука"] },
           { title: "Поставка и монтаж", items: ["выбор брендов", "закупка оборудования", "каблирование", "монтаж", "программирование", "сдача в эксплуатацию"] },
-          { title: "Обслуживание", items: ["плановый сервис", "диагностика неисправностей", "перепрограммирование", "расширение систем", "документация", "гарантийная поддержка"] }
+          { title: "Обслуживание", items: ["плановый сервис", "диагностика неисправностей", "перепрограммирование", "расширение систем", "документация", "гарантийная поддержка"] },
+          { title: "Порошковая окраска", items: ["подготовка металла", "нанесение порошка", "полимеризация", "цвет RAL", "контроль качества", "упаковка"] }
         ],
         markets: ["жилые комплексы", "бизнес-центры", "отели", "рестораны и салоны", "склады", "производства", "магазины", "офисы", "образовательные и медицинские пространства"],
         brands: ["ABB", "JUNG", "Huawei", "Eaton", "Schneider Electric", "HDL", "Zennio", "Extron", "Yealink", "BEG", "Yamaha", "Hikvision", "Zyxel", "Gira", "Beckhoff", "Carrier", "Siemens", "Legrand", "Honeywell", "Helvar", "Interra", "Sharp", "WAGO", "OBO Bettermann", "Polycom", "Phoenix Contact", "iRidium mobile", "VOLA", "Ekinex", "Schrack Seconet"],
@@ -175,13 +178,7 @@
           title: "Իրականացման փուլային ծառայություններ",
           badge: "Փուլային",
           text: "Այս ծառայությունները ապահովում են ամբողջ ցիկլը՝ նախագծումից մինչև գործարկում։",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
-        },
-        {
-          title: "Լրացուցիչ ուղղություններ",
-          badge: "Լրացուցիչ",
-          text: "Սպասարկման և նիշային արտադրական ծառայություններ հատուկ պահանջների համար։",
-          ids: ["wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
         }
       ],
       en: [
@@ -195,13 +192,7 @@
           title: "Delivery-stage services",
           badge: "Delivery",
           text: "These services complete the full cycle from design and supply to commissioning.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
-        },
-        {
-          title: "Additional directions",
-          badge: "Additional",
-          text: "Specialized support and production-related services for specific requests.",
-          ids: ["wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
         }
       ],
       ru: [
@@ -215,13 +206,7 @@
           title: "Услуги по этапам реализации",
           badge: "Этапы",
           text: "Эти услуги закрывают полный цикл: от проектирования и поставки до пусконаладки.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces"]
-        },
-        {
-          title: "Дополнительные направления",
-          badge: "Дополнительно",
-          text: "Нишевые сервисные и производственные работы под отдельные задачи.",
-          ids: ["wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
         }
       ]
     };

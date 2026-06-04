@@ -6,7 +6,8 @@
 #site-main {
   position: relative;
   z-index: 1;
-  min-height: calc(100vh - 74px);
+  min-height: calc(var(--app-min-height) - var(--smarttech-header-bottom, 74px));
+  min-height: calc(var(--app-vh, var(--app-min-height)) - var(--smarttech-header-bottom, 74px));
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(237, 244, 242, 0.18)),
     transparent;
@@ -559,7 +560,7 @@ body.is-license-lightbox-open {
   right: 18px;
   bottom: 18px;
   z-index: 120;
-  width: min(380px, calc(100vw - 32px));
+  width: min(380px, calc(var(--app-vw, 100vw) - 32px));
   display: flex;
   flex-direction: column-reverse;
   align-items: flex-end;
@@ -1109,7 +1110,7 @@ body.ui-reduced-motion .route-transition {
     left: auto;
     right: 12px;
     bottom: 12px;
-    width: min(350px, calc(100vw - 24px));
+    width: min(350px, calc(var(--app-vw, 100vw) - 24px));
   }
 
   .auto-chat-trigger-text {
@@ -1174,10 +1175,11 @@ body.ui-reduced-motion .route-transition {
   }
 
   .auto-chat-shell {
-    left: auto;
-    right: 10px;
+    left: max(10px, env(safe-area-inset-left, 0px));
+    right: max(10px, env(safe-area-inset-right, 0px));
     bottom: 10px;
-    width: calc(100vw - 20px);
+    width: auto;
+    max-width: none;
   }
 
   .auto-chat-panel {
@@ -1186,7 +1188,7 @@ body.ui-reduced-motion .route-transition {
   }
 
   .back-to-top-button {
-    right: 10px;
+    right: max(10px, env(safe-area-inset-right, 0px));
     bottom: 82px;
     width: 42px;
     height: 42px;

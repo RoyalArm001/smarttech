@@ -87,6 +87,14 @@
         "Control4",
         "Crestron",
         "Zennio"
+      ],
+      "powder-coating": [
+        "RAL / NCS colors",
+        "Epoxy primer",
+        "Polyester powder",
+        "Epoxy-polyester powder",
+        "Zinc primer",
+        "Anti-corrosion coating"
       ]
     };
   }
@@ -101,7 +109,8 @@
         "audio-systems": ["առաստաղային բարձրախոս", "պատի բարձրախոս", "amplifier", "mixer", "microphone", "zone controller", "ձայնային ծանուցում", "conference audio"],
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["մալուխային ուղի", "բաշխիչ վահան", "ավտոմատ անջատիչ", "լուսավորության գիծ", "վարդակների գիծ", "հողանցում", "UPS սնուցում", "չափումներ"],
-        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"]
+        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "powder-coating": ["մաքրում", "փայլում", "փոշի կիրառում", "ջեռոցում", "Որակի ստուգում", "փաթեթավորում", "RAL գունային ընտրություն", "պաշտպանիչ ծածկ"]
       },
       en: {
         "video-surveillance": ["IP camera", "PTZ camera", "NVR/DVR", "HDD storage", "PoE switch", "monitor", "remote viewing", "motion alerts"],
@@ -111,7 +120,8 @@
         "audio-systems": ["ceiling speaker", "wall speaker", "amplifier", "mixer", "microphone", "zone controller", "voice notification", "conference audio"],
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["cable route", "distribution panel", "circuit breaker", "lighting line", "socket line", "grounding", "UPS power", "measurements"],
-        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"]
+        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "powder-coating": ["cleaning", "sandblasting", "powder application", "curing", "quality check", "packaging", "RAL color selection", "protective coating"]
       },
       ru: {
         "video-surveillance": ["IP-камера", "PTZ-камера", "NVR/DVR", "HDD архив", "PoE switch", "монитор", "удаленный просмотр", "уведомления движения"],
@@ -121,7 +131,8 @@
         "audio-systems": ["потолочный динамик", "настенный динамик", "amplifier", "mixer", "microphone", "zone controller", "голосовое оповещение", "conference audio"],
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["кабельная трасса", "распределительный щит", "автомат", "линия освещения", "линия розеток", "заземление", "UPS питание", "замеры"],
-        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"]
+        automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "powder-coating": ["очистка", "пескоструй", "нанесение порошка", "полимеризация", "контроль качества", "упаковка", "цвет RAL", "защитное покрытие"]
       },
       be: {
         "video-surveillance": ["IP-камера", "PTZ-камера", "NVR/DVR", "HDD-архіў", "PoE switch", "манітор", "аддалены прагляд", "апавяшчэнні пра рух"],
@@ -233,8 +244,8 @@
         optionHint: "Ընտրեք սարքերն ու աշխատանքները",
         brandLabel: "Նախընտրելի ֆիրմաներ / մոդելներ",
         brandHint: "Ընտրեք մեկը կամ մի քանիսը",
-        readyTitle: "Հայտը պատրաստվում է ավտոմատ",
-        readyText: "Տեսանելի տեքստային բլոկ չկա․ ընտրությունները կգնան նամակի մեջ ուղարկելու պահին։",
+        readyTitle: "Լրացրեք պարտադիր դաշտերը",
+        readyText: "Անուն, հեռախոս և ընտրված համակարգերը պետք է նշված լինեն, ապա կտեսնեք ամբողջական ամփոփումը։",
         sendingTitle: "Պատրաստվում է նամակը",
         sendingText: "Mail ծրագիրը կբացվի արդեն հավաքված վերնագրով եւ տեքստով։",
         name: "Անուն / ընկերություն",
@@ -255,7 +266,8 @@
           { id: "audio-systems", title: "Աուդիո համակարգեր", unit: "գոտի/բարձրախոս", text: "Ֆոնային երաժշտություն, public address, ձայնային ծանուցում" },
           { id: "network", title: "Ցանցեր եւ Wi-Fi", unit: "կետ", text: "LAN, rack, Wi-Fi ծածկույթ" },
           { id: "electrical", title: "Էլեկտրամոնտաժ", unit: "կետ", text: "Վահաններ, մալուխներ, լուսավորություն" },
-          { id: "automation", title: "BMS / ավտոմատացում", unit: "հանգույց", text: "Շենքի կառավարման եւ smart logic լուծումներ" }
+          { id: "automation", title: "BMS / ավտոմատացում", unit: "հանգույց", text: "Շենքի կառավարման եւ smart logic լուծումներ" },
+          { id: "powder-coating", title: "Փոշեներկում", unit: "մ²", text: "Մետաղական դետալների պաշտպանիչ և էսթետիկ փոշեներկում" }
         ],
         maintenanceList: [
           "Պլանային սպասարկում",
@@ -273,6 +285,10 @@
         placeholderNotes: "Նկարագրեք տարածքը, գործող համակարգը կամ հատուկ պահանջները",
         statusMail: "Mail ծրագիրը բացվեց պատրաստ նամակով։ Եթե չի բացվել, ներբեռնեք TXT ֆայլը եւ ուղարկեք email-ով։",
         statusDownload: "TXT ֆայլը պատրաստ է։",
+        previewTitle: "Հայտի ամփոփում",
+        previewHint: "Ստուգեք տվյալները նախքան ուղարկելը։",
+        checklistTitle: "Պարտադիր լրացում",
+        requiredMark: "*",
         subject: "Smart Tech համակարգի հայտ",
         empty: "Չի լրացվել",
         noSystems: "Համակարգեր դեռ ընտրված չեն",
@@ -311,8 +327,8 @@
         optionHint: "Choose devices and tasks",
         brandLabel: "Preferred brands / models",
         brandHint: "Choose one or more",
-        readyTitle: "Request will be built automatically",
-        readyText: "The long text preview is hidden. Your selections will be added to the email on send.",
+        readyTitle: "Fill in the required fields",
+        readyText: "Name, phone and selected systems must be completed before the full preview appears.",
         sendingTitle: "Preparing the email",
         sendingText: "The mail app will open with the prepared subject and message.",
         name: "Name / company",
@@ -333,7 +349,8 @@
           { id: "audio-systems", title: "Audio systems", unit: "zone/speaker", text: "Background music, public address and voice alerts" },
           { id: "network", title: "Networks and Wi-Fi", unit: "point", text: "LAN, rack, Wi-Fi coverage" },
           { id: "electrical", title: "Electrical work", unit: "point", text: "Panels, cabling, lighting" },
-          { id: "automation", title: "BMS / automation", unit: "node", text: "Building management and smart logic" }
+          { id: "automation", title: "BMS / automation", unit: "node", text: "Building management and smart logic" },
+          { id: "powder-coating", title: "Powder coating", unit: "m²", text: "Protective and aesthetic powder coating for metal parts" }
         ],
         maintenanceList: [
           "Scheduled maintenance",
@@ -351,6 +368,10 @@
         placeholderNotes: "Describe the facility, existing system or special requirements",
         statusMail: "The mail app opened with a prepared message. If it did not open, download the TXT file and send it by email.",
         statusDownload: "TXT file is ready.",
+        previewTitle: "Request preview",
+        previewHint: "Review the details before sending.",
+        checklistTitle: "Required items",
+        requiredMark: "*",
         subject: "Smart Tech system request",
         empty: "Not filled",
         noSystems: "No systems selected yet",
@@ -389,8 +410,8 @@
         optionHint: "Выберите устройства и работы",
         brandLabel: "Предпочтительные фирмы / модели",
         brandHint: "Выберите один или несколько",
-        readyTitle: "Заявка будет собрана автоматически",
-        readyText: "Длинный текстовый блок скрыт. Выборы попадут в письмо при отправке.",
+        readyTitle: "Заполните обязательные поля",
+        readyText: "Имя, телефон и выбранные системы должны быть указаны, затем появится полный просмотр.",
         sendingTitle: "Готовим письмо",
         sendingText: "Почта откроется с подготовленной темой и текстом.",
         name: "Имя / компания",
@@ -411,7 +432,8 @@
           { id: "audio-systems", title: "Аудиосистемы", unit: "зона/динамик", text: "Фоновая музыка, public address и голосовые оповещения" },
           { id: "network", title: "Сети и Wi-Fi", unit: "точка", text: "LAN, rack, Wi-Fi покрытие" },
           { id: "electrical", title: "Электромонтаж", unit: "точка", text: "Щиты, кабели, освещение" },
-          { id: "automation", title: "BMS / автоматизация", unit: "узел", text: "Управление зданием и smart logic" }
+          { id: "automation", title: "BMS / автоматизация", unit: "узел", text: "Управление зданием и smart logic" },
+          { id: "powder-coating", title: "Порошковая окраска", unit: "м²", text: "Защитная и эстетичная порошковая окраска металла" }
         ],
         maintenanceList: [
           "Плановое обслуживание",
@@ -429,6 +451,10 @@
         placeholderNotes: "Опишите объект, действующую систему или особые требования",
         statusMail: "Почта открылась с готовым письмом. Если не открылась, скачайте TXT файл и отправьте его по email.",
         statusDownload: "TXT файл готов.",
+        previewTitle: "Просмотр заявки",
+        previewHint: "Проверьте данные перед отправкой.",
+        checklistTitle: "Обязательные поля",
+        requiredMark: "*",
         subject: "Заявка на систему Smart Tech",
         empty: "Не заполнено",
         noSystems: "Системы пока не выбраны",
@@ -872,13 +898,13 @@
                 '<div class="request-grid">' +
                   '<fieldset class="request-fieldset">' +
                     '<legend>' + e(copy.contact) + '</legend>' +
-                    '<label class="request-field">' +
-                      '<span>' + e(copy.name) + '</span>' +
-                      '<input name="clientName" autocomplete="name" placeholder="' + e(copy.placeholderName) + '">' +
+                    '<label class="request-field" data-request-field="clientName">' +
+                      '<span>' + e(copy.name) + ' <em class="request-required">' + e(copy.requiredMark) + '</em></span>' +
+                      '<input name="clientName" autocomplete="name" required placeholder="' + e(copy.placeholderName) + '">' +
                     '</label>' +
-                    '<label class="request-field">' +
-                      '<span>' + e(copy.phone) + '</span>' +
-                      '<input name="clientPhone" autocomplete="tel">' +
+                    '<label class="request-field" data-request-field="clientPhone">' +
+                      '<span>' + e(copy.phone) + ' <em class="request-required">' + e(copy.requiredMark) + '</em></span>' +
+                      '<input name="clientPhone" type="tel" inputmode="tel" autocomplete="tel" required>' +
                     '</label>' +
                     '<label class="request-field">' +
                       '<span>' + e(copy.email) + '</span>' +
@@ -923,13 +949,15 @@
                   '<h3>' + e(wizard.auditTitle) + '</h3>' +
                   '<p>' + e(wizard.auditText) + '</p>' +
                 '</div>' +
-                '<fieldset class="request-fieldset" data-scope-show="sale service">' +
-                  '<legend>' + e(copy.systems) + '</legend>' +
-                  '<div class="request-system-grid">' + systems + '</div>' +
+                '<fieldset class="request-fieldset" data-scope-show="sale service" data-request-fieldset="systems">' +
+                  '<legend>' + e(copy.systems) + ' <em class="request-required">' + e(copy.requiredMark) + '</em></legend>' +
+                  '<p class="request-field-hint" data-request-systems-hint hidden></p>' +
+                  '<div class="request-system-grid" id="request-system-grid">' + systems + '</div>' +
                 '</fieldset>' +
-                '<fieldset class="request-fieldset" data-scope-show="service">' +
-                  '<legend>' + e(copy.maintenance) + '</legend>' +
-                  selectionMenu(copy.maintenance, copy.optionHint, maintenance, "request-maintenance-menu", "") +
+                '<fieldset class="request-fieldset" data-scope-show="service" data-request-fieldset="maintenance">' +
+                  '<legend>' + e(copy.maintenance) + ' <em class="request-required">' + e(copy.requiredMark) + '</em></legend>' +
+                  '<p class="request-field-hint" data-request-maintenance-hint hidden></p>' +
+                  selectionMenu(copy.maintenance, copy.optionHint, maintenance, "request-maintenance-menu", 'data-request-field="maintenance"') +
                 '</fieldset>' +
                 '<fieldset class="request-fieldset request-visit-fieldset" data-scope-show="audit">' +
                   '<legend>' + e(copy.visit) + '</legend>' +
@@ -943,8 +971,8 @@
                     '</label>' +
                     '<p>' + e(copy.visitText) + '</p>' +
                     '<div class="request-grid request-visit-grid">' +
-                      '<label class="request-field">' +
-                        '<span>' + e(copy.visitDate) + '</span>' +
+                      '<label class="request-field" data-request-field="visitDate">' +
+                        '<span>' + e(copy.visitDate) + ' <em class="request-required">' + e(copy.requiredMark) + '</em></span>' +
                         '<input name="visitDate" type="date">' +
                       '</label>' +
                       '<label class="request-field">' +
@@ -977,12 +1005,18 @@
             '<aside class="request-panel request-summary-card reveal">' +
               '<span class="eyebrow">' + e(copy.summaryTitle) + '</span>' +
               '<p>' + e(copy.summaryText) + '</p>' +
-              '<div class="request-submit-state" id="request-submit-state" aria-live="polite">' +
-                '<span class="request-submit-icon" aria-hidden="true"></span>' +
-                '<h3 id="request-submit-title">' + e(copy.readyTitle) + '</h3>' +
+              '<div class="request-checklist-wrap">' +
+                '<h3 class="request-checklist-title">' + e(copy.checklistTitle) + '</h3>' +
+                '<ul class="request-checklist" id="request-checklist" aria-live="polite"></ul>' +
+              '</div>' +
+              '<div class="request-preview-block">' +
+                '<h3 class="request-preview-title">' + e(copy.previewTitle) + '</h3>' +
+                '<p class="request-preview-hint">' + e(copy.previewHint) + '</p>' +
+                '<textarea id="request-summary" class="request-summary notranslate" rows="12" readonly translate="no" aria-label="' + e(copy.previewTitle) + '"></textarea>' +
+              '</div>' +
+              '<div class="request-submit-state is-compact" id="request-submit-state" aria-live="polite">' +
                 '<p id="request-submit-text">' + e(copy.readyText) + '</p>' +
               '</div>' +
-              '<textarea id="request-summary" class="request-summary request-summary-hidden notranslate" rows="1" readonly translate="no" aria-label="' + e(copy.summaryTitle) + '"></textarea>' +
               '<div class="request-actions">' +
                 '<button class="button button-primary" type="submit">' + e(copy.openMail) + '</button>' +
                 '<button class="button request-project-submit" type="button" id="request-project-submit">' + e(copy.sendProject) + '</button>' +
