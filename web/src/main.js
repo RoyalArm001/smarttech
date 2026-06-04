@@ -1860,13 +1860,14 @@
       return message;
     }
 
-    function validateStep(step, showErrors) {
+    function validateStep(step, showErrors, options) {
       var labels = copy();
       var kind = checkedRequestKind();
       var errors = [];
       var targetStep = step;
+      var opts = options || {};
 
-      if (showErrors) clearFieldErrors();
+      if (showErrors && !opts.skipClear) clearFieldErrors();
 
       if (step === 1) {
         if (kind === "sale" || kind === "service") {
@@ -1897,10 +1898,12 @@
       }
 
       if (step === 3) {
-        var scopeErrors = validateStep(1, showErrors);
-        errors = scopeErrors.concat(errors);
-        if (scopeErrors.length) {
-          targetStep = Math.min(targetStep, 1);
+        var scopeResult = validateStep(1, showErrors, { skipClear: true });
+        if (!scopeResult.ok) {
+          if (scopeResult.message) {
+            errors.push(scopeResult.message);
+          }
+          targetStep = Math.min(targetStep, scopeResult.step || 1);
         }
       }
 
@@ -2366,9 +2369,11 @@
     var prevButton = root.querySelector("[data-carousel-prev]");
     var nextButton = root.querySelector("[data-carousel-next]");
     var progress = root.querySelector("[data-carousel-progress]");
+    var meter = root.querySelector("[data-carousel-meter]");
     var interval = parseInt(root.getAttribute("data-interval") || "6500", 10);
     var index = 0;
     var timer = null;
+    root.style.setProperty("--current-project-interval", interval + "ms");
 
     function progressText(position) {
       var template = site.i18n.get("projectsPage.carouselProgress", "{current} / {total}");
@@ -2392,9 +2397,17 @@
       if (progress) {
         progress.textContent = progressText(index + 1);
       }
+      if (meter) {
+        meter.classList.remove("is-running");
+        meter.offsetWidth;
+        if (uiSettings.motion && slides.length > 1) {
+          meter.classList.add("is-running");
+        }
+      }
     }
 
     function stopAutoplay() {
+      root.classList.add("is-paused");
       if (timer) {
         window.clearInterval(timer);
         timer = null;
@@ -2403,6 +2416,7 @@
 
     function startAutoplay() {
       stopAutoplay();
+      root.classList.remove("is-paused");
       if (!uiSettings.motion || slides.length < 2) return;
       timer = window.setInterval(function () {
         goTo(index + 1);
@@ -3033,12 +3047,15 @@
         limitReached: "Այս արագ չաթում արդեն օգտագործվել է 10 հարց։ Շարունակելու համար թողեք հեռախոսահամար կամ գրեք info@smarttechllc.am։",
         limitButton: "Ավարտված",
         typing: "գրում է...",
-        greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ կամ ավտոմատացում։",
+        greeting: "Բարև 👋 Ես SmartTech-ի օգնականն եմ։ Ընտրեք թեմա ներքևից կամ գրեք ձեր հարցը։",
         quickIntents: [
-          { id: "services", label: "Ծառայություններ" },
-          { id: "price", label: "Գների հարց" },
-          { id: "timeline", label: "Ժամկետներ" },
-          { id: "contact", label: "Կապ մեզ հետ" },
+          { id: "cctv", label: "Տեսահսկում" },
+          { id: "network", label: "Ցանց" },
+          { id: "fire", label: "Հրդեհային" },
+          { id: "access", label: "Մուտքի հսկում" },
+          { id: "electrical", label: "Էլեկտրամոնտաժ" },
+          { id: "automation", label: "Ավտոմատացում" },
+          { id: "price", label: "Գին" },
           { id: "survey", label: "Նախագծի բրիֆ" }
         ],
         surveyIntro: "Լավ, հավաքենք կարճ բրիֆ՝ մեր մասնագետը արագ կողմնորոշվի։",
@@ -3055,6 +3072,12 @@
         reminderStatus: "Բրիֆը պահպանված է",
         replies: {
           services: "Մենք առաջարկում ենք տեսահսկման, հրդեհային ու ազդանշանային համակարգեր, ցանցային լուծումներ, էլեկտրական և ավտոմատացման աշխատանքներ.",
+          cctv: "Տեսահսկում՝ IP/HD տեսախցիկներ, NVR/DVR արխիվ, PoE ցանց և հեռահար դիտում։ Գրեք օբյեկտը՝ կառաջարկենք ճիշտ կազմը.",
+          network: "Ցանցային լուծումներ՝ LAN/Wi-Fi, router, switch, firewall և կառուցվածքային մալուխացում՝ կայուն ու անվտանգ աշխատանքի համար.",
+          fire: "Հրդեհային ազդարարման և տարհանման համակարգեր՝ դետեկտորներ, պանելներ և ազդանշման գծեր՝ ըստ անվտանգության նորմերի.",
+          access: "Մուտքի վերահսկում՝ քարտով/կոդով մուտք, դոմոֆոն, turnstile և հեռահար կառավարում.",
+          electrical: "Էլեկտրամոնտաժ՝ ուժային գծեր, բաշխիչ վահաններ, լուսավորություն և կաբելային ուղիներ՝ որակյալ իրականացմամբ.",
+          automation: "Ավտոմատացում և BMS՝ սարքերի կառավարում, սցենարներ և համակարգերի ինտեգրացիա մեկ տրամաբանության մեջ.",
           price: "Ճշգրիտ գինը կախված է օբյեկտից և աշխատանքի ծավալից. կիսվեք համառոտ բրիֆով, և թիմը կպատրաստի հաշվարկը.",
           timeline: "Փոքր նախագծերը սովորաբար ավարտվում են 3-7 օրվա ընթացքում, միջինները՝ 1-3 շաբաթի մեջ. վերջնական ժամկետը հաստատվում է զննման փուլից հետո.",
           contact: "Կարող եք գրել {email}-ին կամ բացել մեր կապի էջը՝ {contactPage}:",
@@ -3076,12 +3099,15 @@
         limitReached: "This quick chat has reached the 10-question limit. To continue, leave your phone number or write to info@smarttechllc.am.",
         limitButton: "Done",
         typing: "typing...",
-        greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need: CCTV, network, fire alarm, access control, electrical works or automation.",
+        greeting: "Hi 👋 I'm SmartTech's assistant. Pick a topic below or type your question.",
         quickIntents: [
-          { id: "services", label: "Services" },
+          { id: "cctv", label: "CCTV" },
+          { id: "network", label: "Network" },
+          { id: "fire", label: "Fire alarm" },
+          { id: "access", label: "Access control" },
+          { id: "electrical", label: "Electrical" },
+          { id: "automation", label: "Automation" },
           { id: "price", label: "Pricing" },
-          { id: "timeline", label: "Timeline" },
-          { id: "contact", label: "Contact" },
           { id: "survey", label: "Project brief" }
         ],
         surveyIntro: "Great, let's collect a short brief so our specialist can understand the request quickly.",
@@ -3098,6 +3124,12 @@
         reminderStatus: "Brief saved",
         replies: {
           services: "We deliver video surveillance, fire and alarm systems, network solutions, electrical works and automation.",
+          cctv: "CCTV: IP/HD cameras, NVR/DVR archive, PoE network and remote viewing. Tell us about the site and we'll suggest the right setup.",
+          network: "Network solutions: LAN/Wi-Fi, routers, switches, firewall and structured cabling for stable and secure operation.",
+          fire: "Fire alarm and evacuation systems: detectors, panels and notification lines, designed to safety codes.",
+          access: "Access control: card/code entry, intercom, turnstiles and remote management.",
+          electrical: "Electrical works: power lines, distribution panels, lighting and cable routes with quality installation.",
+          automation: "Automation and BMS: device control, scenarios and integration of systems into one logic.",
           price: "Accurate pricing depends on your facility and scope. Share a short brief and our team will prepare an estimate.",
           timeline: "Small projects usually take 3-7 days, medium ones 1-3 weeks. Final timing is confirmed after survey.",
           contact: "You can email {email}, or open our contact page: {contactPage}",
@@ -3119,12 +3151,15 @@
         limitReached: "В этом быстром чате уже использовано 10 вопросов. Чтобы продолжить, оставьте телефон или напишите на info@smarttechllc.am.",
         limitButton: "Готово",
         typing: "печатает...",
-        greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж или автоматизация.",
+        greeting: "Здравствуйте 👋 Я ассистент SmartTech. Выберите тему ниже или напишите свой вопрос.",
         quickIntents: [
-          { id: "services", label: "Услуги" },
+          { id: "cctv", label: "Видеонаблюдение" },
+          { id: "network", label: "Сеть" },
+          { id: "fire", label: "Пожарная" },
+          { id: "access", label: "Контроль доступа" },
+          { id: "electrical", label: "Электромонтаж" },
+          { id: "automation", label: "Автоматизация" },
           { id: "price", label: "Стоимость" },
-          { id: "timeline", label: "Сроки" },
-          { id: "contact", label: "Контакты" },
           { id: "survey", label: "Бриф проекта" }
         ],
         surveyIntro: "Хорошо, соберем короткий бриф, чтобы специалист быстро понял задачу.",
@@ -3141,6 +3176,12 @@
         reminderStatus: "Бриф сохранен",
         replies: {
           services: "Мы выполняем видеонаблюдение, пожарные и охранные системы, сетевые решения, электромонтаж и автоматизацию.",
+          cctv: "Видеонаблюдение: IP/HD камеры, архив NVR/DVR, PoE-сеть и удаленный просмотр. Опишите объект — предложим правильный состав.",
+          network: "Сетевые решения: LAN/Wi-Fi, роутеры, коммутаторы, firewall и структурированная кабельная система для стабильной и безопасной работы.",
+          fire: "Системы пожарной сигнализации и оповещения: датчики, панели и линии оповещения по нормам безопасности.",
+          access: "Контроль доступа: вход по карте/коду, домофон, турникеты и удаленное управление.",
+          electrical: "Электромонтаж: силовые линии, распределительные щиты, освещение и кабельные трассы с качественным монтажом.",
+          automation: "Автоматизация и BMS: управление устройствами, сценарии и интеграция систем в единую логику.",
           price: "Точная стоимость зависит от объекта и объема задач. Отправьте краткое описание, и команда подготовит расчет.",
           timeline: "Небольшие проекты обычно занимают 3-7 дней, средние — 1-3 недели. Финальный срок подтверждаем после обследования.",
           contact: "Можно написать на {email}, или открыть страницу контактов: {contactPage}",
@@ -3618,6 +3659,11 @@
         var lang = activeChatLanguage();
         var copy = chatDictionary(lang);
         var intent = button.getAttribute("data-intent") || "fallback";
+        if (intent !== "survey" && copy.replies && copy.replies[intent]) {
+          appendChatMessage("user", button.textContent || "");
+          respondByIntent(intent, copy);
+          return;
+        }
         handleChatRequest(button.textContent || "", intent, copy);
       });
     }
@@ -4022,4 +4068,3 @@
     }
   }
 })(window.SmartTech);
-

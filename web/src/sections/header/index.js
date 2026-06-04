@@ -181,14 +181,7 @@
     }
 
     var headerLanguageSwitcher = renderLanguageSwitcher("header-language-switcher");
-    var contacts = site.content.contacts || {};
-    var primaryPhone = contacts.phones && contacts.phones[0] ? contacts.phones[0].number : "";
     var mobileMenuCloseLabel = site.i18n.get("header.mobile.close", "Close menu");
-    var mobileMenuActions = "" +
-      '<div class="mobile-menu-actions">' +
-        '<a class="mobile-menu-action mobile-menu-action-call" href="tel:' + e(primaryPhone.replace(/\s+/g, "")) + '">' + e(site.i18n.get("common.callNow", "Call now")) + "</a>" +
-        '<a class="mobile-menu-action mobile-menu-action-request" href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.consultation", "Leave a request")) + "</a>" +
-      "</div>";
 
     // Theme toggle (day/night) placed in topbar next to language switcher
     var themeToggle = '<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle day/night mode" title="Day / Night mode"></button>';
@@ -215,7 +208,6 @@
           '<div class="mobile-menu-section mobile-menu-nav">' +
             '<div class="mobile-nav-list mobile-nav-grid notranslate" translate="no">' + navItems + '</div>' +
           '</div>' +
-          mobileMenuActions +
         '</nav>' +
         '<div class="header-actions">' +
           '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-menu-panel">' +

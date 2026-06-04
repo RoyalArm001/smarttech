@@ -105,15 +105,33 @@
       var text = site.i18n.project(project);
       return '<button type="button" class="current-projects-dot' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '" aria-current="' + (index === 0 ? "true" : "false") + '"></button>';
     }).join("");
+    var rail = currentList.map(function (project, index) {
+      var text = site.i18n.project(project);
+      var works = (text.works || []).slice(0, 2).map(function (work) {
+        return '<span>' + e(work) + '</span>';
+      }).join("");
+      return "" +
+        '<button type="button" class="current-projects-rail-item' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '">' +
+          '<b>' + e(String(index + 1).padStart(2, "0")) + "</b>" +
+          '<strong>' + e(text.title) + "</strong>" +
+          '<em>' + works + "</em>" +
+        "</button>";
+    }).join("");
 
     var prevLabel = e(site.i18n.get("projectsPage.carouselPrev", "Previous project"));
     var nextLabel = e(site.i18n.get("projectsPage.carouselNext", "Next project"));
 
     return "" +
       '<div id="current-projects" class="current-projects-carousel reveal" data-current-projects-carousel data-interval="6500">' +
+        '<div class="current-projects-system">' +
+          '<span>' + e(site.i18n.get("projectsPage.ongoingHighlight")) + "</span>" +
+          '<strong>' + e(site.i18n.get("projectsPage.current")) + "</strong>" +
+        "</div>" +
         '<div class="current-projects-viewport">' +
           '<div class="current-projects-track">' + slides + "</div>" +
         "</div>" +
+        '<div class="current-projects-meter" aria-hidden="true"><span data-carousel-meter></span></div>' +
+        '<div class="current-projects-rail" aria-label="' + e(site.i18n.get("projectsPage.current")) + '">' + rail + "</div>" +
         '<div class="current-projects-controls">' +
           '<button type="button" class="current-projects-arrow" data-carousel-prev aria-label="' + prevLabel + '">' +
             '<span aria-hidden="true">&#8249;</span>' +

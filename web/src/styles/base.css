@@ -111,15 +111,19 @@ body::after {
 
 body::before {
   background:
-    linear-gradient(90deg, rgba(10, 168, 150, 0.06) 1px, transparent 1px),
-    linear-gradient(rgba(52, 95, 116, 0.05) 1px, transparent 1px),
-    repeating-linear-gradient(115deg, transparent 0 76px, rgba(56, 170, 184, 0.075) 76px 78px, transparent 78px 150px);
+    linear-gradient(90deg, rgba(10, 168, 150, 0.11) 1px, transparent 1px),
+    linear-gradient(rgba(52, 95, 116, 0.09) 1px, transparent 1px),
+    repeating-linear-gradient(115deg, transparent 0 76px, rgba(56, 170, 184, 0.14) 76px 78px, transparent 78px 150px);
   background-size: 64px 64px, 64px 64px, 260px 260px;
-  opacity: 0.58;
+  opacity: 0.8;
+  animation: smartTechGridDrift 22s linear infinite;
 }
 
 body::after {
-  display: none;
+  background: linear-gradient(105deg, transparent 0 38%, rgba(10, 168, 150, 0.16) 50%, transparent 62%);
+  opacity: 1;
+  transform: translateX(-70%);
+  animation: smartTechSignalSweep 9s ease-in-out infinite;
 }
 
 body.ui-theme-dark {
@@ -140,7 +144,15 @@ body.ui-theme-dark::before {
 }
 
 body.ui-theme-dark::after {
-  background: linear-gradient(105deg, transparent 0 42%, rgba(121, 213, 223, 0.13) 48%, transparent 56%);
+  background: linear-gradient(105deg, transparent 0 38%, rgba(121, 213, 223, 0.22) 50%, transparent 62%);
+  opacity: 1;
+  transform: translateX(-70%);
+  animation: smartTechSignalSweep 9s ease-in-out infinite;
+}
+
+body.ui-reduced-motion::before,
+body.ui-reduced-motion::after {
+  animation: none !important;
 }
 
 img {
@@ -342,20 +354,23 @@ body.is-entry-loading {
     background-position: 0 0, 0 0, 0 0;
   }
   to {
-    background-position: 64px 64px, 64px 64px, 260px 0;
+    background-position: 64px 64px, 64px 64px, 520px 0;
   }
 }
 
 @keyframes smartTechSignalSweep {
-  0%, 58% {
+  0% {
     opacity: 0;
-    transform: translateX(-76%);
+    transform: translateX(-70%);
   }
-  70% {
-    opacity: 0.72;
+  35% {
+    opacity: 0.9;
+  }
+  65% {
+    opacity: 0.9;
   }
   100% {
     opacity: 0;
-    transform: translateX(76%);
+    transform: translateX(70%);
   }
 }

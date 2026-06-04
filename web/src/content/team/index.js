@@ -31,6 +31,122 @@
       ]
     },
     {
+      id: "pm-electrical",
+      accent: "PME",
+      department: "ProjectManagement",
+      roleLevel: "manager",
+      managerId: "director",
+      order: 6,
+      image: "/src/assets/team/technical-project-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=80",
+      color: "#b46f5f",
+      email: "info@smarttechllc.am",
+      title: "Նախագծի մենեջեր — Էլեկտրական համակարգեր",
+      text: "Կառավարում է էլեկտրական համակարգերի նախագծերի փուլերը, ժամկետները, ռեսուրսները և թիմերի համաձայնեցված աշխատանքը։",
+      level: "Նախագծի կառավարում",
+      experience: "7+ տարի",
+      workInfo: [
+        "Էլեկտրական համակարգերի նախագծերի scope, ժամկետների և ռեսուրսների պլանավորում",
+        "Մոնտաժային և տեղադրման թիմերի համակարգում",
+        "Տեխնիկական փաստաթղթերի, գնահատման և փոփոխությունների վերահսկում",
+        "Հանձնումից առաջ quality gate-երի և ստուգումների կազմակերպում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Electrical Installation", image: "/src/assets/team/certificates/members/electrical-installation-engineer-electrical-installation.svg" }
+      ]
+    },
+    {
+      id: "pm-cctv",
+      accent: "PMC",
+      department: "ProjectManagement",
+      roleLevel: "manager",
+      managerId: "director",
+      order: 7,
+      image: "/src/assets/team/project-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1400&q=80",
+      color: "#3d8f9f",
+      email: "info@smarttechllc.am",
+      title: "Նախագծի մենեջեր — Տեսահսկման համակարգեր",
+      text: "Կառավարում է տեսահսկման և մուտքի վերահսկման նախագծերի պլանավորումը, ժամկետները և իրականացման որակը։",
+      level: "Նախագծի կառավարում",
+      experience: "6+ տարի",
+      workInfo: [
+        "Տեսահսկման և մուտքի վերահսկման նախագծերի պլանավորում",
+        "Տեսադաշտերի, արխիվի և սարքավորումների ընտրության համակարգում",
+        "Տեղադրման և կարգաբերման թիմերի վերահսկում",
+        "Փորձարկում, ընդունում և օբյեկտի հանձնման կազմակերպում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Video Surveillance Systems", image: "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg" }
+      ]
+    },
+    {
+      id: "pm-fire-alarm",
+      accent: "PMF",
+      department: "ProjectManagement",
+      roleLevel: "manager",
+      managerId: "director",
+      order: 8,
+      image: "/src/assets/team/alarm-system-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1400&q=80",
+      color: "#d8a63a",
+      email: "info@smarttechllc.am",
+      title: "Նախագծի մենեջեր — Հրդեհային ազդարարման համակարգեր",
+      text: "Կառավարում է հրդեհային ազդարարման և տարհանման համակարգերի նախագծերը՝ ապահովելով համապատասխանություն, անվտանգություն և ժամկետներ։",
+      level: "Նախագծի կառավարում",
+      experience: "6+ տարի",
+      workInfo: [
+        "Հրդեհային ազդարարման և տարհանման նախագծերի պլանավորում",
+        "Նորմատիվ համապատասխանության և անվտանգության պահանջների վերահսկում",
+        "Տեղադրման և կարգաբերման թիմերի համակարգում",
+        "Փորձարկում, ստուգումների արձանագրում և հանձնում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Fire Safety Systems", image: "/src/assets/team/certificates/members/alarm-system-engineer-fire-safety-systems.svg" }
+      ]
+    },
+    {
+      id: "pm-bms",
+      accent: "PMB",
+      department: "ProjectManagement",
+      roleLevel: "manager",
+      managerId: "director",
+      order: 9,
+      image: "/src/assets/team/project-manager.svg",
+      coverImage: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80",
+      color: "#4e7890",
+      email: "info@smarttechllc.am",
+      title: "Նախագծի մենեջեր — BMS",
+      text: "Կառավարում է շենքերի կառավարման (BMS) նախագծերի փուլերը, ինտեգրացիան և թիմերի համակարգումը։",
+      level: "Նախագծի կառավարում",
+      experience: "6+ տարի",
+      workInfo: [
+        "BMS նախագծերի scope, ժամկետների և ռեսուրսների պլանավորում",
+        "HVAC, լուսավորության, անվտանգության ինտեգրացիայի համակարգում",
+        "Ինժեներական և ինտեգրման թիմերի վերահսկում",
+        "Հանձնումից առաջ quality gate-երի և ստուգումների կազմակերպում"
+      ],
+      socials: [
+        { label: "LinkedIn", href: "https://www.linkedin.com/" }
+      ],
+      certificates: [
+        { title: "Project Management", image: "/src/assets/team/certificates/members/it-project-manager-project-management.svg" },
+        { title: "Building Management Systems", image: "/src/assets/team/certificates/members/bms-design-specialist-building-management-systems.svg" }
+      ]
+    },
+    {
       id: "it-network-engineer",
       accent: "NET",
       department: "IT",

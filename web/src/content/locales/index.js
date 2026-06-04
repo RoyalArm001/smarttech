@@ -130,6 +130,9 @@
         reportsTitle: "Մասնագետներ",
         departmentsTitle: "Բաժիններ և ուղղություններ",
         departmentsText: "Յուրաքանչյուր բաժին ունի իր մենեջերը և կցված մասնագետները։",
+        projectEyebrow: "Նախագծերի կառավարում",
+        projectTitle: "Նախագծերի կառավարման բաժին",
+        projectText: "Համակարգերի ուղղություններով նախագծերի մենեջերները կառավարում են պլանավորումը, ժամկետները և իրականացման որակը։",
         itEyebrow: "IT",
         itTitle: "IT բաժին",
         itText: "Ցանցային ինժեներիան և IT նախագծերի իրականացումը աշխատում են որպես առանձին տեխնիկական միավոր։",
@@ -408,6 +411,9 @@
         reportsTitle: "Specialists",
         departmentsTitle: "Departments and directions",
         departmentsText: "Each department has its own manager and attached specialists.",
+        projectEyebrow: "Project Management",
+        projectTitle: "Project Management Department",
+        projectText: "Dedicated project managers run planning, deadlines and delivery quality across each system direction.",
         itEyebrow: "IT",
         itTitle: "IT Department",
         itText: "Network engineering and IT project delivery work as a separate technical unit.",
@@ -648,6 +654,9 @@
         reportsTitle: "Специалисты",
         departmentsTitle: "Отделы и направления",
         departmentsText: "У каждого отдела свой менеджер и прикрепленные специалисты.",
+        projectEyebrow: "Управление проектами",
+        projectTitle: "Отдел управления проектами",
+        projectText: "Выделенные менеджеры проектов ведут планирование, сроки и качество реализации по каждому направлению систем.",
         itEyebrow: "IT",
         itTitle: "IT-отдел",
         itText: "Сетевые решения и IT-проекты работают как отдельное техническое направление.",
@@ -784,6 +793,10 @@
 
   site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
     director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
+    "pm-electrical": { title: "Project Manager - Electrical Systems", text: "Runs electrical systems project phases, deadlines, resources and coordinated team delivery." },
+    "pm-cctv": { title: "Project Manager - CCTV Systems", text: "Manages video surveillance and access control project planning, deadlines and delivery quality." },
+    "pm-fire-alarm": { title: "Project Manager - Fire Alarm Systems", text: "Leads fire alarm and evacuation system projects, ensuring compliance, safety and deadlines." },
+    "pm-bms": { title: "Project Manager - BMS", text: "Manages building management system (BMS) project phases, integration and team coordination." },
     "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },
     "it-project-manager": { title: "IT Project Manager", text: "Coordinates IT and security project phases, deadlines, risks and client communication." },
     "it-installation-engineer": { title: "IT Installation Engineer", text: "Delivers field installation of network, CCTV and server systems according to project documents." },
@@ -806,6 +819,10 @@
 
   site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
     director: { title: "Директор", text: "Руководит проектным направлением Smart Tech, координацией команд и общим контролем качества." },
+    "pm-electrical": { title: "Менеджер проекта - Электрические системы", text: "Ведет этапы проектов электрических систем, сроки, ресурсы и согласованную работу команд." },
+    "pm-cctv": { title: "Менеджер проекта - Системы видеонаблюдения", text: "Управляет планированием, сроками и качеством реализации проектов видеонаблюдения и контроля доступа." },
+    "pm-fire-alarm": { title: "Менеджер проекта - Системы пожарной сигнализации", text: "Ведет проекты пожарной сигнализации и эвакуации, обеспечивая соответствие нормам, безопасность и сроки." },
+    "pm-bms": { title: "Менеджер проекта - BMS", text: "Управляет этапами проектов системы управления зданием (BMS), интеграцией и координацией команд." },
     "it-network-engineer": { title: "Инженер IT-сетей", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
     "it-project-manager": { title: "IT-менеджер проектов", text: "Координирует этапы IT и систем безопасности, сроки, риски и коммуникацию с заказчиком." },
     "it-installation-engineer": { title: "Инженер IT-монтажа", text: "Выполняет полевой монтаж сетей, видеонаблюдения и серверных систем по проектной документации." },
@@ -923,6 +940,14 @@
       }
     });
     return result;
+  }
+
+  function mergeTeamMemberExtras(language, extras) {
+    var locale = site.content.locales[language];
+    if (!locale || !locale.team) return;
+    Object.keys(extras || {}).forEach(function (memberId) {
+      locale.team[memberId] = Object.assign({}, locale.team[memberId], extras[memberId]);
+    });
   }
 
   var polishedServices = {
@@ -1433,8 +1458,12 @@
     ]
   });
 
-  site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
+  mergeTeamMemberExtras("en", {
     director: { level: "Executive", experience: "15+ years", workInfo: ["Strategic development and management of core business directions", "Quality, deadlines and client communication oversight across projects", "Coordination of technical teams, procurement and field operations", "Long-term relationships with major clients and serviced organizations"] },
+    "pm-electrical": { level: "Project Delivery", experience: "7+ years", workInfo: ["Scope, timeline and resource planning for electrical systems projects", "Coordination of installation and field teams", "Control of technical documents, estimates and change requests", "Quality gates and acceptance checks before handover"] },
+    "pm-cctv": { level: "Project Delivery", experience: "6+ years", workInfo: ["Planning of video surveillance and access control projects", "Coordination of field-of-view, archive and equipment selection", "Supervision of installation and configuration teams", "Testing, acceptance and site handover"] },
+    "pm-fire-alarm": { level: "Project Delivery", experience: "6+ years", workInfo: ["Planning of fire alarm and evacuation projects", "Control of code compliance and safety requirements", "Coordination of installation and commissioning teams", "Testing, inspection records and handover"] },
+    "pm-bms": { level: "Project Delivery", experience: "6+ years", workInfo: ["Scope, timeline and resource planning for BMS projects", "Coordination of HVAC, lighting and security integration", "Supervision of engineering and integration teams", "Quality gates and acceptance checks before handover"] },
     "it-network-engineer": { level: "Network Engineering", experience: "8+ years", workInfo: ["LAN/Wi-Fi network design and equipment selection", "Router, switch, firewall and VPN configuration", "Network integration for IP video surveillance and access control", "Monitoring, troubleshooting and documentation"] },
     "it-project-manager": { level: "Project Delivery", experience: "7+ years", workInfo: ["Project scope, timeline and resource planning", "Coordination of engineering teams, procurement and client communication", "Control of technical documents and change requests", "Quality gates before handover"] },
     "alarm-system-engineer": { level: "Safety Engineering", experience: "8+ years", workInfo: ["Fire and alarm panel architecture", "Design of sensors, zones and notification routes", "Installation, configuration, testing and handover", "Service and operation documentation"] },
@@ -1455,8 +1484,12 @@
     "audio-installation-specialist": { level: "Audio Installation", experience: "4+ years", workInfo: ["Speaker and cable route installation", "Amplifier and mixer deployment", "Zone and voice notification configuration", "Sound balancing and testing"] }
   });
 
-  site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
+  mergeTeamMemberExtras("ru", {
     director: { level: "Руководство", experience: "15+ лет", workInfo: ["Стратегическое развитие и управление основными направлениями компании", "Контроль качества, сроков и работы с клиентами по проектам", "Координация технических команд, закупок и полевых работ", "Долгосрочные отношения с крупными заказчиками и обслуживаемыми организациями"] },
+    "pm-electrical": { level: "Управление проектами", experience: "7+ лет", workInfo: ["Планирование scope, сроков и ресурсов проектов электрических систем", "Координация монтажных и полевых команд", "Контроль технической документации, смет и изменений", "Контрольные точки качества и приемка перед сдачей"] },
+    "pm-cctv": { level: "Управление проектами", experience: "6+ лет", workInfo: ["Планирование проектов видеонаблюдения и контроля доступа", "Координация зон обзора, архива и подбора оборудования", "Контроль монтажных и пусконаладочных команд", "Тестирование, приемка и сдача объекта"] },
+    "pm-fire-alarm": { level: "Управление проектами", experience: "6+ лет", workInfo: ["Планирование проектов пожарной сигнализации и эвакуации", "Контроль соответствия нормам и требованиям безопасности", "Координация монтажных и пусконаладочных команд", "Тестирование, протоколы проверок и сдача"] },
+    "pm-bms": { level: "Управление проектами", experience: "6+ лет", workInfo: ["Планирование scope, сроков и ресурсов проектов BMS", "Координация интеграции HVAC, освещения и безопасности", "Контроль инженерных и интеграционных команд", "Контрольные точки качества и приемка перед сдачей"] },
     "it-network-engineer": { level: "Сетевое проектирование", experience: "8+ лет", workInfo: ["Проектирование LAN/Wi-Fi сетей и подбор оборудования", "Настройка router, switch, firewall и VPN", "Сетевая интеграция IP-видеонаблюдения и контроля доступа", "Мониторинг, troubleshooting и документация"] },
     "it-project-manager": { level: "Управление проектами", experience: "7+ лет", workInfo: ["Планирование scope, сроков и ресурсов проекта", "Координация инженерных команд, закупок и связи с заказчиком", "Контроль технической документации и изменений", "Контрольные точки качества перед сдачей"] },
     "alarm-system-engineer": { level: "Инженерия безопасности", experience: "8+ лет", workInfo: ["Архитектура пожарных и охранных панелей", "Проектирование датчиков, зон и маршрутов оповещения", "Монтаж, настройка, тестирование и сдача", "Документация по обслуживанию и эксплуатации"] },
@@ -1638,6 +1671,7 @@
 
   var teamDepartmentsHy = {
     Management: "Կառավարում",
+    ProjectManagement: "Նախագծերի կառավարման բաժին",
     IT: "IT բաժին",
     Security: "Անվտանգության բաժին",
     Technical: "Տեխնիկական բաժին",
@@ -1650,6 +1684,7 @@
 
   var teamDepartmentsEn = {
     Management: "Management",
+    ProjectManagement: "Project Management Department",
     IT: "IT Department",
     Security: "Security Department",
     Technical: "Technical Department",
@@ -1662,6 +1697,7 @@
 
   var teamDepartmentsRu = {
     Management: "Управление",
+    ProjectManagement: "Отдел управления проектами",
     IT: "IT-отдел",
     Security: "Отдел безопасности",
     Technical: "Технический отдел",
@@ -1769,6 +1805,7 @@
     teamDepartments: teamDepartmentsHy,
     teamCertificateTitles: teamCertificateTitlesHy,
     teamDetail: {
+      socialPhone: "Զանգել",
       socialEmail: "Էլ․ փոստ",
       socialLinkedin: "LinkedIn",
       socialTelegram: "Telegram",
@@ -1780,6 +1817,7 @@
     teamDepartments: teamDepartmentsEn,
     teamCertificateTitles: teamCertificateTitlesEn,
     teamDetail: {
+      socialPhone: "Call",
       socialEmail: "Email",
       socialLinkedin: "LinkedIn",
       socialTelegram: "Telegram",
@@ -1791,6 +1829,7 @@
     teamDepartments: teamDepartmentsRu,
     teamCertificateTitles: teamCertificateTitlesRu,
     teamDetail: {
+      socialPhone: "Позвонить",
       socialEmail: "Email",
       socialLinkedin: "LinkedIn",
       socialTelegram: "Telegram",

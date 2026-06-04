@@ -7,6 +7,9 @@
 
   function socialIcon(type) {
     var icons = {
+      phone: '<path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.3 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.3 21 3 12.7 3 2.5c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1l-2.1 2.2Z" fill="currentColor"/>',
+      facebook: '<path d="M13.5 21v-7h2.4l.4-2.9h-2.8V9.3c0-.8.3-1.4 1.5-1.4h1.4V5.3c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8.2V14h2.3v7h3Z" fill="currentColor"/>',
+      instagram: '<path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm4 2.8a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4Zm0 2a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Zm4.4-3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z" fill="currentColor"/>',
       email: '<path d="M3 5h18v14H3V5Zm2 3.2 7 5 7-5V7l-7 5-7-5v1.2Z" fill="currentColor"/>',
       linkedin: '<path d="M6.8 9H3.7v11h3.1V9ZM5.3 4a1.8 1.8 0 1 0 0 3.6A1.8 1.8 0 0 0 5.3 4Zm6.5 5H8.9v11H12v-5.7c0-1.5.7-2.5 2-2.5 1.2 0 1.7.8 1.7 2.5V20h3.1v-6.2c0-3.2-1.6-5-4.2-5-1.4 0-2.3.6-2.8 1.4V9Z" fill="currentColor"/>',
       telegram: '<path d="M21 4.4 18.2 20c-.2 1-1 1.2-1.8.7l-4.1-3-2 2c-.2.2-.5.4-.9.4l.3-4.3 7.8-7c.3-.3-.1-.5-.5-.2l-9.6 6-4.1-1.3c-.9-.3-.9-.9.2-1.3L19.7 3.8c.8-.3 1.5.2 1.3.6Z" fill="currentColor"/>',
@@ -20,11 +23,14 @@
 
   function socialType(item) {
     var text = String((item && (item.type || item.label || item.href)) || "").toLowerCase();
+    if (text.indexOf("phone") >= 0 || text.indexOf("tel:") >= 0 || text.indexOf("call") >= 0 || text.indexOf("viber") >= 0) return "phone";
+    if (text.indexOf("facebook") >= 0 || text.indexOf("fb.") >= 0) return "facebook";
+    if (text.indexOf("instagram") >= 0 || text.indexOf("insta") >= 0) return "instagram";
+    if (text.indexOf("whatsapp") >= 0) return "whatsapp";
+    if (text.indexOf("telegram") >= 0 || text.indexOf("t.me") >= 0) return "telegram";
     if (text.indexOf("mail") >= 0 || text.indexOf("@") >= 0) return "email";
     if (text.indexOf("linkedin") >= 0) return "linkedin";
-    if (text.indexOf("telegram") >= 0 || text.indexOf("t.me") >= 0) return "telegram";
     if (text.indexOf("github") >= 0) return "github";
-    if (text.indexOf("whatsapp") >= 0) return "whatsapp";
     return "link";
   }
 
@@ -36,13 +42,60 @@
     return (member && member.email) || (site.content.contacts && site.content.contacts.email) || "";
   }
 
-  function renderSocialLinks(items, email, className) {
+  var TEAM_TELEGRAM_HREF = "https://t.me/smarttechllc";
+
+  function phoneHref(phone) {
+    return "tel:" + String(phone || "").replace(/[\s()-]/g, "");
+  }
+
+  function findContactSocial(keyword) {
+    var socials = (site.content.contacts && site.content.contacts.socials) || [];
+    for (var i = 0; i < socials.length; i += 1) {
+      var item = socials[i];
+      var text = String((item && (item.label || item.href)) || "").toLowerCase();
+      if (text.indexOf(keyword) >= 0) return item;
+    }
+    return null;
+  }
+
+  function teamCallNumber() {
+    var whatsapp = findContactSocial("whatsapp");
+    if (whatsapp && whatsapp.href) {
+      var match = String(whatsapp.href).match(/\+?\d[\d\s()-]{6,}/);
+      if (match) return match[0].replace(/[\s()-]/g, "");
+    }
+    var phones = (site.content.contacts && site.content.contacts.phones) || [];
+    return phones.length ? phones[phones.length - 1].number : "";
+  }
+
+  function teamContactItems() {
+    var items = [];
+    var facebook = findContactSocial("facebook");
+    var instagram = findContactSocial("instagram");
+    var whatsapp = findContactSocial("whatsapp");
+
+    if (facebook) items.push({ label: "Facebook", href: facebook.href, type: "facebook" });
+    if (instagram) items.push({ label: "Instagram", href: instagram.href, type: "instagram" });
+    if (TEAM_TELEGRAM_HREF) items.push({ label: "Telegram", href: TEAM_TELEGRAM_HREF, type: "telegram" });
+    if (whatsapp) items.push({ label: "WhatsApp", href: whatsapp.href, type: "whatsapp" });
+
+    var callNumber = teamCallNumber();
+    if (callNumber) items.push({ label: "Call", href: phoneHref(callNumber), type: "phone" });
+
+    return items;
+  }
+
+  function renderSocialLinks(items, email, className, phone) {
     var e = site.utils.escapeHtml;
     var links = [];
     var linkClass = className || "member-social-link";
 
     function socialLabel(type, fallback) {
       return site.i18n.get("teamDetail.social" + type.charAt(0).toUpperCase() + type.slice(1), fallback);
+    }
+
+    if (phone) {
+      links.push({ label: socialLabel("phone", "Call"), href: phoneHref(phone), type: "phone" });
     }
 
     if (email) {
@@ -58,6 +111,7 @@
     return links.map(function (item) {
       var type = socialType(item);
       var label = item.label;
+      if (type === "phone") label = socialLabel("phone", label);
       if (type === "linkedin") label = socialLabel("linkedin", label);
       if (type === "telegram") label = socialLabel("telegram", label);
       if (type === "github") label = socialLabel("github", label);
@@ -75,8 +129,12 @@
     var e = site.utils.escapeHtml;
     if (!items || !items.length) return "";
 
-    return items.map(function (item) {
-      return "<li>" + e(item) + "</li>";
+    return items.map(function (item, index) {
+      return "" +
+        "<li>" +
+          "<span>" + e(String(index + 1).padStart(2, "0")) + "</span>" +
+          "<p>" + e(item) + "</p>" +
+        "</li>";
     }).join("");
   }
 
@@ -123,13 +181,36 @@
     return ranks[member.roleLevel] === undefined ? 4 : ranks[member.roleLevel];
   }
 
+  function teamDepartmentRank(member) {
+    var ranks = {
+      Management: 0,
+      ProjectManagement: 1,
+      IT: 2,
+      Security: 3,
+      Electrical: 4,
+      Technical: 5,
+      Automation: 6,
+      BMS: 7,
+      Audio: 8
+    };
+    return ranks[member.department] === undefined ? 20 : ranks[member.department];
+  }
+
   function sortTeamMembers(a, b) {
+    var rankDiff = teamRoleRank(a) - teamRoleRank(b);
+    if (rankDiff) return rankDiff;
+
+    if (a.roleLevel === "manager" || a.roleLevel === "lead") {
+      var departmentDiff = teamDepartmentRank(a) - teamDepartmentRank(b);
+      if (departmentDiff) return departmentDiff;
+    }
+
     var orderA = Number(a.order);
     var orderB = Number(b.order);
     if (!isNaN(orderA) || !isNaN(orderB)) {
       return (isNaN(orderA) ? 999 : orderA) - (isNaN(orderB) ? 999 : orderB);
     }
-    return teamRoleRank(a) - teamRoleRank(b);
+    return String(a.id || "").localeCompare(String(b.id || ""));
   }
 
   function orderedTeamMembers() {
@@ -138,6 +219,38 @@
 
   function isManager(member) {
     return member && member.id !== "director" && (member.roleLevel === "manager" || member.roleLevel === "lead");
+  }
+
+  function englishTeamCopy(member) {
+    var locale = site.content.locales && site.content.locales.en;
+    var team = (locale && locale.team) || {};
+    return (member && team[member.id]) || {};
+  }
+
+  function englishTeamDepartment(department) {
+    var locale = site.content.locales && site.content.locales.en;
+    var departments = (locale && locale.teamDepartments) || {};
+    return departments[department] || department || "Team";
+  }
+
+  function teamDisplayMember(member) {
+    var localized = site.i18n.teamMember(member);
+    var english = englishTeamCopy(member);
+    var merged = Object.assign({}, localized);
+
+    merged.title = english.title || member.title;
+    merged.level = english.level || localized.level || member.level;
+    merged.department = englishTeamDepartment(member.department);
+
+    return merged;
+  }
+
+  function englishTeamRoleLabel(member) {
+    var title = englishTeamCopy(member).title || "";
+
+    if (/project manager/i.test(title)) return "Project Manager";
+    if (/department manager/i.test(title)) return "Department Manager";
+    return member && member.roleLevel === "lead" ? "Direction Lead" : "Manager";
   }
 
   function getTeamStructure(director) {
@@ -172,11 +285,10 @@
 
   function renderTeamCard(member, extraClass) {
     var e = site.utils.escapeHtml;
-    var localized = site.i18n.teamMember(member);
+    var localized = teamDisplayMember(member);
     var title = localized.title || member.title;
-    var description = localized.text || member.text;
     var profileUrl = site.utils.pageUrl("member", member.id);
-    var contactLinks = renderSocialLinks(member.socials || [], memberEmail(member), "team-social-link");
+    var contactLinks = renderSocialLinks(teamContactItems(), "", "team-social-link", "");
 
     return "" +
       '<article class="team-card ' + e(extraClass || "") + ' reveal" style="--team-color: ' + e(member.color) + '">' +
@@ -188,7 +300,6 @@
           '<div class="team-card-copy">' +
             '<span class="team-department">' + e(localized.department || site.i18n.teamDepartment(member.department)) + "</span>" +
             "<h3>" + e(title) + "</h3>" +
-            "<p>" + e(description) + "</p>" +
             '<span class="team-card-action">' + e(site.i18n.get("common.learnMore", "View profile")) + "</span>" +
           "</div>" +
         "</a>" +
@@ -199,30 +310,26 @@
   function renderDirectorOrgChart(member) {
     var e = site.utils.escapeHtml;
     if (!member || member.id !== "director") return "";
-    var directorTitle = site.i18n.teamMember(member).title || member.title;
+    var directorTitle = teamDisplayMember(member).title || member.title;
     var groups = getTeamStructure(member).map(function (group) {
       var manager = group.manager;
-      var managerText = site.i18n.teamMember(manager);
+      var managerText = teamDisplayMember(manager);
       var reportNodes = group.reports.map(function (item) {
-        var localized = site.i18n.teamMember(item);
+        var localized = teamDisplayMember(item);
         return "" +
           '<a class="member-org-node" href="' + e(site.utils.pageUrl("member", item.id)) + '" style="--team-color: ' + e(item.color) + '">' +
             '<span>' + e(item.accent) + "</span>" +
             "<strong>" + e(localized.title || item.title) + "</strong>" +
-            "<small>" + e(site.i18n.teamDepartment(item.department)) + "</small>" +
+            "<small>" + e(englishTeamDepartment(item.department)) + "</small>" +
           "</a>";
       }).join("");
-
-      if (!reportNodes) {
-        reportNodes = '<p class="member-org-empty">' + e(site.i18n.get("teamPage.noReports", "This direction is coordinated by project scope.")) + "</p>";
-      }
 
       return "" +
         '<div class="member-org-group">' +
           '<a class="member-org-node member-org-manager" href="' + e(site.utils.pageUrl("member", manager.id)) + '" style="--team-color: ' + e(manager.color) + '">' +
             '<span>' + e(manager.accent) + "</span>" +
             "<strong>" + e(managerText.title || manager.title) + "</strong>" +
-            "<small>" + e(site.i18n.teamDepartment(manager.department)) + "</small>" +
+            "<small>" + e(englishTeamDepartment(manager.department)) + "</small>" +
           "</a>" +
           '<div class="member-org-child-grid">' + reportNodes + "</div>" +
         "</div>";
@@ -232,12 +339,12 @@
       groups = site.content.team.filter(function (item) {
         return item.id !== member.id;
       }).map(function (item) {
-      var localized = site.i18n.teamMember(item);
+      var localized = teamDisplayMember(item);
       return "" +
         '<a class="member-org-node" href="' + e(site.utils.pageUrl("member", item.id)) + '" style="--team-color: ' + e(item.color) + '">' +
           '<span>' + e(item.accent) + "</span>" +
           "<strong>" + e(localized.title || item.title) + "</strong>" +
-          "<small>" + e(site.i18n.teamDepartment(item.department)) + "</small>" +
+          "<small>" + e(englishTeamDepartment(item.department)) + "</small>" +
         "</a>";
       }).join("");
     }
@@ -261,31 +368,33 @@
 
   function renderTeamManagerGroup(group) {
     var e = site.utils.escapeHtml;
-    var roleLabel = group.manager.roleLevel === "manager"
-      ? site.i18n.get("teamPage.roleManager", "Department manager")
-      : site.i18n.get("teamPage.roleLead", "Direction lead");
+    var roleLabel = englishTeamRoleLabel(group.manager);
     var reports = group.reports.map(function (member) {
       return '<div class="team-report-node">' + renderTeamCard(member, "team-card-specialist") + "</div>";
     }).join("");
     var reportGridClass = "team-report-grid" + (group.reports.length ? " has-reports report-count-" + group.reports.length : " is-empty");
-
-    if (!reports) {
-      reports = '<p class="team-report-empty">' + e(site.i18n.get("teamPage.noReports", "This direction is coordinated by project scope.")) + "</p>";
+    var reportCaption = group.reports.length
+      ? '<p class="team-manager-caption">' +
+          e(site.i18n.get("teamPage.reportsTitle", "Specialists")) +
+          " · " + e(String(group.reports.length)) +
+        "</p>"
+      : "";
+    if (group.reports.length) {
+      reportCaption = '<p class="team-manager-caption">Specialists &middot; ' + e(String(group.reports.length)) + "</p>";
     }
+    var reportBranch = group.reports.length ? '<div class="team-report-branch" aria-hidden="true"></div>' : "";
+    var reportGrid = reports ? '<div class="' + e(reportGridClass) + '">' + reports + "</div>" : "";
 
     return "" +
       '<article class="team-manager-column reveal" style="--team-color: ' + e(group.manager.color) + '">' +
         '<div class="team-manager-meta">' +
-          '<span class="team-department-chip">' + e(site.i18n.teamDepartment(group.manager.department)) + "</span>" +
+          '<span class="team-department-chip">' + e(englishTeamDepartment(group.manager.department)) + "</span>" +
           '<span class="team-role-chip">' + e(roleLabel) + "</span>" +
         "</div>" +
         '<div class="team-manager-head">' + renderTeamCard(group.manager, "team-card-manager") + "</div>" +
-        '<p class="team-manager-caption">' +
-          e(site.i18n.get("teamPage.reportsTitle", "Specialists")) +
-          " · " + e(String(group.reports.length)) +
-        "</p>" +
-        '<div class="team-report-branch" aria-hidden="true"></div>' +
-        '<div class="' + e(reportGridClass) + '">' + reports + "</div>" +
+        reportCaption +
+        reportBranch +
+        reportGrid +
       "</article>";
   }
 
@@ -347,7 +456,7 @@
   }
 
   function teamUnitCopy() {
-    var units = ["it", "technical", "security", "electrical", "automation", "bms", "audio"];
+    var units = ["project", "it", "technical", "security", "electrical", "automation", "bms", "audio"];
     var copy = {};
     units.forEach(function (key) {
       var path = "teamPage." + key;
@@ -362,7 +471,7 @@
 
   function renderTeamUnitLink(member) {
     var e = site.utils.escapeHtml;
-    var localized = site.i18n.teamMember(member);
+    var localized = teamDisplayMember(member);
     return "" +
       '<a class="team-unit-link" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
         "<span>" + e(member.accent) + "</span>" +
@@ -387,6 +496,7 @@
 
   function renderAllDepartmentPanels(members, copy) {
     var departmentMap = [
+      { key: "project", department: "ProjectManagement" },
       { key: "it", department: "IT" },
       { key: "technical", department: "Technical" },
       { key: "security", department: "Security" },
@@ -400,6 +510,160 @@
         return member.department === item.department;
       }), copy);
     }).join("");
+  }
+
+  function memberDetailLabels() {
+    return site.i18n.pickLanguageDictionary({
+      hy: {
+        storyEyebrow: "Դերի նկարագիր",
+        storyTitle: "Ինչ դեր ունի այս ուղղությունը",
+        focusLabel: "Ուղղություն",
+        roleLabel: "Դեր",
+        qualityLabel: "Որակի մոտեցում",
+        qualityText: "Հստակ պլանավորում, մաքուր իրականացում և վերջնական ստուգում",
+        responsibilitiesTitle: "Ինչ է իրականացնում",
+        certificatesIntro: "Մասնագիտական պատրաստվածությունն ու սերտիֆիկատները լրացնում են գործնական փորձը։"
+      },
+      en: {
+        storyEyebrow: "Role overview",
+        storyTitle: "How this role supports projects",
+        focusLabel: "Direction",
+        roleLabel: "Role",
+        qualityLabel: "Quality approach",
+        qualityText: "Clear planning, clean execution and final verification",
+        responsibilitiesTitle: "Core responsibilities",
+        certificatesIntro: "Professional preparation and certificates support hands-on project experience."
+      },
+      ru: {
+        storyEyebrow: "Описание роли",
+        storyTitle: "Как эта роль поддерживает проекты",
+        focusLabel: "Направление",
+        roleLabel: "Роль",
+        qualityLabel: "Подход к качеству",
+        qualityText: "Четкое планирование, аккуратная реализация и финальная проверка",
+        responsibilitiesTitle: "Основные задачи",
+        certificatesIntro: "Профессиональная подготовка и сертификаты дополняют практический опыт."
+      }
+    }, site.i18n.language || "hy");
+  }
+
+  function memberDepartmentFocus(member) {
+    var language = site.i18n.language || "hy";
+    var focusMap = {
+      hy: {
+        Management: "ընկերության ընդհանուր կառավարումը, որակի վերահսկումը և հաճախորդների հետ վստահելի աշխատանքը",
+        ProjectManagement: "նախագծերի պլանավորումը, ժամկետների պահպանումը և թիմերի համաժամեցումը",
+        IT: "ցանցային ենթակառուցվածքների, սերվերային կապերի և հեռահար հասանելիության կայուն աշխատանքը",
+        Security: "անվտանգության, տեսահսկման և ազդարարման համակարգերի հուսալի իրականացումը",
+        Electrical: "էլեկտրական գծերի, վահանների և լուսավորության անվտանգ մոնտաժը",
+        Technical: "թույլ հոսանքի, մալուխային և տեխնիկական տեղադրման աշխատանքների ճշգրիտ իրականացումը",
+        Automation: "կառավարման վահանների, սենսորների և ավտոմատ սցենարների ճիշտ աշխատանքը",
+        BMS: "BMS ինտեգրումը՝ HVAC, լուսավորություն և անվտանգություն մեկ կառավարման տրամաբանության մեջ",
+        Audio: "աուդիո ծածկույթը, public address համակարգերը և ձայնային հարմարավետությունը"
+      },
+      en: {
+        Management: "company-wide management, quality control and reliable client communication",
+        ProjectManagement: "project planning, deadline control and coordination between delivery teams",
+        IT: "stable network infrastructure, server connectivity and secure remote access",
+        Security: "reliable delivery of security, CCTV, access control and alarm systems",
+        Electrical: "safe installation of electrical lines, panels, lighting and cable routes",
+        Technical: "accurate low-voltage, cabling and technical installation works",
+        Automation: "control panels, sensors and automation scenarios working as designed",
+        BMS: "BMS integration of HVAC, lighting and security into one control logic",
+        Audio: "audio coverage, public address systems and comfortable sound experience"
+      },
+      ru: {
+        Management: "общее управление компанией, контроль качества и надежная коммуникация с клиентами",
+        ProjectManagement: "планирование проектов, контроль сроков и координацию команд",
+        IT: "стабильную сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ",
+        Security: "надежную реализацию систем безопасности, видеонаблюдения, доступа и сигнализации",
+        Electrical: "безопасный монтаж электрических линий, щитов, освещения и кабельных трасс",
+        Technical: "точные слаботочные, кабельные и технические монтажные работы",
+        Automation: "корректную работу шкафов управления, датчиков и автоматизированных сценариев",
+        BMS: "интеграцию BMS: HVAC, освещение и безопасность в единой логике управления",
+        Audio: "звуковое покрытие, public address и комфортное аудио для объекта"
+      }
+    };
+    var selected = focusMap[language] || focusMap.hy;
+    return selected[member.department] || selected.ProjectManagement;
+  }
+
+  function memberStoryParagraphs(member, title) {
+    var language = site.i18n.language || "hy";
+    var focus = memberDepartmentFocus(member);
+    var department = englishTeamDepartment(member.department);
+    var role = englishTeamRoleLabel(member);
+
+    if (member.id === "director") {
+      return site.i18n.pickLanguageDictionary({
+        hy: [
+          "Այս էջը ներկայացնում է SmartTech-ի ընդհանուր ղեկավարումը՝ այն կետը, որտեղ տեխնիկական թիմերը, նախագծերի որակը և հաճախորդի սպասումները միավորվում են մեկ հստակ աշխատանքի մեջ։",
+          "Գլխավոր ուշադրությունը " + focus + " է, որպեսզի յուրաքանչյուր օբյեկտ ստանա վստահելի, ժամանակին և վերահսկվող իրականացում։"
+        ],
+        en: [
+          "This page presents SmartTech's general leadership — the point where technical teams, project quality and client expectations are aligned into one clear delivery process.",
+          "The main focus is " + focus + ", so every facility receives reliable, on-time and controlled implementation."
+        ],
+        ru: [
+          "Эта страница показывает общее руководство SmartTech — точку, где технические команды, качество проектов и ожидания клиента соединяются в понятный процесс реализации.",
+          "Основной фокус — " + focus + ", чтобы каждый объект получил надежное, своевременное и контролируемое выполнение."
+        ]
+      }, language);
+    }
+
+    if (member.roleLevel === "manager" || member.roleLevel === "lead") {
+      return site.i18n.pickLanguageDictionary({
+        hy: [
+          title + " դերը պատասխանատու է " + focus + " կազմակերպելու և վերահսկելու համար։ Այս էջը ցույց է տալիս, թե ինչպես է տվյալ ուղղությունը կապում նախագծի պահանջները, թիմային աշխատանքը և վերջնական հանձնումը։",
+          "Աշխատանքի հիմնական նպատակը պատվիրատուի խնդիրը պարզ տեխնիկական պլանի վերածելն է, ապա այն հասցնել ավարտուն, ստուգված և օգտագործման պատրաստ վիճակի։"
+        ],
+        en: [
+          "The " + title + " role is responsible for organizing and controlling " + focus + ". This page shows how the direction connects project requirements, teamwork and final handover.",
+          "The goal is to turn the client's need into a clear technical plan, then bring it to a finished, tested and ready-to-use state."
+        ],
+        ru: [
+          "Роль " + title + " отвечает за организацию и контроль направления: " + focus + ". Эта страница показывает, как направление связывает требования проекта, работу команды и финальную сдачу.",
+          "Главная цель — превратить задачу клиента в понятный технический план и довести его до завершенного, проверенного и готового к работе состояния."
+        ]
+      }, language);
+    }
+
+    return site.i18n.pickLanguageDictionary({
+      hy: [
+        title + " դերը կենտրոնացած է " + department + " ուղղության գործնական և տեխնիկական աշխատանքի վրա։ Մասնագետը ապահովում է, որ տեղադրված համակարգերը լինեն ճիշտ միացված, կարգավորված և պատրաստ կայուն շահագործման։",
+        "Աշխատանքը կարևոր է հատկապես օբյեկտի վերջնական որակի համար․ յուրաքանչյուր կապ, սարքավորում և կարգավորում պետք է համապատասխանի նախագծի տրամաբանությանը։"
+      ],
+      en: [
+        "The " + title + " role focuses on practical and technical work within the " + department + " direction. The specialist ensures that installed systems are connected, configured and ready for stable operation.",
+        "This work is essential for final project quality: every connection, device and setting must match the project's technical logic."
+      ],
+      ru: [
+        "Роль " + title + " сосредоточена на практической и технической работе в направлении " + department + ". Специалист обеспечивает правильное подключение, настройку и готовность систем к стабильной эксплуатации.",
+        "Эта работа важна для финального качества объекта: каждое подключение, устройство и настройка должны соответствовать технической логике проекта."
+      ]
+    }, language);
+  }
+
+  function renderMemberStoryCard(member, title) {
+    var e = site.utils.escapeHtml;
+    var labels = memberDetailLabels();
+    var paragraphs = memberStoryParagraphs(member, title).map(function (paragraph) {
+      return "<p>" + e(paragraph) + "</p>";
+    }).join("");
+
+    return "" +
+      '<article class="member-info-card member-story-card reveal" style="--team-color: ' + e(member.color) + '">' +
+        '<div class="member-story-head">' +
+          '<span class="eyebrow">' + e(labels.storyEyebrow) + "</span>" +
+          "<h2>" + e(labels.storyTitle) + "</h2>" +
+        "</div>" +
+        '<div class="member-story-copy">' + paragraphs + "</div>" +
+        '<div class="member-focus-grid">' +
+          '<div><span>' + e(labels.focusLabel) + "</span><strong>" + e(englishTeamDepartment(member.department)) + "</strong></div>" +
+          '<div><span>' + e(labels.roleLabel) + "</span><strong>" + e(englishTeamRoleLabel(member)) + "</strong></div>" +
+          '<div><span>' + e(labels.qualityLabel) + "</span><strong>" + e(labels.qualityText) + "</strong></div>" +
+        "</div>" +
+      "</article>";
   }
 
   site.sections.team = function team() {
@@ -456,11 +720,13 @@
     if (!member) return site.sections.team();
 
     var localized = site.i18n.teamMember(member);
-    var title = localized.title || member.title;
+    var display = teamDisplayMember(member);
+    var title = display.title || member.title;
     var description = localized.text || member.text;
+    var detailLabels = memberDetailLabels();
+    var workItems = localized.workInfo || member.workInfo || [];
     var levelLabel = site.i18n.get("teamDetail.level", "Level");
     var expLabel = site.i18n.get("teamDetail.experience", "Experience");
-    var workLabel = site.i18n.get("teamDetail.workInfo", "Work information");
     var socialLabel = site.i18n.get("teamDetail.socials", "Social networks");
     var certLabel = site.i18n.get("teamDetail.certificates", "Certificates");
     var profileClass = member.id === "director"
@@ -472,7 +738,6 @@
         eyebrow: site.i18n.get("teamPage.eyebrow"),
         eyebrowKey: "teamPage.eyebrow",
         title: title,
-        titleKey: "team." + member.id + ".title",
         text: description,
         textKey: "team." + member.id + ".text",
         image: member.image,
@@ -489,24 +754,26 @@
             '<h1 class="member-name">' + e(title) + "</h1>" +
             '<p class="member-role">' + e(description) + "</p>" +
             '<div class="member-meta">' +
-              '<span><strong>' + e(levelLabel) + ":</strong> " + e(localized.level || member.level || "Senior") + "</span>" +
+              '<span><strong>' + e(levelLabel) + ":</strong> " + e(display.level || localized.level || member.level || "Senior") + "</span>" +
               '<span><strong>' + e(expLabel) + ":</strong> " + e(localized.experience || member.experience || "8 years") + "</span>" +
             "</div>" +
             '<div class="member-social-block">' +
               '<h3>' + e(socialLabel) + "</h3>" +
-              '<div class="member-social-links">' + renderSocialLinks(member.socials || [], memberEmail(member), "member-social-link") + "</div>" +
+              '<div class="member-social-links">' + renderSocialLinks(teamContactItems(), "", "member-social-link", "") + "</div>" +
             "</div>" +
           "</aside>" +
           '<div class="member-content">' +
+            renderMemberStoryCard(member, title) +
             '<article class="member-info-card reveal">' +
-              "<h2>" + e(workLabel) + "</h2>" +
-              '<ul class="member-work-list">' + renderWorkInfo(localized.workInfo || member.workInfo || []) + "</ul>" +
+              "<h2>" + e(detailLabels.responsibilitiesTitle) + "</h2>" +
+              '<ul class="member-work-list">' + renderWorkInfo(workItems) + "</ul>" +
             "</article>" +
             renderDirectorOrgChart(member) +
             renderItWorkflow(member) +
             renderWorkGallery(member.workImages || []) +
             '<article class="member-info-card reveal">' +
               "<h2>" + e(certLabel) + "</h2>" +
+              '<p class="member-cert-intro">' + e(detailLabels.certificatesIntro) + "</p>" +
               '<div class="member-cert-grid">' + renderCertificates(localized.certificates || member.certificates || []) + "</div>" +
             "</article>" +
           "</div>" +

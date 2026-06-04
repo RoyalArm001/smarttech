@@ -743,6 +743,7 @@ body.ui-theme-dark .language-button {
 
   /* Desktop dropdown style for the hamburger (3 lines) menu */
   .nav-panel {
+    display: block;
     position: absolute;
     top: calc(100% + 12px);
     right: 0;
@@ -880,6 +881,27 @@ body.ui-theme-dark .language-button {
     color: #58d8c9;
     background: rgba(82, 205, 191, 0.1);
     border-color: rgba(82, 205, 191, 0.26);
+  }
+
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-item.has-children {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-item.has-children.is-expanded,
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-item.has-children.is-route-active {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+  }
+
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-expand-btn {
+    color: var(--ink);
+    border-left-color: rgba(255, 255, 255, 0.12);
+  }
+
+  body.ui-theme-dark .nav-panel .mobile-nav-list.mobile-nav-grid .nav-submenu {
+    border-top-color: rgba(255, 255, 255, 0.12);
+    background: rgba(82, 205, 191, 0.06);
   }
 
   /* Hide mobile header/logo inside the compact desktop dropdown */
@@ -1740,57 +1762,11 @@ body.ui-theme-dark .nav-toggle {
     mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 20px), transparent 100%);
   }
 
-  .mobile-menu-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding-top: 8px;
-    margin-top: 2px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-  }
-
-  .mobile-menu-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    font-size: 0.84rem;
-    font-weight: 800;
-    line-height: 1.2;
-    text-align: center;
-    text-decoration: none;
-    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-  }
-
-  .mobile-menu-action-call {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .mobile-menu-action-request {
-    color: #062f2c;
-    background: linear-gradient(135deg, #9ef2e4, #5fd9c8);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-  }
-
-  .mobile-menu-action:hover,
-  .mobile-menu-action:focus-visible {
-    transform: translateY(-1px);
-  }
-
   body.ui-theme-dark .nav-panel {
     background:
       radial-gradient(circle at 50% 0%, rgba(82, 205, 191, 0.18), transparent 42%),
       linear-gradient(165deg, rgb(8, 24, 28), rgb(4, 58, 54) 58%, rgb(6, 28, 30));
     border-color: rgba(255, 255, 255, 0.12);
-  }
-
-  body.ui-theme-dark .mobile-menu-action-request {
-    color: #042824;
   }
 
   .mobile-nav-list.mobile-nav-grid {
@@ -1934,8 +1910,7 @@ body.ui-theme-dark .nav-toggle {
 @media (max-width: 1240px) and (min-width: 769px) {
   .mobile-menu-sheet-top,
   .mobile-menu-toolbar-title,
-  .mobile-menu-close,
-  .mobile-menu-actions {
+  .mobile-menu-close {
     display: none;
   }
 }
