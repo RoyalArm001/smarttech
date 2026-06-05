@@ -178,7 +178,7 @@
           title: "Իրականացման փուլային ծառայություններ",
           badge: "Փուլային",
           text: "Այս ծառայությունները ապահովում են ամբողջ ցիկլը՝ նախագծումից մինչև գործարկում։",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ],
       en: [
@@ -192,7 +192,7 @@
           title: "Delivery-stage services",
           badge: "Delivery",
           text: "These services complete the full cycle from design and supply to commissioning.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ],
       ru: [
@@ -206,7 +206,7 @@
           title: "Услуги по этапам реализации",
           badge: "Этапы",
           text: "Эти услуги закрывают полный цикл: от проектирования и поставки до пусконаладки.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "wacker", "powder-coating"]
+          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ]
     };

@@ -8,8 +8,7 @@
     "systems-design",
     "equipment-supply",
     "installation",
-    "powder-coating",
-    "wacker"
+    "powder-coating"
   ];
 
   site.content.navigation = [
@@ -48,7 +47,8 @@
         { href: site.utils.pageUrl("projects"), labelKey: "nav.projectsAll" },
         { href: site.utils.pageUrl("projects") + "#current-projects", labelKey: "nav.projectsCurrent" },
         { href: site.utils.pageUrl("projects") + "#completed-projects", labelKey: "nav.projectsCompleted" },
-        { href: site.utils.pageUrl("projects") + "#projects-gallery", labelKey: "nav.projectsGallery" }
+        { href: site.utils.pageUrl("projects") + "#projects-gallery", labelKey: "nav.projectsGallery" },
+        { href: site.utils.pageUrl("album"), labelKey: "nav.projectsAlbum" }
       ];
     }
 

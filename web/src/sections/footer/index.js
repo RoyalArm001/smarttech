@@ -24,9 +24,9 @@
     var nav = site.i18n.get("nav");
     var language = site.i18n.language || "hy";
     var footerLabels = {
-      hy: { views: "Դիտումներ", socials: "Սոցիալական հղումներ", mail: "Գրել նամակ", info: "Տեղեկատվություն" },
-      en: { views: "Views", socials: "Social links", mail: "Send email", info: "Info" },
-      ru: { views: "Просмотры", socials: "Социальные ссылки", mail: "Написать на почту", info: "Инфо" }
+      hy: { views: "Դիտումներ", socials: "Սոցիալական հղումներ", mail: "Գրել նամակ", info: "Տեղեկատվություն", assistant: "AI օգնական" },
+      en: { views: "Views", socials: "Social links", mail: "Send email", info: "Info", assistant: "AI assistant" },
+      ru: { views: "Просмотры", socials: "Социальные ссылки", mail: "Написать на почту", info: "Инфо", assistant: "AI-ассистент" }
     };
     var infoLabels = {
       hy: { help: "Օգնություն", faq: "FAQ", terms: "Պայմաններ", privacy: "Գաղտնիություն", disclaimer: "Նշում" },
@@ -36,18 +36,14 @@
     var footerCopy = footerLabels[language] || footerLabels.en;
     var infoCopy = infoLabels[language] || infoLabels.en;
     var logoSrc = company.logo || "/img/smart-tech.png";
-    var powderService = (site.content.services || []).find(function (service) {
-      return service.id === "powder-coating";
-    });
-    var powderLabel = powderService ? site.i18n.service(powderService).title : "Փոշեներկում";
     var quickLinks = [
       { href: site.utils.pageUrl("services"), label: nav.services },
-      { href: site.utils.pageUrl("service", "powder-coating"), label: powderLabel },
       { href: site.utils.pageUrl("projects"), label: nav.projects },
       { href: site.utils.pageUrl("request"), label: nav.request || site.i18n.get("common.proposal", "Request") },
       { href: site.utils.pageUrl("team"), label: nav.team },
       { href: site.utils.pageUrl("contact"), label: nav.contact },
-      { href: site.utils.pageUrl("partners"), label: nav.partners }
+      { href: site.utils.pageUrl("partners"), label: nav.partners },
+      { href: site.utils.pageUrl("chat"), label: footerCopy.assistant }
     ];
     var infoLinks = [
       { href: site.utils.pageUrl("help"), label: infoCopy.help },

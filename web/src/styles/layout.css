@@ -6,8 +6,7 @@
 #site-main {
   position: relative;
   z-index: 1;
-  min-height: calc(var(--app-min-height) - var(--smarttech-header-bottom, 74px));
-  min-height: calc(var(--app-vh, var(--app-min-height)) - var(--smarttech-header-bottom, 74px));
+  min-height: calc(100vh - 74px);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(237, 244, 242, 0.18)),
     transparent;
@@ -560,7 +559,7 @@ body.is-license-lightbox-open {
   right: 18px;
   bottom: 18px;
   z-index: 120;
-  width: min(380px, calc(var(--app-vw, 100vw) - 32px));
+  width: min(380px, calc(100vw - 32px));
   display: flex;
   flex-direction: column-reverse;
   align-items: flex-end;
@@ -736,6 +735,39 @@ body.ui-theme-dark .auto-chat-panel {
   margin: 3px 0 0;
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+.auto-chat-fullpage {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 7px 0 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(10, 168, 150, 0.3);
+  background: rgba(10, 168, 150, 0.08);
+  color: var(--teal-dark);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.auto-chat-fullpage:hover,
+.auto-chat-fullpage:focus-visible {
+  background: rgba(10, 168, 150, 0.16);
+  transform: translateY(-1px);
+}
+
+.auto-chat-fullpage::after {
+  content: "\2197";
+  font-size: 0.82rem;
+}
+
+body.ui-theme-dark .auto-chat-fullpage {
+  color: #58d8c9;
+  background: rgba(82, 205, 191, 0.1);
+  border-color: rgba(82, 205, 191, 0.26);
 }
 
 .auto-chat-status {
@@ -1110,7 +1142,7 @@ body.ui-reduced-motion .route-transition {
     left: auto;
     right: 12px;
     bottom: 12px;
-    width: min(350px, calc(var(--app-vw, 100vw) - 24px));
+    width: min(350px, calc(100vw - 24px));
   }
 
   .auto-chat-trigger-text {
@@ -1175,11 +1207,10 @@ body.ui-reduced-motion .route-transition {
   }
 
   .auto-chat-shell {
-    left: max(10px, env(safe-area-inset-left, 0px));
-    right: max(10px, env(safe-area-inset-right, 0px));
+    left: auto;
+    right: 10px;
     bottom: 10px;
-    width: auto;
-    max-width: none;
+    width: calc(100vw - 20px);
   }
 
   .auto-chat-panel {
@@ -1188,7 +1219,7 @@ body.ui-reduced-motion .route-transition {
   }
 
   .back-to-top-button {
-    right: max(10px, env(safe-area-inset-right, 0px));
+    right: 10px;
     bottom: 82px;
     width: 42px;
     height: 42px;

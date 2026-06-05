@@ -10,6 +10,7 @@ const pageRoutes = {
   "services.html": "services",
   "service.html": "service",
   "projects.html": "projects",
+  "album.html": "album",
   "project.html": "project",
   "our-jobs.html": "our-jobs",
   "request.html": "request",

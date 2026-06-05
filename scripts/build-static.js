@@ -155,6 +155,7 @@ const routeAliases = {
   "services": "services",
   "service": "service",
   "projects": "projects",
+  "album": "album",
   "project": "project",
   "our-jobs": "our-jobs",
   "request": "request",

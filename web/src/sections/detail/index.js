@@ -1,8 +1,15 @@
 (function (site) {
-  function galleryMarkup(images, title) {
+  function galleryMarkup(images, title, captions) {
     var e = site.utils.escapeHtml;
     return images.map(function (image, index) {
-      return '<img src="' + e(image) + '" alt="' + e(title) + ' ' + (index + 1) + '" loading="lazy" decoding="async">';
+      var caption = (captions && captions[index]) || (title + " " + (index + 1));
+      return '' +
+        '<figure class="detail-gallery-item">' +
+          '<img src="' + e(image) + '" alt="' + e(caption) + '" loading="lazy" decoding="async">' +
+          (captions && captions[index]
+            ? '<figcaption>' + e(captions[index]) + '</figcaption>'
+            : "") +
+        '</figure>';
     }).join("");
   }
 
@@ -38,10 +45,10 @@
     var copyByLanguage = {
       hy: {
         project: {
-          eyebrow: "Կատարված աշխատանք",
-          title: "Ինչ է իրականացվել օբյեկտում",
-          text: "Այս հատվածում ներկայացված են իրական օբյեկտի լուսանկարները՝ համակարգերի տեղադրումը, տարածքի մասշտաբը և կատարված աշխատանքի ընդհանուր որակը գնահատելու համար։",
-          suggestion: "Եթե ձեր տարածքը նմանատիպ պահանջներ ունի, կարող ենք գնահատել ռիսկերը և առաջարկել համապատասխան համակարգերի կազմ։"
+          eyebrow: "Կատարված աշխատանքների նկարներ",
+          title: "Smart Tech-ի կատարած աշխատանքները օբյեկտում",
+          text: "Այստեղ ցուցադրվում են իրական տեխնիկական աշխատանքների լուսանկարները՝ մոնտաժ, սարքավորում, մալուխային համակարգեր, աուդիո և այլ իրականացված լուծումներ, ոչ թե օբյեկտի ընդհանուր տեսքը։",
+          suggestion: "Եթե ձեր տարածքում նմանատիպ աշխատանք է պետք, կարող ենք գնահատել օբյեկտը և առաջարկել համապատասխան լուծում։"
         },
         service: {
           eyebrow: "Կիրառման օրինակներ",
@@ -90,10 +97,10 @@
       },
       en: {
         project: {
-          eyebrow: "Delivered work",
-          title: "What was implemented on site",
-          text: "These photos show the real facility, installation quality, system scale and the overall result.",
-          suggestion: "If your site has similar needs, we can assess the risks and propose the right system package."
+          eyebrow: "Completed work photos",
+          title: "Work delivered by Smart Tech on site",
+          text: "These photos show real technical work: installation, equipment, cabling, audio and other delivered solutions — not generic views of the building.",
+          suggestion: "If your site needs similar work, we can assess the facility and propose the right solution."
         },
         service: {
           eyebrow: "Application examples",
@@ -142,10 +149,10 @@
       },
       ru: {
         project: {
-          eyebrow: "Выполненная работа",
-          title: "Что реализовано на объекте",
-          text: "Здесь показаны реальные фотографии объекта, качество монтажа, масштаб системы и итоговый результат.",
-          suggestion: "Если у вашего объекта похожие задачи, мы оценим риски и предложим подходящий состав систем."
+          eyebrow: "Фото выполненных работ",
+          title: "Работы Smart Tech на объекте",
+          text: "Здесь показаны реальные фотографии технических работ: монтаж, оборудование, кабельные системы, аудио и другие выполненные решения, а не общий вид здания.",
+          suggestion: "Если на вашем объекте нужны похожие работы, мы оценим площадку и предложим подходящее решение."
         },
         service: {
           eyebrow: "Примеры применения",
@@ -749,8 +756,8 @@
       "automation-cabinets": "delivery",
       "commissioning-programming": "delivery",
       interfaces: "delivery",
-      wacker: "delivery",
-      "powder-coating": "delivery"
+      wacker: "additional",
+      "powder-coating": "additional"
     };
     var category = categoryById[id] || "delivery";
     var dictionaries = {
@@ -961,21 +968,21 @@
       hy: {
         eyebrow: "Կատարված աշխատանքներ",
         title: "Ինչ է իրականացվել օբյեկտում",
-        text: "Այս հատվածում ներկայացված է օբյեկտում կատարված աշխատանքների ամբողջական օրակարգը՝ առանց նկարների, պարզ և կետերով։",
+        text: "Ստորև ներկայացված է աշխատանքների ցանկը, իսկ հաջորդ բաժնում՝ իրական կատարված աշխատանքների լուսանկարները։",
         sectorLabel: "Կատարման հատված",
         itemLabel: "Աշխատանք"
       },
       en: {
         eyebrow: "Delivered works",
         title: "What was implemented on site",
-        text: "This section lists the complete work scope delivered at the facility, without photos, in a clear agenda format.",
+        text: "The work list is below; the next section shows real photos of completed work on site.",
         sectorLabel: "Work area",
         itemLabel: "Work"
       },
       ru: {
         eyebrow: "Выполненные работы",
         title: "Что было реализовано на объекте",
-        text: "В этом разделе показан полный перечень выполненных работ без фотографий, в понятном формате списка.",
+        text: "Ниже список работ, а в следующем разделе — реальные фотографии выполненных работ на объекте.",
         sectorLabel: "Участок работ",
         itemLabel: "Работа"
       }
@@ -1092,13 +1099,46 @@
           "</div>" +
           '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
         "</div>" +
-        '<div class="detail-gallery">' + galleryMarkup(images, title) + "</div>" +
+        '<div class="detail-gallery">' + galleryMarkup(images, title, kind === "project" ? chips : null) + "</div>" +
         '<aside class="detail-gallery-suggestion">' +
           '<span>' + e(galleryCopy.eyebrow) + "</span>" +
           '<p>' + e(galleryCopy.suggestion) + "</p>" +
           '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
         "</aside>" +
       "</section>" : "";
+    var projectGallerySection = kind === "project" && images && images.length ? "" +
+      '<section class="detail-gallery-section detail-work-gallery reveal">' +
+        '<div class="section-head">' +
+          "<div>" +
+            '<span class="eyebrow">' + e(galleryCopy.eyebrow) + "</span>" +
+            '<h2 class="section-title">' + e(galleryCopy.title) + "</h2>" +
+          "</div>" +
+          '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
+        "</div>" +
+        '<div class="detail-gallery">' + galleryMarkup(images, title, kind === "project" ? chips : null) + "</div>" +
+        '<aside class="detail-gallery-suggestion">' +
+          '<span>' + e(galleryCopy.eyebrow) + "</span>" +
+          '<p>' + e(galleryCopy.suggestion) + "</p>" +
+          '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
+        "</aside>" +
+      "</section>" : "";
+
+    var projectBody = kind === "project" ? (
+      activeBanner +
+      projectStory +
+      projectAgenda +
+      projectGallerySection +
+      (systemGallery ? (
+        '<div class="section-head detail-system-head">' +
+          "<div>" +
+            '<span class="eyebrow">' + e(site.i18n.get("detail.systemGalleryEyebrow", "Systems")) + "</span>" +
+            '<h2 class="section-title">' + e(site.i18n.get("detail.systemGalleryTitle", "Installed system visuals")) + "</h2>" +
+          "</div>" +
+          '<p class="section-copy">' + e(site.i18n.get("detail.systemGalleryText", "")) + "</p>" +
+        "</div>" +
+        '<div class="detail-system-grid reveal">' + systemGallery + "</div>"
+      ) : "")
+    ) : "";
 
     return "" +
       '<section class="detail-page">' +
@@ -1112,6 +1152,7 @@
           "</div>" +
         "</div>" +
         '<div class="container detail-body">' +
+          (kind === "project" ? projectBody : (
           activeBanner +
           projectStory +
           serviceScope +
@@ -1128,7 +1169,9 @@
             '<div class="detail-system-grid reveal">' + systemGallery + "</div>"
           ) : "") +
           projectAgenda +
-          gallerySection +
+          projectGallerySection +
+          gallerySection
+          )) +
           '<div class="detail-cta reveal">' +
             "<div>" +
               "<h2>" + e(site.i18n.get("detail.ctaTitle")) + "</h2>" +

@@ -98,6 +98,16 @@ const routeSeo = {
     schemaType: "CollectionPage",
     includeInSitemap: true
   },
+  album: {
+    path: "/album",
+    canonicalPath: "/album",
+    title: "Աշխատանքների ալբոմ | Smart Tech",
+    description: "Smart Tech-ի աշխատանքների լուսանկարների ալբոմ՝ ընթացիկ նախագծերով և ավարտված աշխատանքներով երկու հստակ բաժիններում։",
+    pageName: "Աշխատանքների ալբոմ",
+    robots: "index, follow",
+    schemaType: "CollectionPage",
+    includeInSitemap: true
+  },
   "our-jobs": {
     path: "/our-jobs",
     canonicalPath: "/projects",

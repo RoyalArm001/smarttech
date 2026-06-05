@@ -49,18 +49,7 @@
       }).join("");
     }
 
-    var logos = logoGrid(site.content.partners || [], "");
     var technologyLogos = logoGrid(site.content.technologyPartners || [], "partner-logo-tech");
-
-    var clientsBlock = logos ? (
-      '<div class="partner-group">' +
-        '<div class="partner-group-head reveal">' +
-          "<h2>" + e(copy.clientsTitle) + "</h2>" +
-          "<p>" + e(copy.clientsText) + "</p>" +
-        "</div>" +
-        '<div class="partners-grid">' + logos + "</div>" +
-      "</div>"
-    ) : "";
 
     var technologyBlock = technologyLogos ? (
       '<div class="partner-group partner-group-spaced">' +
@@ -85,7 +74,6 @@
       }) +
       '<section id="partners-content" class="section partners-section">' +
         '<div class="container">' +
-          clientsBlock +
           technologyBlock +
         "</div>" +
       "</section>";

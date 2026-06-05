@@ -82,61 +82,7 @@
     }).join("");
 
     var featuredServices = (site.content.services || []).slice();
-    function serviceHomeOutcome(serviceId) {
-      var outcomes = {
-        "video-surveillance": {
-          hy: "Օբյեկտը մշտական վերահսկման տակ է, արխիվը հուսալի է, արձագանքը՝ արագ։",
-          en: "Your facility stays under continuous monitoring with reliable archive and fast response.",
-          ru: "Объект под постоянным контролем, надежный архив и быстрая реакция."
-        },
-        "fire-security": {
-          hy: "Վաղ հայտնաբերում, պարզ ազդանշում և անվտանգ տարհանում արտակարգ իրավիճակում։",
-          en: "Early detection, clear alerts and safe evacuation in emergency scenarios.",
-          ru: "Раннее обнаружение, понятная сигнализация и безопасная эвакуация."
-        },
-        networks: {
-          hy: "Կայուն կապ, կանխատեսելի արագություն և ցանց, որը հեշտ է ընդլայնել։",
-          en: "Stable connectivity, predictable speed and a network that scales easily.",
-          ru: "Стабильная связь, предсказуемая скорость и легко масштабируемая сеть."
-        },
-        electrical: {
-          hy: "Անվտանգ էլեկտրամատակարարում, կարգավոր սպառում և կայուն աշխատանք ամեն օր։",
-          en: "Safe power distribution, controlled consumption and stable daily operation.",
-          ru: "Безопасное электроснабжение, контролируемое потребление и стабильная работа."
-        },
-        automation: {
-          hy: "Մեկ կենտրոնից կառավարում, ավտոմատ սցենարներ և ավելի ցածր ռիսկեր։",
-          en: "Centralized control, automated scenarios and lower operational risk.",
-          ru: "Централизованное управление, автоматические сценарии и меньше рисков."
-        },
-        "powder-coating": {
-          hy: "Պաշտպանիչ ծածկույթ, հավասար գույն և արտադրական որակի ավարտ։",
-          en: "Protective coating, even color finish and production-grade quality.",
-          ru: "Защитное покрытие, ровный цвет и производственное качество финиша."
-        },
-        wacker: {
-          hy: "Ճշգրիտ տեղադրում, կարգաբերում և կայուն աշխատանք օբյեկտում։",
-          en: "Precise installation, configuration and stable on-site operation.",
-          ru: "Точный монтаж, настройка и стабильная работа на объекте."
-        },
-        "systems-design": {
-          hy: "Ճիշտ հաշվարկ, պարզ փուլեր և նախագիծ, որը չի ստեղծում ավելորդ ծախսեր։",
-          en: "Accurate engineering, clear stages and a design that avoids costly rework.",
-          ru: "Точный расчет, понятные этапы и проект без лишних затрат."
-        },
-        default: {
-          hy: "Մեկ պատասխանատու թիմ՝ նախագծումից մինչև գործարկում և սպասարկում։",
-          en: "One accountable team from design through commissioning and maintenance.",
-          ru: "Одна ответственная команда: от проекта до ввода и обслуживания."
-        }
-      };
-      return site.i18n.pickLanguageDictionary(outcomes[serviceId] || outcomes.default, site.i18n.language);
-    }
 
-    var powderPhone = ((site.content.contacts || {}).phones || []).find(function (phone) {
-      return String(phone.label || "").indexOf("Փոշեներկ") >= 0 ||
-        String(phone.number || "").indexOf("96424643") >= 0;
-    });
 
     var mobileHomeFeaturedCount = 3;
 
@@ -154,12 +100,6 @@
       var benefitsHtml = benefits.map(function (benefit) {
         return "<li>" + e(benefit) + "</li>";
       }).join("");
-      var powderPhoneLine = service.id === "powder-coating" && powderPhone
-        ? '<p class="home-service-post-phone"><a href="' + e(site.utils.telHref(powderPhone.number)) + '">' +
-            e(site.utils.phoneDisplay(powderPhone.number)) +
-          "</a></p>"
-        : "";
-
       return "" +
         '<article class="home-service-post ' + layoutClass + '">' +
           '<a class="home-service-post-shell" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
@@ -172,11 +112,6 @@
               "<h3>" + e(text.title) + "</h3>" +
               '<p class="home-service-post-lead">' + e(text.lead) + "</p>" +
               (benefitsHtml ? '<ul class="home-service-post-benefits">' + benefitsHtml + "</ul>" : "") +
-              powderPhoneLine +
-              '<p class="home-service-post-outcome">' +
-                "<span>" + e(site.i18n.get("home.servicesOutcomeTitle", "Result")) + "</span> " +
-                e(serviceHomeOutcome(service.id)) +
-              "</p>" +
               '<span class="home-service-post-cta">' + e(site.i18n.get("home.servicesExplore", site.i18n.get("common.learnMore"))) + "</span>" +
             "</span>" +
           "</a>" +

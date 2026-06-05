@@ -122,6 +122,7 @@
         var parentActive = route === page ||
           (page === "service" && route === "services") ||
           (page === "project" && route === "projects") ||
+          (page === "album" && route === "projects") ||
           (page === "member" && route === "team");
         var childActive = children.some(function (child) {
           return isChildNavActive(child.href);

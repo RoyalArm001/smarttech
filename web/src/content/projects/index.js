@@ -119,9 +119,7 @@
       works: ["Էլեկտրական համակարգեր", "Կապի համակարգեր", "Տեսահսկում", "Հրդեհային անվտանգություն", "Մուտքի վերահսկում"],
       images: [
         jobBase + "wyndham-1.png",
-        jobBase + "wyndham-2.png",
-        jobBase + "wyndham-3.png",
-        jobBase + "wyndham-4.png"
+        jobBase + "wyndham-2.png"
       ],
       systemImages: [system.electrical, system.serverRack, system.cctv, system.alarmPanel, system.access]
     },
@@ -229,7 +227,7 @@
     }
   ];
 
-  var activeProjectIds = ["dalan", "abovyan", "wyndham", "only-one", "bidek", "wildberries"];
+  var activeProjectIds = ["dalan", "abovyan", "wyndham", "only-one", "bidek", "pallada-tsaghkadzor"];
   site.content.featuredProjectId = "wyndham";
   site.content.activeProjectIds = activeProjectIds;
   var projectStatusLabels = {

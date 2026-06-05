@@ -106,19 +106,6 @@
       tags: ["PA համակարգ", "Ֆոնային երաժշտություն", "Կոնֆերանսային աուդիո"]
     },
     {
-      id: "wacker",
-      title: "Wacker համակարգերի տեղադրում",
-      lead: "Տեխնիկական համակարգերի ճշգրիտ տեղադրում և կարգաբերում՝ օբյեկտի պահանջներին համապատասխան։",
-      image: img + "wacker_installation.jpg",
-      gallery: [
-        img + "wacker_installation.jpg",
-        img + "building_management_automation.jpg",
-        img + "automation_cabinets.jpg",
-        img + "commissioning_programming.jpg"
-      ],
-      tags: ["Մոնտաժ", "Կարգաբերում", "Սպասարկում"]
-    },
-    {
       id: "powder-coating",
       title: "Փոշեներկում",
       lead: "Մետաղական դետալների պաշտպանիչ և էսթետիկ փոշեներկում՝ հավասար ծածկույթով և արտադրական որակի ֆինիշով։",

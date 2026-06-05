@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
+  var pages = ["home", "services", "projects", "album", "request", "partners", "team", "about", "contact", "chat", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -148,6 +148,7 @@
     if (current === "index") current = "home";
     if (current === "service") current = "services";
     if (current === "project") current = "projects";
+    if (current === "album") current = "projects";
     if (current === "member") current = "team";
 
     var items = mobileBottomNav.querySelectorAll(".bottom-nav-item");
@@ -337,6 +338,7 @@
     if (page === "services") return site.sections.services();
     if (page === "service") return site.sections.serviceDetail(currentRoute().id);
     if (page === "projects") return site.sections.projects();
+    if (page === "album") return site.sections.album();
     if (page === "project") return site.sections.projectDetail(currentRoute().id);
     if (page === "request") return site.sections.request();
     if (page === "member") return site.sections.memberDetail(currentRoute().id);
@@ -344,6 +346,7 @@
     if (page === "team") return site.sections.team();
     if (page === "about") return site.sections.about();
     if (page === "contact") return site.sections.contact();
+    if (page === "chat") return site.sections.chatPage();
     if (page === "licenses") return site.sections.about();
     if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
       return infoPageMarkup(page);
@@ -677,6 +680,7 @@
     setupCurrentProjectsCarousel();
     setupFooterYear();
     setupAutoChat();
+    setupChatPage();
     setupBackToTop();
     setupMobileBottomNav();
     updateMobileBottomNavActive();
@@ -3036,6 +3040,7 @@
         title: "Արագ չատ",
         subtitle: "SmartTech-ի օգնականը ձեզ հետ է",
         quickLabel: "Արագ հարցեր",
+        fullPageLabel: "Բացել ամբողջական AI էջը",
         statusLabel: "Ակտիվ · մինչև 10 հարց",
         openLabel: "Բացել չատը",
         closeLabel: "Փակել չատը",
@@ -3056,6 +3061,10 @@
           { id: "electrical", label: "Էլեկտրամոնտաժ" },
           { id: "automation", label: "Ավտոմատացում" },
           { id: "price", label: "Գին" },
+          { id: "warranty", label: "Երաշխիք" },
+          { id: "maintenance", label: "Սպասարկում" },
+          { id: "experience", label: "Փորձ" },
+          { id: "coverage", label: "Տարածք" },
           { id: "survey", label: "Նախագծի բրիֆ" }
         ],
         surveyIntro: "Լավ, հավաքենք կարճ բրիֆ՝ մեր մասնագետը արագ կողմնորոշվի։",
@@ -3079,6 +3088,10 @@
           electrical: "Էլեկտրամոնտաժ՝ ուժային գծեր, բաշխիչ վահաններ, լուսավորություն և կաբելային ուղիներ՝ որակյալ իրականացմամբ.",
           automation: "Ավտոմատացում և BMS՝ սարքերի կառավարում, սցենարներ և համակարգերի ինտեգրացիա մեկ տրամաբանության մեջ.",
           price: "Ճշգրիտ գինը կախված է օբյեկտից և աշխատանքի ծավալից. կիսվեք համառոտ բրիֆով, և թիմը կպատրաստի հաշվարկը.",
+          warranty: "Այո՛, բոլոր աշխատանքների և տեղադրված սարքերի համար տրամադրում ենք երաշխիք. ժամկետը կախված է համակարգից և սարքավորման արտադրողից.",
+          maintenance: "Այո՛, անում ենք պլանային սպասարկում, անսարքությունների վերացում և համակարգերի թարմացում՝ պայմանագրով կամ կանչով.",
+          experience: "Smart Tech-ը գործում է 2012 թվականից. ունենք 100+ իրականացված նախագիծ և 80+ ինժեներատեխնիկական մասնագետ.",
+          coverage: "Աշխատում ենք Երևանում և ՀՀ ողջ տարածքում. խոշոր օբյեկտների դեպքում քննարկում ենք նաև մարզային նախագծեր.",
           timeline: "Փոքր նախագծերը սովորաբար ավարտվում են 3-7 օրվա ընթացքում, միջինները՝ 1-3 շաբաթի մեջ. վերջնական ժամկետը հաստատվում է զննման փուլից հետո.",
           contact: "Կարող եք գրել {email}-ին կամ բացել մեր կապի էջը՝ {contactPage}:",
           fallback: "Շնորհակալություն. գրեք խնդիրը 1-2 նախադասությամբ, և մեր թիմը շուտով կկապվի ձեզ հետ."
@@ -3088,6 +3101,7 @@
         title: "Quick Chat",
         subtitle: "SmartTech assistant is here",
         quickLabel: "Quick questions",
+        fullPageLabel: "Open full AI page",
         statusLabel: "Online · up to 10 questions",
         openLabel: "Open chat",
         closeLabel: "Close chat",
@@ -3108,6 +3122,10 @@
           { id: "electrical", label: "Electrical" },
           { id: "automation", label: "Automation" },
           { id: "price", label: "Pricing" },
+          { id: "warranty", label: "Warranty" },
+          { id: "maintenance", label: "Maintenance" },
+          { id: "experience", label: "Experience" },
+          { id: "coverage", label: "Coverage" },
           { id: "survey", label: "Project brief" }
         ],
         surveyIntro: "Great, let's collect a short brief so our specialist can understand the request quickly.",
@@ -3131,6 +3149,10 @@
           electrical: "Electrical works: power lines, distribution panels, lighting and cable routes with quality installation.",
           automation: "Automation and BMS: device control, scenarios and integration of systems into one logic.",
           price: "Accurate pricing depends on your facility and scope. Share a short brief and our team will prepare an estimate.",
+          warranty: "Yes, we provide a warranty on all works and installed equipment. The term depends on the system and the device manufacturer.",
+          maintenance: "Yes, we offer scheduled maintenance, fault repair and system updates - by contract or on call.",
+          experience: "Smart Tech has operated since 2012, with 100+ completed projects and 80+ engineering specialists.",
+          coverage: "We work in Yerevan and across Armenia. For larger objects we also discuss regional projects.",
           timeline: "Small projects usually take 3-7 days, medium ones 1-3 weeks. Final timing is confirmed after survey.",
           contact: "You can email {email}, or open our contact page: {contactPage}",
           fallback: "Thanks. Please share your request in 1-2 sentences and our team will follow up quickly."
@@ -3140,6 +3162,7 @@
         title: "Быстрый чат",
         subtitle: "Ассистент SmartTech на связи",
         quickLabel: "Быстрые вопросы",
+        fullPageLabel: "Открыть полную AI-страницу",
         statusLabel: "Онлайн · до 10 вопросов",
         openLabel: "Открыть чат",
         closeLabel: "Закрыть чат",
@@ -3160,6 +3183,10 @@
           { id: "electrical", label: "Электромонтаж" },
           { id: "automation", label: "Автоматизация" },
           { id: "price", label: "Стоимость" },
+          { id: "warranty", label: "Гарантия" },
+          { id: "maintenance", label: "Обслуживание" },
+          { id: "experience", label: "Опыт" },
+          { id: "coverage", label: "Регионы" },
           { id: "survey", label: "Бриф проекта" }
         ],
         surveyIntro: "Хорошо, соберем короткий бриф, чтобы специалист быстро понял задачу.",
@@ -3183,6 +3210,10 @@
           electrical: "Электромонтаж: силовые линии, распределительные щиты, освещение и кабельные трассы с качественным монтажом.",
           automation: "Автоматизация и BMS: управление устройствами, сценарии и интеграция систем в единую логику.",
           price: "Точная стоимость зависит от объекта и объема задач. Отправьте краткое описание, и команда подготовит расчет.",
+          warranty: "Да, мы предоставляем гарантию на все работы и установленное оборудование. Срок зависит от системы и производителя устройств.",
+          maintenance: "Да, выполняем плановое обслуживание, устранение неисправностей и обновление систем - по договору или по вызову.",
+          experience: "Smart Tech работает с 2012 года: более 100 реализованных проектов и более 80 инженерно-технических специалистов.",
+          coverage: "Работаем в Ереване и по всей Армении. Для крупных объектов обсуждаем также региональные проекты.",
           timeline: "Небольшие проекты обычно занимают 3-7 дней, средние — 1-3 недели. Финальный срок подтверждаем после обследования.",
           contact: "Можно написать на {email}, или открыть страницу контактов: {contactPage}",
           fallback: "Спасибо. Опишите задачу в 1-2 предложениях, и команда свяжется с вами в ближайшее время."
@@ -3205,6 +3236,7 @@
       title: base.title,
       subtitle: base.subtitle,
       quickLabel: base.quickLabel,
+      fullPageLabel: base.fullPageLabel,
       statusLabel: base.statusLabel,
       openLabel: base.openLabel,
       closeLabel: base.closeLabel,
@@ -3594,6 +3626,185 @@
       });
   }
 
+  var chatPageHistory = [];
+  var chatPageSurvey = null;
+  var chatPageLang = null;
+
+  function setupChatPage() {
+    var root = document.querySelector("[data-chat-page]");
+    if (!root) return;
+
+    var lang = activeChatLanguage();
+    var copy = chatDictionary(lang);
+    var messages = root.querySelector("[data-chat-page-messages]");
+    var quick = root.querySelector("[data-chat-page-quick]");
+    var form = root.querySelector("[data-chat-page-form]");
+    var input = root.querySelector("[data-chat-page-input]");
+    var send = root.querySelector("[data-chat-page-send]");
+    var statusEl = root.querySelector("[data-chat-page-status]");
+    if (!messages || !form || !input || !send) return;
+
+    if (chatPageLang !== lang) {
+      chatPageLang = lang;
+      chatPageHistory = [];
+      chatPageSurvey = null;
+    }
+
+    input.setAttribute("placeholder", copy.inputPlaceholder);
+    input.setAttribute("aria-label", copy.inputPlaceholder);
+    send.textContent = copy.sendLabel;
+    if (statusEl) statusEl.textContent = copy.statusLabel;
+
+    function scrollDown() {
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function appendMessage(role, text, skipHistory) {
+      var item = document.createElement("div");
+      item.className = "chat-page-message chat-page-message-" + role;
+      item.textContent = text;
+      if (typeof protectBrandText === "function") protectBrandText(item);
+      messages.appendChild(item);
+      scrollDown();
+      if (!skipHistory) {
+        chatPageHistory.push({ role: role, text: text });
+      }
+    }
+
+    function showTyping() {
+      var el = document.createElement("div");
+      el.className = "chat-page-message chat-page-message-bot is-typing";
+      el.textContent = copy.typing;
+      var dots = document.createElement("span");
+      dots.className = "chat-page-typing-dots";
+      dots.innerHTML = "<span></span><span></span><span></span>";
+      el.appendChild(dots);
+      messages.appendChild(el);
+      scrollDown();
+      return el;
+    }
+
+    function removeEl(el) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    function setBusy(isBusy) {
+      root.classList.toggle("is-busy", !!isBusy);
+      input.disabled = !!isBusy;
+      send.disabled = !!isBusy;
+      if (quick) {
+        quick.querySelectorAll("button").forEach(function (b) { b.disabled = !!isBusy; });
+      }
+    }
+
+    function startSurvey() {
+      chatPageSurvey = { step: 0, answers: {} };
+      appendMessage("bot", copy.surveyIntro);
+      window.setTimeout(function () {
+        appendMessage("bot", copy.surveyQuestions[0].question);
+      }, 360);
+    }
+
+    function handleSurveyAnswer(text) {
+      if (!chatPageSurvey) return false;
+      var current = copy.surveyQuestions[chatPageSurvey.step];
+      if (!current) return false;
+      chatPageSurvey.answers[current.id] = text;
+      chatPageSurvey.step += 1;
+      if (chatPageSurvey.step >= copy.surveyQuestions.length) {
+        var summary = [copy.surveySummary];
+        copy.surveyQuestions.forEach(function (q) {
+          summary.push("\u2022 " + q.label + ": " + (chatPageSurvey.answers[q.id] || "\u2014"));
+        });
+        summary.push(copy.surveyReminder);
+        var typingEl = showTyping();
+        window.setTimeout(function () {
+          removeEl(typingEl);
+          appendMessage("bot", summary.join("\n"));
+        }, 520);
+        chatPageSurvey = null;
+      } else {
+        var next = copy.surveyQuestions[chatPageSurvey.step].question;
+        var t2 = showTyping();
+        window.setTimeout(function () {
+          removeEl(t2);
+          appendMessage("bot", next);
+        }, 520);
+      }
+      return true;
+    }
+
+    function respondAi(text, intent) {
+      var snapshot = chatPageHistory.slice(-6).map(function (entry) {
+        return { role: entry.role === "user" ? "user" : "bot", text: String(entry.text || "").slice(0, 360) };
+      });
+      var typingEl = showTyping();
+      setBusy(true);
+      requestAiChat(text, copy, snapshot).then(function (data) {
+        removeEl(typingEl);
+        appendMessage("bot", data.reply || copy.replies[intent] || copy.replies.fallback);
+      }).catch(function (error) {
+        removeEl(typingEl);
+        appendMessage("bot", (error && error.reply) || copy.replies[intent] || copy.networkError);
+      }).then(function () {
+        setBusy(false);
+      });
+    }
+
+    function handleUserText(text, intent) {
+      appendMessage("user", text);
+      if (chatPageSurvey && handleSurveyAnswer(text)) return;
+      if (intent === "survey") { startSurvey(); return; }
+      respondAi(text, intent || "fallback");
+    }
+
+    if (quick) {
+      quick.innerHTML = "";
+      copy.quickIntents.forEach(function (item) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "chat-page-quick-btn notranslate";
+        b.setAttribute("data-intent", item.id);
+        b.setAttribute("translate", "yes");
+        b.textContent = item.label;
+        quick.appendChild(b);
+      });
+      quick.onclick = function (event) {
+        var button = event.target.closest ? event.target.closest("button[data-intent]") : null;
+        if (!button || input.disabled) return;
+        var intent = button.getAttribute("data-intent") || "fallback";
+        if (intent !== "survey" && copy.replies && copy.replies[intent]) {
+          appendMessage("user", button.textContent || "");
+          var typingEl = showTyping();
+          window.setTimeout(function () {
+            removeEl(typingEl);
+            appendMessage("bot", copy.replies[intent]);
+          }, 420);
+          return;
+        }
+        handleUserText(button.textContent || "", intent);
+      };
+    }
+
+    form.onsubmit = function (event) {
+      event.preventDefault();
+      if (input.disabled) return;
+      var value = String(input.value || "").trim();
+      if (!value) return;
+      input.value = "";
+      handleUserText(value, chatIntent(value, lang));
+    };
+
+    messages.innerHTML = "";
+    if (chatPageHistory.length) {
+      chatPageHistory.forEach(function (entry) {
+        appendMessage(entry.role, entry.text, true);
+      });
+    } else {
+      appendMessage("bot", copy.greeting, true);
+    }
+  }
+
   function buildChatUi() {
     var host = document.createElement("div");
     host.className = "auto-chat-shell";
@@ -3611,6 +3822,7 @@
             '<p class="auto-chat-status"><span class="auto-chat-status-dot"></span><span class="auto-chat-status-text"></span></p>' +
             '<h3 class="auto-chat-title"></h3>' +
             '<p class="auto-chat-subtitle"></p>' +
+            '<a class="auto-chat-fullpage notranslate" data-chat-fullpage href="#" translate="no"></a>' +
           "</div>" +
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
@@ -3630,6 +3842,7 @@
       panel: host.querySelector(".auto-chat-panel"),
       title: host.querySelector(".auto-chat-title"),
       subtitle: host.querySelector(".auto-chat-subtitle"),
+      fullpage: host.querySelector("[data-chat-fullpage]"),
       statusText: host.querySelector(".auto-chat-status-text"),
       quickLabel: null,
       close: host.querySelector(".auto-chat-close"),
@@ -3690,6 +3903,10 @@
     var copy = chatDictionary(lang);
     chatUi.title.textContent = copy.title;
     chatUi.subtitle.textContent = copy.subtitle;
+    if (chatUi.fullpage) {
+      chatUi.fullpage.textContent = copy.fullPageLabel || "";
+      chatUi.fullpage.setAttribute("href", site.utils.pageUrl("chat"));
+    }
     var reminderFlag = false;
     try {
       reminderFlag = window.sessionStorage.getItem("smarttech.chat.survey.completed") === "1";
@@ -3847,6 +4064,7 @@
       { id: "home", label: nav.home || "Գլխավոր" },
       { id: "services", label: nav.services || "Ծառայություններ" },
       { id: "projects", label: nav.projects || "Նախագծեր" },
+      { id: "album", label: nav.projectsAlbum || "\u0531\u0577\u056D\u0561\u057F\u0561\u0576\u0584\u0576\u0565\u0580\u056B \u0561\u056C\u0562\u0578\u0574" },
       { id: "request", label: nav.request || "Հայտ" },
       { id: "team", label: nav.team || "Մեր թիմը" },
       { id: "about", label: nav.about || "Մեր մասին" },
