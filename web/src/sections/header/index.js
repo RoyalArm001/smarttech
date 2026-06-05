@@ -136,7 +136,10 @@
 
         var submenuId = "nav-submenu-" + e(route);
         var sublinks = children.map(function (child) {
-          var childLabel = child.label || site.i18n.get(child.labelKey || "", child.labelKey || "");
+          var childLabel = child.label || "";
+                    if (!childLabel && child.labelKey && site.i18n && typeof site.i18n.get === "function") {
+                      childLabel = site.i18n.get(child.labelKey, "");
+                    }
           var subClass = "nav-sublink notranslate" + (isChildNavActive(child.href) ? " is-active" : "");
           return '<a class="' + subClass + '" href="' + e(child.href) + '" translate="no">' + e(childLabel) + "</a>";
         }).join("");

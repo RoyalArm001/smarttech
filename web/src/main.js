@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "album", "request", "partners", "team", "about", "contact", "chat", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
+  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -19,7 +19,6 @@
   var licenseViewerDrag = null;
   var routeTransition = null;
   var routeTransitionTimer = null;
-  var currentProjectsCarouselState = null;
   var uiSettingsStorageKey = "smarttech.uiSettings";
   var onlineLangStorageKey = "smarttech.onlineLang.v3";
   var metricsVisitSessionKey = "smarttech.metrics.visitSession";
@@ -33,6 +32,8 @@
   var menuOutsideClickHandler = null;
   var menuEscHandler = null;
   var menuResizeHandler = null;
+  var closeSiteMenuHandler = null;
+  var closeLanguageSwitchersHandler = null;
   var autoThemeTimer = null;
   var imageFallbackBound = false;
   var searchClickHandler = null;
@@ -41,8 +42,6 @@
   var searchPanelClickHandler = null;
   var firebaseAuthTokenPromise = null;
   var uiSettings = readUiSettings();
-  var mobileLayoutSyncAttached = false;
-  var mobileLayoutFrame = 0;
 
   var googleAnalyticsMeasurementId = "G-1SC80R2NZE";
   var DISABLE_GOOGLE_TRANSLATE = true; // Set to true to disable Google Translate widget for faster performance
@@ -81,13 +80,12 @@
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 6.4A6.8 6.8 0 0 1 12 4h1.2a6.4 6.4 0 0 1 6.4 6.4v.5a6.4 6.4 0 0 1-6.4 6.4H11l-4.2 2.4.8-3.7a6.7 6.7 0 0 1-2.4-5.1v-.5Z"></path><path d="m15.8 6.8.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1ZM10 10h3.8M10 13h5.5"></path></svg>'
     },
     {
-      id: "team",
+      id: "profile",
       type: "link",
       route: "team",
       activeRoutes: ["team", "member"],
-      labelKey: "nav.team",
-      labels: { hy: "Թիմ", en: "Team", ru: "Команда" },
-      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4.5 20v-.6c0-1.9 2.5-3.4 7.5-3.4s7.5 1.5 7.5 3.4V20H4.5Z"></path></svg>'
+      labels: { hy: "Պրոֆիլ", en: "Profile", ru: "Профиль" },
+      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0"></path></svg>'
     }
   ];
 
@@ -148,7 +146,6 @@
     if (current === "index") current = "home";
     if (current === "service") current = "services";
     if (current === "project") current = "projects";
-    if (current === "album") current = "projects";
     if (current === "member") current = "team";
 
     var items = mobileBottomNav.querySelectorAll(".bottom-nav-item");
@@ -227,53 +224,6 @@
     window.googleAnalyticsInitialized = true;
   }
 
-  function scheduleGoogleAnalytics() {
-    if (window.googleAnalyticsScheduled) return;
-    window.googleAnalyticsScheduled = true;
-
-    var run = function () {
-      initializeGoogleAnalytics();
-      trackGoogleAnalyticsPageView();
-    };
-
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(run, { timeout: 4000 });
-      return;
-    }
-
-    window.addEventListener("load", run, { once: true });
-  }
-
-  function setupDeferredImages(root) {
-    var scope = root && root.querySelectorAll ? root : document;
-    var images = scope.querySelectorAll("img[data-src]");
-    if (!images.length) return;
-
-    function activateImage(image) {
-      var source = image.getAttribute("data-src");
-      if (!source || image.getAttribute("src") === source) return;
-      image.setAttribute("src", source);
-      image.removeAttribute("data-src");
-    }
-
-    if (!("IntersectionObserver" in window)) {
-      images.forEach(activateImage);
-      return;
-    }
-
-    var observer = new IntersectionObserver(function (entries, activeObserver) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        activateImage(entry.target);
-        activeObserver.unobserve(entry.target);
-      });
-    }, { rootMargin: "240px 0px", threshold: 0.01 });
-
-    images.forEach(function (image) {
-      observer.observe(image);
-    });
-  }
-
   function trackGoogleAnalyticsPageView() {
     if (!googleAnalyticsMeasurementId || typeof window.gtag !== "function") return;
     window.gtag("config", googleAnalyticsMeasurementId, { page_path: window.location.pathname + window.location.search });
@@ -338,7 +288,6 @@
     if (page === "services") return site.sections.services();
     if (page === "service") return site.sections.serviceDetail(currentRoute().id);
     if (page === "projects") return site.sections.projects();
-    if (page === "album") return site.sections.album();
     if (page === "project") return site.sections.projectDetail(currentRoute().id);
     if (page === "request") return site.sections.request();
     if (page === "member") return site.sections.memberDetail(currentRoute().id);
@@ -346,7 +295,6 @@
     if (page === "team") return site.sections.team();
     if (page === "about") return site.sections.about();
     if (page === "contact") return site.sections.contact();
-    if (page === "chat") return site.sections.chatPage();
     if (page === "licenses") return site.sections.about();
     if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
       return infoPageMarkup(page);
@@ -675,20 +623,14 @@
     setupContactForm();
     setupRequestBuilder();
     setupReveal();
-    setupDeferredImages(main);
-    setupMobileLayoutMetrics();
-    setupCurrentProjectsCarousel();
     setupFooterYear();
     setupAutoChat();
-    setupChatPage();
     setupBackToTop();
     setupMobileBottomNav();
     updateMobileBottomNavActive();
     setupMetricsAutomation();
-    scheduleGoogleAnalytics();
-    if (window.googleAnalyticsInitialized) {
-      trackGoogleAnalyticsPageView();
-    }
+    initializeGoogleAnalytics();
+    trackGoogleAnalyticsPageView();
     resetScroll();
 
     if (!firstRenderDone) {
@@ -803,62 +745,6 @@
     });
   }
 
-  function clampHorizontalPageOverflow() {
-    var doc = document.documentElement;
-    var body = document.body;
-    if (!doc || !body) return;
-
-    if (doc.scrollLeft) doc.scrollLeft = 0;
-    if (body.scrollLeft) body.scrollLeft = 0;
-    if (window.scrollX) window.scrollTo(0, window.scrollY || 0);
-  }
-
-  function syncMobileLayoutMetrics() {
-    var doc = document.documentElement;
-    if (!doc) return;
-
-    var viewport = window.visualViewport;
-    var height = viewport && viewport.height ? viewport.height : window.innerHeight;
-    var width = viewport && viewport.width ? viewport.width : window.innerWidth;
-
-    doc.style.setProperty("--app-vh", Math.max(0, Math.round(height)) + "px");
-    doc.style.setProperty("--app-vw", Math.max(0, Math.round(width)) + "px");
-
-    if (width <= 768) {
-      clampHorizontalPageOverflow();
-    }
-
-    var header = document.getElementById("site-header");
-    if (header && header.getBoundingClientRect) {
-      var rect = header.getBoundingClientRect();
-      var headerHeight = Math.max(56, Math.ceil(rect.height));
-      var headerBottom = Math.max(headerHeight, Math.ceil(rect.bottom));
-      doc.style.setProperty("--smarttech-header-height", headerHeight + "px");
-      doc.style.setProperty("--smarttech-header-bottom", headerBottom + "px");
-    }
-  }
-
-  function scheduleMobileLayoutMetrics() {
-    if (mobileLayoutFrame) return;
-    mobileLayoutFrame = window.requestAnimationFrame(function () {
-      mobileLayoutFrame = 0;
-      syncMobileLayoutMetrics();
-    });
-  }
-
-  function setupMobileLayoutMetrics() {
-    scheduleMobileLayoutMetrics();
-    if (mobileLayoutSyncAttached) return;
-    mobileLayoutSyncAttached = true;
-
-    window.addEventListener("resize", scheduleMobileLayoutMetrics, { passive: true });
-    window.addEventListener("orientationchange", scheduleMobileLayoutMetrics, { passive: true });
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", scheduleMobileLayoutMetrics, { passive: true });
-      window.visualViewport.addEventListener("scroll", scheduleMobileLayoutMetrics, { passive: true });
-    }
-  }
-
   function setupNavigation() {
     var toggle = document.querySelector(".nav-toggle");
     var panel = document.querySelector(".nav-panel");
@@ -884,114 +770,36 @@
       menuEscHandler = null;
     }
 
-    menuResizeHandler = function () {
+    var menuGeometryFrame = 0;
+
+    function syncMobileMenuGeometry() {
+      var header = document.getElementById("site-header");
+      if (!header || !document.documentElement || !header.getBoundingClientRect) return;
+
+      var rect = header.getBoundingClientRect();
+      var height = Math.max(60, Math.ceil(rect.height));
+      var bottom = Math.max(height, Math.ceil(rect.bottom));
+      document.documentElement.style.setProperty("--smarttech-header-height", height + "px");
+      document.documentElement.style.setProperty("--smarttech-header-bottom", bottom + "px");
+    }
+
+    function scheduleMobileMenuGeometrySync(event) {
       if (!panel.classList.contains("is-open")) return;
-      scheduleMobileLayoutMetrics();
-    };
+      if (menuGeometryFrame) return;
+
+      menuGeometryFrame = window.requestAnimationFrame(function () {
+        menuGeometryFrame = 0;
+        syncMobileMenuGeometry();
+      });
+    }
+
+    menuResizeHandler = scheduleMobileMenuGeometrySync;
     window.addEventListener("resize", menuResizeHandler, { passive: true });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", menuResizeHandler, { passive: true });
       window.visualViewport.addEventListener("scroll", menuResizeHandler, { passive: true });
     }
-    scheduleMobileLayoutMetrics();
-
-    function isMobileNavSheet() {
-      return window.matchMedia("(max-width: 768px)").matches;
-    }
-
-    function setNavGroupExpanded(group, expand) {
-      var expandButton = group.querySelector(".nav-expand-btn");
-      var submenu = group.querySelector(".nav-submenu");
-      if (!expandButton || !submenu) return;
-      expandButton.setAttribute("aria-expanded", String(expand));
-      group.classList.toggle("is-expanded", expand);
-      submenu.hidden = !expand;
-      submenu.setAttribute("aria-hidden", String(!expand));
-    }
-
-    function collapseNavSubmenus() {
-      panel.querySelectorAll(".nav-item.has-children").forEach(function (group) {
-        setNavGroupExpanded(group, false);
-      });
-    }
-
-    function syncNavSubmenusOnOpen() {
-      var groups = panel.querySelectorAll(".nav-item.has-children");
-      var activeGroup = null;
-
-      groups.forEach(function (group) {
-        if (group.classList.contains("is-route-active")) {
-          activeGroup = group;
-        }
-      });
-
-      groups.forEach(function (group) {
-        if (isMobileNavSheet()) {
-          setNavGroupExpanded(group, group === activeGroup);
-        } else {
-          setNavGroupExpanded(group, group.classList.contains("is-route-active"));
-        }
-      });
-    }
-
-    var menuFocusTrapHandler = null;
-
-    function getMenuFocusables() {
-      return Array.prototype.slice.call(
-        panel.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
-      ).filter(function (node) {
-        return node.offsetParent !== null || panel.contains(node);
-      });
-    }
-
-    function bindMenuFocusTrap() {
-      if (menuFocusTrapHandler) {
-        document.removeEventListener("keydown", menuFocusTrapHandler);
-        menuFocusTrapHandler = null;
-      }
-      if (!isMobileNavSheet()) return;
-
-      menuFocusTrapHandler = function (event) {
-        if (!panel.classList.contains("is-open") || event.key !== "Tab") return;
-
-        var focusables = getMenuFocusables();
-        if (!focusables.length) return;
-
-        var first = focusables[0];
-        var last = focusables[focusables.length - 1];
-        var active = document.activeElement;
-
-        if (event.shiftKey && active === first) {
-          event.preventDefault();
-          last.focus();
-          return;
-        }
-
-        if (!event.shiftKey && active === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      };
-
-      document.addEventListener("keydown", menuFocusTrapHandler);
-    }
-
-    panel.querySelectorAll(".nav-expand-btn").forEach(function (expandButton) {
-      expandButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        var group = expandButton.closest(".nav-item.has-children");
-        if (!group) return;
-        var isExpanded = expandButton.getAttribute("aria-expanded") === "true";
-        var willExpand = !isExpanded;
-        if (willExpand && isMobileNavSheet()) {
-          panel.querySelectorAll(".nav-item.has-children").forEach(function (other) {
-            if (other !== group) setNavGroupExpanded(other, false);
-          });
-        }
-        setNavGroupExpanded(group, willExpand);
-      });
-    });
+    syncMobileMenuGeometry();
 
     function setMenuState(isOpen, restoreFocus) {
       panel.classList.toggle("is-open", isOpen);
@@ -1003,19 +811,8 @@
       toggle.setAttribute("aria-expanded", String(isOpen));
       panel.setAttribute("aria-hidden", String(!isOpen));
       if (isOpen) {
-        syncNavSubmenusOnOpen();
         window.requestAnimationFrame(syncMobileMenuGeometry);
         panel.scrollTop = 0;
-        bindMenuFocusTrap();
-        window.requestAnimationFrame(function () {
-          var closeButton = panel.querySelector("[data-mobile-menu-close]");
-          var firstLink = panel.querySelector(".mobile-nav-list a, .mobile-nav-list button");
-          if (closeButton) {
-            closeButton.focus();
-          } else if (firstLink) {
-            firstLink.focus();
-          }
-        });
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
         }
@@ -1038,10 +835,6 @@
           document.addEventListener("click", menuOutsideClickHandler, true);
         }, 0);
       } else {
-        if (menuFocusTrapHandler) {
-          document.removeEventListener("keydown", menuFocusTrapHandler);
-          menuFocusTrapHandler = null;
-        }
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
           menuEscHandler = null;
@@ -1050,16 +843,8 @@
           document.removeEventListener("click", menuOutsideClickHandler, true);
           menuOutsideClickHandler = null;
         }
-        if (isMobileNavSheet()) {
-          collapseNavSubmenus();
-        }
-        if (restoreFocus !== false) {
-          var bottomMenuButton = document.querySelector('.mobile-bottom-nav [data-bottom-action="menu"]');
-          if (isMobileNavSheet() && bottomMenuButton) {
-            bottomMenuButton.focus();
-          } else if (document.contains(toggle)) {
-            toggle.focus();
-          }
+        if (restoreFocus !== false && document.contains(toggle)) {
+          toggle.focus();
         }
       }
     }
@@ -1072,22 +857,23 @@
       if (panel.classList.contains("is-open")) {
         closeMenu(false);
       } else {
+        if (typeof closeLanguageSwitchersHandler === "function") {
+          closeLanguageSwitchersHandler();
+        }
         setMenuState(true, false);
       }
     });
+
+    closeSiteMenuHandler = function (restoreFocus) {
+      if (!panel.classList.contains("is-open")) return;
+      closeMenu(restoreFocus);
+    };
 
     if (backdrop) {
       backdrop.addEventListener("click", function () {
         closeMenu(false);
       });
     }
-
-    panel.querySelectorAll("[data-mobile-menu-close]").forEach(function (closeButton) {
-      closeButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        closeMenu(false);
-      });
-    });
 
     panel.addEventListener("click", function (event) {
       if (event.target.closest("a")) {
@@ -1108,6 +894,18 @@
 
     loadOnlineTranslate();
     var activeLang = normalizeLanguageCode(getOnlineLanguage());
+
+    function closeAllLanguageSwitchers() {
+      switchers.forEach(function (switcher) {
+        switcher.classList.remove("is-open");
+        var langToggle = switcher.querySelector("[data-language-toggle]");
+        if (langToggle) {
+          langToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    closeLanguageSwitchersHandler = closeAllLanguageSwitchers;
 
     switchers.forEach(function (switcher) {
       var toggle = switcher.querySelector("[data-language-toggle]");
@@ -1153,6 +951,13 @@
 
       toggle.addEventListener("click", function (event) {
         event.preventDefault();
+        var opening = !switcher.classList.contains("is-open");
+        if (opening) {
+          if (typeof closeSiteMenuHandler === "function") {
+            closeSiteMenuHandler(false);
+          }
+          closeAllLanguageSwitchers();
+        }
         var isOpen = switcher.classList.toggle("is-open");
         toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
       });
@@ -1386,10 +1191,6 @@
     if (!form || !summary) return;
 
     var status = document.getElementById("request-status");
-    var checklist = document.getElementById("request-checklist");
-    var systemsHint = form.querySelector("[data-request-systems-hint]");
-    var maintenanceHint = form.querySelector("[data-request-maintenance-hint]");
-    var systemsGrid = document.getElementById("request-system-grid");
     var downloadButton = document.getElementById("request-download");
     var projectButton = document.getElementById("request-project-submit");
     var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
@@ -1466,21 +1267,7 @@
           sendingTitle: "Պատրաստվում է նամակը",
           sendingText: "Mail ծրագիրը կբացվի արդեն հավաքված վերնագրով եւ տեքստով։",
           mailStatus: "Mail ծրագիրը բացվեց պատրաստ նամակով։ Եթե չի բացվել, ներբեռնեք TXT ֆայլը եւ ուղարկեք email-ով։",
-          downloadStatus: "TXT ֆայլը պատրաստ է։",
-          checklistContact: "Կոնտակտ (անուն, հեռախոս)",
-          checklistSystems: "Ընտրված համակարգեր",
-          checklistMaintenance: "Սպասարկման աշխատանքներ",
-          checklistVisit: "Այցելության օր",
-          checklistDone: "լրացված",
-          checklistPending: "պետք է լրացնել",
-          nameRequired: "Լրացրեք անունը կամ ընկերության անվանումը։",
-          phoneRequired: "Լրացրեք հեռախոսահամարը։",
-          phoneInvalid: "Հեռախոսահամարը սխալ է։",
-          systemsRequired: "Ընտրեք առնվազն մեկ համակարգ։",
-          maintenanceRequired: "Ընտրեք առնվազն մեկ սպասարկման աշխատանք։",
-          visitDateRequired: "Նշեք այցելության ցանկալի օրը։",
-          fixErrors: "Լրացրեք նշված դաշտերը, ապա կրկին սեղմեք ուղարկել։",
-          readyComplete: "Հայտը պատրաստ է ուղարկման։ Ստուգեք ամփոփումը եւ սեղմեք «Բացել mail-ը»։"
+          downloadStatus: "TXT ֆայլը պատրաստ է։"
         },
         en: {
           title: "Smart Tech system request",
@@ -1521,21 +1308,7 @@
           sendingTitle: "Preparing the email",
           sendingText: "The mail app will open with the prepared subject and message.",
           mailStatus: "The mail app opened with a prepared message. If it did not open, download the TXT file and send it by email.",
-          downloadStatus: "TXT file is ready.",
-          checklistContact: "Contact (name, phone)",
-          checklistSystems: "Selected systems",
-          checklistMaintenance: "Service tasks",
-          checklistVisit: "Visit date",
-          checklistDone: "complete",
-          checklistPending: "required",
-          nameRequired: "Enter your name or company name.",
-          phoneRequired: "Enter your phone number.",
-          phoneInvalid: "Phone number looks invalid.",
-          systemsRequired: "Select at least one system.",
-          maintenanceRequired: "Select at least one service task.",
-          visitDateRequired: "Choose a preferred visit date.",
-          fixErrors: "Complete the highlighted fields, then send again.",
-          readyComplete: "The request is ready to send. Review the summary and tap Open mail."
+          downloadStatus: "TXT file is ready."
         },
         ru: {
           title: "Заявка на систему Smart Tech",
@@ -1576,21 +1349,7 @@
           sendingTitle: "Готовим письмо",
           sendingText: "Почта откроется с подготовленной темой и текстом.",
           mailStatus: "Почта открылась с готовым письмом. Если не открылась, скачайте TXT файл и отправьте его по email.",
-          downloadStatus: "TXT файл готов.",
-          checklistContact: "Контакт (имя, телефон)",
-          checklistSystems: "Выбранные системы",
-          checklistMaintenance: "Сервисные работы",
-          checklistVisit: "Дата визита",
-          checklistDone: "готово",
-          checklistPending: "нужно заполнить",
-          nameRequired: "Укажите имя или название компании.",
-          phoneRequired: "Укажите номер телефона.",
-          phoneInvalid: "Номер телефона выглядит неверно.",
-          systemsRequired: "Выберите хотя бы одну систему.",
-          maintenanceRequired: "Выберите хотя бы одну сервисную работу.",
-          visitDateRequired: "Укажите желаемую дату визита.",
-          fixErrors: "Заполните отмеченные поля и отправьте снова.",
-          readyComplete: "Заявка готова к отправке. Проверьте текст и нажмите «Открыть почту»."
+          downloadStatus: "TXT файл готов."
         }
       };
       return dictionaries[activeUiLanguage()] || dictionaries.en || dictionaries.hy;
@@ -1798,177 +1557,11 @@
           checkbox.checked = false;
         });
       }
-    }
-
-    function phoneIsValid(raw) {
-      var digits = String(raw || "").replace(/\D/g, "");
-      return digits.length >= 6;
-    }
-
-    function contactIsComplete() {
-      return !!value("clientName") && phoneIsValid(value("clientPhone"));
-    }
-
-    function systemsAreSelected() {
-      return systemInputs.some(function (checkbox) {
-        return checkbox.checked;
-      });
-    }
-
-    function maintenanceIsSelected() {
-      return maintenanceInputs.some(function (checkbox) {
-        return checkbox.checked;
-      });
-    }
-
-    function visitIsComplete() {
-      return !isVisitNeeded() || !!value("visitDate");
-    }
-
-    function clearFieldErrors() {
-      Array.prototype.forEach.call(form.querySelectorAll(".request-field.is-invalid"), function (field) {
-        field.classList.remove("is-invalid");
-      });
-      if (systemsGrid) systemsGrid.classList.remove("is-invalid");
-      if (systemsHint) {
-        systemsHint.hidden = true;
-        systemsHint.textContent = "";
-      }
-      if (maintenanceHint) {
-        maintenanceHint.hidden = true;
-        maintenanceHint.textContent = "";
-      }
-    }
-
-    function markFieldInvalid(name, message) {
-      var field = form.querySelector('[data-request-field="' + name + '"]');
-      if (field) field.classList.add("is-invalid");
-      if (name === "clientName" || name === "clientPhone" || name === "visitDate") {
-        var input = form.elements[name];
-        if (input && input.closest) {
-          var wrap = input.closest(".request-field");
-          if (wrap) wrap.classList.add("is-invalid");
-        }
-      }
-      if (name === "systems" && systemsGrid) {
-        systemsGrid.classList.add("is-invalid");
-        if (systemsHint) {
-          systemsHint.hidden = false;
-          systemsHint.textContent = message;
-        }
-      }
-      if (name === "maintenance" && maintenanceHint) {
-        maintenanceHint.hidden = false;
-        maintenanceHint.textContent = message;
-      }
-      return message;
-    }
-
-    function validateStep(step, showErrors, options) {
-      var labels = copy();
-      var kind = checkedRequestKind();
-      var errors = [];
-      var targetStep = step;
-      var opts = options || {};
-
-      if (showErrors && !opts.skipClear) clearFieldErrors();
-
-      if (step === 1) {
-        if (kind === "sale" || kind === "service") {
-          if (!systemsAreSelected()) {
-            errors.push(showErrors ? markFieldInvalid("systems", labels.systemsRequired) : labels.systemsRequired);
-          }
-        }
-        if (kind === "service" && !maintenanceIsSelected()) {
-          errors.push(showErrors ? markFieldInvalid("maintenance", labels.maintenanceRequired) : labels.maintenanceRequired);
-        }
-        if (kind === "audit" && !visitIsComplete()) {
-          errors.push(showErrors ? markFieldInvalid("visitDate", labels.visitDateRequired) : labels.visitDateRequired);
-        }
-      }
-
-      if (step === 2 || step === 3) {
-        if (!value("clientName")) {
-          errors.push(showErrors ? markFieldInvalid("clientName", labels.nameRequired) : labels.nameRequired);
-          targetStep = Math.min(targetStep, 2);
-        }
-        if (!value("clientPhone")) {
-          errors.push(showErrors ? markFieldInvalid("clientPhone", labels.phoneRequired) : labels.phoneRequired);
-          targetStep = Math.min(targetStep, 2);
-        } else if (!phoneIsValid(value("clientPhone"))) {
-          errors.push(showErrors ? markFieldInvalid("clientPhone", labels.phoneInvalid) : labels.phoneInvalid);
-          targetStep = Math.min(targetStep, 2);
-        }
-      }
-
-      if (step === 3) {
-        var scopeResult = validateStep(1, showErrors, { skipClear: true });
-        if (!scopeResult.ok) {
-          if (scopeResult.message) {
-            errors.push(scopeResult.message);
-          }
-          targetStep = Math.min(targetStep, scopeResult.step || 1);
-        }
-      }
-
-      return {
-        ok: !errors.length,
-        message: errors[0] || "",
-        step: targetStep
-      };
-    }
-
-    function validateForm(showErrors) {
-      return validateStep(3, showErrors);
-    }
-
-    function updateChecklist() {
-      if (!checklist) return;
-      var labels = copy();
-      var kind = checkedRequestKind();
-      var items = [
-        {
-          key: "contact",
-          label: labels.checklistContact,
-          done: contactIsComplete()
-        }
-      ];
-
-      if (kind === "sale" || kind === "service") {
-        items.push({
-          key: "systems",
-          label: labels.checklistSystems,
-          done: systemsAreSelected()
-        });
-      }
-      if (kind === "service") {
-        items.push({
-          key: "maintenance",
-          label: labels.checklistMaintenance,
-          done: maintenanceIsSelected()
-        });
-      }
       if (kind === "audit") {
-        items.push({
-          key: "visit",
-          label: labels.checklistVisit,
-          done: visitIsComplete()
+        systemInputs.forEach(function (checkbox) {
+          checkbox.checked = false;
         });
       }
-
-      checklist.innerHTML = items.map(function (item) {
-        var stateClass = item.done ? "is-done" : "is-pending";
-        var stateLabel = item.done ? labels.checklistDone : labels.checklistPending;
-        return '' +
-          '<li class="request-checklist-item ' + stateClass + '">' +
-            '<span class="request-checklist-mark" aria-hidden="true"></span>' +
-            '<span class="request-checklist-label">' + item.label + '</span>' +
-            '<span class="request-checklist-state">' + stateLabel + '</span>' +
-          '</li>';
-      }).join("");
-
-      var formReady = validateForm(false).ok;
-      form.classList.toggle("is-ready", formReady);
     }
 
     function setRequestStep(step, shouldScroll) {
@@ -2044,13 +1637,6 @@
     function updateSummary(mode) {
       updateQuantityState();
       summary.value = buildSummary(mode);
-      updateChecklist();
-      var ready = validateForm(false).ok;
-      var labels = copy();
-      var text = document.getElementById("request-submit-text");
-      if (text) {
-        text.textContent = ready ? labels.readyComplete : labels.readyText;
-      }
     }
 
     function scheduleSummaryUpdate() {
@@ -2073,6 +1659,7 @@
     function setSubmitState(mode) {
       var labels = copy();
       var state = document.getElementById("request-submit-state");
+      var title = document.getElementById("request-submit-title");
       var text = document.getElementById("request-submit-text");
       var isSending = mode === "sending";
 
@@ -2080,8 +1667,11 @@
       if (state) {
         state.classList.toggle("is-sending", isSending);
       }
+      if (title) {
+        title.textContent = isSending ? labels.sendingTitle : labels.readyTitle;
+      }
       if (text) {
-        text.textContent = isSending ? labels.sendingText : (validateForm(false).ok ? labels.mailStatus : labels.readyText);
+        text.textContent = isSending ? labels.sendingText : labels.readyText;
       }
     }
 
@@ -2162,14 +1752,6 @@
         setRequestStep(Number(go.getAttribute("data-request-go") || 0));
       }
       if (next) {
-        var validation = validateStep(currentRequestStep, true);
-        if (!validation.ok) {
-          setStatus(validation.message || copy().fixErrors);
-          setRequestStep(validation.step);
-          return;
-        }
-        clearFieldErrors();
-        setStatus("");
         setRequestStep(currentRequestStep + 1);
       }
       if (prev) {
@@ -2185,9 +1767,7 @@
       }
     });
 
-    form.addEventListener("input", function (event) {
-      var fieldWrap = event.target && event.target.closest ? event.target.closest(".request-field") : null;
-      if (fieldWrap) fieldWrap.classList.remove("is-invalid");
+    form.addEventListener("input", function () {
       scheduleSummaryUpdate();
     });
 
@@ -2211,15 +1791,6 @@
     });
 
     function openPreparedMail(mode) {
-      var validation = validateForm(true);
-      if (!validation.ok) {
-        setStatus(validation.message || copy().fixErrors);
-        setRequestStep(validation.step);
-        updateSummary(mode);
-        return;
-      }
-
-      clearFieldErrors();
       updateSummary(mode);
       var labels = copy();
       var subject = emailSubject(labels, mode);
@@ -2244,14 +1815,6 @@
 
     if (downloadButton) {
       downloadButton.addEventListener("click", function () {
-        var validation = validateForm(true);
-        if (!validation.ok) {
-          setStatus(validation.message || copy().fixErrors);
-          setRequestStep(validation.step);
-          updateSummary();
-          return;
-        }
-
         updateSummary();
         setSubmitState("ready");
 
@@ -2352,119 +1915,8 @@
     });
   }
 
-  function teardownCurrentProjectsCarousel() {
-    if (!currentProjectsCarouselState) return;
-    if (typeof currentProjectsCarouselState.stop === "function") {
-      currentProjectsCarouselState.stop();
-    }
-    currentProjectsCarouselState = null;
-  }
-
-  function setupCurrentProjectsCarousel() {
-    teardownCurrentProjectsCarousel();
-
-    var root = document.querySelector("[data-current-projects-carousel]");
-    if (!root) return;
-
-    var slides = Array.prototype.slice.call(root.querySelectorAll("[data-current-project-slide]"));
-    if (!slides.length) return;
-
-    var dots = Array.prototype.slice.call(root.querySelectorAll("[data-carousel-dot]"));
-    var prevButton = root.querySelector("[data-carousel-prev]");
-    var nextButton = root.querySelector("[data-carousel-next]");
-    var progress = root.querySelector("[data-carousel-progress]");
-    var meter = root.querySelector("[data-carousel-meter]");
-    var interval = parseInt(root.getAttribute("data-interval") || "6500", 10);
-    var index = 0;
-    var timer = null;
-    root.style.setProperty("--current-project-interval", interval + "ms");
-
-    function progressText(position) {
-      var template = site.i18n.get("projectsPage.carouselProgress", "{current} / {total}");
-      return template
-        .replace("{current}", String(position))
-        .replace("{total}", String(slides.length));
-    }
-
-    function goTo(nextIndex) {
-      index = (nextIndex + slides.length) % slides.length;
-      slides.forEach(function (slide, slideIndex) {
-        var isActive = slideIndex === index;
-        slide.classList.toggle("is-active", isActive);
-        slide.setAttribute("aria-hidden", isActive ? "false" : "true");
-      });
-      dots.forEach(function (dot, dotIndex) {
-        var isActive = dotIndex === index;
-        dot.classList.toggle("is-active", isActive);
-        dot.setAttribute("aria-current", isActive ? "true" : "false");
-      });
-      if (progress) {
-        progress.textContent = progressText(index + 1);
-      }
-      if (meter) {
-        meter.classList.remove("is-running");
-        meter.offsetWidth;
-        if (uiSettings.motion && slides.length > 1) {
-          meter.classList.add("is-running");
-        }
-      }
-    }
-
-    function stopAutoplay() {
-      root.classList.add("is-paused");
-      if (timer) {
-        window.clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    function startAutoplay() {
-      stopAutoplay();
-      root.classList.remove("is-paused");
-      if (!uiSettings.motion || slides.length < 2) return;
-      timer = window.setInterval(function () {
-        goTo(index + 1);
-      }, interval);
-    }
-
-    if (prevButton) {
-      prevButton.addEventListener("click", function () {
-        goTo(index - 1);
-        startAutoplay();
-      });
-    }
-
-    if (nextButton) {
-      nextButton.addEventListener("click", function () {
-        goTo(index + 1);
-        startAutoplay();
-      });
-    }
-
-    dots.forEach(function (dot) {
-      dot.addEventListener("click", function () {
-        var target = parseInt(dot.getAttribute("data-carousel-dot") || "0", 10);
-        goTo(target);
-        startAutoplay();
-      });
-    });
-
-    root.addEventListener("mouseenter", stopAutoplay);
-    root.addEventListener("mouseleave", startAutoplay);
-    root.addEventListener("focusin", stopAutoplay);
-    root.addEventListener("focusout", function (event) {
-      if (!root.contains(event.relatedTarget)) {
-        startAutoplay();
-      }
-    });
-
-    goTo(0);
-    currentProjectsCarouselState = { stop: stopAutoplay, root: root };
-    startAutoplay();
-  }
-
   function setupReveal() {
-    var items = document.querySelectorAll(".reveal, .reveal-slide");
+    var items = document.querySelectorAll(".reveal");
     if (!("IntersectionObserver" in window)) {
       items.forEach(function (item) {
         item.classList.add("is-visible");
@@ -2479,17 +1931,10 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    }, { threshold: 0.14 });
 
-    var revealIndex = 0;
-    items.forEach(function (item) {
-      var customDelay = item.getAttribute("data-reveal-delay");
-      if (customDelay != null && customDelay !== "") {
-        item.style.transitionDelay = customDelay + "ms";
-      } else if (!item.classList.contains("reveal-slide")) {
-        item.style.transitionDelay = Math.min(revealIndex * 78, 540) + "ms";
-        revealIndex += 1;
-      }
+    items.forEach(function (item, index) {
+      item.style.transitionDelay = Math.min(index * 78, 540) + "ms";
       observer.observe(item);
     });
   }
@@ -3040,7 +2485,6 @@
         title: "Արագ չատ",
         subtitle: "SmartTech-ի օգնականը ձեզ հետ է",
         quickLabel: "Արագ հարցեր",
-        fullPageLabel: "Բացել ամբողջական AI էջը",
         statusLabel: "Ակտիվ · մինչև 10 հարց",
         openLabel: "Բացել չատը",
         closeLabel: "Փակել չատը",
@@ -3052,19 +2496,12 @@
         limitReached: "Այս արագ չաթում արդեն օգտագործվել է 10 հարց։ Շարունակելու համար թողեք հեռախոսահամար կամ գրեք info@smarttechllc.am։",
         limitButton: "Ավարտված",
         typing: "գրում է...",
-        greeting: "Բարև 👋 Ես SmartTech-ի օգնականն եմ։ Ընտրեք թեմա ներքևից կամ գրեք ձեր հարցը։",
+        greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ կամ ավտոմատացում։",
         quickIntents: [
-          { id: "cctv", label: "Տեսահսկում" },
-          { id: "network", label: "Ցանց" },
-          { id: "fire", label: "Հրդեհային" },
-          { id: "access", label: "Մուտքի հսկում" },
-          { id: "electrical", label: "Էլեկտրամոնտաժ" },
-          { id: "automation", label: "Ավտոմատացում" },
-          { id: "price", label: "Գին" },
-          { id: "warranty", label: "Երաշխիք" },
-          { id: "maintenance", label: "Սպասարկում" },
-          { id: "experience", label: "Փորձ" },
-          { id: "coverage", label: "Տարածք" },
+          { id: "services", label: "Ծառայություններ" },
+          { id: "price", label: "Գների հարց" },
+          { id: "timeline", label: "Ժամկետներ" },
+          { id: "contact", label: "Կապ մեզ հետ" },
           { id: "survey", label: "Նախագծի բրիֆ" }
         ],
         surveyIntro: "Լավ, հավաքենք կարճ բրիֆ՝ մեր մասնագետը արագ կողմնորոշվի։",
@@ -3081,17 +2518,7 @@
         reminderStatus: "Բրիֆը պահպանված է",
         replies: {
           services: "Մենք առաջարկում ենք տեսահսկման, հրդեհային ու ազդանշանային համակարգեր, ցանցային լուծումներ, էլեկտրական և ավտոմատացման աշխատանքներ.",
-          cctv: "Տեսահսկում՝ IP/HD տեսախցիկներ, NVR/DVR արխիվ, PoE ցանց և հեռահար դիտում։ Գրեք օբյեկտը՝ կառաջարկենք ճիշտ կազմը.",
-          network: "Ցանցային լուծումներ՝ LAN/Wi-Fi, router, switch, firewall և կառուցվածքային մալուխացում՝ կայուն ու անվտանգ աշխատանքի համար.",
-          fire: "Հրդեհային ազդարարման և տարհանման համակարգեր՝ դետեկտորներ, պանելներ և ազդանշման գծեր՝ ըստ անվտանգության նորմերի.",
-          access: "Մուտքի վերահսկում՝ քարտով/կոդով մուտք, դոմոֆոն, turnstile և հեռահար կառավարում.",
-          electrical: "Էլեկտրամոնտաժ՝ ուժային գծեր, բաշխիչ վահաններ, լուսավորություն և կաբելային ուղիներ՝ որակյալ իրականացմամբ.",
-          automation: "Ավտոմատացում և BMS՝ սարքերի կառավարում, սցենարներ և համակարգերի ինտեգրացիա մեկ տրամաբանության մեջ.",
           price: "Ճշգրիտ գինը կախված է օբյեկտից և աշխատանքի ծավալից. կիսվեք համառոտ բրիֆով, և թիմը կպատրաստի հաշվարկը.",
-          warranty: "Այո՛, բոլոր աշխատանքների և տեղադրված սարքերի համար տրամադրում ենք երաշխիք. ժամկետը կախված է համակարգից և սարքավորման արտադրողից.",
-          maintenance: "Այո՛, անում ենք պլանային սպասարկում, անսարքությունների վերացում և համակարգերի թարմացում՝ պայմանագրով կամ կանչով.",
-          experience: "Smart Tech-ը գործում է 2012 թվականից. ունենք 100+ իրականացված նախագիծ և 80+ ինժեներատեխնիկական մասնագետ.",
-          coverage: "Աշխատում ենք Երևանում և ՀՀ ողջ տարածքում. խոշոր օբյեկտների դեպքում քննարկում ենք նաև մարզային նախագծեր.",
           timeline: "Փոքր նախագծերը սովորաբար ավարտվում են 3-7 օրվա ընթացքում, միջինները՝ 1-3 շաբաթի մեջ. վերջնական ժամկետը հաստատվում է զննման փուլից հետո.",
           contact: "Կարող եք գրել {email}-ին կամ բացել մեր կապի էջը՝ {contactPage}:",
           fallback: "Շնորհակալություն. գրեք խնդիրը 1-2 նախադասությամբ, և մեր թիմը շուտով կկապվի ձեզ հետ."
@@ -3101,7 +2528,6 @@
         title: "Quick Chat",
         subtitle: "SmartTech assistant is here",
         quickLabel: "Quick questions",
-        fullPageLabel: "Open full AI page",
         statusLabel: "Online · up to 10 questions",
         openLabel: "Open chat",
         closeLabel: "Close chat",
@@ -3113,19 +2539,12 @@
         limitReached: "This quick chat has reached the 10-question limit. To continue, leave your phone number or write to info@smarttechllc.am.",
         limitButton: "Done",
         typing: "typing...",
-        greeting: "Hi 👋 I'm SmartTech's assistant. Pick a topic below or type your question.",
+        greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need: CCTV, network, fire alarm, access control, electrical works or automation.",
         quickIntents: [
-          { id: "cctv", label: "CCTV" },
-          { id: "network", label: "Network" },
-          { id: "fire", label: "Fire alarm" },
-          { id: "access", label: "Access control" },
-          { id: "electrical", label: "Electrical" },
-          { id: "automation", label: "Automation" },
+          { id: "services", label: "Services" },
           { id: "price", label: "Pricing" },
-          { id: "warranty", label: "Warranty" },
-          { id: "maintenance", label: "Maintenance" },
-          { id: "experience", label: "Experience" },
-          { id: "coverage", label: "Coverage" },
+          { id: "timeline", label: "Timeline" },
+          { id: "contact", label: "Contact" },
           { id: "survey", label: "Project brief" }
         ],
         surveyIntro: "Great, let's collect a short brief so our specialist can understand the request quickly.",
@@ -3142,17 +2561,7 @@
         reminderStatus: "Brief saved",
         replies: {
           services: "We deliver video surveillance, fire and alarm systems, network solutions, electrical works and automation.",
-          cctv: "CCTV: IP/HD cameras, NVR/DVR archive, PoE network and remote viewing. Tell us about the site and we'll suggest the right setup.",
-          network: "Network solutions: LAN/Wi-Fi, routers, switches, firewall and structured cabling for stable and secure operation.",
-          fire: "Fire alarm and evacuation systems: detectors, panels and notification lines, designed to safety codes.",
-          access: "Access control: card/code entry, intercom, turnstiles and remote management.",
-          electrical: "Electrical works: power lines, distribution panels, lighting and cable routes with quality installation.",
-          automation: "Automation and BMS: device control, scenarios and integration of systems into one logic.",
           price: "Accurate pricing depends on your facility and scope. Share a short brief and our team will prepare an estimate.",
-          warranty: "Yes, we provide a warranty on all works and installed equipment. The term depends on the system and the device manufacturer.",
-          maintenance: "Yes, we offer scheduled maintenance, fault repair and system updates - by contract or on call.",
-          experience: "Smart Tech has operated since 2012, with 100+ completed projects and 80+ engineering specialists.",
-          coverage: "We work in Yerevan and across Armenia. For larger objects we also discuss regional projects.",
           timeline: "Small projects usually take 3-7 days, medium ones 1-3 weeks. Final timing is confirmed after survey.",
           contact: "You can email {email}, or open our contact page: {contactPage}",
           fallback: "Thanks. Please share your request in 1-2 sentences and our team will follow up quickly."
@@ -3162,7 +2571,6 @@
         title: "Быстрый чат",
         subtitle: "Ассистент SmartTech на связи",
         quickLabel: "Быстрые вопросы",
-        fullPageLabel: "Открыть полную AI-страницу",
         statusLabel: "Онлайн · до 10 вопросов",
         openLabel: "Открыть чат",
         closeLabel: "Закрыть чат",
@@ -3174,19 +2582,12 @@
         limitReached: "В этом быстром чате уже использовано 10 вопросов. Чтобы продолжить, оставьте телефон или напишите на info@smarttechllc.am.",
         limitButton: "Готово",
         typing: "печатает...",
-        greeting: "Здравствуйте 👋 Я ассистент SmartTech. Выберите тему ниже или напишите свой вопрос.",
+        greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж или автоматизация.",
         quickIntents: [
-          { id: "cctv", label: "Видеонаблюдение" },
-          { id: "network", label: "Сеть" },
-          { id: "fire", label: "Пожарная" },
-          { id: "access", label: "Контроль доступа" },
-          { id: "electrical", label: "Электромонтаж" },
-          { id: "automation", label: "Автоматизация" },
+          { id: "services", label: "Услуги" },
           { id: "price", label: "Стоимость" },
-          { id: "warranty", label: "Гарантия" },
-          { id: "maintenance", label: "Обслуживание" },
-          { id: "experience", label: "Опыт" },
-          { id: "coverage", label: "Регионы" },
+          { id: "timeline", label: "Сроки" },
+          { id: "contact", label: "Контакты" },
           { id: "survey", label: "Бриф проекта" }
         ],
         surveyIntro: "Хорошо, соберем короткий бриф, чтобы специалист быстро понял задачу.",
@@ -3203,17 +2604,7 @@
         reminderStatus: "Бриф сохранен",
         replies: {
           services: "Мы выполняем видеонаблюдение, пожарные и охранные системы, сетевые решения, электромонтаж и автоматизацию.",
-          cctv: "Видеонаблюдение: IP/HD камеры, архив NVR/DVR, PoE-сеть и удаленный просмотр. Опишите объект — предложим правильный состав.",
-          network: "Сетевые решения: LAN/Wi-Fi, роутеры, коммутаторы, firewall и структурированная кабельная система для стабильной и безопасной работы.",
-          fire: "Системы пожарной сигнализации и оповещения: датчики, панели и линии оповещения по нормам безопасности.",
-          access: "Контроль доступа: вход по карте/коду, домофон, турникеты и удаленное управление.",
-          electrical: "Электромонтаж: силовые линии, распределительные щиты, освещение и кабельные трассы с качественным монтажом.",
-          automation: "Автоматизация и BMS: управление устройствами, сценарии и интеграция систем в единую логику.",
           price: "Точная стоимость зависит от объекта и объема задач. Отправьте краткое описание, и команда подготовит расчет.",
-          warranty: "Да, мы предоставляем гарантию на все работы и установленное оборудование. Срок зависит от системы и производителя устройств.",
-          maintenance: "Да, выполняем плановое обслуживание, устранение неисправностей и обновление систем - по договору или по вызову.",
-          experience: "Smart Tech работает с 2012 года: более 100 реализованных проектов и более 80 инженерно-технических специалистов.",
-          coverage: "Работаем в Ереване и по всей Армении. Для крупных объектов обсуждаем также региональные проекты.",
           timeline: "Небольшие проекты обычно занимают 3-7 дней, средние — 1-3 недели. Финальный срок подтверждаем после обследования.",
           contact: "Можно написать на {email}, или открыть страницу контактов: {contactPage}",
           fallback: "Спасибо. Опишите задачу в 1-2 предложениях, и команда свяжется с вами в ближайшее время."
@@ -3236,7 +2627,6 @@
       title: base.title,
       subtitle: base.subtitle,
       quickLabel: base.quickLabel,
-      fullPageLabel: base.fullPageLabel,
       statusLabel: base.statusLabel,
       openLabel: base.openLabel,
       closeLabel: base.closeLabel,
@@ -3626,185 +3016,6 @@
       });
   }
 
-  var chatPageHistory = [];
-  var chatPageSurvey = null;
-  var chatPageLang = null;
-
-  function setupChatPage() {
-    var root = document.querySelector("[data-chat-page]");
-    if (!root) return;
-
-    var lang = activeChatLanguage();
-    var copy = chatDictionary(lang);
-    var messages = root.querySelector("[data-chat-page-messages]");
-    var quick = root.querySelector("[data-chat-page-quick]");
-    var form = root.querySelector("[data-chat-page-form]");
-    var input = root.querySelector("[data-chat-page-input]");
-    var send = root.querySelector("[data-chat-page-send]");
-    var statusEl = root.querySelector("[data-chat-page-status]");
-    if (!messages || !form || !input || !send) return;
-
-    if (chatPageLang !== lang) {
-      chatPageLang = lang;
-      chatPageHistory = [];
-      chatPageSurvey = null;
-    }
-
-    input.setAttribute("placeholder", copy.inputPlaceholder);
-    input.setAttribute("aria-label", copy.inputPlaceholder);
-    send.textContent = copy.sendLabel;
-    if (statusEl) statusEl.textContent = copy.statusLabel;
-
-    function scrollDown() {
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function appendMessage(role, text, skipHistory) {
-      var item = document.createElement("div");
-      item.className = "chat-page-message chat-page-message-" + role;
-      item.textContent = text;
-      if (typeof protectBrandText === "function") protectBrandText(item);
-      messages.appendChild(item);
-      scrollDown();
-      if (!skipHistory) {
-        chatPageHistory.push({ role: role, text: text });
-      }
-    }
-
-    function showTyping() {
-      var el = document.createElement("div");
-      el.className = "chat-page-message chat-page-message-bot is-typing";
-      el.textContent = copy.typing;
-      var dots = document.createElement("span");
-      dots.className = "chat-page-typing-dots";
-      dots.innerHTML = "<span></span><span></span><span></span>";
-      el.appendChild(dots);
-      messages.appendChild(el);
-      scrollDown();
-      return el;
-    }
-
-    function removeEl(el) {
-      if (el && el.parentNode) el.parentNode.removeChild(el);
-    }
-
-    function setBusy(isBusy) {
-      root.classList.toggle("is-busy", !!isBusy);
-      input.disabled = !!isBusy;
-      send.disabled = !!isBusy;
-      if (quick) {
-        quick.querySelectorAll("button").forEach(function (b) { b.disabled = !!isBusy; });
-      }
-    }
-
-    function startSurvey() {
-      chatPageSurvey = { step: 0, answers: {} };
-      appendMessage("bot", copy.surveyIntro);
-      window.setTimeout(function () {
-        appendMessage("bot", copy.surveyQuestions[0].question);
-      }, 360);
-    }
-
-    function handleSurveyAnswer(text) {
-      if (!chatPageSurvey) return false;
-      var current = copy.surveyQuestions[chatPageSurvey.step];
-      if (!current) return false;
-      chatPageSurvey.answers[current.id] = text;
-      chatPageSurvey.step += 1;
-      if (chatPageSurvey.step >= copy.surveyQuestions.length) {
-        var summary = [copy.surveySummary];
-        copy.surveyQuestions.forEach(function (q) {
-          summary.push("\u2022 " + q.label + ": " + (chatPageSurvey.answers[q.id] || "\u2014"));
-        });
-        summary.push(copy.surveyReminder);
-        var typingEl = showTyping();
-        window.setTimeout(function () {
-          removeEl(typingEl);
-          appendMessage("bot", summary.join("\n"));
-        }, 520);
-        chatPageSurvey = null;
-      } else {
-        var next = copy.surveyQuestions[chatPageSurvey.step].question;
-        var t2 = showTyping();
-        window.setTimeout(function () {
-          removeEl(t2);
-          appendMessage("bot", next);
-        }, 520);
-      }
-      return true;
-    }
-
-    function respondAi(text, intent) {
-      var snapshot = chatPageHistory.slice(-6).map(function (entry) {
-        return { role: entry.role === "user" ? "user" : "bot", text: String(entry.text || "").slice(0, 360) };
-      });
-      var typingEl = showTyping();
-      setBusy(true);
-      requestAiChat(text, copy, snapshot).then(function (data) {
-        removeEl(typingEl);
-        appendMessage("bot", data.reply || copy.replies[intent] || copy.replies.fallback);
-      }).catch(function (error) {
-        removeEl(typingEl);
-        appendMessage("bot", (error && error.reply) || copy.replies[intent] || copy.networkError);
-      }).then(function () {
-        setBusy(false);
-      });
-    }
-
-    function handleUserText(text, intent) {
-      appendMessage("user", text);
-      if (chatPageSurvey && handleSurveyAnswer(text)) return;
-      if (intent === "survey") { startSurvey(); return; }
-      respondAi(text, intent || "fallback");
-    }
-
-    if (quick) {
-      quick.innerHTML = "";
-      copy.quickIntents.forEach(function (item) {
-        var b = document.createElement("button");
-        b.type = "button";
-        b.className = "chat-page-quick-btn notranslate";
-        b.setAttribute("data-intent", item.id);
-        b.setAttribute("translate", "yes");
-        b.textContent = item.label;
-        quick.appendChild(b);
-      });
-      quick.onclick = function (event) {
-        var button = event.target.closest ? event.target.closest("button[data-intent]") : null;
-        if (!button || input.disabled) return;
-        var intent = button.getAttribute("data-intent") || "fallback";
-        if (intent !== "survey" && copy.replies && copy.replies[intent]) {
-          appendMessage("user", button.textContent || "");
-          var typingEl = showTyping();
-          window.setTimeout(function () {
-            removeEl(typingEl);
-            appendMessage("bot", copy.replies[intent]);
-          }, 420);
-          return;
-        }
-        handleUserText(button.textContent || "", intent);
-      };
-    }
-
-    form.onsubmit = function (event) {
-      event.preventDefault();
-      if (input.disabled) return;
-      var value = String(input.value || "").trim();
-      if (!value) return;
-      input.value = "";
-      handleUserText(value, chatIntent(value, lang));
-    };
-
-    messages.innerHTML = "";
-    if (chatPageHistory.length) {
-      chatPageHistory.forEach(function (entry) {
-        appendMessage(entry.role, entry.text, true);
-      });
-    } else {
-      appendMessage("bot", copy.greeting, true);
-    }
-  }
-
   function buildChatUi() {
     var host = document.createElement("div");
     host.className = "auto-chat-shell";
@@ -3822,7 +3033,6 @@
             '<p class="auto-chat-status"><span class="auto-chat-status-dot"></span><span class="auto-chat-status-text"></span></p>' +
             '<h3 class="auto-chat-title"></h3>' +
             '<p class="auto-chat-subtitle"></p>' +
-            '<a class="auto-chat-fullpage notranslate" data-chat-fullpage href="#" translate="no"></a>' +
           "</div>" +
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
@@ -3842,7 +3052,6 @@
       panel: host.querySelector(".auto-chat-panel"),
       title: host.querySelector(".auto-chat-title"),
       subtitle: host.querySelector(".auto-chat-subtitle"),
-      fullpage: host.querySelector("[data-chat-fullpage]"),
       statusText: host.querySelector(".auto-chat-status-text"),
       quickLabel: null,
       close: host.querySelector(".auto-chat-close"),
@@ -3872,11 +3081,6 @@
         var lang = activeChatLanguage();
         var copy = chatDictionary(lang);
         var intent = button.getAttribute("data-intent") || "fallback";
-        if (intent !== "survey" && copy.replies && copy.replies[intent]) {
-          appendChatMessage("user", button.textContent || "");
-          respondByIntent(intent, copy);
-          return;
-        }
         handleChatRequest(button.textContent || "", intent, copy);
       });
     }
@@ -3903,10 +3107,6 @@
     var copy = chatDictionary(lang);
     chatUi.title.textContent = copy.title;
     chatUi.subtitle.textContent = copy.subtitle;
-    if (chatUi.fullpage) {
-      chatUi.fullpage.textContent = copy.fullPageLabel || "";
-      chatUi.fullpage.setAttribute("href", site.utils.pageUrl("chat"));
-    }
     var reminderFlag = false;
     try {
       reminderFlag = window.sessionStorage.getItem("smarttech.chat.survey.completed") === "1";
@@ -3986,7 +3186,6 @@
   window.addEventListener("popstate", render);
 
   setupEntryLoader();
-  setupMobileLayoutMetrics();
 
   if (window.location.protocol === "file:") {
     if (!window.location.hash) {
@@ -4064,7 +3263,6 @@
       { id: "home", label: nav.home || "Գլխավոր" },
       { id: "services", label: nav.services || "Ծառայություններ" },
       { id: "projects", label: nav.projects || "Նախագծեր" },
-      { id: "album", label: nav.projectsAlbum || "\u0531\u0577\u056D\u0561\u057F\u0561\u0576\u0584\u0576\u0565\u0580\u056B \u0561\u056C\u0562\u0578\u0574" },
       { id: "request", label: nav.request || "Հայտ" },
       { id: "team", label: nav.team || "Մեր թիմը" },
       { id: "about", label: nav.about || "Մեր մասին" },
@@ -4286,3 +3484,4 @@
     }
   }
 })(window.SmartTech);
+
