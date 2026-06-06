@@ -1,0 +1,78 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": null,
+  "buildCommand": "npm run web",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "trailingSlash": false,
+  "cleanUrls": true,
+  "regions": ["fra1"],
+  "functions": {
+    "api/[...path].js": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.smarttechllc.am" }],
+      "destination": "https://smarttechllc.am/:path*",
+      "permanent": true
+    },
+    { "source": "/index", "destination": "/home", "permanent": true },
+    { "source": "/index.html", "destination": "/home", "permanent": true },
+    { "source": "/pages", "destination": "/home", "permanent": true },
+    { "source": "/pages/", "destination": "/home", "permanent": true },
+    { "source": "/pages/index", "destination": "/home", "permanent": true },
+    { "source": "/pages/index.html", "destination": "/home", "permanent": true },
+    { "source": "/pages/services", "destination": "/services", "permanent": true },
+    { "source": "/pages/services.html", "destination": "/services", "permanent": true },
+    { "source": "/pages/service", "destination": "/service", "permanent": true },
+    { "source": "/pages/service.html", "destination": "/service", "permanent": true },
+    { "source": "/pages/projects", "destination": "/projects", "permanent": true },
+    { "source": "/pages/projects.html", "destination": "/projects", "permanent": true },
+    { "source": "/pages/project", "destination": "/project", "permanent": true },
+    { "source": "/pages/project.html", "destination": "/project", "permanent": true },
+    { "source": "/pages/our-jobs", "destination": "/projects", "permanent": true },
+    { "source": "/pages/our-jobs.html", "destination": "/projects", "permanent": true },
+    { "source": "/pages/request", "destination": "/request", "permanent": true },
+    { "source": "/pages/request.html", "destination": "/request", "permanent": true },
+    { "source": "/pages/partners", "destination": "/partners", "permanent": true },
+    { "source": "/pages/partners.html", "destination": "/partners", "permanent": true },
+    { "source": "/pages/team", "destination": "/team", "permanent": true },
+    { "source": "/pages/team.html", "destination": "/team", "permanent": true },
+    { "source": "/pages/member", "destination": "/member", "permanent": true },
+    { "source": "/pages/member.html", "destination": "/member", "permanent": true },
+    { "source": "/pages/about", "destination": "/about", "permanent": true },
+    { "source": "/pages/about.html", "destination": "/about", "permanent": true },
+    { "source": "/pages/contact", "destination": "/contact", "permanent": true },
+    { "source": "/pages/contact.html", "destination": "/contact", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/robots.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+    },
+    {
+      "source": "/sitemap.xml",
+      "headers": [{ "key": "Content-Type", "value": "application/xml; charset=utf-8" }]
+    },
+    {
+      "source": "/img/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/src/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
+      "source": "/src/(.*\\.(css|js))",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+    }
+  ]
+}

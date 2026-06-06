@@ -5,16 +5,14 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "node scripts/start-local.js",
-    "local": "node scripts/start-local.js",
-    "preview": "node scripts/start-local.js",
+    "dev": "node tools/start-local.js",
+    "local": "node tools/start-local.js",
+    "preview": "node tools/start-local.js",
     "serve": "node server.js",
     "web": "npm run build",
-    "seo": "node scripts/apply-seo.js",
-    "build": "npm run check && node scripts/build-static.js",
-    "cleanup": "node scripts/cleanup-project.js",
-    "cleanup:apply": "node scripts/cleanup-project.js --apply",
-    "check": "node --check server.js && node --check web/src/main.js && node --check web/src/core/namespace.js && node --check web/src/core/i18n.js && node --check web/src/core/utils.js && node --check web/src/core/runtime-config.js && node --check web/src/sections/header/index.js && node --check web/src/sections/hero/index.js && node --check web/src/sections/services/index.js && node --check web/src/sections/projects/index.js && node --check web/src/sections/album/index.js && node --check web/src/sections/admin/index.js && node --check web/src/sections/chatpage/index.js && node --check web/src/sections/team/index.js && node --check web/src/sections/about/index.js && node --check web/src/sections/contact/index.js && node --check web/src/sections/request/index.js && node --check web/src/sections/footer/index.js && node --check web/src/content/company/index.js && node --check web/src/content/services/index.js && node --check web/src/content/projects/index.js && node --check web/src/content/team/index.js && node --check web/src/content/locales/index.js && node --check web/src/content/navigation/index.js",
+    "seo": "node lib/apply-seo.js",
+    "build": "npm run check && node lib/build-static.js",
+    "check": "node --check server.js && node --check admin/cms-store.js && node --check lib/seo-config.js && node --check lib/build-static.js && node --check lib/apply-seo.js && node --check tools/start-local.js && node --check api/[...path].js && node --check admin/panel.js && node --check admin/cms-editor.js && node --check src/main.js && node --check src/core/namespace.js && node --check src/core/i18n.js && node --check src/core/utils.js && node --check src/core/cms-merge.js && node --check src/core/runtime-config.js && node --check src/sections/header/index.js && node --check src/sections/hero/index.js && node --check src/sections/services/index.js && node --check src/sections/projects/index.js && node --check src/sections/album/index.js && node --check src/sections/chatpage/index.js && node --check src/sections/team/index.js && node --check src/sections/about/index.js && node --check src/sections/contact/index.js && node --check src/sections/request/index.js && node --check src/sections/footer/index.js && node --check src/content/company/index.js && node --check src/content/services/index.js && node --check src/content/projects/index.js && node --check src/content/team/index.js && node --check src/content/locales/index.js && node --check src/content/navigation/index.js",
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {

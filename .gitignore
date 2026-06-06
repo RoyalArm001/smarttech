@@ -5,9 +5,10 @@ npm-debug.log*
 .smarttech-metrics.dat
 dist/
 build/
-data/admin/*.json
-data/admin/*.jsonl
-web/img/admin-album/
+admin/data/*.json
+admin/data/*.jsonl
+admin/data/cms/*.json
+img/admin-album/
 
-# Ignore images directory to keep them off git
-web/images/
+# Ignore legacy images directory to keep them off git
+images/

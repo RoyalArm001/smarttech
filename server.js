@@ -7,6 +7,8 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const sharp = require("sharp");
 const { GoogleGenAI } = require("@google/genai");
+const cms = require("./admin/cms-store");
+const seo = require("./lib/seo-config");
 
 function parseEnvLine(line) {
   const trimmed = String(line || "").trim();
@@ -52,12 +54,12 @@ function jsString(value) {
 }
 
 const rootDir = __dirname;
-const webDir = path.resolve(rootDir, "web");
-const adminDataDir = path.resolve(rootDir, "data", "admin");
+const siteDir = rootDir;
+const adminDataDir = path.resolve(rootDir, "admin", "data");
 const adminAlbumFile = path.resolve(adminDataDir, "album.json");
 const adminSettingsFile = path.resolve(adminDataDir, "settings.json");
 const adminRequestLogFile = path.resolve(adminDataDir, "requests.jsonl");
-const adminAlbumUploadDir = path.resolve(webDir, "img", "admin-album");
+const adminAlbumUploadDir = path.resolve(siteDir, "img", "admin-album");
 const adminSessionCookie = "smarttech_admin";
 const adminSessionTtlMs = 8 * 60 * 60 * 1000;
 const adminUploadMaxBytes = 7 * 1024 * 1024;
@@ -75,7 +77,7 @@ const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խ
 const chatFallbackMessage = "Կներեք, այս պահին չաթը չի կարող պատասխանել։ Խնդրում ենք փորձել քիչ անց։";
 const chatSystemInstruction = [
   "Դու հանդիսանում ես \"SmartTech LLC\" (սմարթ տեք) ընկերության պաշտոնական, բարեհամբույր և պրոֆեսիոնալ AI օգնականը:",
-  "Քո պաշտոնական վեբկայքն է՝ http://www.smarttechllc.am/։ Քո գլխավոր նպատակն է կայքի այցելուներին արագ, հստակ և օգտակար տեղեկատվություն տրամադրել ընկերության ապրանքների, ՏՏ լուծումների և ծառայությունների մասին:",
+  "Քո պաշտոնական վեբկայքն է՝ https://smarttechllc.am/։ Քո գլխավոր նպատակն է կայքի այցելուներին արագ, հստակ և օգտակար տեղեկատվություն տրամադրել ընկերության ապրանքների, ՏՏ լուծումների և ծառայությունների մասին:",
   "Մեր գիտելիքների բազան. SmartTech LLC-ն զբաղվում է համակարգչային, սերվերային և ցանցային տեխնիկայի ներմուծմամբ, մեծածախ ու մանրածախ վաճառքով, համակարգային ինտեգրմամբ և ՏՏ աուդիտով:",
   "Սերվերային համակարգեր. առաջարկում ենք բարձրակարգ սերվերներ, տվյալների պահպանման համակարգեր (SAN, NAS) և կառավարման լուծումներ խոշոր ու միջին բիզնեսների համար:",
   "Ցանցային սարքավորումներ. կոմուտատորներ (Switches), երթուղիչներ (Routers), անվտանգության պատնեշներ (Firewalls) և անլար ցանցային լուծումներ:",
@@ -87,7 +89,7 @@ const chatSystemInstruction = [
   "Թեմայից շեղում. եթե հարցը կապ չունի ՏՏ ոլորտի, սարքավորումների կամ SmartTech-ի հետ, քաղաքավարի մերժիր նույն լեզվով: Հայերեն օրինակ՝ «Ներողություն, ես SmartTech-ի AI օգնականն եմ և կարող եմ պատասխանել միայն մեր ծառայություններին ու ՏՏ սարքավորումներին վերաբերող հարցերին:»"
 ].join(" ");
 const chatSystemInstructionV2 = [
-  "You are the official, friendly and professional AI assistant of SmartTech LLC (Smart Tech), website: http://www.smarttechllc.am/.",
+  "You are the official, friendly and professional AI assistant of SmartTech LLC (Smart Tech), website: https://smarttechllc.am/.",
   "Supported languages are only Armenian, English and Russian. Reply in the same supported language used by the visitor. If the visitor uses another language, politely ask them to write in Armenian, English or Russian.",
   "Keep every answer human, warm and direct. Use at most 2-3 short sentences. Ask only one clear follow-up question when needed, and never ask more than 10 questions during one chat.",
   "Do not answer unrelated requests. If the topic is not SmartTech, IT equipment, engineering systems, security systems or services, politely refuse in the user's language.",
@@ -144,7 +146,9 @@ const mimeTypes = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
   ".json": "application/json; charset=utf-8",
-  ".webmanifest": "application/manifest+json; charset=utf-8"
+  ".webmanifest": "application/manifest+json; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8"
 };
 
 app.disable("x-powered-by");
@@ -446,7 +450,7 @@ function uploadedImageFilePath(publicPath) {
   const image = normalizeAdminImagePath(publicPath);
   if (!image) return null;
 
-  const target = path.resolve(webDir, image.replace(/^\/+/, ""));
+  const target = path.resolve(siteDir, image.replace(/^\/+/, ""));
   if (target !== adminAlbumUploadDir && !target.startsWith(adminAlbumUploadDir + path.sep)) {
     return null;
   }
@@ -730,6 +734,16 @@ const adminApiLimiter = rateLimit({
 });
 
 app.use((request, response, next) => {
+  const host = String(request.headers.host || "").split(":")[0].toLowerCase();
+  if (host === "www.smarttechllc.am") {
+    const target = new URL(request.url, "https://smarttechllc.am");
+    response.redirect(301, target.toString());
+    return;
+  }
+  next();
+});
+
+app.use((request, response, next) => {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   response.setHeader("X-Frame-Options", "DENY");
@@ -737,8 +751,64 @@ app.use((request, response, next) => {
   next();
 });
 
+app.get("/robots.txt", publicApiLimiter, (request, response) => {
+  response.setHeader("Content-Type", "text/plain; charset=utf-8");
+  response.setHeader("Cache-Control", "public, max-age=3600");
+  response.status(200).send(seo.robotsTxt());
+});
+
+app.get("/sitemap.xml", publicApiLimiter, (request, response) => {
+  response.setHeader("Content-Type", "application/xml; charset=utf-8");
+  response.setHeader("Cache-Control", "public, max-age=3600");
+  response.status(200).send(seo.sitemapXml());
+});
+
 app.get("/api/album", publicApiLimiter, (request, response) => {
   jsonResponse(response, 200, publicAlbumPayload());
+});
+
+app.get("/api/content", publicApiLimiter, (request, response) => {
+  jsonResponse(response, 200, cms.publicPayload());
+});
+
+app.get("/api/admin/cms", adminApiLimiter, requireAdmin, (request, response) => {
+  jsonResponse(response, 200, { collections: cms.listCollections() });
+});
+
+app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, (request, response) => {
+  try {
+    jsonResponse(response, 200, cms.adminCollectionPayload(cleanAdminText(request.params.collection, 40)));
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS read failed" });
+  }
+});
+
+app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const collection = cleanAdminText(request.params.collection, 40);
+    const saved = cms.writeCollection(collection, request.body || {});
+    jsonResponse(response, 200, {
+      collection: collection,
+      data: saved,
+      collections: cms.listCollections()
+    });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS save failed" });
+  }
+});
+
+app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const collection = cleanAdminText(request.params.collection, 40);
+    cms.deleteCollection(collection);
+    jsonResponse(response, 200, {
+      collection: collection,
+      deleted: true,
+      collections: cms.listCollections()
+    });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS delete failed" });
+  }
 });
 
 app.post("/api/request", requestSubmitLimiter, express.json({ limit: "12kb" }), sameOriginGuard, (request, response) => {
@@ -962,8 +1032,8 @@ function safeWebPath(urlPath) {
   var relative = normalized === "" || normalized === "home" || normalized === "index"
     ? "pages/index.html"
     : normalized;
-  var target = path.resolve(webDir, relative);
-  if (target !== webDir && !target.startsWith(webDir + path.sep)) {
+  var target = path.resolve(siteDir, relative);
+  if (target !== siteDir && !target.startsWith(siteDir + path.sep)) {
     return null;
   }
   return { relative, target };
@@ -1030,18 +1100,22 @@ function resolveStaticTarget(targetInfo) {
   }
 
   const pageRelative = relative.startsWith("pages/") ? relative.slice("pages/".length) : relative;
-  const aliasedPage = pageShellAliases[pageRelative.replace(/\.html$/i, "")];
-  if (aliasedPage) {
-    candidates.push(path.resolve(webDir, "pages", aliasedPage));
+  const pageKey = pageRelative.replace(/\.html$/i, "");
+  if (pageKey === "admin") {
+    candidates.unshift(path.resolve(siteDir, "admin", "index.html"));
   }
-  const pageTarget = path.resolve(webDir, "pages", pageRelative);
+  const aliasedPage = pageShellAliases[pageKey];
+  if (aliasedPage) {
+    candidates.push(path.resolve(siteDir, "pages", aliasedPage));
+  }
+  const pageTarget = path.resolve(siteDir, "pages", pageRelative);
   candidates.push(pageTarget);
   if (!path.extname(pageTarget)) {
     candidates.push(pageTarget + ".html");
   }
 
   for (const candidate of candidates) {
-    if ((candidate === webDir || candidate.startsWith(webDir + path.sep)) && fs.existsSync(candidate)) {
+    if ((candidate === siteDir || candidate.startsWith(siteDir + path.sep)) && fs.existsSync(candidate)) {
       return candidate;
     }
   }
@@ -1138,4 +1212,8 @@ function startServer(portToUse) {
   });
 }
 
-startServer(defaultPort);
+if (require.main === module) {
+  startServer(defaultPort);
+}
+
+module.exports = app;

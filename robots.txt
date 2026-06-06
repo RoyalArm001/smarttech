@@ -1,0 +1,20 @@
+# Smart Tech LLC robots.txt
+# https://smarttechllc.am/
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: Yandex
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Preferred mirror for Yandex Webmaster
+Host: smarttechllc.am
+
+# Ignore duplicate URL parameters on detail pages
+Clean-param: id /service /project /member
+
+Sitemap: https://smarttechllc.am/sitemap.xml

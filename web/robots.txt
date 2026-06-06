@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-
-# Detail pages use noindex meta tags; they must stay crawlable so crawlers can see those tags.
-
-Sitemap: https://www.smarttechllc.am/sitemap.xml
