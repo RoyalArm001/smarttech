@@ -12,19 +12,19 @@
     "web": "npm run build",
     "seo": "node lib/apply-seo.js",
     "build": "npm run check && node lib/build-static.js",
-    "check": "node --check server.js && node --check admin/cms-store.js && node --check lib/seo-config.js && node --check lib/build-static.js && node --check lib/apply-seo.js && node --check tools/start-local.js && node --check api/[...path].js && node --check admin/panel.js && node --check admin/cms-editor.js && node --check src/main.js && node --check src/core/namespace.js && node --check src/core/i18n.js && node --check src/core/utils.js && node --check src/core/cms-merge.js && node --check src/core/runtime-config.js && node --check src/sections/header/index.js && node --check src/sections/hero/index.js && node --check src/sections/services/index.js && node --check src/sections/projects/index.js && node --check src/sections/album/index.js && node --check src/sections/chatpage/index.js && node --check src/sections/team/index.js && node --check src/sections/about/index.js && node --check src/sections/contact/index.js && node --check src/sections/request/index.js && node --check src/sections/footer/index.js && node --check src/content/company/index.js && node --check src/content/services/index.js && node --check src/content/projects/index.js && node --check src/content/team/index.js && node --check src/content/locales/index.js && node --check src/content/navigation/index.js",
+    "check": "node tools/check-syntax.js",
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "playwright": "^1.60.0",
-    "sharp": "^0.34.5"
+    "playwright": "^1.60.0"
   },
   "dependencies": {
     "@google/genai": "^2.7.0",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2"
+    "express-rate-limit": "^8.5.2",
+    "sharp": "^0.34.5"
   }
 }
