@@ -119,7 +119,7 @@ This repo includes `vercel.json` — connect GitHub to Vercel and deploy with de
 | Build command | `npm run web` |
 | Output directory | `dist` |
 | Install command | `npm install` |
-| Node.js | 20.x |
+| Node.js | 24.x |
 
 **Domains in Vercel**
 

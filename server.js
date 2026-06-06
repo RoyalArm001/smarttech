@@ -153,8 +153,8 @@ const mimeTypes = {
 
 app.disable("x-powered-by");
 
-if (process.env.SMARTTECH_TRUST_PROXY) {
-  app.set("trust proxy", process.env.SMARTTECH_TRUST_PROXY);
+if (process.env.VERCEL || process.env.SMARTTECH_TRUST_PROXY) {
+  app.set("trust proxy", process.env.SMARTTECH_TRUST_PROXY || 1);
 }
 
 const adminSessions = new Map();

@@ -4,7 +4,7 @@
   "framework": null,
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
-  "installCommand": "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install",
+  "installCommand": "npm install --omit=dev",
   "trailingSlash": false,
   "cleanUrls": true,
   "regions": ["fra1"],
