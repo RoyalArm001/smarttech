@@ -4,6 +4,7 @@ npm-debug.log*
 .smarttech-contact-requests.log
 .smarttech-metrics.dat
 dist/
+public/
 build/
 admin/data/*.json
 admin/data/*.jsonl

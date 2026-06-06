@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": null,
-  "buildCommand": "npm run web",
+  "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
   "installCommand": "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install",
   "trailingSlash": false,
@@ -50,9 +50,6 @@
     { "source": "/pages/contact", "destination": "/contact", "permanent": true },
     { "source": "/pages/contact.html", "destination": "/contact", "permanent": true }
   ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
-  ],
   "headers": [
     {
       "source": "/robots.txt",
@@ -63,15 +60,15 @@
       "headers": [{ "key": "Content-Type", "value": "application/xml; charset=utf-8" }]
     },
     {
-      "source": "/img/(.*)",
+      "source": "/img/:path*",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
-      "source": "/src/assets/(.*)",
+      "source": "/src/assets/:path*",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
-      "source": "/src/(.*\\.(css|js))",
+      "source": "/src/:path*",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
     }
   ]

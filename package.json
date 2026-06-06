@@ -12,6 +12,7 @@
     "web": "npm run build",
     "seo": "node lib/apply-seo.js",
     "build": "npm run check && node lib/build-static.js",
+    "vercel-build": "npm run check && node lib/build-static.js",
     "check": "node tools/check-syntax.js",
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
