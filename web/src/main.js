@@ -2851,6 +2851,14 @@
     return bestScore > 0 ? bestIntent : "fallback";
   }
 
+  function chatTopicHint(text) {
+    var normalized = String(text || "").toLowerCase();
+    if (/cctv|camera|cameras|nvr|dvr|տեսահսկ|տեսախց|видеонаб|камер/.test(normalized)) {
+      return "cctv";
+    }
+    return "";
+  }
+
   function simpleQuickIntents(language) {
     var lang = normalizeChatLanguageCode(language);
     var questions = {
@@ -2880,6 +2888,25 @@
       ]
     };
     return questions[lang] || questions.hy;
+  }
+
+  function isLocalChatIntent(intent) {
+    return ["services", "cctv", "price", "timeline", "contact"].indexOf(intent) >= 0;
+  }
+
+  function cctvQuickReply(language) {
+    var replies = {
+      hy: "Տեսահսկման համար նախ պետք է պարզել՝ քանի գոտի եք ուզում վերահսկել, ներսում/դրսում է տեղադրումը, քանի օր արխիվ է պետք և արդյոք հեռախոսով դիտում եք ուզում։ Եթե գրեք օբյեկտի տեսակը ու մոտավոր տեսախցիկների քանակը, կօգնեմ կազմել ճիշտ բրիֆ։",
+      en: "For CCTV we first need the zones, indoor/outdoor points, archive duration and whether mobile remote viewing is needed. Share the object type and approximate camera count, and I will help prepare the right brief.",
+      ru: "Для видеонаблюдения сначала нужны зоны, точки внутри/снаружи, срок архива и нужен ли просмотр с телефона. Напишите тип объекта и примерное количество камер, и я помогу собрать правильный бриф."
+    };
+    return replies[normalizeChatLanguageCode(language)] || replies.hy;
+  }
+
+  function chatReplyForIntent(intent, copy, language) {
+    if (copy && copy.replies && copy.replies[intent]) return copy.replies[intent];
+    if (intent === "cctv") return cctvQuickReply(language);
+    return (copy && copy.replies && copy.replies.fallback) || "";
   }
 
   function startChatSurvey(copy) {
@@ -3146,7 +3173,7 @@
       if (typingEl && typingEl.parentNode) {
         typingEl.parentNode.removeChild(typingEl);
       }
-      appendChatMessage("bot", copy.replies[intent] || copy.replies.fallback);
+      appendChatMessage("bot", chatReplyForIntent(intent, copy, activeChatLanguage()));
     }, 680);
   }
 
@@ -3173,6 +3200,12 @@
       return;
     }
 
+    if (isLocalChatIntent(intent)) {
+      respondByIntent(intent, copy);
+      finishChatTurnIfLimited(copy);
+      return;
+    }
+
     if (chatTypingTimer) {
       window.clearTimeout(chatTypingTimer);
       chatTypingTimer = null;
@@ -3188,7 +3221,7 @@
       })
       .catch(function (error) {
         removeTyping(typingEl);
-        appendChatMessage("bot", error.reply || copy.networkError);
+        appendChatMessage("bot", chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError);
       })
       .then(function () {
         setChatBusy(false, copy);
@@ -3276,7 +3309,7 @@
       ui.input.value = "";
       var lang = activeChatLanguage();
       var copy = chatDictionary(lang);
-      handleChatRequest(value, chatIntent(value, lang), copy);
+      handleChatRequest(value, chatTopicHint(value) || chatIntent(value, lang), copy);
     });
 
     return ui;
@@ -3549,7 +3582,21 @@
       return true;
     }
 
-    function sendMessage(text) {
+    function appendPageIntentReply(intent) {
+      setBusy(true);
+      var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
+
+      window.setTimeout(function () {
+        if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+        var reply = chatReplyForIntent(intent, copy, activeChatLanguage());
+        append("bot", reply);
+        history.push({ role: "bot", text: reply });
+        setBusy(false);
+        if (input) input.focus();
+      }, 420);
+    }
+
+    function sendMessage(text, forcedIntent) {
       var message = String(text || "").trim();
       if (!message || busy) return;
 
@@ -3561,8 +3608,15 @@
         return;
       }
 
-      if (chatIntent(message, activeChatLanguage()) === "survey") {
+      var intent = forcedIntent || chatTopicHint(message) || chatIntent(message, activeChatLanguage());
+
+      if (intent === "survey") {
         startPageSurvey();
+        return;
+      }
+
+      if (isLocalChatIntent(intent)) {
+        appendPageIntentReply(intent);
         return;
       }
 
@@ -3596,6 +3650,7 @@
         })
         .catch(function (error) {
           if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+          error.reply = chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError;
           append("bot", error.reply || "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։");
         })
         .then(function () {
@@ -3611,10 +3666,10 @@
         if (!button) return;
         var intent = button.getAttribute("data-chat-page-intent") || "";
         if (intent === "survey") {
-          sendMessage(button.textContent || "Project brief");
+          sendMessage(button.textContent || "Project brief", intent);
           return;
         }
-        sendMessage(button.getAttribute("data-chat-page-question") || button.textContent);
+        sendMessage(button.getAttribute("data-chat-page-question") || button.textContent, intent);
       });
     }
 
