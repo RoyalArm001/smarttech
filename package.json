@@ -17,7 +17,7 @@
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   },
   "devDependencies": {
     "playwright": "^1.60.0"
