@@ -1,6 +1,6 @@
 .page-hero {
   position: relative;
-  min-height: 430px;
+  min-height: 348px;
   overflow: hidden;
   isolation: isolate;
   color: #ffffff;
@@ -39,16 +39,16 @@
 }
 
 .page-hero-overlay {
-  min-height: 430px;
+  min-height: 348px;
   display: flex;
   align-items: center;
-  padding: 84px 0 58px;
+  padding: 68px 0 46px;
 }
 
 .page-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(320px, 0.54fr);
-  gap: 44px;
+  grid-template-columns: minmax(0, 0.92fr) minmax(260px, 0.46fr);
+  gap: 32px;
   align-items: center;
 }
 
@@ -61,26 +61,27 @@
 }
 
 .page-hero-copy h1 {
-  margin: 10px 0 18px;
-  font-size: clamp(2.15rem, 5vw, 3.85rem);
-  line-height: 1;
+  margin: 8px 0 14px;
+  font-size: clamp(1.9rem, 4.1vw, 3.15rem);
+  line-height: 1.06;
 }
 
 .page-hero-copy p {
-  max-width: 690px;
+  max-width: 640px;
   margin: 0;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 1.08rem;
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
 .page-hero-action {
   width: fit-content;
-  margin-top: 28px;
+  margin-top: 22px;
 }
 
 .page-hero-visual {
   position: relative;
-  min-height: 292px;
+  min-height: 248px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius);
@@ -244,29 +245,30 @@
   }
 
   .page-hero-visual {
-    min-height: 230px;
+    min-height: 210px;
   }
 }
 
 @media (max-width: 560px) {
   .page-hero,
   .page-hero-overlay {
-    min-height: 390px;
+    min-height: 320px;
   }
 
   .page-hero-overlay {
-    padding: 60px 0 34px;
+    padding: 52px 0 30px;
   }
 
   .page-hero-copy h1 {
-    margin: 8px 0 14px;
-    font-size: clamp(1.58rem, 7.8vw, 2rem);
-    line-height: 1.06;
+    margin: 8px 0 12px;
+    font-size: clamp(1.52rem, 7.2vw, 1.92rem);
+    line-height: 1.08;
     overflow-wrap: anywhere;
   }
 
   .page-hero-copy p {
-    font-size: 0.96rem;
+    font-size: 0.94rem;
+    line-height: 1.6;
   }
 
   .page-hero-action {

@@ -782,9 +782,10 @@
         ? labels.directorLabel
         : labels.managersLabel;
     var departmentLabel = person.department || humanDepartmentLabel(member.department);
-    var metaLabel = departmentLabel === roleLabel
+    var cardTitle = person.cardTitle || person.title || member.title;
+    var metaLabel = person.cardMeta || (departmentLabel === roleLabel
       ? departmentLabel
-      : departmentLabel + " / " + roleLabel;
+      : departmentLabel + " / " + roleLabel);
     var extraClass = variant ? " team-person-" + variant : "";
 
     return "" +
@@ -795,7 +796,7 @@
         "</span>" +
         '<span class="team-person-copy">' +
           '<small>' + e(metaLabel) + "</small>" +
-          '<strong>' + e(person.title) + "</strong>" +
+          '<strong>' + e(cardTitle) + "</strong>" +
           '<span>' + e(person.text || "") + "</span>" +
           '<b>' + e(labels.profile) + "</b>" +
         "</span>" +

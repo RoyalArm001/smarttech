@@ -147,6 +147,7 @@
       title: "Moselle Armenia Wellness & Medical SPA",
       works: ["Medical SPA բուժական հատվածում կատարված աշխատանքներ", "UTP մալուխի մոնտաժ", "Կապի մալուխային համակարգի կառուցում", "Ամբողջական աուդիո համակարգի տեղադրում"],
       images: [
+        jobBase + "moselle-armenia-hotel.jpg",
         jobBase + "moselle-medical-hydromassage.png",
         jobBase + "moselle-medical-laboratory.png",
         jobBase + "moselle-medical-electrotherapy.png",
@@ -167,7 +168,7 @@
       id: "pallada-tsaghkadzor",
       title: "Pallada Tsaghkadzor",
       works: ["Ավտոմատ հրդեհային ազդարարում", "Տարհանման ծանուցման համակարգ", "Էլեկտրամոնտաժային աշխատանքներ", "BMS"],
-      images: [jobBase + "pallada-tsaghkadzor.jpg"],
+      images: [jobBase + "pallada-tsaghkadzor.png"],
       systemImages: [system.alarmPanel, system.electrical, system.automation],
       translations: {
         en: { title: "Pallada Tsaghkadzor", works: ["Automatic fire alarm", "Evacuation notification system", "Electrical installation works", "BMS"] },

@@ -4,6 +4,7 @@ const defaultImage = siteUrl + "/img/smart-tech.png";
 const imageAlt = "Smart Tech անվտանգության, էլեկտրամոնտաժման և խելացի համակարգերի լուծումներ";
 const lastmod = "2026-06-01";
 const googleAnalyticsMeasurementId = "G-1SC80R2NZE";
+const yandexVerificationCode = "f75d8ae54fe216ec";
 
 const organization = {
   "@type": ["Organization", "LocalBusiness"],
@@ -423,6 +424,7 @@ function seoHead(route) {
     "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
     "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">",
     "    <meta name=\"robots\" content=\"" + escapeHtml(robots) + "\">",
+    "    <meta name=\"yandex-verification\" content=\"" + yandexVerificationCode + "\">",
     "    <meta name=\"description\" content=\"" + escapeHtml(description) + "\">",
     "    <link rel=\"canonical\" href=\"" + escapeHtml(canonical) + "\">",
     "    <link rel=\"sitemap\" type=\"application/xml\" href=\"" + siteUrl + "/sitemap.xml\">",

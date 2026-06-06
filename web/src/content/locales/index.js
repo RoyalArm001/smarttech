@@ -617,6 +617,38 @@
     "electrical-installation-engineer": { title: "Էլեկտրամոնտաժային ինժեներ", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների համար։" }
   });
 
+  site.content.locales.hy.team = Object.assign({}, site.content.locales.hy.team, {
+    director: {
+      title: "Տնօրեն",
+      cardMeta: "Ղեկավարում",
+      text: "Ղեկավարում է Smart Tech-ի նախագծերը, թիմերի աշխատանքը և որակի վերահսկումը։"
+    },
+    "pm-electrical": {
+      title: "Էլեկտրական համակարգերի նախագծերի ղեկավար",
+      cardTitle: "Էլեկտրական համակարգեր",
+      cardMeta: "Նախագծերի ղեկավարում",
+      text: "Համակարգում է էլեկտրական համակարգերի նախագծումը, մոնտաժը և հանձնումը։"
+    },
+    "pm-cctv": {
+      title: "Տեսահսկման համակարգերի նախագծերի ղեկավար",
+      cardTitle: "Տեսահսկման համակարգեր",
+      cardMeta: "Նախագծերի ղեկավարում",
+      text: "Համակարգում է տեսահսկման և մուտքի վերահսկման նախագծերի ընթացքը։"
+    },
+    "pm-fire-alarm": {
+      title: "Հրդեհային համակարգերի նախագծերի ղեկավար",
+      cardTitle: "Հրդեհային ազդարարում",
+      cardMeta: "Նախագծերի ղեկավարում",
+      text: "Համակարգում է հրդեհային ազդարարման և տարհանման համակարգերի նախագծերը։"
+    },
+    "pm-bms": {
+      title: "BMS համակարգերի նախագծերի ղեկավար",
+      cardTitle: "BMS համակարգեր",
+      cardMeta: "Նախագծերի ղեկավարում",
+      text: "Համակարգում է շենքերի ավտոմատացման և BMS ինտեգրման նախագծերը։"
+    }
+  });
+
   site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
     director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
     "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },

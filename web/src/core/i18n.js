@@ -129,6 +129,8 @@
     var merged = Object.assign({}, baseMember);
 
     if (translated.title) merged.title = translated.title;
+    if (translated.cardTitle) merged.cardTitle = translated.cardTitle;
+    if (translated.cardMeta) merged.cardMeta = translated.cardMeta;
     if (translated.text) merged.text = translated.text;
     if (translated.level) merged.level = translated.level;
     if (translated.experience) merged.experience = translated.experience;

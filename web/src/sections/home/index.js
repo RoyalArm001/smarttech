@@ -14,12 +14,12 @@
         IT: "IT և ցանցեր",
         Security: "Անվտանգություն",
         Technical: "Տեխնիկական համակարգեր",
-        ProjectManagement: "Նախագծերի կառավարում",
+        ProjectManagement: "Նախագծերի ղեկավարում",
         Automation: "Ավտոմատացում",
         BMS: "BMS նախագծում",
         Electrical: "Էլեկտրամոնտաժ",
         Audio: "Աուդիո համակարգեր",
-        Management: "Կառավարում"
+        Management: "Ղեկավարում"
       },
       en: {
         IT: "IT and networks",
@@ -238,7 +238,7 @@
 
     function renderHomeTeamCard(member, extraClass, showText) {
       var localized = site.i18n.teamMember(member);
-      var title = localized.title || member.title;
+      var title = localized.cardTitle || localized.title || member.title;
       var text = localized.text || member.text;
       var department = departmentLabels[member.department] || localized.department || site.i18n.teamDepartment(member.department);
 
