@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
+  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -26,6 +26,8 @@
   var firebaseAuthSessionKey = "smarttech.firebase.anonymousAuth";
   var chatDismissedSessionKey = "smarttech.chat.dismissed";
   var manualThemeStorageKey = "smarttech.theme";
+  var adminAlbumSignature = "";
+  var adminAlbumLoading = false;
   var onlineTranslateScriptLoaded = false;
   var googleUiCleanupTimer = null;
   var languageOutsideClickHandler = null;
@@ -288,6 +290,8 @@
     if (page === "services") return site.sections.services();
     if (page === "service") return site.sections.serviceDetail(currentRoute().id);
     if (page === "projects") return site.sections.projects();
+    if (page === "album") return site.sections.album();
+    if (page === "chat") return site.sections.chatPage();
     if (page === "project") return site.sections.projectDetail(currentRoute().id);
     if (page === "request") return site.sections.request();
     if (page === "member") return site.sections.memberDetail(currentRoute().id);
@@ -585,6 +589,13 @@
       }
     });
 
+    scope.querySelectorAll("img[data-src].is-deferred-src:not([src])").forEach(function (image) {
+      var deferredSrc = image.getAttribute("data-src");
+      if (!deferredSrc) return;
+      image.src = deferredSrc;
+      image.removeAttribute("data-src");
+    });
+
     if (imageFallbackBound) return;
     imageFallbackBound = true;
     document.addEventListener("error", function (event) {
@@ -594,6 +605,53 @@
       if (image.getAttribute("src") === fallback || image.src.indexOf(fallback) >= 0) return;
       image.src = fallback;
     }, true);
+  }
+
+  function normalizeAdminAlbumPhoto(item) {
+    item = item || {};
+    var image = String(item.image || "");
+    if (!/^\/img\/admin-album\/[A-Za-z0-9._-]+\.webp$/i.test(image)) {
+      return null;
+    }
+    return {
+      id: String(item.id || ""),
+      section: item.section === "current" ? "current" : "completed",
+      image: image,
+      title: String(item.title || "Smart Tech").slice(0, 90),
+      caption: String(item.caption || item.title || "Smart Tech").slice(0, 150),
+      status: String(item.status || "").slice(0, 70),
+      createdAt: String(item.createdAt || "")
+    };
+  }
+
+  function loadAdminAlbumPhotosIfNeeded() {
+    if (currentRoute().page !== "album" || adminAlbumLoading || typeof window.fetch !== "function") return;
+    adminAlbumLoading = true;
+
+    window.fetch("/api/album", {
+      cache: "no-store",
+      credentials: "same-origin"
+    })
+      .then(function (response) {
+        return response.ok ? response.json() : { photos: [] };
+      })
+      .then(function (payload) {
+        var photos = ((payload && payload.photos) || [])
+          .map(normalizeAdminAlbumPhoto)
+          .filter(Boolean);
+        var signature = JSON.stringify(photos);
+        if (signature === adminAlbumSignature) return;
+
+        adminAlbumSignature = signature;
+        site.content.adminAlbumPhotos = photos;
+        if (currentRoute().page === "album") {
+          render();
+        }
+      })
+      .catch(function () {})
+      .finally(function () {
+        adminAlbumLoading = false;
+      });
   }
 
   function render() {
@@ -623,14 +681,17 @@
     setupContactForm();
     setupRequestBuilder();
     setupReveal();
+    setupRevealSlides();
     setupFooterYear();
     setupAutoChat();
+    setupChatPage();
     setupBackToTop();
     setupMobileBottomNav();
     updateMobileBottomNavActive();
     setupMetricsAutomation();
     initializeGoogleAnalytics();
     trackGoogleAnalyticsPageView();
+    loadAdminAlbumPhotosIfNeeded();
     resetScroll();
 
     if (!firstRenderDone) {
@@ -801,6 +862,56 @@
     }
     syncMobileMenuGeometry();
 
+    function setNavGroupExpanded(group, expand) {
+      var expandButton = group.querySelector(".nav-expand-btn");
+      var submenu = group.querySelector(".nav-submenu");
+      if (!expandButton || !submenu) return;
+      expandButton.setAttribute("aria-expanded", String(expand));
+      group.classList.toggle("is-expanded", expand);
+      submenu.hidden = !expand;
+      submenu.setAttribute("aria-hidden", String(!expand));
+    }
+
+    function collapseNavSubmenus() {
+      panel.querySelectorAll(".nav-item.has-children").forEach(function (group) {
+        setNavGroupExpanded(group, false);
+      });
+    }
+
+    function syncNavSubmenusOnOpen() {
+      var groups = panel.querySelectorAll(".nav-item.has-children");
+      var activeGroup = null;
+
+      groups.forEach(function (group) {
+        if (group.classList.contains("is-route-active")) {
+          activeGroup = group;
+        }
+      });
+
+      groups.forEach(function (group) {
+        setNavGroupExpanded(group, group === activeGroup);
+      });
+    }
+
+    panel.querySelectorAll(".nav-item.has-children").forEach(function (group) {
+      var expandButton = group.querySelector(".nav-expand-btn");
+      if (!expandButton) return;
+
+      expandButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var willExpand = !group.classList.contains("is-expanded");
+
+        panel.querySelectorAll(".nav-item.has-children").forEach(function (other) {
+          if (other !== group) {
+            setNavGroupExpanded(other, false);
+          }
+        });
+
+        setNavGroupExpanded(group, willExpand);
+      });
+    });
+
     function setMenuState(isOpen, restoreFocus) {
       panel.classList.toggle("is-open", isOpen);
       document.body.classList.toggle("is-menu-open", isOpen);
@@ -811,6 +922,7 @@
       toggle.setAttribute("aria-expanded", String(isOpen));
       panel.setAttribute("aria-hidden", String(!isOpen));
       if (isOpen) {
+        syncNavSubmenusOnOpen();
         window.requestAnimationFrame(syncMobileMenuGeometry);
         panel.scrollTop = 0;
         if (menuEscHandler) {
@@ -835,6 +947,7 @@
           document.addEventListener("click", menuOutsideClickHandler, true);
         }, 0);
       } else {
+        collapseNavSubmenus();
         if (menuEscHandler) {
           document.removeEventListener("keydown", menuEscHandler);
           menuEscHandler = null;
@@ -871,6 +984,13 @@
 
     if (backdrop) {
       backdrop.addEventListener("click", function () {
+        closeMenu(false);
+      });
+    }
+
+    var mobileMenuClose = panel.querySelector("[data-mobile-menu-close]");
+    if (mobileMenuClose) {
+      mobileMenuClose.addEventListener("click", function () {
         closeMenu(false);
       });
     }
@@ -1915,6 +2035,35 @@
     });
   }
 
+  function setupRevealSlides() {
+    var items = document.querySelectorAll(".reveal-slide");
+    if (!items.length) return;
+
+    function revealItem(item) {
+      var delay = Number(item.getAttribute("data-reveal-delay") || 0);
+      window.setTimeout(function () {
+        item.classList.add("is-visible");
+      }, delay);
+    }
+
+    if (!uiSettings.motion || !("IntersectionObserver" in window)) {
+      items.forEach(revealItem);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        revealItem(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+
+    items.forEach(function (item) {
+      observer.observe(item);
+    });
+  }
+
   function setupReveal() {
     var items = document.querySelectorAll(".reveal");
     if (!("IntersectionObserver" in window)) {
@@ -2637,7 +2786,7 @@
       networkError: base.networkError || "Չհաջողվեց կապվել AI օգնականի հետ։ Խնդրում ենք փորձել քիչ անց։",
       typing: base.typing,
       greeting: translateTemplate(base.greeting, vars),
-      quickIntents: base.quickIntents,
+      quickIntents: simpleQuickIntents(activeLanguage),
       surveyIntro: base.surveyIntro,
       surveyQuestions: base.surveyQuestions,
       surveySummary: base.surveySummary,
@@ -2700,6 +2849,37 @@
     });
 
     return bestScore > 0 ? bestIntent : "fallback";
+  }
+
+  function simpleQuickIntents(language) {
+    var lang = normalizeChatLanguageCode(language);
+    var questions = {
+      hy: [
+        { id: "services", label: "Ի՞նչ ծառայություններ ունեք" },
+        { id: "cctv", label: "Տեսահսկում եմ ուզում" },
+        { id: "price", label: "Ինչպե՞ս ստանալ գին" },
+        { id: "timeline", label: "Որքա՞ն է տևում" },
+        { id: "contact", label: "Կապ մասնագետի հետ" },
+        { id: "survey", label: "Լրացնել բրիֆ" }
+      ],
+      en: [
+        { id: "services", label: "What services do you offer?" },
+        { id: "cctv", label: "I need CCTV" },
+        { id: "price", label: "How to get a price?" },
+        { id: "timeline", label: "How long does it take?" },
+        { id: "contact", label: "Contact a specialist" },
+        { id: "survey", label: "Fill project brief" }
+      ],
+      ru: [
+        { id: "services", label: "Какие услуги есть?" },
+        { id: "cctv", label: "Нужно видеонаблюдение" },
+        { id: "price", label: "Как получить цену?" },
+        { id: "timeline", label: "Сколько длится монтаж?" },
+        { id: "contact", label: "Связаться со специалистом" },
+        { id: "survey", label: "Заполнить бриф" }
+      ]
+    };
+    return questions[lang] || questions.hy;
   }
 
   function startChatSurvey(copy) {
@@ -3037,6 +3217,10 @@
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
         '<div class="auto-chat-messages" aria-live="polite"></div>' +
+        '<div class="auto-chat-quick-wrap">' +
+          '<p class="auto-chat-quick-label"></p>' +
+          '<div class="auto-chat-quick-actions"></div>' +
+        "</div>" +
         '<form class="auto-chat-form">' +
           '<input class="auto-chat-input" type="text" autocomplete="off" maxlength="700">' +
           '<button class="auto-chat-send" type="submit"></button>' +
@@ -3053,10 +3237,10 @@
       title: host.querySelector(".auto-chat-title"),
       subtitle: host.querySelector(".auto-chat-subtitle"),
       statusText: host.querySelector(".auto-chat-status-text"),
-      quickLabel: null,
+      quickLabel: host.querySelector(".auto-chat-quick-label"),
       close: host.querySelector(".auto-chat-close"),
       messages: host.querySelector(".auto-chat-messages"),
-      quickActions: null,
+      quickActions: host.querySelector(".auto-chat-quick-actions"),
       form: host.querySelector(".auto-chat-form"),
       input: host.querySelector(".auto-chat-input"),
       send: host.querySelector(".auto-chat-send")
@@ -3099,8 +3283,18 @@
   }
 
   function setupAutoChat() {
+    if (currentRoute().page === "chat") {
+      if (chatUi && chatUi.root) {
+        chatUi.root.hidden = true;
+      }
+      return;
+    }
+
     if (!chatUi) {
       chatUi = buildChatUi();
+    }
+    if (chatUi.root) {
+      chatUi.root.hidden = false;
     }
 
     var lang = activeChatLanguage();
@@ -3149,6 +3343,297 @@
       setChatLimitReached(copy);
     }
     setChatDismissed(isChatDismissed());
+  }
+
+  function setupChatPage() {
+    var root = document.querySelector("[data-chat-page]");
+    if (!root) return;
+
+    var messages = root.querySelector("[data-chat-page-messages]");
+    var form = root.querySelector("[data-chat-page-form]");
+    var input = root.querySelector("[data-chat-page-input]");
+    var send = root.querySelector("[data-chat-page-send]");
+    var status = root.querySelector("[data-chat-page-status]");
+    var quick = root.querySelector("[data-chat-page-quick]");
+    var history = [];
+    var copy = chatDictionary(activeChatLanguage());
+    var pageSurveyState = null;
+    var latestSurveyPayload = null;
+    var busy = false;
+
+    function append(role, text, typing) {
+      var item = document.createElement("div");
+      item.className = "chat-page-message chat-page-message-" + role + (typing ? " is-typing" : "");
+      if (typing) {
+        item.innerHTML = '<span>' + site.utils.escapeHtml(text) + '</span><span class="chat-page-typing-dots"><span></span><span></span><span></span></span>';
+      } else {
+        item.textContent = text;
+      }
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+      return item;
+    }
+
+    function pageHistory() {
+      return history.slice(-8).map(function (entry) {
+        return {
+          role: entry.role === "user" ? "user" : "bot",
+          text: String(entry.text || "").slice(0, 360)
+        };
+      });
+    }
+
+    function setBusy(next) {
+      busy = next;
+      root.classList.toggle("is-busy", busy);
+      if (input) input.disabled = busy;
+      if (send) send.disabled = busy;
+      if (quick) {
+        quick.querySelectorAll("button").forEach(function (button) {
+          button.disabled = busy;
+        });
+      }
+      if (status) {
+        status.textContent = busy ? (status.getAttribute("data-typing-label") || "") : "";
+      }
+    }
+
+    function refreshPageQuickButtons() {
+      if (!quick) return;
+      quick.innerHTML = "";
+      simpleQuickIntents(activeChatLanguage()).forEach(function (item) {
+        var button = document.createElement("button");
+        button.className = "chat-page-quick-btn";
+        button.type = "button";
+        button.setAttribute("data-chat-page-intent", item.id);
+        button.textContent = item.label;
+        quick.appendChild(button);
+      });
+    }
+
+    function surveyMailLabel() {
+      var lang = activeChatLanguage();
+      if (lang === "en") return "Send this request";
+      if (lang === "ru") return "Отправить заявку";
+      return "Ուղարկել հայտը";
+    }
+
+    function surveySubmitLabel() {
+      return "Submit request";
+    }
+
+    function surveySubmittedLabel(id) {
+      var suffix = id ? " #" + String(id).slice(0, 8) : "";
+      return "Request submitted" + suffix + ". Our team can follow up by phone or email.";
+    }
+
+    function surveySubmitErrorLabel() {
+      return "Could not submit the request. Please use the email fallback.";
+    }
+
+    function appendSurveySummary(summaryText, payload) {
+      var item = document.createElement("div");
+      item.className = "chat-page-message chat-page-message-bot chat-page-message-brief";
+      var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
+      item.innerHTML = '<span>' + site.utils.escapeHtml(summaryText) + '</span>' +
+        '<span class="chat-page-brief-actions">' +
+          '<button class="chat-page-submit-action" type="button" data-chat-page-submit-request>' + site.utils.escapeHtml(surveySubmitLabel()) + '</button>' +
+          '<a class="chat-page-mail-action" href="' + site.utils.escapeHtml(site.utils.mailTo(recipient, "Smart Tech project request", summaryText)) + '">' +
+            site.utils.escapeHtml(surveyMailLabel()) +
+          "</a>" +
+        "</span>" +
+        '<small class="chat-page-submit-status" data-chat-page-submit-status></small>';
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+      history.push({ role: "bot", text: summaryText });
+      latestSurveyPayload = payload || null;
+    }
+
+    function startPageSurvey() {
+      pageSurveyState = { step: 0, answers: {} };
+      append("bot", copy.surveyIntro);
+      history.push({ role: "bot", text: copy.surveyIntro });
+      setBusy(true);
+      var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
+      window.setTimeout(function () {
+        if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+        var firstQuestion = copy.surveyQuestions && copy.surveyQuestions[0] ? copy.surveyQuestions[0].question : "";
+        if (firstQuestion) {
+          append("bot", firstQuestion);
+          history.push({ role: "bot", text: firstQuestion });
+        }
+        setBusy(false);
+        if (input) input.focus();
+      }, 560);
+    }
+
+    function completePageSurvey() {
+      var summary = [copy.surveySummary];
+      var answers = {};
+      (copy.surveyQuestions || []).forEach(function (question) {
+        var answer = pageSurveyState.answers[question.id] || "-";
+        answers[question.id] = answer;
+        summary.push("- " + question.label + ": " + answer);
+      });
+      summary.push(copy.surveyReminder);
+      var summaryText = summary.join("\n");
+      var payload = {
+        source: "chat",
+        language: activeChatLanguage(),
+        page: window.location.pathname + window.location.search,
+        contact: answers.contact || "",
+        answers: answers,
+        summary: summaryText
+      };
+      pageSurveyState = null;
+      appendSurveySummary(summaryText, payload);
+    }
+
+    function submitLatestSurvey(button) {
+      if (!latestSurveyPayload || busy) return;
+      var card = button.closest(".chat-page-message-brief");
+      var submitStatus = card ? card.querySelector("[data-chat-page-submit-status]") : null;
+      button.disabled = true;
+      if (submitStatus) submitStatus.textContent = surveySubmitLabel() + "...";
+
+      window.fetch("/api/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(latestSurveyPayload)
+      })
+        .then(function (response) {
+          return response.json().catch(function () {
+            return {};
+          }).then(function (data) {
+            if (!response.ok) {
+              throw new Error(data.error || "Submit failed");
+            }
+            return data;
+          });
+        })
+        .then(function (data) {
+          var message = surveySubmittedLabel(data.id);
+          if (submitStatus) submitStatus.textContent = message;
+          append("bot", message);
+          history.push({ role: "bot", text: message });
+        })
+        .catch(function () {
+          button.disabled = false;
+          if (submitStatus) submitStatus.textContent = surveySubmitErrorLabel();
+        });
+    }
+
+    function handlePageSurveyAnswer(message) {
+      if (!pageSurveyState || !copy.surveyQuestions || !copy.surveyQuestions.length) return false;
+      var current = copy.surveyQuestions[pageSurveyState.step];
+      if (!current) return false;
+
+      pageSurveyState.answers[current.id] = message;
+      pageSurveyState.step += 1;
+      setBusy(true);
+      var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
+
+      window.setTimeout(function () {
+        if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+        if (pageSurveyState && pageSurveyState.step >= copy.surveyQuestions.length) {
+          completePageSurvey();
+        } else if (pageSurveyState) {
+          var nextQuestion = copy.surveyQuestions[pageSurveyState.step].question;
+          append("bot", nextQuestion);
+          history.push({ role: "bot", text: nextQuestion });
+        }
+        setBusy(false);
+        if (input) input.focus();
+      }, 620);
+
+      return true;
+    }
+
+    function sendMessage(text) {
+      var message = String(text || "").trim();
+      if (!message || busy) return;
+
+      var historySnapshot = pageHistory();
+      append("user", message);
+      history.push({ role: "user", text: message });
+
+      if (handlePageSurveyAnswer(message)) {
+        return;
+      }
+
+      if (chatIntent(message, activeChatLanguage()) === "survey") {
+        startPageSurvey();
+        return;
+      }
+
+      setBusy(true);
+
+      var typing = append("bot", status && status.getAttribute("data-typing-label") || "...", true);
+      window.fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: message,
+          page: window.location.pathname,
+          history: historySnapshot
+        })
+      })
+        .then(function (response) {
+          return response.json().then(function (data) {
+            if (!response.ok) {
+              var error = new Error(data.reply || data.error || "");
+              error.reply = data.reply || data.error || "";
+              throw error;
+            }
+            return data;
+          });
+        })
+        .then(function (data) {
+          if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+          var reply = data.reply || "Խնդրում ենք հարցը գրել մի փոքր ավելի հստակ։";
+          append("bot", reply);
+          history.push({ role: "bot", text: reply });
+        })
+        .catch(function (error) {
+          if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
+          append("bot", error.reply || "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։");
+        })
+        .then(function () {
+          setBusy(false);
+          if (input) input.focus();
+        });
+    }
+
+    if (quick) {
+      refreshPageQuickButtons();
+      quick.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-chat-page-question], [data-chat-page-intent]");
+        if (!button) return;
+        var intent = button.getAttribute("data-chat-page-intent") || "";
+        if (intent === "survey") {
+          sendMessage(button.textContent || "Project brief");
+          return;
+        }
+        sendMessage(button.getAttribute("data-chat-page-question") || button.textContent);
+      });
+    }
+
+    if (messages) {
+      messages.addEventListener("click", function (event) {
+        var submitButton = event.target.closest("[data-chat-page-submit-request]");
+        if (!submitButton) return;
+        submitLatestSurvey(submitButton);
+      });
+    }
+
+    if (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var value = input ? input.value : "";
+        if (input) input.value = "";
+        sendMessage(value);
+      });
+    }
   }
 
   function buildBackToTopUi() {
@@ -3218,8 +3703,9 @@
     if (!btn) {
       btn = document.createElement("button");
       btn.className = "pwa-install-btn-header";
-      btn.setAttribute("aria-label", "Install app");
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+      btn.setAttribute("aria-label", "Install Smart Tech app");
+      btn.setAttribute("title", "Install Smart Tech");
+      btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v10.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path><path d="m7.8 10 4.2 4.2 4.2-4.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.4 16.8v1.4A1.8 1.8 0 0 0 7.2 20h9.6a1.8 1.8 0 0 0 1.8-1.8v-1.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
       btn.addEventListener("click", function () {
         if (!pwaDeferredPrompt) return;
         pwaDeferredPrompt.prompt();
@@ -3263,6 +3749,8 @@
       { id: "home", label: nav.home || "Գլխավոր" },
       { id: "services", label: nav.services || "Ծառայություններ" },
       { id: "projects", label: nav.projects || "Նախագծեր" },
+      { id: "album", label: nav.projectsAlbum || "???????????? ?????" },
+      { id: "chat", label: nav.chat || "\u0041\u0049 \u0585\u0563\u0576\u0561\u056F\u0561\u0576" },
       { id: "request", label: nav.request || "Հայտ" },
       { id: "team", label: nav.team || "Մեր թիմը" },
       { id: "about", label: nav.about || "Մեր մասին" },
@@ -3484,4 +3972,3 @@
     }
   }
 })(window.SmartTech);
-

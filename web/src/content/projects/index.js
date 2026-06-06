@@ -167,7 +167,7 @@
       id: "pallada-tsaghkadzor",
       title: "Pallada Tsaghkadzor",
       works: ["Ավտոմատ հրդեհային ազդարարում", "Տարհանման ծանուցման համակարգ", "Էլեկտրամոնտաժային աշխատանքներ", "BMS"],
-      images: [jobBase + "pallada-tsaghkadzor.png"],
+      images: [jobBase + "pallada-tsaghkadzor.jpg"],
       systemImages: [system.alarmPanel, system.electrical, system.automation],
       translations: {
         en: { title: "Pallada Tsaghkadzor", works: ["Automatic fire alarm", "Evacuation notification system", "Electrical installation works", "BMS"] },

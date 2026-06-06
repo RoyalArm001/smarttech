@@ -1100,11 +1100,6 @@
           '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
         "</div>" +
         '<div class="detail-gallery">' + galleryMarkup(images, title, kind === "project" ? chips : null) + "</div>" +
-        '<aside class="detail-gallery-suggestion">' +
-          '<span>' + e(galleryCopy.eyebrow) + "</span>" +
-          '<p>' + e(galleryCopy.suggestion) + "</p>" +
-          '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
-        "</aside>" +
       "</section>" : "";
     var projectGallerySection = kind === "project" && images && images.length ? "" +
       '<section class="detail-gallery-section detail-work-gallery reveal">' +
@@ -1116,11 +1111,6 @@
           '<p class="section-copy">' + e(galleryCopy.text) + "</p>" +
         "</div>" +
         '<div class="detail-gallery">' + galleryMarkup(images, title, kind === "project" ? chips : null) + "</div>" +
-        '<aside class="detail-gallery-suggestion">' +
-          '<span>' + e(galleryCopy.eyebrow) + "</span>" +
-          '<p>' + e(galleryCopy.suggestion) + "</p>" +
-          '<a href="' + e(site.utils.pageUrl("request")) + '">' + e(site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal", "Request"))) + "</a>" +
-        "</aside>" +
       "</section>" : "";
 
     var projectBody = kind === "project" ? (

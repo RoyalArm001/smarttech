@@ -10,16 +10,22 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/img/smart-tech.png",
+      "src": "/img/icons/smarttech-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/img/smart-tech-alt.png",
+      "src": "/img/icons/smarttech-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/img/icons/smarttech-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "lang": "hy",

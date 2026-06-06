@@ -666,16 +666,219 @@
       "</article>";
   }
 
+  function teamPageLabels() {
+    return site.i18n.pickLanguageDictionary({
+      hy: {
+        overviewEyebrow: "Թիմի քարտեզ",
+        overviewTitle: "Մեկ էջում՝ ղեկավարումը, բաժինները և պատասխանատուները",
+        overviewText: "Թիմը ներկայացված է պարզ կառուցվածքով, որպեսզի արագ երևա՝ ով որ ուղղության համար է պատասխանատու և ով է իրականացնում աշխատանքը։",
+        directorLabel: "Ընդհանուր ղեկավարում",
+        managersLabel: "Պատասխանատուներ",
+        specialistsLabel: "Մասնագետներ",
+        profile: "Բացել պրոֆիլը",
+        people: "մարդ",
+        empty: "Այս բաժնում մասնագետներ դեռ նշված չեն։"
+      },
+      en: {
+        overviewEyebrow: "Team map",
+        overviewTitle: "Leadership, departments and responsible people in one clear view",
+        overviewText: "The team is shown as a clean directory so visitors can quickly understand who leads each direction and who delivers the work.",
+        directorLabel: "General leadership",
+        managersLabel: "Responsible leads",
+        specialistsLabel: "Specialists",
+        profile: "Open profile",
+        people: "people",
+        empty: "No specialists are listed for this department yet."
+      },
+      ru: {
+        overviewEyebrow: "Карта команды",
+        overviewTitle: "Руководство, отделы и ответственные в одном понятном виде",
+        overviewText: "Команда показана как простой каталог, чтобы посетитель быстро видел, кто отвечает за направление и кто выполняет работу.",
+        directorLabel: "Общее руководство",
+        managersLabel: "Ответственные",
+        specialistsLabel: "Специалисты",
+        profile: "Открыть профиль",
+        people: "чел.",
+        empty: "В этом отделе специалисты пока не указаны."
+      }
+    }, site.i18n.language || "hy");
+  }
+
+  function departmentOrderValue(department) {
+    var ranks = {
+      ProjectManagement: 1,
+      IT: 2,
+      Security: 3,
+      Electrical: 4,
+      Technical: 5,
+      Automation: 6,
+      BMS: 7,
+      Audio: 8
+    };
+    return ranks[department] || 20;
+  }
+
+  function humanDepartmentLabel(department) {
+    var key = String(department || "Team").trim();
+    var translated = site.i18n.teamDepartment(key);
+    var labels = site.i18n.pickLanguageDictionary({
+      hy: {
+        Management: "Ընդհանուր ղեկավարում",
+        ProjectManagement: "Նախագծերի կառավարում",
+        IT: "IT",
+        Security: "Անվտանգության համակարգեր",
+        Electrical: "Էլեկտրամոնտաժ",
+        Technical: "Տեխնիկական աշխատանքներ",
+        Automation: "Ավտոմատացում",
+        BMS: "BMS",
+        Audio: "Աուդիո համակարգեր",
+        Team: "Թիմ"
+      },
+      en: {
+        Management: "Management",
+        ProjectManagement: "Project Management",
+        IT: "IT",
+        Security: "Security Systems",
+        Electrical: "Electrical Works",
+        Technical: "Technical Works",
+        Automation: "Automation",
+        BMS: "BMS",
+        Audio: "Audio Systems",
+        Team: "Team"
+      },
+      ru: {
+        Management: "Общее руководство",
+        ProjectManagement: "Управление проектами",
+        IT: "IT",
+        Security: "Системы безопасности",
+        Electrical: "Электромонтаж",
+        Technical: "Технические работы",
+        Automation: "Автоматизация",
+        BMS: "BMS",
+        Audio: "Аудиосистемы",
+        Team: "Команда"
+      }
+    });
+
+    if (translated && translated !== key) return translated;
+    return labels[key] || key.replace(/([a-z])([A-Z])/g, "$1 $2");
+  }
+
+  function localizedTeamMember(member) {
+    var localized = site.i18n.teamMember(member);
+    return Object.assign({}, member, localized, {
+      title: localized.title || member.title,
+      text: localized.text || member.text,
+      department: humanDepartmentLabel(member.department)
+    });
+  }
+
+  function renderTeamDirectoryCard(member, variant, labels) {
+    var e = site.utils.escapeHtml;
+    var person = localizedTeamMember(member);
+    var roleLabel = member.roleLevel === "specialist"
+      ? labels.specialistsLabel
+      : member.id === "director"
+        ? labels.directorLabel
+        : labels.managersLabel;
+    var departmentLabel = person.department || humanDepartmentLabel(member.department);
+    var metaLabel = departmentLabel === roleLabel
+      ? departmentLabel
+      : departmentLabel + " / " + roleLabel;
+    var extraClass = variant ? " team-person-" + variant : "";
+
+    return "" +
+      '<a class="team-person-card' + extraClass + ' reveal" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
+        '<span class="team-person-photo">' +
+          '<img src="' + e(member.image) + '" alt="' + e(person.title) + '" loading="lazy" decoding="async">' +
+          '<em>' + e(member.accent) + "</em>" +
+        "</span>" +
+        '<span class="team-person-copy">' +
+          '<small>' + e(metaLabel) + "</small>" +
+          '<strong>' + e(person.title) + "</strong>" +
+          '<span>' + e(person.text || "") + "</span>" +
+          '<b>' + e(labels.profile) + "</b>" +
+        "</span>" +
+      "</a>";
+  }
+
+  function teamDepartmentGroups(members) {
+    var grouped = {};
+    members.forEach(function (member) {
+      var key = member.department || "Team";
+      if (!grouped[key]) {
+        grouped[key] = {
+          key: key,
+          color: member.color || "#0aa896",
+          members: []
+        };
+      }
+      if (member.roleLevel === "manager" || member.roleLevel === "lead") {
+        grouped[key].color = member.color || grouped[key].color;
+      }
+      grouped[key].members.push(member);
+    });
+
+    return Object.keys(grouped).map(function (key) {
+      var group = grouped[key];
+      group.members = group.members.sort(sortTeamMembers);
+      group.managers = group.members.filter(isManager);
+      group.specialists = group.members.filter(function (member) {
+        return !isManager(member);
+      });
+      return group;
+    }).sort(function (a, b) {
+      return departmentOrderValue(a.key) - departmentOrderValue(b.key);
+    });
+  }
+
+  function renderDepartmentBlock(group, labels) {
+    var e = site.utils.escapeHtml;
+    var departmentTitle = humanDepartmentLabel(group.key);
+    var count = group.members.length;
+    var managerCards = group.managers.map(function (member) {
+      return renderTeamDirectoryCard(member, "lead", labels);
+    }).join("");
+    var specialistCards = group.specialists.map(function (member) {
+      return renderTeamDirectoryCard(member, "compact", labels);
+    }).join("");
+
+    return "" +
+      '<article class="team-directory-group reveal" style="--team-color: ' + e(group.color || "#0aa896") + '">' +
+        '<header class="team-directory-head">' +
+          '<div>' +
+            '<span class="eyebrow">' + e(departmentTitle) + "</span>" +
+            "<h2>" + e(departmentTitle) + "</h2>" +
+          "</div>" +
+          '<strong>' + e(String(count)) + ' <span>' + e(labels.people) + "</span></strong>" +
+        "</header>" +
+        (managerCards ? (
+          '<div class="team-directory-lane">' +
+            '<p>' + e(labels.managersLabel) + "</p>" +
+            '<div class="team-directory-grid team-directory-grid-leads">' + managerCards + "</div>" +
+          "</div>"
+        ) : "") +
+        '<div class="team-directory-lane">' +
+          '<p>' + e(labels.specialistsLabel) + "</p>" +
+          (specialistCards
+            ? '<div class="team-directory-grid team-directory-grid-compact">' + specialistCards + "</div>"
+            : '<div class="team-directory-empty">' + e(labels.empty) + "</div>") +
+        "</div>" +
+      "</article>";
+  }
+
   site.sections.team = function team() {
     var e = site.utils.escapeHtml;
     var director = getMemberById("director") || site.content.team[0];
     var members = orderedTeamMembers().filter(function (member) {
       return !director || member.id !== director.id;
     });
-    var unitCopy = teamUnitCopy();
-    var unitPanels = renderAllDepartmentPanels(members, unitCopy);
-    var departmentGrid = renderTeamDepartmentsGrid(director);
+    var labels = teamPageLabels();
+    var departmentBlocks = teamDepartmentGroups(members).map(function (group) {
+      return renderDepartmentBlock(group, labels);
+    }).join("");
     var statsMarkup = renderTeamStats(members, director);
+    var directorCard = director ? renderTeamDirectoryCard(director, "director", labels) : "";
 
     return "" +
       site.sections.pageHero({
@@ -690,25 +893,17 @@
       }) +
       '<section id="team-content" class="section team-section">' +
         '<div class="container">' +
-          '<div class="team-org-overview">' +
-            '<div class="team-structure-head reveal">' +
-              '<span class="eyebrow">' + e(site.i18n.get("teamPage.managementEyebrow", "Management")) + "</span>" +
-              "<h2>" + e(site.i18n.get("teamPage.managementTitle", "General team management")) + "</h2>" +
-              "<p>" + e(site.i18n.get("teamPage.managementText", "Managers are shown first, and each direction's specialists are grouped directly below their responsible manager.")) + "</p>" +
+          '<div class="team-directory-shell">' +
+            '<div class="team-directory-intro reveal">' +
+              '<span class="eyebrow">' + e(labels.overviewEyebrow) + "</span>" +
+              "<h2>" + e(labels.overviewTitle) + "</h2>" +
+              "<p>" + e(labels.overviewText) + "</p>" +
             "</div>" +
-            '<div class="team-stats-grid reveal">' + statsMarkup + "</div>" +
-            '<div class="team-hierarchy">' +
-              renderTeamCard(director, "team-card-director team-card-featured") +
-              '<div class="team-tree-connector" aria-hidden="true"></div>' +
-              '<div class="team-departments-grid">' + departmentGrid + "</div>" +
+            '<div class="team-directory-top">' +
+              '<div class="team-directory-lead">' + directorCard + "</div>" +
+              '<div class="team-directory-stats reveal">' + statsMarkup + "</div>" +
             "</div>" +
-          "</div>" +
-          '<div class="team-unit-stack">' +
-            '<div class="team-unit-stack-head reveal">' +
-              "<h2>" + e(site.i18n.get("teamPage.departmentsTitle", "Departments and directions")) + "</h2>" +
-              "<p>" + e(site.i18n.get("teamPage.departmentsText", "Each department has its own manager and attached specialists.")) + "</p>" +
-            "</div>" +
-            unitPanels +
+            '<div class="team-directory-stack">' + departmentBlocks + "</div>" +
           "</div>" +
         "</div>" +
       "</section>";

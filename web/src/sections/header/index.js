@@ -45,6 +45,16 @@
       '</svg>';
   }
 
+  function chatPageSvg() {
+    return '' +
+      '<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">' +
+        '<path d="M7.5 9.25h9" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>' +
+        '<path d="M7.5 13.1h5.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"></path>' +
+        '<path d="M12 21c5.1 0 8.75-3.25 8.75-8.15 0-4.65-3.55-7.85-8.75-7.85s-8.75 3.2-8.75 7.85c0 2.22.82 4.12 2.24 5.53l-.5 2.46c-.08.39.32.71.68.55l2.46-1.1A10.4 10.4 0 0 0 12 21Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path>' +
+        '<path d="M16.9 4.3c.12-.72.74-1.3 1.5-1.3s1.38.58 1.5 1.3c.74.13 1.3.74 1.3 1.5s-.56 1.37-1.3 1.5c-.12.72-.74 1.3-1.5 1.3s-1.38-.58-1.5-1.3c-.74-.13-1.3-.74-1.3-1.5s.56-1.37 1.3-1.5Z" fill="currentColor" opacity=".28"></path>' +
+      '</svg>';
+  }
+
   site.sections.header = function header() {
     var e = site.utils.escapeHtml;
     var company = site.content.company;
@@ -189,6 +199,11 @@
 
     // Theme toggle (day/night) placed in topbar next to language switcher
     var themeToggle = '<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle day/night mode" title="Day / Night mode"></button>';
+    var chatLabel = site.i18n.get("nav.chat", "AI assistant");
+    var chatPageLink = '' +
+      '<a class="chat-page-link' + (page === "chat" ? " is-active" : "") + '" href="' + e(site.utils.pageUrl("chat")) + '" aria-label="' + e(chatLabel) + '" title="' + e(chatLabel) + '">' +
+        chatPageSvg() +
+      "</a>";
 
     return '' +
       '<div class="container header-inner">' +
@@ -217,6 +232,7 @@
           '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-menu-panel">' +
             '<span></span><span></span><span></span>' +
           '</button>' +
+          chatPageLink +
           headerLanguageSwitcher +
           themeToggle +
           '<div class="header-install-slot" data-pwa-install-slot hidden></div>' +

@@ -108,6 +108,26 @@ const routeSeo = {
     schemaType: "CollectionPage",
     includeInSitemap: true
   },
+  admin: {
+    path: "/admin",
+    canonicalPath: "/admin",
+    title: "Smart Tech Admin",
+    description: "Protected Smart Tech administration panel.",
+    pageName: "Admin",
+    robots: "noindex, nofollow",
+    schemaType: "WebPage",
+    includeInSitemap: false
+  },
+  chat: {
+    path: "/chat",
+    canonicalPath: "/chat",
+    title: "AI օգնական | Smart Tech",
+    description: "Smart Tech-ի AI օգնականի առանձին էջ՝ ծառայությունների, նախագծերի, գների և կապի հարցերի արագ պատասխանների համար։",
+    pageName: "AI օգնական",
+    robots: "index, follow",
+    schemaType: "WebPage",
+    includeInSitemap: true
+  },
   "our-jobs": {
     path: "/our-jobs",
     canonicalPath: "/projects",

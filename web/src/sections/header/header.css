@@ -1948,6 +1948,7 @@ body.ui-theme-dark .nav-toggle {
 }
 
 .header-actions .search-trigger,
+.header-actions .chat-page-link,
 .header-actions .theme-toggle,
 .header-actions .nav-toggle,
 .header-actions .pwa-install-btn-header,
@@ -1973,6 +1974,7 @@ body.ui-theme-dark .nav-toggle {
 }
 
 body.ui-theme-dark .header-actions .search-trigger,
+body.ui-theme-dark .header-actions .chat-page-link,
 body.ui-theme-dark .header-actions .theme-toggle,
 body.ui-theme-dark .header-actions .pwa-install-btn-header,
 body.ui-theme-dark .header-actions .header-language-switcher .language-toggle {
@@ -1983,10 +1985,12 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle {
 }
 
 .header-actions .search-trigger:hover,
+.header-actions .chat-page-link:hover,
 .header-actions .theme-toggle:hover,
 .header-actions .pwa-install-btn-header:hover,
 .header-actions .header-language-switcher .language-toggle:hover,
 .header-actions .search-trigger:focus-visible,
+.header-actions .chat-page-link:focus-visible,
 .header-actions .theme-toggle:focus-visible,
 .header-actions .pwa-install-btn-header:focus-visible,
 .header-actions .header-language-switcher .language-toggle:focus-visible {
@@ -1998,10 +2002,12 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle {
 }
 
 body.ui-theme-dark .header-actions .search-trigger:hover,
+body.ui-theme-dark .header-actions .chat-page-link:hover,
 body.ui-theme-dark .header-actions .theme-toggle:hover,
 body.ui-theme-dark .header-actions .pwa-install-btn-header:hover,
 body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:hover,
 body.ui-theme-dark .header-actions .search-trigger:focus-visible,
+body.ui-theme-dark .header-actions .chat-page-link:focus-visible,
 body.ui-theme-dark .header-actions .theme-toggle:focus-visible,
 body.ui-theme-dark .header-actions .pwa-install-btn-header:focus-visible,
 body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:focus-visible {
@@ -2010,12 +2016,34 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
 }
 
 .header-actions .search-trigger svg,
+.header-actions .chat-page-link svg,
 .header-actions .theme-toggle svg,
 .header-actions .pwa-install-btn-header svg {
   display: block;
   width: var(--header-action-icon);
   height: var(--header-action-icon);
   pointer-events: none;
+}
+
+.header-actions .pwa-install-btn-header img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.header-actions .chat-page-link {
+  order: 1;
+  flex: 0 0 var(--header-action-size);
+  text-decoration: none;
+}
+
+.header-actions .chat-page-link.is-active {
+  border-color: rgba(10, 168, 150, 0.42);
+  background: linear-gradient(145deg, rgba(10, 168, 150, 0.18), rgba(52, 95, 116, 0.14));
+  color: var(--teal-dark);
 }
 
 .header-actions .nav-toggle {
@@ -2050,6 +2078,18 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
   gap: 0;
 }
 
+.header-actions .header-language-switcher {
+  order: 2;
+}
+
+.header-actions .theme-toggle {
+  order: 3;
+}
+
+.header-actions .header-install-slot {
+  order: 4;
+}
+
 .header-actions .header-language-switcher .language-toggle-code,
 .header-actions .header-language-switcher .language-toggle-caret {
   display: none;
@@ -2077,6 +2117,24 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
   .header-actions .header-language-switcher .language-toggle-flag {
     width: 22px;
     height: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-actions .header-language-switcher {
+    order: 0;
+  }
+
+  .header-actions .theme-toggle {
+    order: 1;
+  }
+
+  .header-actions .chat-page-link {
+    order: 2;
+  }
+
+  .header-actions .header-install-slot {
+    order: 3;
   }
 }
 
@@ -2109,10 +2167,6 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
     --header-action-radius: 13px;
     --header-action-icon: 20px;
     gap: 5px;
-  }
-
-  .header-actions .header-install-slot {
-    display: none;
   }
 
   .header-actions .nav-toggle span {

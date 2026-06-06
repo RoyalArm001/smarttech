@@ -899,6 +899,12 @@ body.ui-theme-dark .auto-chat-close {
   text-transform: uppercase;
 }
 
+.auto-chat-quick-wrap {
+  display: grid;
+  gap: 8px;
+}
+
+.auto-chat-quick-actions,
 .auto-chat-actions {
   display: flex;
   flex-wrap: wrap;

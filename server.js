@@ -1,9 +1,11 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { execFile } = require("child_process");
 const { URL } = require("url");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
+const sharp = require("sharp");
 const { GoogleGenAI } = require("@google/genai");
 
 function parseEnvLine(line) {
@@ -51,6 +53,15 @@ function jsString(value) {
 
 const rootDir = __dirname;
 const webDir = path.resolve(rootDir, "web");
+const adminDataDir = path.resolve(rootDir, "data", "admin");
+const adminAlbumFile = path.resolve(adminDataDir, "album.json");
+const adminSettingsFile = path.resolve(adminDataDir, "settings.json");
+const adminRequestLogFile = path.resolve(adminDataDir, "requests.jsonl");
+const adminAlbumUploadDir = path.resolve(webDir, "img", "admin-album");
+const adminSessionCookie = "smarttech_admin";
+const adminSessionTtlMs = 8 * 60 * 60 * 1000;
+const adminUploadMaxBytes = 7 * 1024 * 1024;
+const adminAllowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
 
 loadEnvFile(path.resolve(rootDir, ".env"));
 loadEnvFile(path.resolve(rootDir, ".env.local"));
@@ -58,8 +69,8 @@ loadEnvFile(path.resolve(rootDir, ".env.local"));
 const app = express();
 const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
 const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
-const geminiModel = envValue(["GEMINI_MODEL", "GOOGLE_GEMINI_MODEL"], "gemini-2.5-flash");
-const geminiApiKey = envValue(["GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GOOGLE_API_KEY"], "");
+const defaultGeminiModel = envValue(["GEMINI_MODEL", "GOOGLE_GEMINI_MODEL"], "gemini-2.5-flash");
+const defaultGeminiApiKey = envValue(["GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GOOGLE_API_KEY"], "");
 const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից:";
 const chatFallbackMessage = "Կներեք, այս պահին չաթը չի կարող պատասխանել։ Խնդրում ենք փորձել քիչ անց։";
 const chatSystemInstruction = [
@@ -80,16 +91,35 @@ const chatSystemInstructionV2 = [
   "Supported languages are only Armenian, English and Russian. Reply in the same supported language used by the visitor. If the visitor uses another language, politely ask them to write in Armenian, English or Russian.",
   "Keep every answer human, warm and direct. Use at most 2-3 short sentences. Ask only one clear follow-up question when needed, and never ask more than 10 questions during one chat.",
   "Do not answer unrelated requests. If the topic is not SmartTech, IT equipment, engineering systems, security systems or services, politely refuse in the user's language.",
-  "Site pages you know: Home, Services, Projects, Work Album, Request, Partners, Team, About, Contact, Licenses, Help, FAQ, Terms, Privacy and Disclaimer.",
-  "Company summary: SmartTech LLC designs, supplies, installs, configures and maintains engineering, security, network, electrical and smart building systems for business, residential, hotel, office, retail and production spaces.",
-  "Core services on the website: systems design, equipment supply, installation, automation cabinet assembly, commissioning and programming, control/interface development, video surveillance, fire and security systems, network installation, electrical installation, building automation and smart systems, audio systems and powder coating.",
-  "Security systems: IP cameras, NVR/DVR recorders, remote monitoring, alarm systems, fire alarm, evacuation notification, intercoms, doorphones and access control. SmartTech works with Hikvision and other leading brands.",
-  "IT and network solutions: servers, SAN/NAS storage, switches, routers, firewalls, Wi-Fi, structured cabling, racks, patch panels, server setup, IT audit and IT outsourcing.",
-  "Electrical and automation solutions: power networks, lighting, distribution boards, BMS, access control logic, controllers, automation cabinets, programming, testing and user handover.",
+  "Site pages you know: Home, Services, Projects, Work Album, AI assistant page, Request, Partners, Team, About, Contact, Licenses, Help, FAQ, Terms, Privacy and Disclaimer.",
+  "Company summary: SmartTech LLC designs, supplies, installs, configures and maintains engineering, security, network, electrical, low-current and smart building systems for business, residential, hotel, office, retail and production spaces.",
+  "Main workflow: consultation, object survey/measurement, technical brief, equipment selection, commercial offer, supply, installation, commissioning/programming, user handover and maintenance.",
+  "Core services: system design, equipment supply, installation, automation cabinet assembly, commissioning and programming, control/interface development, video surveillance, fire and security systems, network installation, electrical installation, building automation/BMS, smart systems, audio systems and powder coating.",
+  "Video surveillance knowledge: IP cameras, analog/HDCVI/TVI where needed, indoor/outdoor cameras, PTZ, varifocal lenses, IR/ColorVu/AcuSense style analytics, NVR/DVR, HDD archive sizing, PoE switches, UPS, monitors, remote viewing, mobile app access, motion alerts and network security.",
+  "For CCTV questions ask for object type, indoor/outdoor zones, approximate camera count or area, required archive duration, night vision needs, internet availability and whether remote viewing is needed.",
+  "Security and alarm systems: motion sensors, door/window contacts, smoke/heat detectors, sirens, keypads, GSM/Wi-Fi/LAN modules, mobile notifications, security zones, panic buttons and maintenance.",
+  "Fire safety systems: fire alarm panels, smoke/heat/manual call points, sirens, evacuation voice notification, cable routes, zoning, commissioning and handover. Do not claim legal certification unless explicitly provided; recommend specialist review.",
+  "Access control and intercom: controllers, card/biometric readers, magnetic/electric locks, exit buttons, door closers, turnstiles, visitor logic, staff cards, IP intercoms, apartment monitors, mobile app door opening and event logs.",
+  "IT and network solutions: structured cabling, UTP/fiber, racks, patch panels, switches, routers, firewalls, Wi-Fi coverage, access points, VLANs, UPS, server setup, SAN/NAS storage, IT audit and IT outsourcing.",
+  "Electrical and automation: power lines, lighting, sockets, grounding, distribution boards, circuit breakers, load balancing, automation cabinets, BMS, KNX-style modules, sensors, relays, HVAC/lighting integration, dashboards, scenario programming and testing.",
+  "Audio systems: public address, voice evacuation, background music, zone controllers, amplifiers, microphones, conference audio and speaker placement.",
+  "Powder coating: surface preparation, cleaning, powder application, curing, RAL/NCS colors, protective coatings and quality control.",
+  "Brands and technology families that may be relevant: Hikvision, Dahua, Uniview, Axis, Hanwha, Bosch, Ajax, DSC, Paradox, Satel, Honeywell, ZKTeco, Suprema, HID, Akuvox, BAS-IP, 2N, Cisco, MikroTik, UniFi, Aruba, TP-Link Omada, Schneider Electric, ABB, Legrand, Eaton, Siemens, KNX, HDL, Zennio, Crestron, Control4, Yamaha, Bosch Audio, TOA and JBL Professional. Mention brands as examples, not guaranteed stock.",
   "Projects visible on the website include Abovyan 5/5 Hotel, Amiryan Business Center, Eria Hotel, Dalan Technopark, Wyndham Grand Tsaghkadzor, Only One residential complex, Bedeck Davtashen, Pallada Tsaghkadzor, ULS Data Center, ACBA Bank Sebastia 80, Evocabank, Movenpick Hotel and Wildberries.",
   "Current in-progress projects: Dalan Technopark, Abovyan 5/5 Hotel, Wyndham Grand Tsaghkadzor, Only One Residential Complex, Bedeck Davtashen Residential Complex and Pallada Tsaghkadzor. Wildberries and all other listed projects are completed.",
-  "Contact details: email info@smarttechllc.am, phones +37477424643 and +37496424643, address 10 Vazgen Sargsyan St, Yerevan. For price, order or quotation questions, ask for a phone/email or suggest contacting the specialists.",
-  "For project brief questions, collect only practical details: required service, object type, city/address, approximate size, deadline, contact person and phone/email."
+  "Contact details: email info@smarttechllc.am, phones +37477424643 and +37496424643, address 10 Vazgen Sargsyan St, Yerevan.",
+  "Do not invent exact prices, stock, deadlines, legal guarantees or engineering calculations. For price questions explain that cost depends on object survey, equipment class, cable routes, camera/device count, archive duration and deadlines.",
+  "When a visitor wants a quote, order, request, application or project brief, collect a short questionnaire one question at a time: required service, object type, city/address, approximate scope or device count, deadline, contact person and phone/email. After collecting enough details, summarize the brief and tell them SmartTech can follow up by phone/email.",
+  "If the visitor gives several details at once, do not repeat them; ask only the next missing practical detail.",
+  "If the visitor asks what is needed, give a compact checklist and then ask one qualifying question.",
+  "For maintenance questions explain that useful details are installed system type, brand/model if known, fault symptoms, object address, access time and whether the issue is urgent.",
+  "For troubleshooting questions give safe first checks only: power, network/internet, recorder status, camera/sensor indicator, app login and recent changes. Do not instruct users to open electrical panels or bypass safety systems.",
+  "For equipment selection questions compare practical classes: budget/basic, business/reliable and advanced/analytics. Explain tradeoffs in reliability, archive duration, night image quality, remote access and expandability.",
+  "For network/Wi-Fi questions ask about area, walls/floors, user count, internet speed, existing router/switches, required guest network and coverage dead zones.",
+  "For electrical questions ask for load type, approximate power, cable route, panel location, grounding, drawings and deadline; recommend site survey before final estimate.",
+  "For hotels, offices and residential complexes mention that integrated systems can combine CCTV, access control, intercom, Wi-Fi, fire alarm, public address and BMS into one coordinated project.",
+  "Prefer answers with this structure when useful: short direct answer, 3-5 item checklist, then one next question.",
+  "Use Armenian terms naturally when replying in Armenian: տեսահսկում, հրդեհային ազդանշան, մուտքի վերահսկում, ցանց, էլեկտրամոնտաժ, ավտոմատացում, չափագրում, գնային առաջարկ."
 ].join("\n");
 let geminiClient = null;
 
@@ -112,7 +142,9 @@ const mimeTypes = {
   ".webp": "image/webp",
   ".avif": "image/avif",
   ".svg": "image/svg+xml",
-  ".ico": "image/x-icon"
+  ".ico": "image/x-icon",
+  ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8"
 };
 
 app.disable("x-powered-by");
@@ -121,10 +153,92 @@ if (process.env.SMARTTECH_TRUST_PROXY) {
   app.set("trust proxy", process.env.SMARTTECH_TRUST_PROXY);
 }
 
+const adminSessions = new Map();
+let geminiClientApiKey = "";
+
+const defaultFirebaseDatabaseUrl = envValue([
+  "SMARTTECH_FIREBASE_DATABASE_URL", "FIREBASE_DATABASE_URL",
+  "VITE_FIREBASE_DATABASE_URL", "NEXT_PUBLIC_FIREBASE_DATABASE_URL"
+], "https://jermukguide-f64ef-default-rtdb.firebaseio.com");
+
+const defaultFirebaseStatsPath = envValue([
+  "SMARTTECH_FIREBASE_STATS_PATH", "FIREBASE_STATS_PATH",
+  "VITE_FIREBASE_STATS_PATH", "NEXT_PUBLIC_FIREBASE_STATS_PATH"
+], "BlogID_201588890086708935/PostID_WebsiteStats");
+
+const defaultFirebaseApiKey = envValue([
+  "SMARTTECH_FIREBASE_API_KEY", "FIREBASE_API_KEY",
+  "VITE_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_API_KEY"
+], "");
+
+const defaultFirebaseAuthToken = envValue([
+  "SMARTTECH_FIREBASE_AUTH_TOKEN", "FIREBASE_AUTH_TOKEN",
+  "VITE_FIREBASE_AUTH_TOKEN", "NEXT_PUBLIC_FIREBASE_AUTH_TOKEN"
+], "");
+
+function ensureAdminDataDir() {
+  fs.mkdirSync(adminDataDir, { recursive: true });
+}
+
+function readJsonFile(filePath, fallback) {
+  if (!fs.existsSync(filePath)) return fallback;
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : fallback;
+  } catch (error) {
+    console.warn("Invalid admin JSON file:", path.basename(filePath), error && error.message);
+    return fallback;
+  }
+}
+
+function writeJsonFile(filePath, payload) {
+  ensureAdminDataDir();
+  const tempPath = filePath + "." + process.pid + ".tmp";
+  fs.writeFileSync(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  fs.renameSync(tempPath, filePath);
+}
+
+function readAdminSettings() {
+  return readJsonFile(adminSettingsFile, {});
+}
+
+function writeAdminSettings(settings) {
+  writeJsonFile(adminSettingsFile, settings || {});
+}
+
+function settingValue(settings, key, fallback) {
+  const value = settings && settings[key];
+  if (typeof value === "string" && value.trim()) {
+    return value.trim();
+  }
+  return fallback;
+}
+
+function runtimeGeminiModel(settings) {
+  return settingValue(settings || readAdminSettings(), "geminiModel", defaultGeminiModel);
+}
+
+function runtimeGeminiApiKey(settings) {
+  return settingValue(settings || readAdminSettings(), "geminiApiKey", defaultGeminiApiKey);
+}
+
+function runtimeFirebaseConfig(settings) {
+  const source = settings || readAdminSettings();
+  return {
+    databaseUrl: settingValue(source, "firebaseDatabaseUrl", defaultFirebaseDatabaseUrl),
+    statsPath: settingValue(source, "firebaseStatsPath", defaultFirebaseStatsPath),
+    apiKey: settingValue(source, "firebaseApiKey", defaultFirebaseApiKey),
+    authToken: settingValue(source, "firebaseAuthToken", defaultFirebaseAuthToken)
+  };
+}
+
 function getGeminiClient() {
-  if (!geminiApiKey) return null;
-  if (!geminiClient) {
-    geminiClient = new GoogleGenAI({ apiKey: geminiApiKey });
+  const apiKey = runtimeGeminiApiKey();
+  if (!apiKey) return null;
+  if (!geminiClient || geminiClientApiKey !== apiKey) {
+    geminiClientApiKey = apiKey;
+    geminiClient = new GoogleGenAI({ apiKey });
   }
   return geminiClient;
 }
@@ -134,6 +248,397 @@ function cleanChatText(value, maxLength) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, maxLength);
+}
+
+function cleanAdminText(value, maxLength) {
+  return String(value || "")
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
+}
+
+function cleanRequestText(value, maxLength) {
+  return String(value || "")
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, maxLength);
+}
+
+function jsonResponse(response, status, payload) {
+  response.status(status).type("application/json; charset=utf-8").json(payload);
+}
+
+function httpError(statusCode, message) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
+function randomToken(bytes) {
+  return crypto.randomBytes(bytes || 32).toString("hex");
+}
+
+function parseCookies(request) {
+  const cookies = {};
+  String(request.headers.cookie || "").split(";").forEach((item) => {
+    const index = item.indexOf("=");
+    if (index <= 0) return;
+    const key = item.slice(0, index).trim();
+    const value = item.slice(index + 1).trim();
+    if (!key) return;
+    cookies[key] = decodeURIComponent(value);
+  });
+  return cookies;
+}
+
+function isHttpsRequest(request) {
+  return request.secure || String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim() === "https";
+}
+
+function sessionCookie(token, request) {
+  const parts = [
+    adminSessionCookie + "=" + encodeURIComponent(token),
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Strict",
+    "Max-Age=" + Math.floor(adminSessionTtlMs / 1000)
+  ];
+  if (isHttpsRequest(request)) {
+    parts.push("Secure");
+  }
+  return parts.join("; ");
+}
+
+function clearSessionCookie() {
+  return adminSessionCookie + "=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
+}
+
+function timingSafeStringEquals(actual, expected) {
+  const actualHash = crypto.createHash("sha256").update(String(actual || "")).digest();
+  const expectedHash = crypto.createHash("sha256").update(String(expected || "")).digest();
+  return crypto.timingSafeEqual(actualHash, expectedHash);
+}
+
+function adminPassword() {
+  return envValue(["SMARTTECH_ADMIN_PASSWORD", "ADMIN_PASSWORD"], "");
+}
+
+function getAdminSession(request) {
+  const cookies = parseCookies(request);
+  const token = cookies[adminSessionCookie];
+  if (!token) return null;
+
+  const session = adminSessions.get(token);
+  if (!session) return null;
+
+  if (session.expiresAt <= Date.now()) {
+    adminSessions.delete(token);
+    return null;
+  }
+
+  session.expiresAt = Date.now() + adminSessionTtlMs;
+  return session;
+}
+
+function requireAdmin(request, response, next) {
+  const session = getAdminSession(request);
+  if (!session) {
+    jsonResponse(response, 401, { error: "Unauthorized" });
+    return;
+  }
+  request.adminSession = session;
+  next();
+}
+
+function requireCsrf(request, response, next) {
+  const session = request.adminSession || getAdminSession(request);
+  const token = cleanAdminText(request.headers["x-csrf-token"], 160);
+  if (!session || !token || token !== session.csrfToken) {
+    jsonResponse(response, 403, { error: "CSRF token is invalid" });
+    return;
+  }
+  request.adminSession = session;
+  next();
+}
+
+function sameOriginGuard(request, response, next) {
+  const host = String(request.headers.host || "");
+  const candidates = [request.headers.origin, request.headers.referer].filter(Boolean);
+
+  for (const candidate of candidates) {
+    try {
+      const url = new URL(String(candidate));
+      if (url.host && url.host !== host) {
+        jsonResponse(response, 403, { error: "Cross-origin admin request blocked" });
+        return;
+      }
+    } catch (error) {
+      jsonResponse(response, 403, { error: "Invalid request origin" });
+      return;
+    }
+  }
+
+  next();
+}
+
+function normalizeAlbumSection(section) {
+  return section === "current" ? "current" : "completed";
+}
+
+function normalizeAdminImagePath(value) {
+  const image = cleanAdminText(value, 180);
+  if (!/^\/img\/admin-album\/[A-Za-z0-9._-]+\.webp$/i.test(image)) {
+    return "";
+  }
+  return image;
+}
+
+function normalizeAlbumRecord(record) {
+  if (!record || typeof record !== "object") return null;
+  const image = normalizeAdminImagePath(record.image);
+  if (!image) return null;
+
+  const section = normalizeAlbumSection(record.section);
+  const title = cleanAdminText(record.title, 90) || "Smart Tech";
+  const caption = cleanAdminText(record.caption, 150) || title;
+  const status = cleanAdminText(record.status, 70) || (section === "current" ? "Active work" : "Completed work");
+  const createdAtValue = cleanAdminText(record.createdAt, 40);
+  const createdAt = Number.isNaN(Date.parse(createdAtValue)) ? new Date().toISOString() : new Date(createdAtValue).toISOString();
+
+  return {
+    id: /^[a-f0-9-]{12,80}$/i.test(String(record.id || "")) ? String(record.id) : crypto.randomUUID(),
+    section,
+    image,
+    title,
+    caption,
+    status,
+    createdAt
+  };
+}
+
+function readAlbumStore() {
+  const store = readJsonFile(adminAlbumFile, { photos: [] });
+  return {
+    photos: (Array.isArray(store.photos) ? store.photos : [])
+      .map(normalizeAlbumRecord)
+      .filter(Boolean)
+  };
+}
+
+function writeAlbumStore(store) {
+  writeJsonFile(adminAlbumFile, {
+    photos: (Array.isArray(store.photos) ? store.photos : [])
+      .map(normalizeAlbumRecord)
+      .filter(Boolean)
+  });
+}
+
+function publicAlbumPayload() {
+  const store = readAlbumStore();
+  const photos = store.photos.slice().sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  return { photos };
+}
+
+function uploadedImageFilePath(publicPath) {
+  const image = normalizeAdminImagePath(publicPath);
+  if (!image) return null;
+
+  const target = path.resolve(webDir, image.replace(/^\/+/, ""));
+  if (target !== adminAlbumUploadDir && !target.startsWith(adminAlbumUploadDir + path.sep)) {
+    return null;
+  }
+  return target;
+}
+
+function deleteUploadedImageIfUnused(publicPath, remainingPhotos) {
+  const target = uploadedImageFilePath(publicPath);
+  if (!target) return;
+  const stillUsed = remainingPhotos.some((photo) => photo.image === publicPath);
+  if (stillUsed || !fs.existsSync(target)) return;
+  fs.unlinkSync(target);
+}
+
+async function saveAlbumUpload(upload) {
+  const mime = cleanAdminText(upload && upload.mime, 80).toLowerCase();
+  const dataUrl = String((upload && upload.data) || "");
+  let base64 = dataUrl;
+  let detectedMime = mime;
+  const dataUrlMatch = dataUrl.match(/^data:([^;]+);base64,(.*)$/);
+  if (dataUrlMatch) {
+    detectedMime = cleanAdminText(dataUrlMatch[1], 80).toLowerCase();
+    base64 = dataUrlMatch[2];
+  }
+
+  if (adminAllowedImageTypes.indexOf(detectedMime) < 0 || (mime && mime !== detectedMime)) {
+    throw httpError(400, "Only JPG, PNG and WEBP images are allowed");
+  }
+
+  if (!/^[A-Za-z0-9+/=\r\n]+$/.test(base64) || base64.length > Math.ceil(adminUploadMaxBytes * 1.38)) {
+    throw httpError(400, "Image data is invalid or too large");
+  }
+
+  const sourceBuffer = Buffer.from(base64, "base64");
+  if (!sourceBuffer.length || sourceBuffer.length > adminUploadMaxBytes) {
+    throw httpError(400, "Image size must be 7 MB or less");
+  }
+
+  fs.mkdirSync(adminAlbumUploadDir, { recursive: true });
+  const fileName = Date.now() + "-" + randomToken(8) + ".webp";
+  const target = path.resolve(adminAlbumUploadDir, fileName);
+  if (target !== adminAlbumUploadDir && !target.startsWith(adminAlbumUploadDir + path.sep)) {
+    throw httpError(400, "Invalid upload target");
+  }
+
+  await sharp(sourceBuffer, { failOn: "warning" })
+    .rotate()
+    .resize({ width: 1600, height: 1200, fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 82 })
+    .toFile(target);
+
+  return "/img/admin-album/" + fileName;
+}
+
+function configuredSecurityStatus() {
+  return {
+    sessionMinutes: Math.floor(adminSessionTtlMs / 60000),
+    csrf: true,
+    sameOriginGuard: true,
+    uploadResize: true,
+    uploadMaxMb: Math.floor(adminUploadMaxBytes / (1024 * 1024)),
+    allowedImageTypes: adminAllowedImageTypes
+  };
+}
+
+function adminSettingsPayload() {
+  const settings = readAdminSettings();
+  const firebase = runtimeFirebaseConfig(settings);
+  return {
+    settings: {
+      geminiModel: runtimeGeminiModel(settings),
+      geminiApiKeyConfigured: !!runtimeGeminiApiKey(settings),
+      geminiApiKeyFromAdmin: !!settings.geminiApiKey,
+      firebaseDatabaseUrl: firebase.databaseUrl,
+      firebaseStatsPath: firebase.statsPath,
+      firebaseApiKeyConfigured: !!firebase.apiKey,
+      firebaseApiKeyFromAdmin: !!settings.firebaseApiKey,
+      firebaseAuthTokenConfigured: !!firebase.authToken,
+      firebaseAuthTokenFromAdmin: !!settings.firebaseAuthToken
+    },
+    security: configuredSecurityStatus()
+  };
+}
+
+function normalizedUrlSetting(value, currentValue) {
+  const cleaned = cleanAdminText(value, 280);
+  if (!cleaned) return currentValue;
+  try {
+    const url = new URL(cleaned);
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return currentValue;
+    }
+    return url.toString().replace(/\/+$/g, "");
+  } catch (error) {
+    return currentValue;
+  }
+}
+
+function updateAdminSettings(body) {
+  const current = readAdminSettings();
+  const next = Object.assign({}, current);
+
+  if (Object.prototype.hasOwnProperty.call(body, "geminiModel")) {
+    const model = cleanAdminText(body.geminiModel, 90);
+    if (/^[A-Za-z0-9_.:-]{3,90}$/.test(model)) {
+      next.geminiModel = model;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "firebaseDatabaseUrl")) {
+    next.firebaseDatabaseUrl = normalizedUrlSetting(body.firebaseDatabaseUrl, next.firebaseDatabaseUrl || defaultFirebaseDatabaseUrl);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "firebaseStatsPath")) {
+    const statsPath = cleanAdminText(body.firebaseStatsPath, 180).replace(/^\/+|\/+$/g, "");
+    if (statsPath) {
+      next.firebaseStatsPath = statsPath;
+    }
+  }
+
+  [
+    "geminiApiKey",
+    "firebaseApiKey",
+    "firebaseAuthToken"
+  ].forEach((key) => {
+    if (!Object.prototype.hasOwnProperty.call(body, key)) return;
+    const value = cleanAdminText(body[key], 500);
+    if (value === "__CLEAR__") {
+      delete next[key];
+    } else if (value) {
+      next[key] = value;
+    }
+  });
+
+  writeAdminSettings(next);
+  return adminSettingsPayload();
+}
+
+function normalizeRequestAnswers(answers) {
+  const allowed = ["service", "facility", "location", "size", "timeline", "contact"];
+  const normalized = {};
+  const source = answers && typeof answers === "object" ? answers : {};
+  allowed.forEach((key) => {
+    const value = cleanRequestText(source[key], 240);
+    if (value) normalized[key] = value;
+  });
+  return normalized;
+}
+
+function normalizeRequestPayload(body, request) {
+  const answers = normalizeRequestAnswers(body && body.answers);
+  const summary = cleanRequestText(body && body.summary, 2400);
+  const contact = cleanRequestText((body && body.contact) || answers.contact, 240);
+  const source = cleanRequestText(body && body.source, 40) || "chat";
+  const language = cleanRequestText(body && body.language, 12) || "hy";
+  const page = cleanRequestText(body && body.page, 160) || "";
+
+  if (!summary && !Object.keys(answers).length) {
+    throw httpError(400, "Request details are required");
+  }
+
+  if (!contact && source === "chat") {
+    throw httpError(400, "Contact details are required");
+  }
+
+  return {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    source,
+    language,
+    page,
+    contact,
+    summary,
+    answers,
+    userAgent: cleanRequestText(request.headers["user-agent"], 220),
+    ip: cleanRequestText(request.ip || request.socket && request.socket.remoteAddress, 80)
+  };
+}
+
+function appendRequestLog(entry) {
+  ensureAdminDataDir();
+  fs.appendFileSync(adminRequestLogFile, JSON.stringify(entry) + "\n", "utf8");
+}
+
+function submitPublicRequest(body, request) {
+  const entry = normalizeRequestPayload(body, request);
+  appendRequestLog(entry);
+  return {
+    ok: true,
+    id: entry.id,
+    createdAt: entry.createdAt
+  };
 }
 
 function detectChatLanguage(text) {
@@ -188,6 +693,183 @@ const chatGlobalLimiter = rateLimit({
   handler: chatLimiterHandler
 });
 
+function adminLimiterHandler(request, response) {
+  jsonResponse(response, 429, { error: "Too many requests. Try again in a minute." });
+}
+
+const publicApiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: adminLimiterHandler
+});
+
+const requestSubmitLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: adminLimiterHandler
+});
+
+const adminLoginLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: adminLimiterHandler
+});
+
+const adminApiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 80,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: adminLimiterHandler
+});
+
+app.use((request, response, next) => {
+  response.setHeader("X-Content-Type-Options", "nosniff");
+  response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.setHeader("X-Frame-Options", "DENY");
+  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  next();
+});
+
+app.get("/api/album", publicApiLimiter, (request, response) => {
+  jsonResponse(response, 200, publicAlbumPayload());
+});
+
+app.post("/api/request", requestSubmitLimiter, express.json({ limit: "12kb" }), sameOriginGuard, (request, response) => {
+  try {
+    jsonResponse(response, 201, submitPublicRequest(request.body || {}, request));
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "Request submit failed" });
+  }
+});
+
+app.get("/api/admin/session", adminApiLimiter, (request, response) => {
+  const session = getAdminSession(request);
+  if (!session) {
+    jsonResponse(response, 200, {
+      authenticated: false,
+      adminPasswordConfigured: !!adminPassword()
+    });
+    return;
+  }
+
+  jsonResponse(response, 200, {
+    authenticated: true,
+    csrfToken: session.csrfToken,
+    expiresAt: new Date(session.expiresAt).toISOString(),
+    adminPasswordConfigured: !!adminPassword(),
+    album: publicAlbumPayload(),
+    admin: adminSettingsPayload()
+  });
+});
+
+app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "2kb" }), sameOriginGuard, (request, response) => {
+  const password = adminPassword();
+  if (!password) {
+    jsonResponse(response, 503, { error: "Admin password is not configured" });
+    return;
+  }
+
+  const provided = cleanAdminText(request.body && request.body.password, 400);
+  if (!provided || !timingSafeStringEquals(provided, password)) {
+    jsonResponse(response, 401, { error: "Invalid admin password" });
+    return;
+  }
+
+  const token = randomToken(32);
+  const session = {
+    csrfToken: randomToken(24),
+    createdAt: Date.now(),
+    expiresAt: Date.now() + adminSessionTtlMs
+  };
+  adminSessions.set(token, session);
+  response.setHeader("Set-Cookie", sessionCookie(token, request));
+  jsonResponse(response, 200, {
+    authenticated: true,
+    csrfToken: session.csrfToken,
+    expiresAt: new Date(session.expiresAt).toISOString(),
+    album: publicAlbumPayload(),
+    admin: adminSettingsPayload()
+  });
+});
+
+app.post("/api/admin/logout", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  const cookies = parseCookies(request);
+  if (cookies[adminSessionCookie]) {
+    adminSessions.delete(cookies[adminSessionCookie]);
+  }
+  response.setHeader("Set-Cookie", clearSessionCookie());
+  jsonResponse(response, 200, { authenticated: false });
+});
+
+app.get("/api/admin/settings", adminApiLimiter, requireAdmin, (request, response) => {
+  jsonResponse(response, 200, adminSettingsPayload());
+});
+
+app.put("/api/admin/settings", adminApiLimiter, express.json({ limit: "6kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    jsonResponse(response, 200, updateAdminSettings(request.body || {}));
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "Settings update failed" });
+  }
+});
+
+app.get("/api/admin/album", adminApiLimiter, requireAdmin, (request, response) => {
+  jsonResponse(response, 200, publicAlbumPayload());
+});
+
+app.post("/api/admin/album/images", adminApiLimiter, express.json({ limit: "10mb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  try {
+    const image = await saveAlbumUpload(request.body && request.body.file);
+    const section = normalizeAlbumSection(request.body && request.body.section);
+    const record = normalizeAlbumRecord({
+      id: crypto.randomUUID(),
+      section,
+      image,
+      title: request.body && request.body.title,
+      caption: request.body && request.body.caption,
+      status: request.body && request.body.status,
+      createdAt: new Date().toISOString()
+    });
+
+    if (!record) {
+      throw httpError(400, "Album record is invalid");
+    }
+
+    const store = readAlbumStore();
+    store.photos.unshift(record);
+    writeAlbumStore(store);
+    jsonResponse(response, 201, { photo: record, album: publicAlbumPayload() });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "Image upload failed" });
+  }
+});
+
+app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const id = cleanAdminText(request.params.id, 90);
+    const store = readAlbumStore();
+    const target = store.photos.find((photo) => photo.id === id);
+    if (!target) {
+      jsonResponse(response, 404, { error: "Image not found" });
+      return;
+    }
+
+    const remaining = store.photos.filter((photo) => photo.id !== id);
+    writeAlbumStore({ photos: remaining });
+    deleteUploadedImageIfUnused(target.image, remaining);
+    jsonResponse(response, 200, { deleted: true, album: publicAlbumPayload() });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "Image delete failed" });
+  }
+});
+
 app.post("/api/chat", chatUserLimiter, chatGlobalLimiter, express.json({ limit: "8kb" }), async (request, response) => {
   const message = cleanChatText(request.body && request.body.message, 700);
   const pagePath = cleanChatText(request.body && request.body.page, 120);
@@ -218,7 +900,7 @@ app.post("/api/chat", chatUserLimiter, chatGlobalLimiter, express.json({ limit: 
     });
 
     const geminiResponse = await client.models.generateContent({
-      model: geminiModel,
+      model: runtimeGeminiModel(),
       contents,
       config: {
         systemInstruction: chatSystemInstructionV2,
@@ -389,33 +1071,15 @@ function serveWeb(request, response) {
   let target = resolveStaticTarget(targetInfo);
 
   if (targetInfo.relative.replace(/\\/g, "/") === "src/core/runtime-config.js") {
-    const databaseUrl = envValue([
-      "SMARTTECH_FIREBASE_DATABASE_URL", "FIREBASE_DATABASE_URL",
-      "VITE_FIREBASE_DATABASE_URL", "NEXT_PUBLIC_FIREBASE_DATABASE_URL"
-    ], "https://jermukguide-f64ef-default-rtdb.firebaseio.com");
-
-    const statsPath = envValue([
-      "SMARTTECH_FIREBASE_STATS_PATH", "FIREBASE_STATS_PATH",
-      "VITE_FIREBASE_STATS_PATH", "NEXT_PUBLIC_FIREBASE_STATS_PATH"
-    ], "BlogID_201588890086708935/PostID_WebsiteStats");
-
-    const apiKey = envValue([
-      "SMARTTECH_FIREBASE_API_KEY", "FIREBASE_API_KEY",
-      "VITE_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_API_KEY"
-    ], "");
-
-    const authToken = envValue([
-      "SMARTTECH_FIREBASE_AUTH_TOKEN", "FIREBASE_AUTH_TOKEN",
-      "VITE_FIREBASE_AUTH_TOKEN", "NEXT_PUBLIC_FIREBASE_AUTH_TOKEN"
-    ], "");
+    const firebaseConfig = runtimeFirebaseConfig();
 
     const configContent = [
       "(function (window) {",
       "  window.SmartTechRuntimeConfig = Object.assign({}, window.SmartTechRuntimeConfig, {",
-      "    firebaseDatabaseUrl: " + jsString(databaseUrl) + ",",
-      "    firebaseStatsPath: " + jsString(statsPath) + ",",
-      "    firebaseApiKey: " + jsString(apiKey) + ",",
-      "    firebaseAuthToken: " + jsString(authToken),
+      "    firebaseDatabaseUrl: " + jsString(firebaseConfig.databaseUrl) + ",",
+      "    firebaseStatsPath: " + jsString(firebaseConfig.statsPath) + ",",
+      "    firebaseApiKey: " + jsString(firebaseConfig.apiKey) + ",",
+      "    firebaseAuthToken: " + jsString(firebaseConfig.authToken),
       "  });",
       "})(window);",
       ""

@@ -99,6 +99,22 @@
     });
   }
 
+  function collectAdminAlbumPhotos(section) {
+    return (site.content.adminAlbumPhotos || [])
+      .filter(function (item) {
+        return item && item.section === section && item.image;
+      })
+      .map(function (item, index) {
+        return {
+          image: item.image,
+          title: item.title || "Smart Tech",
+          caption: item.caption || item.title || "Smart Tech",
+          status: item.status || (section === "current" ? "Active work" : "Completed work"),
+          index: index
+        };
+      });
+  }
+
   function photoCard(item, index) {
     var e = site.utils.escapeHtml;
     var sizeClass = index % 9 === 0 ? " is-tall" : index % 5 === 0 ? " is-wide" : "";
@@ -156,8 +172,8 @@
     var e = site.utils.escapeHtml;
     var text = copy();
     var projects = site.content.projects || [];
-    var currentPhotos = collectProjectPhotos(projects, "current");
-    var completedPhotos = collectProjectPhotos(projects, "completed").concat(collectCompletedGalleryPhotos(text));
+    var currentPhotos = collectAdminAlbumPhotos("current").concat(collectProjectPhotos(projects, "current"));
+    var completedPhotos = collectAdminAlbumPhotos("completed").concat(collectProjectPhotos(projects, "completed"), collectCompletedGalleryPhotos(text));
     var heroPhoto = (currentPhotos[0] || completedPhotos[0] || {}).image || (site.content.company.heroImages || [])[0];
 
     return '' +

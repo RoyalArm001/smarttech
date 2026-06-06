@@ -20,7 +20,8 @@
         team: "Մեր թիմը",
         about: "Մեր մասին",
         contact: "Կապ",
-        request: "Պատվիրել"
+        request: "Պատվիրել",
+        chat: "\u0041\u0049 \u0585\u0563\u0576\u0561\u056F\u0561\u0576",
       },
       header: {
         mobile: {
@@ -255,7 +256,8 @@
         team: "Team",
         about: "About",
         contact: "Contact",
-        request: "Request"
+        request: "Request",
+        chat: "AI assistant",
       },
       header: {
         mobile: {
@@ -441,7 +443,8 @@
         team: "Команда",
         about: "О нас",
         contact: "Контакты",
-        request: "Заявка"
+        request: "Заявка",
+        chat: "\u0041\u0049-\u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043D\u0442",
       },
       header: {
         mobile: {

@@ -240,6 +240,7 @@
       var localized = site.i18n.teamMember(member);
       var title = localized.title || member.title;
       var text = localized.text || member.text;
+      var department = departmentLabels[member.department] || localized.department || site.i18n.teamDepartment(member.department);
 
       return "" +
         '<a class="home-team-card ' + e(extraClass || "") + ' reveal" href="' + e(site.utils.pageUrl("member", member.id)) + '" style="--team-color: ' + e(member.color) + '">' +
@@ -248,7 +249,7 @@
             '<small>' + e(member.accent) + "</small>" +
           "</span>" +
           '<span class="home-team-copy">' +
-            '<span class="home-team-department">' + e(localized.department || site.i18n.teamDepartment(member.department)) + "</span>" +
+            '<span class="home-team-department">' + e(department) + "</span>" +
             "<strong>" + e(title) + "</strong>" +
             (showText ? "<em>" + e(text) + "</em>" : "") +
           "</span>" +

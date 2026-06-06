@@ -18,6 +18,7 @@
     "nav.projectsCompleted": { hy: "Ավարտված", en: "Completed", ru: "Завершённые" },
     "nav.projectsGallery": { hy: "Լուսանկարներ", en: "Photos", ru: "Фото" },
     "nav.projectsAlbum": { hy: "Աշխատանքների ալբոմ", en: "Work album", ru: "Альбом работ" },
+    "nav.chat": { hy: "\u0041\u0049 \u0585\u0563\u0576\u0561\u056F\u0561\u0576", en: "AI assistant", ru: "\u0041\u0049-\u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043D\u0442" },
     "nav.teamAll": { hy: "Թիմի էջ", en: "Team page", ru: "Страница команды" },
     "nav.teamMembers": { hy: "Մասնագետներ", en: "Specialists", ru: "Специалисты" }
   };
@@ -47,7 +48,8 @@
     { href: "#team", submenu: true },
     { href: "#partners" },
     { href: "#about" },
-    { href: "#contact" }
+    { href: "#contact" },
+    { href: "#chat" }
   ];
 
   site.content.buildNavChildren = function buildNavChildren(route) {
