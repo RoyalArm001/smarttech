@@ -12,6 +12,7 @@
   var chatUserQuestionCount = 0;
   var chatLimitReached = false;
   var chatSurveyState = null;
+  var chatLatestSurveyPayload = null;
   var backToTopUi = null;
   var licenseViewerUi = null;
   var licenseViewerReady = false;
@@ -1330,6 +1331,19 @@
     var summaryFrame = null;
     var currentRequestStep = 0;
 
+    try {
+      var briefRaw = window.sessionStorage.getItem("smarttech.chat.brief");
+      if (briefRaw) {
+        var briefData = JSON.parse(briefRaw);
+        var notesField = form.querySelector('[name="notes"]');
+        if (notesField && briefData && briefData.summary && !String(notesField.value || "").trim()) {
+          notesField.value = briefData.summary;
+        }
+      }
+    } catch (error) {
+      // Ignore invalid brief payload.
+    }
+
     Array.prototype.forEach.call(form.querySelectorAll("[data-request-qty]"), function (input) {
       quantityInputsBySystem[input.getAttribute("data-request-qty")] = input;
     });
@@ -1967,34 +1981,102 @@
     var status = document.getElementById("form-status");
     if (!form || !status) return;
     var submitButton = form.querySelector("button[type='submit']");
+    var contactInbox = "info@smarttechllc.am";
+    var statusFadeTimer = null;
+    var contactUnlockTimer = null;
 
-    function feedbackText(key) {
+    function feedbackText(key, vars) {
+      vars = vars || {};
       var messages = {
         hy: {
           sending: "Ուղարկվում է...",
-          success: "Հարցումը ստացանք։ Մեր թիմը կապ կհաստատի ձեզ հետ։",
-          fallback: "Եթե պատուհանը չբացվեց, գրեք մեզ էլ․ փոստով կամ WhatsApp/Viber-ով։",
-          error: "Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ կապվեք հեռախոսով։"
+          success: "Հարցումը հաջողությամբ ուղարկվեց։",
+          cooldown: "Հաջորդ հաղորդագրությունը կարող եք ուղարկել 2 ժամ հետո։",
+          blocked: "Հաջորդ հարցումը կարող եք ուղարկել {time} հետո։",
+          fallback: "Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ կապվեք հեռախոսով / WhatsApp / Viber։",
+          error: "Չհաջողվեց ուղարկել։ Փորձեք կրկին կամ կապվեք հեռախոսով։",
+          deliveryFailed: "Հարցումը գրանցվեց, բայց նամակը չհասավ։ Խնդրում ենք զանգել կամ գրել WhatsApp/Viber-ով։"
         },
         en: {
           sending: "Sending request...",
-          success: "Request received. Our team will contact you soon.",
-          fallback: "If the email window did not open, contact us by email, WhatsApp or Viber.",
-          error: "Could not send the request. Please try again or call us."
+          success: "Request sent successfully.",
+          cooldown: "You can send the next message in 2 hours.",
+          blocked: "You can send the next request in {time}.",
+          fallback: "Could not send the request. Please try again or contact us by phone / WhatsApp / Viber.",
+          error: "Could not send the request. Please try again or call us.",
+          deliveryFailed: "We received your request, but the email did not go through. Please call or message us on WhatsApp/Viber."
         },
         ru: {
           sending: "Отправляем заявку...",
-          success: "Заявка получена. Наша команда скоро свяжется с вами.",
-          fallback: "Если окно почты не открылось, напишите нам на email, WhatsApp или Viber.",
-          error: "Не удалось отправить заявку. Попробуйте еще раз или позвоните нам."
+          success: "Заявка успешно отправлена.",
+          cooldown: "Следующее сообщение можно отправить через 2 часа.",
+          blocked: "Следующую заявку можно отправить через {time}.",
+          fallback: "Не удалось отправить заявку. Попробуйте еще раз или свяжитесь по телефону / WhatsApp / Viber.",
+          error: "Не удалось отправить заявку. Попробуйте еще раз или позвоните нам.",
+          deliveryFailed: "Заявка принята, но письмо не отправилось. Пожалуйста, позвоните или напишите в WhatsApp/Viber."
         }
       };
       var lang = activeUiLanguage();
-      return (messages[lang] && messages[lang][key]) || messages.en[key] || messages.hy[key] || "";
+      var text = (messages[lang] && messages[lang][key]) || messages.en[key] || messages.hy[key] || "";
+      return text.replace("{time}", vars.time || "");
+    }
+
+    function clearContactStatus() {
+      if (statusFadeTimer) {
+        window.clearTimeout(statusFadeTimer);
+        statusFadeTimer = null;
+      }
+      status.textContent = "";
+      status.classList.remove("is-success", "is-fading-out", "has-multiline");
+    }
+
+    function showContactStatus(lines, isSuccess, autoHide) {
+      if (statusFadeTimer) {
+        window.clearTimeout(statusFadeTimer);
+        statusFadeTimer = null;
+      }
+      status.classList.remove("is-fading-out");
+      status.classList.toggle("has-multiline", Array.isArray(lines) && lines.length > 1);
+      status.textContent = Array.isArray(lines) ? lines.join("\n") : String(lines || "");
+      status.classList.toggle("is-success", !!isSuccess);
+      if (!autoHide || !status.textContent) return;
+      statusFadeTimer = window.setTimeout(function () {
+        status.classList.add("is-fading-out");
+        window.setTimeout(function () {
+          clearContactStatus();
+        }, 520);
+      }, 8000);
+    }
+
+    function lockContactForm() {
+      form.classList.add("is-submitted-success");
+      if (submitButton) submitButton.disabled = true;
+    }
+
+    function unlockContactForm() {
+      form.classList.remove("is-submitted-success");
+      if (submitButton) submitButton.disabled = false;
+      clearContactStatus();
+    }
+
+    function scheduleContactUnlock() {
+      if (contactUnlockTimer) {
+        window.clearTimeout(contactUnlockTimer);
+        contactUnlockTimer = null;
+      }
+      var lockState = site.utils.getContactSubmitLockState();
+      if (!lockState.locked) {
+        unlockContactForm();
+        return;
+      }
+      lockContactForm();
+      contactUnlockTimer = window.setTimeout(function () {
+        unlockContactForm();
+      }, lockState.remainingMs + 60);
     }
 
     function setBusy(isBusy) {
-      if (submitButton) {
+      if (submitButton && !form.classList.contains("is-submitted-success")) {
         submitButton.disabled = isBusy;
       }
       form.classList.toggle("is-submitting", isBusy);
@@ -2006,7 +2088,33 @@
         name: String(data.get("name") || "").trim(),
         phone: String(data.get("phone") || "").trim(),
         email: String(data.get("email") || "").trim(),
-        message: String(data.get("message") || "").trim()
+        message: String(data.get("message") || "").trim(),
+        website: String(data.get("website") || "").trim()
+      };
+    }
+
+    function buildContactRequestPayload(payload) {
+      var contactLine = [payload.name, payload.phone, payload.email].filter(Boolean).join(" · ");
+      var summary = [
+        "Contact page request",
+        "Name: " + payload.name,
+        "Phone: " + payload.phone,
+        "Email: " + (payload.email || "—"),
+        "",
+        "Message:",
+        payload.message
+      ].join("\n");
+
+      return {
+        source: "contact-page",
+        language: activeUiLanguage(),
+        page: window.location.pathname + window.location.search,
+        contact: contactLine,
+        answers: {
+          contact: contactLine
+        },
+        summary: summary,
+        _trap: payload.website || ""
       };
     }
 
@@ -2019,19 +2127,91 @@
         "Message:",
         payload.message
       ].join("\n");
-      window.location.href = site.utils.mailTo(site.content.contacts.email, "New consultation request from Smart Tech website", body);
-      status.textContent = feedbackText("fallback");
+      window.location.href = site.utils.mailTo(contactInbox, "Smart Tech contact request", body);
+      showContactStatus(feedbackText("fallback"), false, true);
     }
+
+    scheduleContactUnlock();
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var payload = payloadFromForm();
+      if (!payload.name || payload.name.length < 2 || !payload.phone || !payload.message || payload.website) {
+        showContactStatus(feedbackText("error"), false, true);
+        return;
+      }
+      if (String(payload.phone).replace(/\D/g, "").length < 8) {
+        showContactStatus(feedbackText("error"), false, true);
+        return;
+      }
+      if (payload.message.length < 10) {
+        showContactStatus(feedbackText("error"), false, true);
+        return;
+      }
+
+      var lockState = site.utils.getContactSubmitLockState();
+      if (lockState.locked) {
+        var remaining = site.utils.formatContactCooldown(lockState.remainingMs, activeUiLanguage());
+        showContactStatus(feedbackText("blocked", { time: remaining }), true, true);
+        lockContactForm();
+        scheduleContactUnlock();
+        return;
+      }
+
+      var requestPayload = buildContactRequestPayload(payload);
 
       setBusy(true);
-      openEmailFallback(payload);
-      setTimeout(function () {
-        setBusy(false);
-      }, 500);
+      showContactStatus(feedbackText("sending"), false, false);
+
+      window.fetch("/api/request", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestPayload)
+      })
+        .then(function (response) {
+          return response.json().catch(function () {
+            return {};
+          }).then(function (data) {
+            if (!response.ok) {
+              var apiError = new Error((data && data.error) || "Submit failed");
+              apiError.deliveryFailed = response.status === 503 || (data && data.error) === "Delivery failed";
+              throw apiError;
+            }
+            if (!data || data.emailSent !== true) {
+              var legacyError = new Error("Delivery failed");
+              legacyError.deliveryFailed = true;
+              throw legacyError;
+            }
+            return data;
+          });
+        })
+        .then(function (data) {
+          site.utils.setContactSubmitLock();
+          site.utils.recordRequestSubmit(requestPayload);
+          showContactStatus([
+            feedbackText("success"),
+            feedbackText("cooldown")
+          ], true, true);
+          lockContactForm();
+          scheduleContactUnlock();
+          site.utils.showSubmitSuccessCelebration(submitButton || status);
+          form.reset();
+        })
+        .catch(function (error) {
+          var deliveryFailed = !!(error && error.deliveryFailed);
+          showContactStatus(
+            deliveryFailed ? feedbackText("deliveryFailed") : feedbackText("error"),
+            false,
+            true
+          );
+          if (!deliveryFailed) {
+            openEmailFallback(payload);
+          }
+        })
+        .then(function () {
+          setBusy(false);
+        });
     });
   }
 
@@ -2645,25 +2825,61 @@
         limitReached: "Այս արագ չաթում արդեն օգտագործվել է 10 հարց։ Շարունակելու համար թողեք հեռախոսահամար կամ գրեք info@smarttechllc.am։",
         limitButton: "Ավարտված",
         typing: "գրում է...",
-        greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ կամ ավտոմատացում։",
+        greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ է պետք, կամ սեղմեք «Նախագծի բրիֆ»՝ արագ հարցերով հայտ հավաքելու համար։",
         quickIntents: [
+          { id: "survey", label: "Նախագծի բրիֆ" },
           { id: "services", label: "Ծառայություններ" },
           { id: "price", label: "Գների հարց" },
           { id: "timeline", label: "Ժամկետներ" },
-          { id: "contact", label: "Կապ մեզ հետ" },
-          { id: "survey", label: "Նախագծի բրիֆ" }
+          { id: "contact", label: "Կապ մեզ հետ" }
         ],
-        surveyIntro: "Լավ, հավաքենք կարճ բրիֆ՝ մեր մասնագետը արագ կողմնորոշվի։",
+        surveyIntro: "Լավ, 6 արագ հարցով հավաքենք նախագծի բրիֆը։ Ընտրեք պատասխանը կամ գրեք ձեր տարբերակը։",
+        surveyChoiceHint: "Ընտրեք պատասխանը",
         surveyQuestions: [
-          { id: "service", label: "Ծառայություն", question: "Ի՞նչ լուծում է պետք՝ տեսահսկում, ցանց, հրդեհային, մուտքի հսկում, էլեկտրամոնտաժ, թե այլ բան։" },
-          { id: "facility", label: "Օբյեկտ", question: "Ի՞նչ օբյեկտ է՝ բնակարան, գրասենյակ, խանութ, հյուրանոց, պահեստ, թե արտադրամաս։" },
-          { id: "location", label: "Վայր", question: "Ո՞ր քաղաքում կամ հասցեի մոտ է օբյեկտը։" },
-          { id: "size", label: "Ծավալ", question: "Մոտավորապես ինչ չափ է աշխատանքը՝ տարածք, հարկեր կամ սարքերի քանակ։" },
-          { id: "timeline", label: "Ժամկետ", question: "Ե՞րբ եք ուզում սկսել կամ ավարտել աշխատանքը։" },
-          { id: "contact", label: "Կապ", question: "Ո՞ւմ հետ կապվենք։ Գրեք անուն և հեռախոս կամ էլ. հասցե։" }
+          {
+            id: "service",
+            label: "Ծառայություն",
+            question: "Ի՞նչ լուծում է պետք։",
+            options: ["Տեսահսկում", "Ցանց / Wi-Fi", "Հրդեհային", "Մուտքի վերահսկում", "Էլեկտրամոնտաժ", "Ավտոմատացում"]
+          },
+          {
+            id: "facility",
+            label: "Օբյեկտ",
+            question: "Ի՞նչ օբյեկտ է։",
+            options: ["Բնակարան", "Գրասենյակ", "Խանութ", "Հյուրանոց", "Պահեստ", "Արտադրամաս"]
+          },
+          {
+            id: "location",
+            label: "Վայր",
+            question: "Ո՞ր քաղաքում է օբյեկտը։",
+            options: ["Երևան", "Մարզ", "Այլ քաղաք"]
+          },
+          {
+            id: "size",
+            label: "Ծավալ",
+            question: "Մոտավոր ծավալը։",
+            options: ["Փոքր", "Միջին", "Մեծ", "Կգրեմ ես"]
+          },
+          {
+            id: "timeline",
+            label: "Ժամկետ",
+            question: "Ե՞րբ եք ուզում սկսել։",
+            options: ["Անհրաժեշտ", "1 շաբաթ", "2-4 շաբաթ", "1+ ամիս", "Դեռ չգիտեմ"]
+          },
+          {
+            id: "contact",
+            label: "Կապ",
+            question: "Ո՞ւմ հետ կապվենք։ Գրեք անուն և հեռախոս կամ էլ. հասցե։"
+          }
         ],
-        surveySummary: "Ահա գրանցված մանրամասները:",
-        surveyReminder: "Շնորհակալություն։ Տվյալները բավարար են նախնական կապի համար։",
+        surveySummary: "Ահա հավաքված նախագծի բրիֆը.",
+        surveyReminder: "Շնորհակալություն։ Սեղմեք «Ուղարկել Smart Tech-ին»՝ բրիֆը ուղարկելու համար։",
+        submitRequestLabel: "Ուղարկել Smart Tech-ին",
+        openRequestLabel: "Լրացնել հայտի էջում",
+        surveyMailLabel: "Բացել email հավելվածը",
+        surveySubmittedLabel: "Հայտը հաջողությամբ ուղարկվեց։ Թիմը շուտով կկապվի ձեզ հետ։",
+        surveySubmitBlockedLabel: "Դուք արդեն ուղարկել եք հայտ։ Խնդրում ենք սպասել մի փոքր և կրկին փորձել։",
+        surveySubmitError: "Չհաջողվեց ուղարկել։ Փորձեք email-ով կամ հայտի էջից։",
         reminderStatus: "Բրիֆը պահպանված է",
         replies: {
           services: "Մենք առաջարկում ենք տեսահսկման, հրդեհային ու ազդանշանային համակարգեր, ցանցային լուծումներ, էլեկտրական և ավտոմատացման աշխատանքներ.",
@@ -2688,25 +2904,61 @@
         limitReached: "This quick chat has reached the 10-question limit. To continue, leave your phone number or write to info@smarttechllc.am.",
         limitButton: "Done",
         typing: "typing...",
-        greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need: CCTV, network, fire alarm, access control, electrical works or automation.",
+        greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need, or tap Project brief to assemble a request with quick questions.",
         quickIntents: [
+          { id: "survey", label: "Project brief" },
           { id: "services", label: "Services" },
           { id: "price", label: "Pricing" },
           { id: "timeline", label: "Timeline" },
-          { id: "contact", label: "Contact" },
-          { id: "survey", label: "Project brief" }
+          { id: "contact", label: "Contact" }
         ],
-        surveyIntro: "Great, let's collect a short brief so our specialist can understand the request quickly.",
+        surveyIntro: "Great. Let's assemble your project brief in 6 quick steps. Pick an answer or type your own.",
+        surveyChoiceHint: "Pick an answer",
         surveyQuestions: [
-          { id: "service", label: "Service", question: "What solution do you need: CCTV, network, fire alarm, access control, electrical works, automation or something else?" },
-          { id: "facility", label: "Object", question: "What type of place is it: apartment, office, shop, hotel, warehouse or production site?" },
-          { id: "location", label: "Location", question: "Which city or approximate address is the object in?" },
-          { id: "size", label: "Scope", question: "What is the approximate scope: area, floors or number of devices?" },
-          { id: "timeline", label: "Timing", question: "When would you like to start or finish the work?" },
-          { id: "contact", label: "Contact", question: "Who should we contact? Please share a name and phone or email." }
+          {
+            id: "service",
+            label: "Service",
+            question: "What solution do you need?",
+            options: ["CCTV", "Network / Wi-Fi", "Fire alarm", "Access control", "Electrical works", "Automation"]
+          },
+          {
+            id: "facility",
+            label: "Object",
+            question: "What type of place is it?",
+            options: ["Apartment", "Office", "Shop", "Hotel", "Warehouse", "Production site"]
+          },
+          {
+            id: "location",
+            label: "Location",
+            question: "Which city is the object in?",
+            options: ["Yerevan", "Region", "Other city"]
+          },
+          {
+            id: "size",
+            label: "Scope",
+            question: "Approximate scope?",
+            options: ["Small", "Medium", "Large", "I will type it"]
+          },
+          {
+            id: "timeline",
+            label: "Timing",
+            question: "When should work start?",
+            options: ["Urgent", "1 week", "2-4 weeks", "1+ month", "Not sure yet"]
+          },
+          {
+            id: "contact",
+            label: "Contact",
+            question: "Who should we contact? Share name and phone or email."
+          }
         ],
-        surveySummary: "Here is what we have recorded:",
-        surveyReminder: "Thank you. This is enough for an initial follow-up.",
+        surveySummary: "Here is your assembled project brief:",
+        surveyReminder: "Thank you. Tap Send to Smart Tech to submit your brief.",
+        submitRequestLabel: "Send to Smart Tech",
+        openRequestLabel: "Open request page",
+        surveyMailLabel: "Open email app",
+        surveySubmittedLabel: "Request sent successfully. Our team will follow up soon.",
+        surveySubmitBlockedLabel: "You already sent a request. Please wait a moment before trying again.",
+        surveySubmitError: "Could not submit. Try email or the request page.",
         reminderStatus: "Brief saved",
         replies: {
           services: "We deliver video surveillance, fire and alarm systems, network solutions, electrical works and automation.",
@@ -2731,25 +2983,61 @@
         limitReached: "В этом быстром чате уже использовано 10 вопросов. Чтобы продолжить, оставьте телефон или напишите на info@smarttechllc.am.",
         limitButton: "Готово",
         typing: "печатает...",
-        greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж или автоматизация.",
+        greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно, или нажмите «Бриф проекта», чтобы быстро собрать заявку.",
         quickIntents: [
+          { id: "survey", label: "Бриф проекта" },
           { id: "services", label: "Услуги" },
           { id: "price", label: "Стоимость" },
           { id: "timeline", label: "Сроки" },
-          { id: "contact", label: "Контакты" },
-          { id: "survey", label: "Бриф проекта" }
+          { id: "contact", label: "Контакты" }
         ],
-        surveyIntro: "Хорошо, соберем короткий бриф, чтобы специалист быстро понял задачу.",
+        surveyIntro: "Хорошо. Соберем бриф проекта в 6 быстрых шагов. Выберите ответ или напишите свой вариант.",
+        surveyChoiceHint: "Выберите ответ",
         surveyQuestions: [
-          { id: "service", label: "Услуга", question: "Какое решение нужно: видеонаблюдение, сеть, пожарная сигнализация, контроль доступа, электромонтаж, автоматизация или другое?" },
-          { id: "facility", label: "Объект", question: "Какой это объект: квартира, офис, магазин, гостиница, склад или производство?" },
-          { id: "location", label: "Локация", question: "В каком городе или примерно по какому адресу находится объект?" },
-          { id: "size", label: "Объем", question: "Какой примерный объем: площадь, этажи или количество устройств?" },
-          { id: "timeline", label: "Срок", question: "Когда хотите начать или завершить работу?" },
-          { id: "contact", label: "Контакт", question: "С кем связаться? Напишите имя и телефон или email." }
+          {
+            id: "service",
+            label: "Услуга",
+            question: "Какое решение нужно?",
+            options: ["Видеонаблюдение", "Сеть / Wi-Fi", "Пожарная сигнализация", "Контроль доступа", "Электромонтаж", "Автоматизация"]
+          },
+          {
+            id: "facility",
+            label: "Объект",
+            question: "Какой это объект?",
+            options: ["Квартира", "Офис", "Магазин", "Гостиница", "Склад", "Производство"]
+          },
+          {
+            id: "location",
+            label: "Локация",
+            question: "В каком городе объект?",
+            options: ["Ереван", "Область", "Другой город"]
+          },
+          {
+            id: "size",
+            label: "Объем",
+            question: "Примерный объем?",
+            options: ["Малый", "Средний", "Большой", "Напишу сам"]
+          },
+          {
+            id: "timeline",
+            label: "Срок",
+            question: "Когда начать работу?",
+            options: ["Срочно", "1 неделя", "2-4 недели", "1+ месяц", "Пока не знаю"]
+          },
+          {
+            id: "contact",
+            label: "Контакт",
+            question: "С кем связаться? Напишите имя и телефон или email."
+          }
         ],
-        surveySummary: "Вот детали, которые мы записали:",
-        surveyReminder: "Спасибо. Этого достаточно для первичной связи.",
+        surveySummary: "Вот собранный бриф проекта:",
+        surveyReminder: "Спасибо. Нажмите «Отправить Smart Tech», чтобы отправить бриф.",
+        submitRequestLabel: "Отправить Smart Tech",
+        openRequestLabel: "Открыть страницу заявки",
+        surveyMailLabel: "Открыть почтовое приложение",
+        surveySubmittedLabel: "Заявка успешно отправлена. Команда скоро свяжется с вами.",
+        surveySubmitBlockedLabel: "Вы уже отправили заявку. Подождите немного и попробуйте снова.",
+        surveySubmitError: "Не удалось отправить. Попробуйте email или страницу заявки.",
         reminderStatus: "Бриф сохранен",
         replies: {
           services: "Мы выполняем видеонаблюдение, пожарные и охранные системы, сетевые решения, электромонтаж и автоматизацию.",
@@ -2788,9 +3076,16 @@
       greeting: translateTemplate(base.greeting, vars),
       quickIntents: simpleQuickIntents(activeLanguage),
       surveyIntro: base.surveyIntro,
+      surveyChoiceHint: base.surveyChoiceHint,
       surveyQuestions: base.surveyQuestions,
       surveySummary: base.surveySummary,
       surveyReminder: base.surveyReminder,
+      submitRequestLabel: base.submitRequestLabel,
+      openRequestLabel: base.openRequestLabel,
+      surveyMailLabel: base.surveyMailLabel,
+      surveySubmittedLabel: base.surveySubmittedLabel,
+      surveySubmitBlockedLabel: base.surveySubmitBlockedLabel,
+      surveySubmitError: base.surveySubmitError,
       reminderStatus: base.reminderStatus,
       replies: replies
     };
@@ -2863,28 +3158,28 @@
     var lang = normalizeChatLanguageCode(language);
     var questions = {
       hy: [
+        { id: "survey", label: "Նախագծի բրիֆ" },
         { id: "services", label: "Ի՞նչ ծառայություններ ունեք" },
         { id: "cctv", label: "Տեսահսկում եմ ուզում" },
         { id: "price", label: "Ինչպե՞ս ստանալ գին" },
         { id: "timeline", label: "Որքա՞ն է տևում" },
-        { id: "contact", label: "Կապ մասնագետի հետ" },
-        { id: "survey", label: "Լրացնել բրիֆ" }
+        { id: "contact", label: "Կապ մասնագետի հետ" }
       ],
       en: [
+        { id: "survey", label: "Project brief" },
         { id: "services", label: "What services do you offer?" },
         { id: "cctv", label: "I need CCTV" },
         { id: "price", label: "How to get a price?" },
         { id: "timeline", label: "How long does it take?" },
-        { id: "contact", label: "Contact a specialist" },
-        { id: "survey", label: "Fill project brief" }
+        { id: "contact", label: "Contact a specialist" }
       ],
       ru: [
+        { id: "survey", label: "Бриф проекта" },
         { id: "services", label: "Какие услуги есть?" },
         { id: "cctv", label: "Нужно видеонаблюдение" },
         { id: "price", label: "Как получить цену?" },
         { id: "timeline", label: "Сколько длится монтаж?" },
-        { id: "contact", label: "Связаться со специалистом" },
-        { id: "survey", label: "Заполнить бриф" }
+        { id: "contact", label: "Связаться со специалистом" }
       ]
     };
     return questions[lang] || questions.hy;
@@ -2909,22 +3204,193 @@
     return (copy && copy.replies && copy.replies.fallback) || "";
   }
 
+  function getActiveSurveyQuestion(copy, state) {
+    if (!state || !copy || !copy.surveyQuestions) return null;
+    return copy.surveyQuestions[state.step] || null;
+  }
+
+  function buildChatSurveySummary(copy, answers) {
+    var lines = [copy.surveySummary];
+    copy.surveyQuestions.forEach(function (question) {
+      lines.push("• " + question.label + ": " + (answers[question.id] || "—"));
+    });
+    lines.push(copy.surveyReminder);
+    return lines.join("\n");
+  }
+
+  function buildChatSurveyPayload(copy, answers, source) {
+    return {
+      source: source || "chat",
+      language: activeChatLanguage(),
+      page: window.location.pathname + window.location.search,
+      contact: answers.contact || "",
+      answers: answers,
+      summary: buildChatSurveySummary(copy, answers)
+    };
+  }
+
+  function storeChatSurveyBrief(payload) {
+    try {
+      window.sessionStorage.setItem("smarttech.chat.brief", JSON.stringify(payload));
+    } catch (error) {
+      // Storage may be unavailable in private mode.
+    }
+  }
+
+  function renderSurveyOptionBar(container, question, copy, onPick, optionClass) {
+    if (!container) return;
+    container.innerHTML = "";
+    if (!question || !question.options || !question.options.length) {
+      container.hidden = true;
+      return;
+    }
+
+    container.hidden = false;
+    var hint = document.createElement("p");
+    hint.className = "chat-survey-hint";
+    hint.textContent = copy.surveyChoiceHint || "";
+    container.appendChild(hint);
+
+    var grid = document.createElement("div");
+    grid.className = "chat-survey-options";
+    question.options.forEach(function (option) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = optionClass || "chat-survey-option";
+      button.textContent = option;
+      button.addEventListener("click", function () {
+        onPick(option);
+      });
+      grid.appendChild(button);
+    });
+    container.appendChild(grid);
+  }
+
+  function submitChatSurveyPayload(payload, copy, statusNode, submitButton) {
+    if (!payload) return Promise.reject(new Error("Missing payload"));
+
+    var guard = site.utils.requestSubmitCheck(payload);
+    if (!guard.allowed) {
+      var blockedMessage = copy.surveySubmitBlockedLabel || copy.surveySubmittedLabel || "Request already sent.";
+      if (statusNode) {
+        statusNode.textContent = blockedMessage;
+        statusNode.classList.add("is-success");
+      }
+      var actionsWrap = submitButton ? submitButton.closest(".auto-chat-brief-actions, .chat-page-brief-actions") : null;
+      if (actionsWrap) actionsWrap.classList.add("is-submitted-success");
+      if (submitButton) submitButton.disabled = true;
+      return Promise.resolve(blockedMessage);
+    }
+
+    if (submitButton) submitButton.disabled = true;
+    if (statusNode) {
+      statusNode.textContent = (copy.submitRequestLabel || "Submit") + "...";
+      statusNode.classList.remove("is-success");
+    }
+
+    return window.fetch("/api/request", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({}, payload, { _trap: "" }))
+    }).then(function (response) {
+      return response.json().catch(function () {
+        return {};
+      }).then(function (data) {
+        if (!response.ok) {
+          throw new Error(data.error || "Submit failed");
+        }
+        return data;
+      });
+    }).then(function () {
+      var message = copy.surveySubmittedLabel || "Request received.";
+      site.utils.recordRequestSubmit(payload);
+      if (statusNode) {
+        statusNode.textContent = message;
+        statusNode.classList.add("is-success");
+      }
+      var actionsWrap = submitButton ? submitButton.closest(".auto-chat-brief-actions, .chat-page-brief-actions") : null;
+      if (actionsWrap) actionsWrap.classList.add("is-submitted-success");
+      site.utils.showSubmitSuccessCelebration(submitButton || statusNode);
+      return message;
+    }).catch(function () {
+      if (submitButton) submitButton.disabled = false;
+      if (statusNode) {
+        statusNode.textContent = copy.surveySubmitError || "Submit failed.";
+        statusNode.classList.remove("is-success");
+      }
+      throw new Error("submit failed");
+    });
+  }
+
+  function appendChatBriefActions(container, summaryText, payload, copy, classPrefix) {
+    var prefix = classPrefix || "auto-chat";
+    var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
+    storeChatSurveyBrief(payload);
+
+    var actions = document.createElement("span");
+    actions.className = prefix + "-brief-actions";
+    actions.innerHTML =
+      '<button class="' + prefix + '-submit-action" type="button" data-chat-submit-request>' +
+        site.utils.escapeHtml(copy.submitRequestLabel || "Submit request") +
+      "</button>" +
+      '<a class="' + prefix + '-open-request-action" href="' + site.utils.escapeHtml(site.utils.pageUrl("request")) + '">' +
+        site.utils.escapeHtml(copy.openRequestLabel || "Open request page") +
+      "</a>" +
+      '<a class="' + prefix + '-mail-action" href="' +
+        site.utils.escapeHtml(site.utils.mailTo(recipient, "Smart Tech project request", summaryText)) +
+      '">' + site.utils.escapeHtml(copy.surveyMailLabel || "Send by email") + "</a>" +
+      '<small class="' + prefix + '-submit-status" data-chat-submit-status></small>';
+
+    container.appendChild(actions);
+  }
+
   function startChatSurvey(copy) {
     chatSurveyState = { step: 0, answers: {} };
+    chatLatestSurveyPayload = null;
     appendChatMessage("bot", copy.surveyIntro);
     window.setTimeout(function () {
-      appendChatMessage("bot", copy.surveyQuestions[0].question);
-    }, 480);
+      showAutoChatSurveyQuestion(copy);
+    }, 420);
+  }
+
+  function clearAutoChatSurveyOptions() {
+    if (chatUi && chatUi.surveyOptions) {
+      chatUi.surveyOptions.hidden = true;
+      chatUi.surveyOptions.innerHTML = "";
+    }
+  }
+
+  function showAutoChatSurveyQuestion(copy) {
+    var question = getActiveSurveyQuestion(copy, chatSurveyState);
+    if (!question || !chatUi) return;
+    appendChatMessage("bot", question.question);
+    renderSurveyOptionBar(chatUi.surveyOptions, question, copy, function (option) {
+      if (chatUi.root.classList.contains("is-busy")) return;
+      handleChatRequest(option, "fallback", copy);
+    }, "auto-chat-survey-option");
   }
 
   function completeChatSurvey(copy) {
-    var summary = [copy.surveySummary];
-    copy.surveyQuestions.forEach(function (question) {
-      var answer = chatSurveyState.answers[question.id] || "—";
-      summary.push("• " + question.label + ": " + answer);
-    });
-    summary.push(copy.surveyReminder);
-    appendChatMessage("bot", summary.join("\n"));
+    clearAutoChatSurveyOptions();
+    var answers = chatSurveyState ? chatSurveyState.answers : {};
+    var summaryText = buildChatSurveySummary(copy, answers);
+    var payload = buildChatSurveyPayload(copy, answers, "chat-widget");
+    chatLatestSurveyPayload = payload;
+
+    if (chatUi && chatUi.messages) {
+      var item = document.createElement("div");
+      item.className = "auto-chat-message auto-chat-message-bot auto-chat-message-brief";
+      var text = document.createElement("span");
+      text.textContent = summaryText;
+      protectBrandText(text);
+      item.appendChild(text);
+      appendChatBriefActions(item, summaryText, payload, copy, "auto-chat");
+      chatUi.messages.appendChild(item);
+      chatUi.messages.scrollTop = chatUi.messages.scrollHeight;
+      pushChatHistory("bot", summaryText);
+    }
+
     chatSurveyState = null;
 
     try {
@@ -2941,25 +3407,21 @@
 
     chatSurveyState.answers[current.id] = messageText;
     chatSurveyState.step += 1;
+    clearAutoChatSurveyOptions();
 
     var typingEl;
     if (chatSurveyState.step >= copy.surveyQuestions.length) {
       typingEl = showTyping(copy);
       chatTypingTimer = window.setTimeout(function () {
-        if (typingEl && typingEl.parentNode) {
-          typingEl.parentNode.removeChild(typingEl);
-        }
+        removeTyping(typingEl);
         completeChatSurvey(copy);
-      }, 700);
+      }, 620);
     } else {
-      var nextQuestion = copy.surveyQuestions[chatSurveyState.step].question;
       typingEl = showTyping(copy);
       chatTypingTimer = window.setTimeout(function () {
-        if (typingEl && typingEl.parentNode) {
-          typingEl.parentNode.removeChild(typingEl);
-        }
-        appendChatMessage("bot", nextQuestion);
-      }, 700);
+        removeTyping(typingEl);
+        showAutoChatSurveyQuestion(copy);
+      }, 620);
     }
 
     return true;
@@ -3081,6 +3543,11 @@
         button.disabled = !!isBusy || chatLimitReached;
       });
     }
+    if (chatUi.surveyOptions) {
+      chatUi.surveyOptions.querySelectorAll("button").forEach(function (button) {
+        button.disabled = !!isBusy || chatLimitReached;
+      });
+    }
   }
 
   function setChatLimitReached(copy) {
@@ -3139,7 +3606,7 @@
     chatUi.quickActions.innerHTML = "";
     copy.quickIntents.forEach(function (item) {
       var button = document.createElement("button");
-      button.className = "auto-chat-quick";
+      button.className = "auto-chat-quick" + (item.id === "survey" ? " auto-chat-quick-primary" : "");
       button.type = "button";
       button.setAttribute("data-intent", item.id);
       button.setAttribute("data-translate-id", "chat-quick-" + item.id);
@@ -3250,6 +3717,7 @@
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
         '<div class="auto-chat-messages" aria-live="polite"></div>' +
+        '<div class="auto-chat-survey-options" data-chat-survey-options hidden></div>' +
         '<div class="auto-chat-quick-wrap">' +
           '<p class="auto-chat-quick-label"></p>' +
           '<div class="auto-chat-quick-actions"></div>' +
@@ -3273,6 +3741,7 @@
       quickLabel: host.querySelector(".auto-chat-quick-label"),
       close: host.querySelector(".auto-chat-close"),
       messages: host.querySelector(".auto-chat-messages"),
+      surveyOptions: host.querySelector("[data-chat-survey-options]"),
       quickActions: host.querySelector(".auto-chat-quick-actions"),
       form: host.querySelector(".auto-chat-form"),
       input: host.querySelector(".auto-chat-input"),
@@ -3299,6 +3768,19 @@
         var copy = chatDictionary(lang);
         var intent = button.getAttribute("data-intent") || "fallback";
         handleChatRequest(button.textContent || "", intent, copy);
+      });
+    }
+
+    if (ui.messages) {
+      ui.messages.addEventListener("click", function (event) {
+        var submitButton = event.target.closest("[data-chat-submit-request]");
+        if (!submitButton || !chatLatestSurveyPayload) return;
+        var card = submitButton.closest(".auto-chat-message-brief");
+        var statusNode = card ? card.querySelector("[data-chat-submit-status]") : null;
+        var lang = activeChatLanguage();
+        var copy = chatDictionary(lang);
+        submitChatSurveyPayload(chatLatestSurveyPayload, copy, statusNode, submitButton)
+          .catch(function () {});
       });
     }
 
@@ -3388,6 +3870,7 @@
     var send = root.querySelector("[data-chat-page-send]");
     var status = root.querySelector("[data-chat-page-status]");
     var quick = root.querySelector("[data-chat-page-quick]");
+    var surveyOptions = root.querySelector("[data-chat-page-survey-options]");
     var history = [];
     var copy = chatDictionary(activeChatLanguage());
     var pageSurveyState = null;
@@ -3426,9 +3909,30 @@
           button.disabled = busy;
         });
       }
+      if (surveyOptions) {
+        surveyOptions.querySelectorAll("button").forEach(function (button) {
+          button.disabled = busy;
+        });
+      }
       if (status) {
         status.textContent = busy ? (status.getAttribute("data-typing-label") || "") : "";
       }
+    }
+
+    function clearPageSurveyOptions() {
+      if (!surveyOptions) return;
+      surveyOptions.hidden = true;
+      surveyOptions.innerHTML = "";
+    }
+
+    function showPageSurveyQuestion() {
+      var question = getActiveSurveyQuestion(copy, pageSurveyState);
+      if (!question) return;
+      append("bot", question.question);
+      history.push({ role: "bot", text: question.question });
+      renderSurveyOptionBar(surveyOptions, question, copy, function (option) {
+        sendMessage(option);
+      }, "chat-page-survey-option");
     }
 
     function refreshPageQuickButtons() {
@@ -3436,7 +3940,7 @@
       quick.innerHTML = "";
       simpleQuickIntents(activeChatLanguage()).forEach(function (item) {
         var button = document.createElement("button");
-        button.className = "chat-page-quick-btn";
+        button.className = "chat-page-quick-btn" + (item.id === "survey" ? " chat-page-quick-btn-primary" : "");
         button.type = "button";
         button.setAttribute("data-chat-page-intent", item.id);
         button.textContent = item.label;
@@ -3445,37 +3949,29 @@
     }
 
     function surveyMailLabel() {
-      var lang = activeChatLanguage();
-      if (lang === "en") return "Send this request";
-      if (lang === "ru") return "Отправить заявку";
-      return "Ուղարկել հայտը";
+      return copy.surveyMailLabel || "Send by email";
     }
 
     function surveySubmitLabel() {
-      return "Submit request";
+      return copy.submitRequestLabel || "Submit request";
     }
 
     function surveySubmittedLabel(id) {
-      var suffix = id ? " #" + String(id).slice(0, 8) : "";
-      return "Request submitted" + suffix + ". Our team can follow up by phone or email.";
+      var base = copy.surveySubmittedLabel || "Request received.";
+      return id ? base + " #" + String(id).slice(0, 8) : base;
     }
 
     function surveySubmitErrorLabel() {
-      return "Could not submit the request. Please use the email fallback.";
+      return copy.surveySubmitError || "Could not submit the request.";
     }
 
     function appendSurveySummary(summaryText, payload) {
       var item = document.createElement("div");
       item.className = "chat-page-message chat-page-message-bot chat-page-message-brief";
-      var recipient = (site.content.contacts && site.content.contacts.email) || "info@smarttechllc.am";
-      item.innerHTML = '<span>' + site.utils.escapeHtml(summaryText) + '</span>' +
-        '<span class="chat-page-brief-actions">' +
-          '<button class="chat-page-submit-action" type="button" data-chat-page-submit-request>' + site.utils.escapeHtml(surveySubmitLabel()) + '</button>' +
-          '<a class="chat-page-mail-action" href="' + site.utils.escapeHtml(site.utils.mailTo(recipient, "Smart Tech project request", summaryText)) + '">' +
-            site.utils.escapeHtml(surveyMailLabel()) +
-          "</a>" +
-        "</span>" +
-        '<small class="chat-page-submit-status" data-chat-page-submit-status></small>';
+      var text = document.createElement("span");
+      text.textContent = summaryText;
+      item.appendChild(text);
+      appendChatBriefActions(item, summaryText, payload, copy, "chat-page");
       messages.appendChild(item);
       messages.scrollTop = messages.scrollHeight;
       history.push({ role: "bot", text: summaryText });
@@ -3484,40 +3980,24 @@
 
     function startPageSurvey() {
       pageSurveyState = { step: 0, answers: {} };
+      latestSurveyPayload = null;
       append("bot", copy.surveyIntro);
       history.push({ role: "bot", text: copy.surveyIntro });
       setBusy(true);
       var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
       window.setTimeout(function () {
         if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        var firstQuestion = copy.surveyQuestions && copy.surveyQuestions[0] ? copy.surveyQuestions[0].question : "";
-        if (firstQuestion) {
-          append("bot", firstQuestion);
-          history.push({ role: "bot", text: firstQuestion });
-        }
         setBusy(false);
+        showPageSurveyQuestion();
         if (input) input.focus();
-      }, 560);
+      }, 520);
     }
 
     function completePageSurvey() {
-      var summary = [copy.surveySummary];
-      var answers = {};
-      (copy.surveyQuestions || []).forEach(function (question) {
-        var answer = pageSurveyState.answers[question.id] || "-";
-        answers[question.id] = answer;
-        summary.push("- " + question.label + ": " + answer);
-      });
-      summary.push(copy.surveyReminder);
-      var summaryText = summary.join("\n");
-      var payload = {
-        source: "chat",
-        language: activeChatLanguage(),
-        page: window.location.pathname + window.location.search,
-        contact: answers.contact || "",
-        answers: answers,
-        summary: summaryText
-      };
+      clearPageSurveyOptions();
+      var answers = pageSurveyState ? pageSurveyState.answers : {};
+      var summaryText = buildChatSurveySummary(copy, answers);
+      var payload = buildChatSurveyPayload(copy, answers, "chat-page");
       pageSurveyState = null;
       appendSurveySummary(summaryText, payload);
     }
@@ -3525,35 +4005,9 @@
     function submitLatestSurvey(button) {
       if (!latestSurveyPayload || busy) return;
       var card = button.closest(".chat-page-message-brief");
-      var submitStatus = card ? card.querySelector("[data-chat-page-submit-status]") : null;
-      button.disabled = true;
-      if (submitStatus) submitStatus.textContent = surveySubmitLabel() + "...";
-
-      window.fetch("/api/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(latestSurveyPayload)
-      })
-        .then(function (response) {
-          return response.json().catch(function () {
-            return {};
-          }).then(function (data) {
-            if (!response.ok) {
-              throw new Error(data.error || "Submit failed");
-            }
-            return data;
-          });
-        })
-        .then(function (data) {
-          var message = surveySubmittedLabel(data.id);
-          if (submitStatus) submitStatus.textContent = message;
-          append("bot", message);
-          history.push({ role: "bot", text: message });
-        })
-        .catch(function () {
-          button.disabled = false;
-          if (submitStatus) submitStatus.textContent = surveySubmitErrorLabel();
-        });
+      var submitStatus = card ? card.querySelector("[data-chat-submit-status]") : null;
+      submitChatSurveyPayload(latestSurveyPayload, copy, submitStatus, button)
+        .catch(function () {});
     }
 
     function handlePageSurveyAnswer(message) {
@@ -3563,6 +4017,7 @@
 
       pageSurveyState.answers[current.id] = message;
       pageSurveyState.step += 1;
+      clearPageSurveyOptions();
       setBusy(true);
       var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
 
@@ -3571,13 +4026,11 @@
         if (pageSurveyState && pageSurveyState.step >= copy.surveyQuestions.length) {
           completePageSurvey();
         } else if (pageSurveyState) {
-          var nextQuestion = copy.surveyQuestions[pageSurveyState.step].question;
-          append("bot", nextQuestion);
-          history.push({ role: "bot", text: nextQuestion });
+          showPageSurveyQuestion();
         }
         setBusy(false);
         if (input) input.focus();
-      }, 620);
+      }, 560);
 
       return true;
     }
@@ -3623,7 +4076,7 @@
       setBusy(true);
 
       var typing = append("bot", status && status.getAttribute("data-typing-label") || "...", true);
-      window.fetch("/api/chat", {
+      window.fetch("/api/chat-page", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -3675,7 +4128,7 @@
 
     if (messages) {
       messages.addEventListener("click", function (event) {
-        var submitButton = event.target.closest("[data-chat-page-submit-request]");
+        var submitButton = event.target.closest("[data-chat-page-submit-request], [data-chat-submit-request]");
         if (!submitButton) return;
         submitLatestSurvey(submitButton);
       });

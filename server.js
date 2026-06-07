@@ -75,6 +75,16 @@ const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
 const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
 const defaultGeminiModel = envValue(["GEMINI_MODEL", "GOOGLE_GEMINI_MODEL"], "gemini-2.5-flash");
 const defaultGeminiApiKey = envValue(["GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GOOGLE_API_KEY"], "");
+const defaultOpenAiModel = envValue(["OPENAI_MODEL", "CHATGPT_MODEL"], "gpt-4o-mini");
+const defaultOpenAiApiKey = envValue(["OPENAI_API_KEY", "CHATGPT_API_KEY"], "");
+const defaultRequestEmailTo = envValue(["REQUEST_EMAIL_TO", "SMARTTECH_REQUEST_EMAIL"], "support@smarttechllc.am");
+const defaultRequestEmailFrom = envValue(["REQUEST_EMAIL_FROM", "SMARTTECH_REQUEST_EMAIL_FROM"], "Smart Tech <order@smarttechllc.am>");
+const defaultResendApiKey = envValue(["RESEND_API_KEY"], "");
+const defaultSmtpHost = envValue(["SMTP_HOST", "MAIL_HOST"], "");
+const defaultSmtpPort = Number(envValue(["SMTP_PORT", "MAIL_PORT"], "465"));
+const defaultSmtpSecure = envValue(["SMTP_SECURE", "MAIL_SECURE"], "true") !== "false";
+const defaultSmtpUser = envValue(["SMTP_USER", "MAIL_USER", "SMTP_EMAIL"], "");
+const defaultSmtpPass = envValue(["SMTP_PASS", "MAIL_PASS", "SMTP_PASSWORD"], "");
 const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից:";
 const chatFallbackMessage = "Կներեք, այս պահին չաթը չի կարող պատասխանել։ Խնդրում ենք փորձել քիչ անց։";
 const chatSystemInstruction = [
@@ -126,6 +136,7 @@ const chatSystemInstructionV2 = [
   "Use Armenian terms naturally when replying in Armenian: տեսահսկում, հրդեհային ազդանշան, մուտքի վերահսկում, ցանց, էլեկտրամոնտաժ, ավտոմատացում, չափագրում, գնային առաջարկ."
 ].join("\n");
 let geminiClient = null;
+let smtpTransporter = null;
 
 const pageShellAliases = {
   help: "about.html",
@@ -283,6 +294,66 @@ function cleanRequestText(value, maxLength) {
     .replace(/\n{3,}/g, "\n\n")
     .trim()
     .slice(0, maxLength);
+}
+
+function sanitizeEmailHeader(value, maxLength) {
+  return cleanRequestText(String(value || "").replace(/[\r\n]/g, " "), maxLength);
+}
+
+function extractReplyToEmail(contact) {
+  const value = sanitizeEmailHeader(contact, 240);
+  const match = value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  if (!match) return undefined;
+  const email = match[0].toLowerCase();
+  if (email.length > 120 || /[\r\n]/.test(email)) return undefined;
+  return email;
+}
+
+function countDigits(value) {
+  return String(value || "").replace(/\D/g, "").length;
+}
+
+const allowedRequestSources = {
+  "contact-page": true,
+  "chat-page": true,
+  "chat-widget": true,
+  chat: true
+};
+
+const allowedRequestLanguages = {
+  hy: true,
+  en: true,
+  ru: true
+};
+
+function isLocalDevHost(host) {
+  const normalized = String(host || "").split(":")[0].toLowerCase();
+  return normalized === "localhost" || normalized === "127.0.0.1";
+}
+
+function trustedRequestHosts() {
+  return envValue(["REQUEST_TRUSTED_HOSTS"], "smarttechllc.am,www.smarttechllc.am")
+    .split(",")
+    .map(function (item) { return item.trim().toLowerCase(); })
+    .filter(Boolean);
+}
+
+function hostAllowedForRequests(hostname) {
+  const host = String(hostname || "").toLowerCase();
+  if (!host) return false;
+  if (isLocalDevHost(host)) return true;
+  return trustedRequestHosts().some(function (trusted) {
+    return host === trusted || host.endsWith("." + trusted);
+  });
+}
+
+function looksLikeSpamRequest(summary, contact) {
+  const text = (summary + " " + contact).toLowerCase();
+  if (/(\bviagra\b|\bcasino\b|\bbitcoin\b|\bcrypto\b|\bseo service\b|\bclick here\b)/i.test(text)) {
+    return true;
+  }
+  const links = (summary.match(/https?:\/\//gi) || []).length;
+  return links > 3;
 }
 
 function jsonResponse(response, status, payload) {
@@ -614,20 +685,107 @@ function normalizeRequestAnswers(answers) {
   return normalized;
 }
 
+function assertRequestAllowed(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw httpError(400, "Invalid request");
+  }
+
+  if (Object.keys(body).length > 16) {
+    throw httpError(400, "Invalid request");
+  }
+
+  const trap = cleanRequestText(body._trap || body.website || body.company, 80);
+  if (trap) {
+    throw httpError(400, "Invalid request");
+  }
+
+  const summary = cleanRequestText(body.summary, 2400);
+  const contact = cleanRequestText(body.contact || (body.answers && body.answers.contact), 240);
+  const source = cleanRequestText(body.source, 40) || "chat";
+
+  if (summary && summary.length < 12) {
+    throw httpError(400, "Invalid request");
+  }
+
+  if (looksLikeSpamRequest(summary, contact)) {
+    throw httpError(400, "Invalid request");
+  }
+
+  if (source === "contact-page") {
+    if (!summary || summary.length < 20) {
+      throw httpError(400, "Invalid request");
+    }
+    if (countDigits(contact) < 8) {
+      throw httpError(400, "Invalid request");
+    }
+  }
+}
+
+function requestJsonGuard(request, response, next) {
+  const contentType = String(request.headers["content-type"] || "").toLowerCase();
+  if (!contentType.includes("application/json")) {
+    jsonResponse(response, 415, { error: "Invalid request" });
+    return;
+  }
+  next();
+}
+
+function requestSiteGuard(request, response, next) {
+  sameOriginGuard(request, response, function () {
+    const host = String(request.headers.host || "").split(":")[0].toLowerCase();
+    if (isLocalDevHost(host) && !process.env.VERCEL) {
+      next();
+      return;
+    }
+
+    const referer = String(request.headers.referer || request.headers.origin || "");
+    if (!referer) {
+      jsonResponse(response, 403, { error: "Invalid request" });
+      return;
+    }
+
+    try {
+      const url = new URL(referer);
+      if (!hostAllowedForRequests(url.hostname)) {
+        jsonResponse(response, 403, { error: "Invalid request" });
+        return;
+      }
+    } catch (error) {
+      jsonResponse(response, 403, { error: "Invalid request" });
+      return;
+    }
+
+    next();
+  });
+}
+
 function normalizeRequestPayload(body, request) {
-  const answers = normalizeRequestAnswers(body && body.answers);
-  const summary = cleanRequestText(body && body.summary, 2400);
-  const contact = cleanRequestText((body && body.contact) || answers.contact, 240);
-  const source = cleanRequestText(body && body.source, 40) || "chat";
-  const language = cleanRequestText(body && body.language, 12) || "hy";
-  const page = cleanRequestText(body && body.page, 160) || "";
+  assertRequestAllowed(body);
+  const answers = normalizeRequestAnswers(body.answers);
+  const summary = cleanRequestText(body.summary, 2400);
+  const contact = cleanRequestText(body.contact || answers.contact, 240);
+  const source = cleanRequestText(body.source, 40) || "chat";
+  const language = cleanRequestText(body.language, 12) || "hy";
+  const page = cleanRequestText(body.page, 160) || "";
+
+  if (!allowedRequestSources[source]) {
+    throw httpError(400, "Invalid request");
+  }
+
+  if (!allowedRequestLanguages[language]) {
+    throw httpError(400, "Invalid request");
+  }
+
+  if (page && !/^\/[\w\-./?=&%]*$/i.test(page)) {
+    throw httpError(400, "Invalid request");
+  }
 
   if (!summary && !Object.keys(answers).length) {
-    throw httpError(400, "Request details are required");
+    throw httpError(400, "Invalid request");
   }
 
   if (!contact && source === "chat") {
-    throw httpError(400, "Contact details are required");
+    throw httpError(400, "Invalid request");
   }
 
   return {
@@ -649,13 +807,136 @@ function appendRequestLog(entry) {
   fs.appendFileSync(adminRequestLogFile, JSON.stringify(entry) + "\n", "utf8");
 }
 
-function submitPublicRequest(body, request) {
+function formatRequestEmailBody(entry) {
+  const lines = [
+    "Smart Tech website request",
+    "ID: " + entry.id,
+    "Created: " + entry.createdAt,
+    "Source: " + entry.source,
+    "Language: " + entry.language,
+    "Page: " + (entry.page || "/"),
+    "Contact: " + (entry.contact || "—"),
+    "",
+    entry.summary || ""
+  ];
+
+  const answerKeys = entry.answers ? Object.keys(entry.answers) : [];
+  if (answerKeys.length) {
+    lines.push("", "Answers:");
+    answerKeys.forEach(function (key) {
+      lines.push("- " + key + ": " + entry.answers[key]);
+    });
+  }
+
+  return lines.join("\n");
+}
+
+function smtpConfigured() {
+  return !!(defaultSmtpHost && defaultSmtpUser && defaultSmtpPass);
+}
+
+function getSmtpTransporter() {
+  if (!smtpConfigured()) return null;
+  if (!smtpTransporter) {
+    const nodemailer = require("nodemailer");
+    smtpTransporter = nodemailer.createTransport({
+      host: defaultSmtpHost,
+      port: Number.isNaN(defaultSmtpPort) ? 465 : defaultSmtpPort,
+      secure: defaultSmtpSecure,
+      auth: {
+        user: defaultSmtpUser,
+        pass: defaultSmtpPass
+      }
+    });
+  }
+  return smtpTransporter;
+}
+
+function requestEmailSubject(entry) {
+  return sanitizeEmailHeader("Smart Tech project request #" + String(entry.id).slice(0, 8), 120);
+}
+
+async function sendRequestNotificationEmailViaSmtp(entry) {
+  const transporter = getSmtpTransporter();
+  if (!transporter) return false;
+
+  const replyTo = extractReplyToEmail(entry.contact);
+  await transporter.sendMail({
+    from: sanitizeEmailHeader(defaultRequestEmailFrom, 160),
+    to: sanitizeEmailHeader(defaultRequestEmailTo, 160),
+    replyTo: replyTo,
+    subject: requestEmailSubject(entry),
+    text: formatRequestEmailBody(entry)
+  });
+  return true;
+}
+
+async function sendRequestNotificationEmailViaResend(entry) {
+  if (!defaultResendApiKey) return false;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + defaultResendApiKey
+    },
+    body: JSON.stringify({
+      from: sanitizeEmailHeader(defaultRequestEmailFrom, 160),
+      to: [sanitizeEmailHeader(defaultRequestEmailTo, 160)],
+      subject: requestEmailSubject(entry),
+      text: formatRequestEmailBody(entry)
+    })
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(function () {
+      return {};
+    });
+    const error = new Error((payload && payload.message) || "Email delivery failed");
+    error.status = response.status;
+    throw error;
+  }
+
+  return true;
+}
+
+async function sendRequestNotificationEmail(entry) {
+  if (smtpConfigured()) {
+    return sendRequestNotificationEmailViaSmtp(entry);
+  }
+  if (defaultResendApiKey) {
+    return sendRequestNotificationEmailViaResend(entry);
+  }
+  return false;
+}
+
+async function submitPublicRequest(body, request) {
   const entry = normalizeRequestPayload(body, request);
   appendRequestLog(entry);
+
+  let emailSent = false;
+  try {
+    emailSent = await sendRequestNotificationEmail(entry);
+  } catch (error) {
+    console.error(
+      "Request notification email failed:",
+      defaultRequestEmailTo,
+      error && (error.status || error.message || error)
+    );
+  }
+
+  if (!emailSent) {
+    console.error(
+      "Request saved but email was not delivered to",
+      defaultRequestEmailTo + ".",
+      smtpConfigured() ? "SMTP send returned false." : "Configure SMTP or RESEND_API_KEY."
+    );
+    throw httpError(503, "Delivery failed");
+  }
+
   return {
     ok: true,
-    id: entry.id,
-    createdAt: entry.createdAt
+    emailSent: true
   };
 }
 
@@ -684,10 +965,76 @@ function normalizeChatHistory(history) {
     .filter(Boolean);
 }
 
+function normalizeOpenAIChatHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  return history
+    .slice(-6)
+    .map((entry) => {
+      const role = entry && entry.role === "user" ? "user" : "assistant";
+      const content = cleanChatText(entry && entry.text, 360);
+      if (!content) return null;
+      return { role, content };
+    })
+    .filter(Boolean);
+}
+
 function isGeminiRateLimitError(error) {
   const status = error && (error.status || error.code || error.statusCode);
   const message = String((error && error.message) || "");
   return [429, 503].indexOf(Number(status)) >= 0 || message.indexOf("429") >= 0 || message.indexOf("503") >= 0 || /rate|quota|exhausted|overload|unavailable/i.test(message);
+}
+
+function isOpenAIRateLimitError(error) {
+  const status = Number(error && (error.status || error.statusCode));
+  const message = String((error && error.message) || "");
+  return status === 429 || status === 503 || /rate|quota|exhausted|overload|unavailable/i.test(message);
+}
+
+async function generateOpenAIChatReply({ message, pagePath, replyLanguage, history }) {
+  if (!defaultOpenAiApiKey) {
+    throw httpError(503, "OpenAI API key is not configured");
+  }
+
+  const messages = [
+    { role: "system", content: chatSystemInstructionV2 },
+    ...normalizeOpenAIChatHistory(history),
+    {
+      role: "user",
+      content: [
+        "Current site page: " + (pagePath || "/"),
+        "Detected visitor language: " + replyLanguage + ". Reply only in this language unless it is not Armenian, English or Russian.",
+        "Visitor message: " + message
+      ].join("\n")
+    }
+  ];
+
+  const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + defaultOpenAiApiKey
+    },
+    body: JSON.stringify({
+      model: defaultOpenAiModel,
+      messages,
+      temperature: 0.2,
+      max_tokens: 200
+    })
+  });
+
+  const payload = await openAiResponse.json().catch(() => ({}));
+  if (!openAiResponse.ok) {
+    const error = new Error((payload.error && payload.error.message) || "OpenAI request failed");
+    error.status = openAiResponse.status;
+    throw error;
+  }
+
+  const reply = cleanChatText(
+    payload.choices && payload.choices[0] && payload.choices[0].message && payload.choices[0].message.content,
+    900
+  );
+  return reply || "Կարո՞ղ եք հարցը մի փոքր ավելի հստակ գրել։";
 }
 
 function chatLimiterHandler(request, response) {
@@ -711,6 +1058,15 @@ const chatGlobalLimiter = rateLimit({
   handler: chatLimiterHandler
 });
 
+const chatPageGlobalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 14,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: () => "openai-chat-page-global",
+  handler: chatLimiterHandler
+});
+
 function adminLimiterHandler(request, response) {
   jsonResponse(response, 429, { error: "Too many requests. Try again in a minute." });
 }
@@ -725,7 +1081,15 @@ const publicApiLimiter = rateLimit({
 
 const requestSubmitLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 8,
+  limit: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: adminLimiterHandler
+});
+
+const requestSubmitHourlyLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 12,
   standardHeaders: true,
   legacyHeaders: false,
   handler: adminLimiterHandler
@@ -762,6 +1126,11 @@ app.use((request, response, next) => {
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   response.setHeader("X-Frame-Options", "DENY");
   response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  response.setHeader("Cross-Origin-Resource-Policy", "same-site");
+  if (isHttpsRequest(request)) {
+    response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
   next();
 });
 
@@ -825,11 +1194,18 @@ app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requi
   }
 });
 
-app.post("/api/request", requestSubmitLimiter, express.json({ limit: "12kb" }), sameOriginGuard, (request, response) => {
+app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, express.json({ limit: "10kb" }), requestJsonGuard, requestSiteGuard, async (request, response) => {
   try {
-    jsonResponse(response, 201, submitPublicRequest(request.body || {}, request));
+    jsonResponse(response, 201, await submitPublicRequest(request.body || {}, request));
   } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "Request submit failed" });
+    const status = error.statusCode || 500;
+    jsonResponse(response, status, {
+      error: status === 400 || status === 403 || status === 415
+        ? "Invalid request"
+        : status === 503
+          ? "Delivery failed"
+          : "Request failed"
+    });
   }
 });
 
@@ -1005,6 +1381,40 @@ app.post("/api/chat", chatUserLimiter, chatGlobalLimiter, express.json({ limit: 
     }
 
     console.error("Gemini chat error:", error && (error.status || error.code || error.message || error));
+    response.status(500).json({ reply: chatFallbackMessage });
+  }
+});
+
+app.post("/api/chat-page", chatUserLimiter, chatPageGlobalLimiter, express.json({ limit: "8kb" }), async (request, response) => {
+  const message = cleanChatText(request.body && request.body.message, 700);
+  const pagePath = cleanChatText(request.body && request.body.page, 120);
+  const replyLanguage = detectChatLanguage(message);
+
+  if (!message) {
+    response.status(400).json({ reply: "Խնդրում ենք գրել հարցը։" });
+    return;
+  }
+
+  if (!defaultOpenAiApiKey) {
+    response.status(503).json({ reply: "Smart Tech AI-ն դեռ կարգավորված չէ։ Խնդրում ենք ավելացնել OPENAI_API_KEY server-ի .env ֆայլում։" });
+    return;
+  }
+
+  try {
+    const reply = await generateOpenAIChatReply({
+      message,
+      pagePath,
+      replyLanguage,
+      history: request.body && request.body.history
+    });
+    response.json({ reply });
+  } catch (error) {
+    if (isOpenAIRateLimitError(error)) {
+      response.status(429).json({ reply: chatRateLimitMessage });
+      return;
+    }
+
+    console.error("OpenAI chat-page error:", error && (error.status || error.message || error));
     response.status(500).json({ reply: chatFallbackMessage });
   }
 });

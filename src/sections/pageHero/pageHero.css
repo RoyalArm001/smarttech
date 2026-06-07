@@ -38,6 +38,23 @@
   animation: pageSweep 6.4s ease-in-out infinite;
 }
 
+.page-hero-contact {
+  background-image:
+    linear-gradient(108deg, rgba(11, 17, 19, 0.95) 0%, rgba(11, 17, 19, 0.84) 38%, rgba(8, 88, 82, 0.58) 62%, rgba(52, 95, 116, 0.24) 100%),
+    var(--page-hero-image);
+  background-position: center right;
+}
+
+.page-hero-contact::before {
+  opacity: 0.42;
+}
+
+.page-hero-contact .page-hero-visual {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(9, 19, 22, 0.5);
+}
+
 .page-hero-overlay {
   min-height: 348px;
   display: flex;

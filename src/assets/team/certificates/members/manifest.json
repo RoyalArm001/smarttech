@@ -89,6 +89,26 @@
       "image": "/src/assets/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg"
     }
   ],
+  "electrical-automation-panel-specialist": [
+    {
+      "title": "Control Panel Engineering",
+      "image": "/src/assets/team/certificates/members/automation-specialist-control-panel-engineering.svg"
+    },
+    {
+      "title": "Panel Assembly",
+      "image": "/src/assets/team/certificates/members/electrical-works-specialist-panel-assembly.svg"
+    }
+  ],
+  "electrical-cabling-lighting-specialist": [
+    {
+      "title": "Electrical Installation",
+      "image": "/src/assets/team/certificates/members/electrical-installation-engineer-electrical-installation.svg"
+    },
+    {
+      "title": "Low Voltage Systems",
+      "image": "/src/assets/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg"
+    }
+  ],
   "it-installation-engineer": [
     {
       "title": "Structured Cabling",

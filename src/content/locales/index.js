@@ -420,7 +420,9 @@
         "automation-specialist": { title: "Electrical Automation Specialist", text: "Builds control, automation and scenario-based operation solutions for electrical devices." },
         "bms-design-specialist": { title: "BMS Design Specialist", text: "Designs building management solutions that connect safety, engineering and automation logic." },
         "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring systems with stable archive and secure access." },
-        "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." }
+        "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." },
+        "electrical-automation-panel-specialist": { title: "Electrical Automation Panel Specialist", text: "Assembles electrical control panels, automation cabinets and scenario-based control blocks according to project schematics." },
+        "electrical-cabling-lighting-specialist": { title: "Cabling and Lighting Specialist", text: "Installs electrical lines, cable routes, lighting fixtures and socket groups on site." }
       }
     },
     ru: {
@@ -614,7 +616,9 @@
     "bms-design-specialist": { title: "BMS սիստեմի նախագծման մասնագետ", text: "Նախագծում է շենքերի կառավարման BMS լուծումները՝ կապելով անվտանգությունը, ինժեներիան և ավտոմատացումը մեկ տրամաբանության մեջ։" },
     "video-access-control-engineer": { title: "Տեսահսկման և մուտքի վերահսկման ինժեներ", text: "Նախագծում է տեսահսկման, մուտքի վերահսկման և հեռահար դիտարկման համակարգերը՝ կայուն արխիվով և անվտանգ հասանելիությամբ։" },
     "audio-systems-specialist": { title: "Աուդիո համակարգերի տեղադրման մասնագետ", text: "Նախագծում, տեղադրում և կարգաբերում է ֆոնային երաժշտության, public address, ձայնային ծանուցման և կոնֆերանսային աուդիո համակարգերը։" },
-    "electrical-installation-engineer": { title: "Էլեկտրամոնտաժային ինժեներ", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների համար։" }
+    "electrical-installation-engineer": { title: "Էլեկտրամոնտաժային ինժեներ", text: "Պատասխանատու է էլեկտրական ցանցերի մոնտաժի, բաշխիչ վահանների, լուսավորության և մալուխային ուղիների համար։" },
+    "electrical-automation-panel-specialist": { title: "Էլեկտրական ավտոմատ համակարգերի հավաքման մասնագետ", text: "Հավաքում է էլեկտրական կառավարման վահանները, ավտոմատիկայի պահարանները և սցենարային կառավարման բլոկները։" },
+    "electrical-cabling-lighting-specialist": { title: "Լուսավորության և մալուխային ուղիների մասնագետ", text: "Կատարում է էլեկտրական գծերի, մալուխային ուղիների, լուսավորության և վարդակային խմբերի դաշտային մոնտաժը։" }
   });
 
   site.content.locales.hy.team = Object.assign({}, site.content.locales.hy.team, {
@@ -658,7 +662,9 @@
     "bms-design-specialist": { title: "BMS Design Specialist", text: "Designs building management solutions that connect safety, engineering and automation logic." },
     "video-access-control-engineer": { title: "Video and Access Control Engineer", text: "Designs video surveillance, access control and remote monitoring systems with stable archive and secure access." },
     "audio-systems-specialist": { title: "Audio Systems Installation Specialist", text: "Designs, installs and configures background music, public address, voice notification and conference audio systems." },
-    "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." }
+    "electrical-installation-engineer": { title: "Electrical Installation Engineer", text: "Handles electrical network installation, distribution panels, lighting and cable routes." },
+    "electrical-automation-panel-specialist": { title: "Electrical Automation Panel Specialist", text: "Assembles electrical control panels, automation cabinets and scenario-based control blocks according to project schematics." },
+    "electrical-cabling-lighting-specialist": { title: "Cabling and Lighting Specialist", text: "Installs electrical lines, cable routes, lighting fixtures and socket groups on site." }
   });
 
   site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
@@ -670,7 +676,9 @@
     "bms-design-specialist": { title: "Специалист по проектированию BMS", text: "Проектирует системы управления зданием, объединяя безопасность, инженерию и автоматизацию." },
     "video-access-control-engineer": { title: "Инженер видеонаблюдения и контроля доступа", text: "Проектирует системы видеонаблюдения, контроля доступа и удаленного мониторинга со стабильным архивом и безопасным доступом." },
     "audio-systems-specialist": { title: "Специалист по монтажу аудиосистем", text: "Проектирует, устанавливает и настраивает системы фоновой музыки, public address, голосового оповещения и конференц-аудио." },
-    "electrical-installation-engineer": { title: "Инженер электромонтажа", text: "Отвечает за монтаж электрических сетей, распределительных щитов, освещения и кабельных трасс." }
+    "electrical-installation-engineer": { title: "Инженер электромонтажа", text: "Отвечает за монтаж электрических сетей, распределительных щитов, освещения и кабельных трасс." },
+    "electrical-automation-panel-specialist": { title: "Специалист по сборке электроавтоматики", text: "Собирает щиты управления, шкафы автоматики и блоки сценарного управления по проектным схемам." },
+    "electrical-cabling-lighting-specialist": { title: "Специалист по освещению и кабельным трассам", text: "Выполняет монтаж электролиний, кабельных трасс, освещения и розеточных групп на объекте." }
   });
   site.content.locales.hy.projects = Object.assign({}, site.content.locales.hy.projects, {
     "only-one": {
@@ -1238,7 +1246,9 @@
     "bms-design-specialist": { level: "BMS Design", experience: "7+ years", workInfo: ["BMS architecture design and equipment selection", "Integration of HVAC, lighting, access and security systems", "Control scenarios and monitoring dashboards", "Design documents and handover packages"] },
     "video-access-control-engineer": { level: "Security Systems", experience: "7+ years", workInfo: ["Selection of IP cameras, NVR/DVR devices and storage", "Integration of access points, card readers and turnstiles", "Remote viewing, user permissions and notifications", "Coverage calculation, testing and handover documents"] },
     "audio-systems-specialist": { level: "Audio Systems", experience: "6+ years", workInfo: ["Sound coverage calculation and speaker placement", "Selection of amplifiers, mixers, microphones and zone controllers", "Installation of public address, background music and conference audio", "Tuning, balancing, testing and user handover"] },
-    "electrical-installation-engineer": { level: "Electrical Engineering", experience: "6+ years", workInfo: ["Installation of electrical lines, cable routes and distribution nodes", "Panel assembly, labeling and protective device layout", "Verification of lighting, socket groups and technical power lines", "Measurements, fault diagnostics and technical support at handover"] }
+    "electrical-installation-engineer": { level: "Electrical Engineering", experience: "6+ years", workInfo: ["Installation of electrical lines, cable routes and distribution nodes", "Panel assembly, labeling and protective device layout", "Verification of lighting, socket groups and technical power lines", "Measurements, fault diagnostics and technical support at handover"] },
+    "electrical-automation-panel-specialist": { level: "Control Panel Assembly", experience: "5+ years", workInfo: ["Assembly of control panels and automation cabinets", "Installation of relays, contactors, controllers and protective devices", "Schematic wiring, labeling and cable routing", "Testing, documentation and handover support"] },
+    "electrical-cabling-lighting-specialist": { level: "Cabling & Lighting", experience: "5+ years", workInfo: ["Installation of cable routes, wiring and trunking", "Mounting of lighting, socket groups and switches", "Connection and labeling of distribution nodes", "Measurements, continuity checks and safety verification"] }
   });
 
   site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
@@ -1250,7 +1260,9 @@
     "bms-design-specialist": { level: "Проектирование BMS", experience: "7+ лет", workInfo: ["Проектирование архитектуры BMS и подбор оборудования", "Интеграция HVAC, освещения, доступа и безопасности", "Сценарии управления и мониторинговые панели", "Проектная документация и пакеты сдачи"] },
     "video-access-control-engineer": { level: "Системы безопасности", experience: "7+ лет", workInfo: ["Подбор IP-камер, NVR/DVR и решений хранения", "Интеграция точек доступа, считывателей и турникетов", "Удаленный просмотр, права пользователей и уведомления", "Расчет зон обзора, тестирование и документы сдачи"] },
     "audio-systems-specialist": { level: "Аудиосистемы", experience: "6+ лет", workInfo: ["Расчет звукового покрытия и размещение динамиков", "Подбор усилителей, микшеров, микрофонов и zone controller", "Монтаж public address, фоновой музыки и конференц-аудио", "Настройка, балансировка, тестирование и передача заказчику"] },
-    "electrical-installation-engineer": { level: "Электромонтаж", experience: "6+ лет", workInfo: ["Монтаж электролиний, кабельных трасс и распределительных узлов", "Сборка щитов, маркировка и размещение защитных автоматов", "Проверка освещения, розеточных групп и технических линий питания", "Замеры, диагностика неисправностей и техподдержка при сдаче"] }
+    "electrical-installation-engineer": { level: "Электромонтаж", experience: "6+ лет", workInfo: ["Монтаж электролиний, кабельных трасс и распределительных узлов", "Сборка щитов, маркировка и размещение защитных автоматов", "Проверка освещения, розеточных групп и технических линий питания", "Замеры, диагностика неисправностей и техподдержка при сдаче"] },
+    "electrical-automation-panel-specialist": { level: "Сборка щитов управления", experience: "5+ лет", workInfo: ["Сборка щитов управления и шкафов автоматики", "Установка реле, контакторов, контроллеров и защитных устройств", "Монтаж по схемам, маркировка и прокладка кабелей", "Тестирование, документирование и поддержка при сдаче"] },
+    "electrical-cabling-lighting-specialist": { level: "Освещение и кабельные трассы", experience: "5+ лет", workInfo: ["Монтаж кабельных трасс, проводки и лотков", "Установка освещения, розеточных групп и выключателей", "Подключение и маркировка распределительных узлов", "Замеры, проверка цепи и контроль безопасности"] }
   });
 
   site.content.locales.hy = mergeLocale(site.content.locales.hy, {

@@ -14,6 +14,7 @@
     "build": "npm run check && node lib/build-static.js",
     "vercel-build": "npm run check && node lib/build-static.js",
     "check": "node lib/check-syntax.js",
+    "test:smtp": "node lib/test-smtp.js",
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {
@@ -29,6 +30,7 @@
     "@google/genai": "^2.8.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
+    "nodemailer": "^8.0.10",
     "sharp": "^0.34.5"
   }
 }

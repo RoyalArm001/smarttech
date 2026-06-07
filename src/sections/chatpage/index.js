@@ -3,17 +3,17 @@
     return site.i18n.pickLanguageDictionary({
       hy: {
         eyebrow: "AI օգնական",
-        title: "Smart Tech AI օգնական",
-        text: "Առանձին էջ՝ մեր AI օգնականի հետ հանգիստ զրուցելու համար։ Հարցրեք տեսահսկման, ցանցերի, հրդեհային համակարգերի, էլեկտրամոնտաժի, ավտոմատացման կամ ձեր նախագծի մասին։",
-        intro: "Բարև։ Ես Smart Tech-ի AI օգնականն եմ։ Գրեք ձեր հարցը կամ ընտրեք արագ հարցերից մեկը։",
+        title: "Smart Tech AI",
+        text: "Առանձին էջ՝ արագ հավաքել նախագծի բրիֆը։ Ընտրեք պատասխանները կամ գրեք ձեր տարբերակը, AI-ն ask-ը կպատրաստի, դուք կուղարկեք։",
+        intro: "Բարև։ Սեղմեք «Նախագծի բրիֆ» կամ գրեք ինչ է պետք։ Հարցերին արագ կպատասխանեք կոճակներով, վերջում հավաքված հայտը կուղարկեք։",
         quickLabel: "Արագ հարցեր",
         input: "Գրեք ձեր հարցը...",
         send: "Ուղարկել",
         typing: "Գրում է...",
         status: "Պատասխանում է հայերեն, անգլերեն և ռուսերեն",
         questions: [
-          "Ի՞նչ ծառայություններ եք մատուցում",
-          "Տեսահսկման համակարգի համար ինչ է պետք",
+          "Նախագծի բրիֆ",
+          "Տեսահսկում եմ ուզում",
           "Ինչպե՞ս ստանալ գնային առաջարկ",
           "Որքա՞ն ժամանակ է տևում տեղադրումը",
           "Ուզում եմ կապվել մասնագետի հետ"
@@ -21,17 +21,17 @@
       },
       en: {
         eyebrow: "AI assistant",
-        title: "Smart Tech AI assistant",
-        text: "A dedicated page for a focused conversation with our AI assistant. Ask about CCTV, networks, fire systems, electrical works, automation or your project.",
-        intro: "Hi. I am Smart Tech's AI assistant. Type your question or choose one of the quick questions.",
+        title: "Smart Tech AI",
+        text: "A dedicated page to assemble a project brief quickly. Pick answers or type your own, Smart Tech AI prepares the request for you.",
+        intro: "Hi. Tap Project brief or describe what you need. Answer with quick buttons, then submit the assembled request.",
         quickLabel: "Quick questions",
         input: "Type your question...",
         send: "Send",
         typing: "Typing...",
         status: "Replies in Armenian, English and Russian",
         questions: [
-          "What services do you provide?",
-          "What is needed for CCTV installation?",
+          "Project brief",
+          "I need CCTV",
           "How can I get a price offer?",
           "How long does installation take?",
           "I want to contact a specialist"
@@ -39,17 +39,17 @@
       },
       ru: {
         eyebrow: "AI-ассистент",
-        title: "AI-ассистент Smart Tech",
-        text: "Отдельная страница для удобного общения с AI-ассистентом. Задайте вопрос о видеонаблюдении, сетях, пожарных системах, электромонтаже, автоматизации или вашем проекте.",
-        intro: "Здравствуйте. Я AI-ассистент Smart Tech. Напишите вопрос или выберите быстрый вопрос.",
+        title: "Smart Tech AI",
+        text: "Отдельная страница для быстрого сбора брифа проекта. Выбирайте ответы кнопками или пишите свой вариант, Smart Tech AI подготовит заявку.",
+        intro: "Здравствуйте. Нажмите «Бриф проекта» или опишите задачу. Ответьте кнопками и отправьте собранную заявку.",
         quickLabel: "Быстрые вопросы",
         input: "Напишите вопрос...",
         send: "Отправить",
         typing: "Печатает...",
         status: "Отвечает на армянском, английском и русском",
         questions: [
-          "Какие услуги вы предоставляете?",
-          "Что нужно для установки видеонаблюдения?",
+          "Бриф проекта",
+          "Нужно видеонаблюдение",
           "Как получить ценовое предложение?",
           "Сколько времени занимает монтаж?",
           "Хочу связаться со специалистом"
@@ -62,6 +62,10 @@
     var e = site.utils.escapeHtml;
     var copy = chatPageCopy();
     var quickQuestions = copy.questions.map(function (question) {
+      var isSurvey = /բրիֆ|brief|бриф/i.test(question);
+      if (isSurvey) {
+        return '<button class="chat-page-quick-btn chat-page-quick-btn-primary" type="button" data-chat-page-intent="survey">' + e(question) + "</button>";
+      }
       return '<button class="chat-page-quick-btn" type="button" data-chat-page-question="' + e(question) + '">' + e(question) + "</button>";
     }).join("");
 
@@ -93,6 +97,7 @@
               '<div class="chat-page-messages" data-chat-page-messages aria-live="polite">' +
                 '<div class="chat-page-message chat-page-message-bot">' + e(copy.intro) + "</div>" +
               "</div>" +
+              '<div class="chat-page-survey-options" data-chat-page-survey-options hidden></div>' +
               '<div class="chat-page-quick-wrap">' +
                 '<p class="chat-page-quick-label">' + e(copy.quickLabel) + "</p>" +
                 '<div class="chat-page-quick" data-chat-page-quick role="group">' + quickQuestions + "</div>" +

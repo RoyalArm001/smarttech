@@ -3,9 +3,9 @@
     var dictionaries = {
       hy: {
         paragraphs: [
-          "Smart Tech-ի առաքելությունն է փոխել առօրյան՝ ստեղծելով ավելի հարմարավետ, անվտանգ և էկոլոգիապես արդյունավետ պայմաններ կյանքի և աշխատանքի համար։",
-          "Ընկերությունը 2012 թվականից մասնագիտանում է շենքերի ավտոմատացման, դիսպետչերացման, անվտանգության, օդորակման, օդափոխության և ջեռուցման ինժեներական համակարգերի ոլորտում։",
-          "Մենք ինքնուրույն մշակում ենք լուծումները և իրականացնում ամբողջ գործընթացը՝ նախագծումից մինչև ներդրում, ներառյալ մոնտաժ, ծրագրավորում, սարքավորումների մատակարարում և հետագա սպասարկում։"
+          "Smart Tech-ը նախագծում, տեղադրում և սպասարկում է անվտանգության, տեսահսկման, ցանցային, էլեկտրամոնտաժային և ավտոմատացման համակարգեր բիզնեսի, հյուրանոցների, գրասենյակների և բնակելի տարածքների համար։",
+          "2012 թվականից մենք իրականացրել ենք հյուրանոցային, գրասենյակային, առևտրային, պահեստային և արտադրական օբյեկտների համար լուծումներ՝ Hikvision և այլ առաջատար արտադրողների սարքավորումներով։",
+          "Մենք միավորում ենք նախագիծը, չափագրումը, մատակարարումը, մոնտաժը, կարգավորումը, ծրագրավորումը և հետագա սպասարկումը՝ մեկ Smart Tech թիմով։"
         ],
         stats: [
           { value: "2012", label: "գործունեության սկիզբ" },
@@ -29,19 +29,19 @@
         ],
         advantageTitle: "Ինչ է շահում պատվիրատուն",
         advantages: [
-          "Էներգիայի, ջրի և ջերմության չնպատակային օգտագործման նվազեցում և սպասարկման ծախսերի օպտիմալացում։",
-          "Ավտոմատացման միջոցով մարդկային սխալի ռիսկի նվազեցում և վթարային իրավիճակներին արագ արձագանք։",
-          "Շենքի համակարգերի կառավարում մեկ դիսպետչերական կենտրոնից՝ իրական ժամանակի և արխիվային տվյալներով։",
-          "Համակարգերի աշխատանքային գրաֆիկների կարգավորում ըստ շաբաթվա օրվա, սեզոնի և օգտագործման պայմանների։"
+          "Տեսահսկում, մուտքի վերահսկում, հրդեհային/ազդանշանային և ցանցային համակարգեր՝ օբյեկտի պաշտպանություն և վերահսկում իրական ժամանակում։",
+          "Նախագծումից մինչև սպասարկում՝ մեկ Smart Tech թիմ, մեկ պատասխանատվություն, առանց միջնորդների և բաց թողնված փուլերի։",
+          "Հեռահար դիտարկում, արխիվ և ծանուցումներ՝ արագ արձագանք, հստակ վերահսկում և 24/7 մոնիտորինգ, երբ դա պահանջվում է։",
+          "Օբյեկտին համապատասխան սարքավորումներ՝ ճիշտ հաշվարկված տեխնիկա, առաջատար արտադրողներ և Smart Tech-ի երկարաժամկետ սպասարկում։"
         ],
         licenseTitle: "Լիցենզիաներ և որակ",
         licenseText: "Ընկերությունը կարևորում է օրենսդրական պահանջների և ոլորտային ստանդարտների պահպանումը։ Լիցենզիաներն ու սերտիֆիկատները հաստատում են համակարգերի նախագծման և տեղադրման մասնագիտական պատրաստվածությունը։"
       },
       en: {
         paragraphs: [
-          "Smart Tech's mission is to improve everyday life by creating more comfortable, safe and environmentally efficient conditions for living and work.",
-          "Since 2012 the company has specialized in building automation, dispatching, security, air conditioning, ventilation and heating engineering systems.",
-          "We develop solutions in-house and cover the full scope: design, implementation, installation, programming, equipment supply and further maintenance."
+          "Smart Tech designs, installs and maintains security, CCTV, network, electrical and automation systems for business, hotel, office and residential sites.",
+          "Since 2012 we have delivered projects for hotels, offices, retail, warehouses and production facilities using equipment from Hikvision and other leading brands.",
+          "We combine survey, design, supply, installation, commissioning, programming and maintenance in one Smart Tech team."
         ],
         stats: [
           { value: "2012", label: "started operating" },
@@ -65,19 +65,19 @@
         ],
         advantageTitle: "What the client gains",
         advantages: [
-          "Reduced non-target use of electricity, water and heat, with optimized maintenance costs.",
-          "Lower human error risk and faster emergency response through automation.",
-          "Unified monitoring and control from one dispatch center with real-time and archive data.",
-          "Operating schedules adjusted by weekday, season and actual building usage."
+          "CCTV, access control, fire/alarm and network systems for real-time protection and monitoring of the site.",
+          "One Smart Tech team from design to maintenance — single responsibility without gaps or middlemen.",
+          "Remote viewing, archive and alerts for faster response, clear oversight and 24/7 monitoring when required.",
+          "Equipment matched to the site — correct engineering, trusted brands and long-term Smart Tech service."
         ],
         licenseTitle: "Licenses and quality",
         licenseText: "The company values compliance with legal requirements and industry standards. Licenses and certificates confirm professional readiness for design and installation of engineering systems."
       },
       ru: {
         paragraphs: [
-          "Миссия Smart Tech - менять повседневность, создавая более комфортные, безопасные и экологичные условия для жизни и работы.",
-          "С 2012 года компания специализируется на автоматизации, диспетчеризации зданий, системах безопасности, кондиционирования, вентиляции и отопления.",
-          "Мы самостоятельно разрабатываем решения и выполняем полный комплекс работ: от проектирования до внедрения, включая монтаж, программирование, поставку оборудования и дальнейшее обслуживание."
+          "Smart Tech проектирует, устанавливает и обслуживает системы безопасности, видеонаблюдения, сетей, электромонтажа и автоматизации для бизнеса, отелей, офисов и жилых объектов.",
+          "С 2012 года мы реализовали решения для отелей, офисов, торговли, складов и производств с оборудованием Hikvision и других ведущих брендов.",
+          "Мы объединяем обследование, проектирование, поставку, монтаж, настройку, программирование и сервис в одной команде Smart Tech."
         ],
         stats: [
           { value: "2012", label: "начало работы" },
@@ -101,10 +101,10 @@
         ],
         advantageTitle: "Что получает заказчик",
         advantages: [
-          "Снижение нецелевого использования электроэнергии, воды и тепла, а также оптимизация затрат на обслуживание.",
-          "Снижение риска человеческой ошибки и быстрая реакция на аварийные ситуации благодаря автоматизации.",
-          "Координация систем здания из единого диспетчерского центра с данными в реальном времени и архиве.",
-          "Настройка расписаний работы систем по дням недели, сезону и реальному режиму использования здания."
+          "Видеонаблюдение, контроль доступа, пожарная/охранная сигнализация и сети — защита и контроль объекта в реальном времени.",
+          "От проекта до сервиса — одна команда Smart Tech и единая ответственность без посредников и пропущенных этапов.",
+          "Удаленный просмотр, архив и уведомления — быстрая реакция, прозрачный контроль и мониторинг 24/7 при необходимости.",
+          "Оборудование под задачу объекта — верный расчет, проверенные бренды и долгосрочный сервис Smart Tech."
         ],
         licenseTitle: "Лицензии и качество",
         licenseText: "Компания соблюдает законодательные требования и отраслевые стандарты. Лицензии и сертификаты подтверждают профессиональную компетенцию в проектировании и инсталляции инженерных систем."
@@ -156,6 +156,15 @@
       return '<li>' + e(item) + '</li>';
     }).join("");
 
+    var licenseDocuments = company.licenseDocuments || [];
+    var licenseCards = licenseDocuments.map(function (item) {
+      return '' +
+        '<a class="about-license-card" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +
+          '<img src="' + e(item.thumb || item.image) + '" alt="' + e(item.alt || item.title) + '" loading="lazy" decoding="async">' +
+          '<span>' + e(item.title) + '</span>' +
+        '</a>';
+    }).join("");
+
     return '' +
       site.sections.pageHero({
         eyebrow: site.i18n.get("about.eyebrow"),
@@ -192,6 +201,7 @@
         '<div class="container about-license reveal">' +
           '<h2>' + e(copy.licenseTitle) + '</h2>' +
           '<p>' + e(copy.licenseText) + '</p>' +
+          (licenseCards ? '<div class="about-license-grid">' + licenseCards + '</div>' : '') +
         '</div>' +
       '</section>';
   };

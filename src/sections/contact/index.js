@@ -6,7 +6,6 @@
     var mapUrl = "https://maps.google.com/?ll=" + contacts.map.lat + "," + contacts.map.lng;
     var phoneLabels = [labels.office, labels.powder, labels.store, labels.main];
     var emails = contacts.emails && contacts.emails.length ? contacts.emails : [contacts.email];
-    var formAction = site.utils.mailTo(contacts.email, "Smart Tech contact request", "");
 
     var phoneLinks = contacts.phones.map(function (phone, index) {
       return '' +
@@ -36,7 +35,7 @@
         titleKey: "contact.title",
         text: site.i18n.get("contact.text"),
         textKey: "contact.text",
-        image: "/img/message.avif",
+        image: "/img/cctv/monitoring-room.jpg",
         tone: "contact"
       }) +
       '<section id="contact" class="section contact-section">' +
@@ -51,7 +50,8 @@
             '</div>' +
             '<div class="social-row">' + socialLinks + '</div>' +
           '</div>' +
-          '<form class="contact-form reveal" id="contact-form" action="' + e(formAction) + '" method="post" enctype="text/plain">' +
+          '<form class="contact-form reveal" id="contact-form" action="#" method="post" novalidate>' +
+            '<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>' +
             '<label>' + e(labels.name) + '<input name="name" autocomplete="name" required></label>' +
             '<label>' + e(labels.phone) + '<input name="phone" autocomplete="tel" required></label>' +
             '<label>Email<input name="email" type="email" autocomplete="email"></label>' +

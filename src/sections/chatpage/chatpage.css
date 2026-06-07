@@ -241,7 +241,8 @@ body.ui-theme-dark .chat-page-agent-mark {
 }
 
 .chat-page-mail-action,
-.chat-page-submit-action {
+.chat-page-submit-action,
+.chat-page-open-request-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -260,7 +261,9 @@ body.ui-theme-dark .chat-page-agent-mark {
 .chat-page-mail-action:hover,
 .chat-page-mail-action:focus-visible,
 .chat-page-submit-action:hover,
-.chat-page-submit-action:focus-visible {
+.chat-page-submit-action:focus-visible,
+.chat-page-open-request-action:hover,
+.chat-page-open-request-action:focus-visible {
   box-shadow: 0 10px 22px rgba(8, 123, 112, 0.22);
   transform: translateY(-1px);
 }
@@ -352,6 +355,19 @@ body.ui-theme-dark .chat-page-mail-action {
   font-size: 0.78rem;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.chat-page-quick-btn-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--panel-teal), var(--panel-steel));
+  border-color: transparent;
+}
+
+.chat-page-quick-btn-primary:hover,
+.chat-page-quick-btn-primary:focus-visible {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--panel-teal), var(--panel-steel));
+  box-shadow: 0 10px 22px rgba(8, 123, 112, 0.22);
 }
 
 .chat-page-quick-btn {
