@@ -55,6 +55,7 @@ function jsString(value) {
 
 const rootDir = __dirname;
 const siteDir = rootDir;
+const pageTemplateDir = path.resolve(rootDir, "lib", "page-templates");
 const adminDataDir = process.env.VERCEL
   ? path.join("/tmp", "smarttech-admin-data")
   : path.resolve(rootDir, "admin", "data");
@@ -146,6 +147,17 @@ const pageShellAliases = {
   privacy: "about.html",
   disclaimer: "about.html"
 };
+
+function resolvePagesDir() {
+  const primary = path.resolve(siteDir, "pages");
+  if (fs.existsSync(primary)) {
+    return primary;
+  }
+  if (fs.existsSync(pageTemplateDir)) {
+    return pageTemplateDir;
+  }
+  return primary;
+}
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -1532,6 +1544,7 @@ function resolveStaticTarget(targetInfo) {
   const relative = targetInfo.relative.replace(/\\/g, "/");
   const direct = targetInfo.target;
   const candidates = [direct];
+  const pagesDir = resolvePagesDir();
 
   if (!path.extname(direct)) {
     candidates.push(direct + ".html");
@@ -1544,9 +1557,9 @@ function resolveStaticTarget(targetInfo) {
   }
   const aliasedPage = pageShellAliases[pageKey];
   if (aliasedPage) {
-    candidates.push(path.resolve(siteDir, "pages", aliasedPage));
+    candidates.push(path.resolve(pagesDir, aliasedPage));
   }
-  const pageTarget = path.resolve(siteDir, "pages", pageRelative);
+  const pageTarget = path.resolve(pagesDir, pageRelative);
   candidates.push(pageTarget);
   if (!path.extname(pageTarget)) {
     candidates.push(pageTarget + ".html");

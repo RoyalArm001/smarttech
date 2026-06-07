@@ -13,6 +13,7 @@
     "seo": "node lib/apply-seo.js",
     "build": "npm run check && node lib/build-static.js",
     "vercel-build": "npm run check && node lib/build-static.js",
+    "sync:pages": "node -e \"require('fs').cpSync('pages','lib/page-templates',{recursive:true,force:true}); console.log('Synced pages/ -> lib/page-templates/')\"",
     "check": "node lib/check-syntax.js",
     "test:smtp": "node lib/test-smtp.js",
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
