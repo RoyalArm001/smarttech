@@ -82,12 +82,12 @@
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 6.4A6.8 6.8 0 0 1 12 4h1.2a6.4 6.4 0 0 1 6.4 6.4v.5a6.4 6.4 0 0 1-6.4 6.4H11l-4.2 2.4.8-3.7a6.7 6.7 0 0 1-2.4-5.1v-.5Z"></path><path d="m15.8 6.8.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1ZM10 10h3.8M10 13h5.5"></path></svg>'
     },
     {
-      id: "profile",
+      id: "team",
       type: "link",
       route: "team",
       activeRoutes: ["team", "member"],
-      labels: { hy: "Պրոֆիլ", en: "Profile", ru: "Профиль" },
-      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0"></path></svg>'
+      labelKey: "nav.team",
+      icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.2" cy="8.3" r="2.45"></circle><path d="M4.1 17.6c0-1.95 1.4-3.55 3.1-3.55s3.1 1.6 3.1 3.55H4.1Z"></path><circle cx="16.8" cy="8.3" r="2.45"></circle><path d="M13.7 17.6c0-1.95 1.4-3.55 3.1-3.55s3.1 1.6 3.1 3.55h-6.2Z"></path><circle cx="12" cy="9.7" r="2.85"></circle><path d="M6.9 20c0-2.75 2.25-5 5.1-5s5.1 2.25 5.1 5H6.9Z"></path></svg>'
     }
   ];
 
@@ -3799,7 +3799,13 @@
     slot.hidden = false;
   }
 
+  function isLocalDevHost() {
+    var host = window.location.hostname;
+    return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+  }
+
   window.addEventListener("beforeinstallprompt", function (e) {
+    if (isLocalDevHost()) return;
     e.preventDefault();
     pwaDeferredPrompt = e;
     setupPwaInstallButton(); // show immediately if header already rendered

@@ -1089,18 +1089,32 @@ function extensionlessRedirectLocation(requestUrl) {
   return null;
 }
 
+function stripVercelAnalytics(html) {
+  return String(html || "")
+    .replace(/[ \t]*<!-- Vercel Web Analytics[^>]*-->\s*/g, "")
+    .replace(/[ \t]*<script defer src="\/_vercel\/insights\/script\.js"><\/script>\s*/g, "")
+    .replace(/[ \t]*<!-- Vercel Speed Insights[^>]*-->\s*/g, "")
+    .replace(/[ \t]*<script defer src="\/_vercel\/speed-insights\/script\.js"><\/script>\s*/g, "");
+}
+
 function sendStatic(response, targetPath) {
-  fs.readFile(targetPath, (error, file) => {
+  const ext = path.extname(targetPath).toLowerCase();
+  const isHtml = ext === ".html";
+  const stripVercel = isHtml && !process.env.VERCEL_ENV;
+  const encoding = stripVercel ? "utf8" : null;
+
+  fs.readFile(targetPath, encoding, (error, file) => {
     if (error) {
       response.writeHead(error.code === "ENOENT" ? 404 : 500);
       response.end(error.code === "ENOENT" ? "Not found" : "Server error");
       return;
     }
+    const body = stripVercel ? stripVercelAnalytics(file) : file;
     response.writeHead(200, {
-      "content-type": mimeTypes[path.extname(targetPath).toLowerCase()] || "application/octet-stream",
+      "content-type": mimeTypes[ext] || "application/octet-stream",
       "cache-control": "no-store"
     });
-    response.end(file);
+    response.end(body);
   });
 }
 

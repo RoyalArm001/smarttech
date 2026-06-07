@@ -428,6 +428,11 @@ body.is-menu-open .mobile-bottom-nav {
   height: 22px;
 }
 
+.mobile-bottom-nav .bottom-nav-team .bottom-nav-icon svg {
+  fill: currentColor;
+  stroke: none;
+}
+
 .mobile-bottom-nav .bottom-nav-label {
   display: block;
   width: 100%;
