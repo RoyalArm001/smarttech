@@ -15,9 +15,15 @@
   },
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [{ "type": "host", "value": "www.smarttechllc.am" }],
-      "destination": "https://smarttechllc.am/:path*",
+      "destination": "https://smarttechllc.am/",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "has": [{ "type": "host", "value": "www.smarttechllc.am" }],
+      "destination": "https://smarttechllc.am/:path+",
       "permanent": true
     },
     { "source": "/index", "destination": "/home", "permanent": true },
