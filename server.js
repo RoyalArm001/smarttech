@@ -465,14 +465,36 @@ function requireCsrf(request, response, next) {
   next();
 }
 
+function normalizeRequestHost(hostname) {
+  return String(hostname || "").split(":")[0].toLowerCase().replace(/^www\./, "");
+}
+
+function requestOriginHostsMatch(requestHost, originHost) {
+  const req = String(requestHost || "").split(":")[0].toLowerCase();
+  const origin = String(originHost || "").split(":")[0].toLowerCase();
+  if (!req || !origin) return true;
+  if (req === origin) return true;
+  if (normalizeRequestHost(req) === normalizeRequestHost(origin)) {
+    return hostAllowedForRequests(req) && hostAllowedForRequests(origin);
+  }
+  if (process.env.VERCEL && process.env.VERCEL_URL) {
+    const vercelHost = String(process.env.VERCEL_URL).split(":")[0].toLowerCase();
+    if (req === vercelHost || origin === vercelHost) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function sameOriginGuard(request, response, next) {
-  const host = String(request.headers.host || "");
+  const host = String(request.headers.host || "").split(":")[0].toLowerCase();
   const candidates = [request.headers.origin, request.headers.referer].filter(Boolean);
 
   for (const candidate of candidates) {
     try {
       const url = new URL(String(candidate));
-      if (url.host && url.host !== host) {
+      const originHost = url.hostname.toLowerCase();
+      if (originHost && !requestOriginHostsMatch(host, originHost)) {
         jsonResponse(response, 403, { error: "Cross-origin admin request blocked" });
         return;
       }
@@ -1204,6 +1226,31 @@ app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requi
   } catch (error) {
     jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS delete failed" });
   }
+});
+
+app.get("/api/status", publicApiLimiter, (request, response) => {
+  const emailReady = smtpConfigured() || !!defaultResendApiKey;
+  jsonResponse(response, 200, {
+    runtime: process.env.VERCEL ? "vercel" : "local",
+    vercelEnv: process.env.VERCEL_ENV || null,
+    email: {
+      configured: emailReady,
+      smtp: smtpConfigured(),
+      resend: !!defaultResendApiKey,
+      to: defaultRequestEmailTo,
+      from: defaultRequestEmailFrom.replace(/<[^>]+>/g, "").trim() || defaultRequestEmailFrom
+    },
+    chat: {
+      gemini: !!defaultGeminiApiKey,
+      openai: !!defaultOpenAiApiKey
+    },
+    admin: {
+      passwordConfigured: !!adminPassword()
+    },
+    hint: emailReady
+      ? "Email env vars are loaded."
+      : "Add SMTP_* or RESEND_API_KEY in Vercel → Settings → Environment Variables, then Redeploy."
+  });
 });
 
 app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, express.json({ limit: "10kb" }), requestJsonGuard, requestSiteGuard, async (request, response) => {
