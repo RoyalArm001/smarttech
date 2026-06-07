@@ -1,8 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 
-const cmsDir = path.resolve(__dirname, "data", "cms");
+const isVercel = Boolean(process.env.VERCEL);
+const localDataRoot = path.resolve(__dirname, "data");
+const runtimeDataRoot = isVercel
+  ? path.join("/tmp", "smarttech-admin-data")
+  : localDataRoot;
+
+const cmsDir = path.join(runtimeDataRoot, "cms");
+const bundledCmsDir = path.join(localDataRoot, "cms");
 const manifestFile = path.join(cmsDir, "manifest.json");
+const bundledManifestFile = path.join(bundledCmsDir, "manifest.json");
 
 const COLLECTIONS = {
   contacts: {
@@ -50,7 +58,15 @@ const COLLECTIONS = {
 };
 
 function ensureCmsDir() {
-  fs.mkdirSync(cmsDir, { recursive: true });
+  try {
+    fs.mkdirSync(cmsDir, { recursive: true });
+    return true;
+  } catch (error) {
+    if (error && (error.code === "EROFS" || error.code === "EACCES")) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 function collectionFile(id) {
@@ -63,9 +79,25 @@ function collectionFile(id) {
   return path.join(cmsDir, id + ".json");
 }
 
+function collectionReadPath(id) {
+  collectionFile(id);
+  const runtimePath = path.join(cmsDir, id + ".json");
+  const bundledPath = path.join(bundledCmsDir, id + ".json");
+  if (fs.existsSync(runtimePath)) return runtimePath;
+  if (fs.existsSync(bundledPath)) return bundledPath;
+  return null;
+}
+
 function readManifest() {
-  ensureCmsDir();
-  const manifest = readJsonFile(manifestFile, { version: 1, collections: {} });
+  const manifestPath = fs.existsSync(manifestFile)
+    ? manifestFile
+    : (fs.existsSync(bundledManifestFile) ? bundledManifestFile : null);
+
+  if (!manifestPath) {
+    return { version: 1, collections: {} };
+  }
+
+  const manifest = readJsonFile(manifestPath, { version: 1, collections: {} });
   manifest.version = 1;
   manifest.collections = manifest.collections && typeof manifest.collections === "object"
     ? manifest.collections
@@ -94,7 +126,11 @@ function readJsonFile(filePath, fallback) {
 }
 
 function writeJsonFile(filePath, payload) {
-  ensureCmsDir();
+  if (!ensureCmsDir()) {
+    const error = new Error("CMS storage is read-only in this environment");
+    error.statusCode = 503;
+    throw error;
+  }
   const tempPath = filePath + "." + process.pid + ".tmp";
   fs.writeFileSync(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
   fs.renameSync(tempPath, filePath);
@@ -335,8 +371,8 @@ function assertPayloadSize(id, payload) {
 }
 
 function readCollection(id) {
-  const filePath = collectionFile(id);
-  if (!fs.existsSync(filePath)) return null;
+  const filePath = collectionReadPath(id);
+  if (!filePath) return null;
   return readJsonFile(filePath, null);
 }
 

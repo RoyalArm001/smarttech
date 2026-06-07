@@ -55,7 +55,9 @@ function jsString(value) {
 
 const rootDir = __dirname;
 const siteDir = rootDir;
-const adminDataDir = path.resolve(rootDir, "admin", "data");
+const adminDataDir = process.env.VERCEL
+  ? path.join("/tmp", "smarttech-admin-data")
+  : path.resolve(rootDir, "admin", "data");
 const adminAlbumFile = path.resolve(adminDataDir, "album.json");
 const adminSettingsFile = path.resolve(adminDataDir, "settings.json");
 const adminRequestLogFile = path.resolve(adminDataDir, "requests.jsonl");
@@ -181,7 +183,15 @@ const defaultFirebaseAuthToken = envValue([
 ], "");
 
 function ensureAdminDataDir() {
-  fs.mkdirSync(adminDataDir, { recursive: true });
+  try {
+    fs.mkdirSync(adminDataDir, { recursive: true });
+    return true;
+  } catch (error) {
+    if (error && (error.code === "EROFS" || error.code === "EACCES")) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 function readJsonFile(filePath, fallback) {
@@ -197,7 +207,11 @@ function readJsonFile(filePath, fallback) {
 }
 
 function writeJsonFile(filePath, payload) {
-  ensureAdminDataDir();
+  if (!ensureAdminDataDir()) {
+    const error = new Error("Admin storage is read-only in this environment");
+    error.statusCode = 503;
+    throw error;
+  }
   const tempPath = filePath + "." + process.pid + ".tmp";
   fs.writeFileSync(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
   fs.renameSync(tempPath, filePath);
@@ -631,7 +645,7 @@ function normalizeRequestPayload(body, request) {
 }
 
 function appendRequestLog(entry) {
-  ensureAdminDataDir();
+  if (!ensureAdminDataDir()) return;
   fs.appendFileSync(adminRequestLogFile, JSON.stringify(entry) + "\n", "utf8");
 }
 
