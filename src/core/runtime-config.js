@@ -3,6 +3,7 @@
     firebaseDatabaseUrl: "",
     firebaseStatsPath: "",
     firebaseApiKey: "",
-    firebaseAuthToken: ""
+    firebaseAuthToken: "",
+    cmsApiBaseUrl: ""
   });
 })(window);

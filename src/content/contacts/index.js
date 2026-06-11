@@ -14,7 +14,8 @@
     socials: [
       { label: "Facebook", href: "https://www.facebook.com/share/1CYQCeM7jd" },
       { label: "Instagram", href: "https://www.instagram.com/smart_tech_armenia?utm_source=qr&igsh=eDZweG8zMnRna2N4" },
-      { label: "WhatsApp", href: "whatsapp://send?phone=+37496424643" },
+      { label: "Telegram", href: "https://t.me/smarttechllc" },
+      { label: "WhatsApp", href: "https://wa.me/37496424643" },
       { label: "Viber", href: "viber://chat?number=+37496424643" },
       { label: "TikTok", href: "https://www.tiktok.com/@best_systems" }
     ]

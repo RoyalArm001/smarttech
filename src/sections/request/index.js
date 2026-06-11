@@ -110,6 +110,7 @@
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["մալուխային ուղի", "բաշխիչ վահան", "ավտոմատ անջատիչ", "լուսավորության գիծ", "վարդակների գիծ", "հողանցում", "UPS սնուցում", "չափումներ"],
         automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "engineering-monitoring": ["SMS ահազանգում", "email/Telegram ծանուցում", "NVR մոնիթորինգ", "սերվերային վերահսկում", "UPS/ցանցի կարգավիճակ", "dashboard", "իրադարձությունների մատյան", "պլանային սպասարձում"],
         "powder-coating": ["մաքրում", "փայլում", "փոշի կիրառում", "ջեռոցում", "Որակի ստուգում", "փաթեթավորում", "RAL գունային ընտրություն", "պաշտպանիչ ծածկ"]
       },
       en: {
@@ -121,6 +122,7 @@
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["cable route", "distribution panel", "circuit breaker", "lighting line", "socket line", "grounding", "UPS power", "measurements"],
         automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "engineering-monitoring": ["SMS alerts", "email/Telegram notifications", "NVR monitoring", "server supervision", "UPS/network status", "dashboard", "event log", "scheduled maintenance"],
         "powder-coating": ["cleaning", "sandblasting", "powder application", "curing", "quality check", "packaging", "RAL color selection", "protective coating"]
       },
       ru: {
@@ -132,6 +134,7 @@
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["кабельная трасса", "распределительный щит", "автомат", "линия освещения", "линия розеток", "заземление", "UPS питание", "замеры"],
         automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
+        "engineering-monitoring": ["SMS-оповещения", "email/Telegram уведомления", "мониторинг NVR", "контроль серверов", "статус UPS/сети", "dashboard", "журнал событий", "плановое обслуживание"],
         "powder-coating": ["очистка", "пескоструй", "нанесение порошка", "полимеризация", "контроль качества", "упаковка", "цвет RAL", "защитное покрытие"]
       },
       be: {
@@ -267,6 +270,7 @@
           { id: "network", title: "Ցանցեր եւ Wi-Fi", unit: "կետ", text: "LAN, rack, Wi-Fi ծածկույթ" },
           { id: "electrical", title: "Էլեկտրամոնտաժ", unit: "կետ", text: "Վահաններ, մալուխներ, լուսավորություն" },
           { id: "automation", title: "BMS / ավտոմատացում", unit: "հանգույց", text: "Շենքի կառավարման եւ smart logic լուծումներ" },
+          { id: "engineering-monitoring", title: "24/7 մոնիթորինգ", unit: "հանգույց", text: "SMS/email ահազանգում, սերվեր/NVR, dashboard եւ ավարուժ սպասարձում" },
           { id: "powder-coating", title: "Փոշեներկում", unit: "մ²", text: "Մետաղական դետալների պաշտպանիչ և էսթետիկ փոշեներկում" }
         ],
         maintenanceList: [
@@ -350,6 +354,7 @@
           { id: "network", title: "Networks and Wi-Fi", unit: "point", text: "LAN, rack, Wi-Fi coverage" },
           { id: "electrical", title: "Electrical work", unit: "point", text: "Panels, cabling, lighting" },
           { id: "automation", title: "BMS / automation", unit: "node", text: "Building management and smart logic" },
+          { id: "engineering-monitoring", title: "24/7 monitoring", unit: "node", text: "SMS/email alerts, server/NVR, dashboard and engineering support" },
           { id: "powder-coating", title: "Powder coating", unit: "m²", text: "Protective and aesthetic powder coating for metal parts" }
         ],
         maintenanceList: [
@@ -433,6 +438,7 @@
           { id: "network", title: "Сети и Wi-Fi", unit: "точка", text: "LAN, rack, Wi-Fi покрытие" },
           { id: "electrical", title: "Электромонтаж", unit: "точка", text: "Щиты, кабели, освещение" },
           { id: "automation", title: "BMS / автоматизация", unit: "узел", text: "Управление зданием и smart logic" },
+          { id: "engineering-monitoring", title: "24/7 мониторинг", unit: "узел", text: "SMS/email-оповещения, сервер/NVR, dashboard и инженерная поддержка" },
           { id: "powder-coating", title: "Порошковая окраска", unit: "м²", text: "Защитная и эстетичная порошковая окраска металла" }
         ],
         maintenanceList: [
@@ -637,7 +643,8 @@
         "audio-systems": locale.services["audio-systems"].title,
         network: locale.services.networks.title,
         electrical: locale.services.electrical.title,
-        automation: locale.services.automation.title
+        automation: locale.services.automation.title,
+        "engineering-monitoring": locale.services["engineering-monitoring"] ? locale.services["engineering-monitoring"].title : "24/7 monitoring"
       };
 
       copy.heroEyebrow = locale.common.proposal;

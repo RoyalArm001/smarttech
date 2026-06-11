@@ -15,6 +15,7 @@
           { title: "Նախագծում եւ խորհրդատվություն", items: ["օբյեկտի ուսումնասիրություն", "չափագրում եւ ռիսկերի գնահատում", "տեխնիկական առաջադրանք", "բյուջեի նախնական հաշվարկ", "սարքավորումների ճիշտ դասավորում"] },
           { title: "Անվտանգության համակարգեր", items: ["տեսահսկում եւ հեռահար դիտում", "alarm անվտանգություն", "հրդեհային ազդարարում", "տարհանման համակարգեր", "մուտքի վերահսկում", "դոմոֆոններ եւ դռների ավտոմատացում"] },
           { title: "IT ցանցեր եւ կապ", items: ["LAN եւ structured cabling", "Wi-Fi ծածկույթ", "rack եւ patch panel", "switch/router/firewall", "VPN եւ հեռահար մուտք", "մոնիթորինգ եւ troubleshooting"] },
+          { title: "Մոնիթորինգ եւ ավարուժ", items: ["24/7 համակարգերի վերահսկում", "SMS, email եւ հավելվածի ահազանգում", "սերվեր, NVR եւ UPS մոնիթորինգ", "կենտրոնացված dashboard", "թեստավորում եւ troubleshooting", "պլանային սպասարկում"] },
           { title: "Էլեկտրամոնտաժ", items: ["մալուխային ուղիներ", "բաշխիչ վահաններ", "լուսավորություն", "սնուցման գծեր", "պաշտպանիչ ավտոմատներ", "UPS եւ պահուստային սնուցում"] },
           { title: "BMS եւ ավտոմատացում", items: ["շենքի կառավարման logic", "սցենարային կառավարում", "HVAC / lighting ինտեգրում", "սենսորներ եւ controller-ներ", "smart control", "մոնիթորինգ dashboard"] },
           { title: "Աուդիո եւ ծանուցում", items: ["public address", "ֆոնային երաժշտություն", "ձայնային ծանուցում", "կոնֆերանսային աուդիո", "միկրոֆոններ եւ zone control", "ձայնի կարգաբերում"] },
@@ -46,6 +47,7 @@
           { title: "Design and consulting", items: ["site survey", "measurement and risk review", "technical brief", "initial budgeting", "equipment placement"] },
           { title: "Security systems", items: ["video surveillance", "alarm security", "fire alarm", "evacuation systems", "access control", "intercom and door automation"] },
           { title: "IT networks", items: ["LAN and structured cabling", "Wi-Fi coverage", "rack and patch panels", "switch/router/firewall", "VPN and remote access", "monitoring and troubleshooting"] },
+          { title: "Monitoring and support", items: ["24/7 system supervision", "SMS, email and app alerts", "server, NVR and UPS monitoring", "central dashboard", "testing and troubleshooting", "scheduled maintenance"] },
           { title: "Electrical works", items: ["cable routes", "distribution panels", "lighting", "power lines", "protection automats", "UPS and backup power"] },
           { title: "BMS and automation", items: ["building management logic", "scenario control", "HVAC / lighting integration", "sensors and controllers", "smart control", "monitoring dashboard"] },
           { title: "Audio and notification", items: ["public address", "background music", "voice alerts", "conference audio", "microphones and zone control", "sound tuning"] },
@@ -77,6 +79,7 @@
           { title: "Проектирование и консультация", items: ["обследование объекта", "замер и оценка рисков", "техническое задание", "первичный расчет бюджета", "расположение оборудования"] },
           { title: "Системы безопасности", items: ["видеонаблюдение", "alarm безопасность", "пожарная сигнализация", "системы эвакуации", "контроль доступа", "домофоны и автоматизация дверей"] },
           { title: "IT сети и связь", items: ["LAN и structured cabling", "Wi-Fi покрытие", "rack и patch panel", "switch/router/firewall", "VPN и удаленный доступ", "мониторинг и troubleshooting"] },
+          { title: "Мониторинг и поддержка", items: ["круглосуточный контроль систем", "SMS, email и push-уведомления", "мониторинг серверов, NVR и UPS", "центральный dashboard", "тестирование и troubleshooting", "плановое обслуживание"] },
           { title: "Электромонтаж", items: ["кабельные трассы", "распределительные щиты", "освещение", "линии питания", "защитные автоматы", "UPS и резервное питание"] },
           { title: "BMS и автоматизация", items: ["логика управления зданием", "сценарное управление", "интеграция HVAC / lighting", "сенсоры и контроллеры", "smart control", "monitoring dashboard"] },
           { title: "Аудио и оповещение", items: ["public address", "фоновая музыка", "голосовые оповещения", "конференц-аудио", "микрофоны и zone control", "настройка звука"] },
@@ -172,7 +175,7 @@
           title: "Հիմնական համակարգային ծառայություններ",
           badge: "Հիմնական",
           text: "Անվտանգություն, էլեկտրամոնտաժ, ցանցեր և ավտոմատացում՝ օբյեկտի առօրյա աշխատանքի համար։",
-          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "engineering-monitoring", "audio-systems"]
         },
         {
           title: "Իրականացման փուլային ծառայություններ",
@@ -186,7 +189,7 @@
           title: "Core engineering services",
           badge: "Core",
           text: "Security, electrical, network and automation systems for stable daily facility operations.",
-          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "engineering-monitoring", "audio-systems"]
         },
         {
           title: "Delivery-stage services",
@@ -200,7 +203,7 @@
           title: "Ключевые инженерные услуги",
           badge: "Основное",
           text: "Системы безопасности, электромонтаж, сети и автоматизация для стабильной ежедневной работы объекта.",
-          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "audio-systems"]
+          ids: ["video-surveillance", "fire-security", "networks", "electrical", "automation", "engineering-monitoring", "audio-systems"]
         },
         {
           title: "Услуги по этапам реализации",

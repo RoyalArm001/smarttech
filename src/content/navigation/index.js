@@ -5,6 +5,7 @@
     "networks",
     "electrical",
     "automation",
+    "engineering-monitoring",
     "systems-design",
     "equipment-supply",
     "installation",

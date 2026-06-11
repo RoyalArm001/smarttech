@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
+    "start": "node tools/start-local.js",
     "dev": "node tools/start-local.js",
     "local": "node tools/start-local.js",
     "preview": "node tools/start-local.js",
@@ -32,6 +32,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "nodemailer": "^8.0.10",
+    "openai": "^6.42.0",
     "sharp": "^0.34.5"
   }
 }

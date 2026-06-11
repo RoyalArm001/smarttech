@@ -4,12 +4,14 @@ const path = require("path");
 const rootDir = path.resolve(__dirname, "..");
 
 const env = Object.assign({}, process.env, {
+  SMARTTECH_APP_MODE: "web",
   WEB_PORT: process.env.WEB_PORT || "3000",
   OPEN_BROWSER: process.env.OPEN_BROWSER || "1"
 });
+delete env.ADMIN_PORT;
 
 console.log("");
-console.log("Starting SmartTech local server...");
+console.log("Starting SmartTech public web server...");
 console.log("Close this window or press Ctrl+C to stop it.");
 console.log("");
 

@@ -1,0 +1,91 @@
+.seo-landing-section {
+  padding: 28px 0 56px;
+}
+
+.seo-landing-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.seo-geo-block {
+  padding: 20px 22px;
+  border: 1px solid rgba(20, 33, 38, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 28px rgba(20, 33, 38, 0.05);
+}
+
+.seo-geo-block h2 {
+  margin: 0 0 10px;
+  font-size: 1.12rem;
+}
+
+.seo-geo-block p,
+.seo-geo-block li {
+  color: var(--ink-soft);
+  line-height: 1.62;
+}
+
+.seo-geo-block ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.seo-faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.seo-faq-item {
+  border: 1px solid rgba(20, 33, 38, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #f8faf9;
+}
+
+.seo-faq-item summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.seo-faq-item p {
+  margin: 10px 0 0;
+}
+
+.seo-landing-cta {
+  padding: 22px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(10, 168, 150, 0.12), rgba(52, 165, 200, 0.1));
+  border: 1px solid rgba(10, 168, 150, 0.18);
+}
+
+.seo-landing-cta h3 {
+  margin: 0 0 8px;
+}
+
+.seo-landing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+@media (min-width: 900px) {
+  .seo-landing-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .seo-geo-faq,
+  .seo-landing-cta {
+    grid-column: 1 / -1;
+  }
+}
+
+body.ui-theme-dark .seo-geo-block {
+  background: rgba(24, 30, 32, 0.92);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.ui-theme-dark .seo-faq-item {
+  background: rgba(255, 255, 255, 0.04);
+}

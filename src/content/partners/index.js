@@ -1,14 +1,7 @@
 (function (site) {
-  var clientsBase = "/img/partners/clients/";
   var techBase = "/img/partners/technology/";
 
-  site.content.partners = [
-    { name: "ՍերտուսԱվիա", logo: clientsBase + "sertusavia.png" },
-    { name: "Elite Estate", logo: clientsBase + "elite-estate.jpg" },
-    { name: "Յու-Ստրոյ", logo: clientsBase + "yu-stroy.png" },
-    { name: "Priority Global Stroy", logo: clientsBase + "priority-global-stroy.png" },
-    { name: "SU 83", logo: clientsBase + "su-83.png" }
-  ];
+  site.content.partners = [];
 
   site.content.technologyPartners = [
     { name: "Eaton", logo: techBase + "eaton.png" },
@@ -39,6 +32,31 @@
     { name: "Legrand", logo: techBase + "legrand.png" },
     { name: "Honeywell", logo: techBase + "honeywell.png" },
     { name: "Helvar", logo: techBase + "helvar.jpg" },
-    { name: "Sharp", logo: techBase + "sharp.png" }
+    { name: "Sharp", logo: techBase + "sharp.png" },
+    { name: "Dahua", logo: techBase + "dahua.png" },
+    { name: "Axis", logo: techBase + "axis.png" },
+    { name: "Uniview", logo: techBase + "uniview.png" },
+    { name: "Bosch", logo: techBase + "bosch.png" },
+    { name: "Hanwha Vision", logo: techBase + "hanwha-vision.png" },
+    { name: "Ajax", logo: techBase + "ajax.png" },
+    { name: "Cisco", logo: techBase + "cisco.png" },
+    { name: "MikroTik", logo: techBase + "mikrotik.png" },
+    { name: "TP-Link", logo: techBase + "tp-link.png" },
+    { name: "Ubiquiti", logo: techBase + "ubiquiti.png" },
+    { name: "ZKTeco", logo: techBase + "zkteco.png" },
+    { name: "Akuvox", logo: techBase + "akuvox.png" },
+    { name: "2N", logo: techBase + "2n.png" },
+    { name: "Paradox", logo: techBase + "paradox.png" },
+    { name: "DSC", logo: techBase + "dsc.png" },
+    { name: "TOA", logo: techBase + "toa.png" },
+    { name: "JBL", logo: techBase + "jbl.png" },
+    { name: "Johnson Controls", logo: techBase + "johnson-controls.png" },
+    { name: "Crestron", logo: techBase + "crestron.png" },
+    { name: "Control4", logo: techBase + "control4.png" },
+    { name: "Schrack Seconet", logo: techBase + "schrack-seconet.png" },
+    { name: "Grandstream", logo: techBase + "grandstream.png" },
+    { name: "Satel", logo: techBase + "satel.png" },
+    { name: "Tiandy", logo: techBase + "tiandy.png" },
+    { name: "Milesight", logo: techBase + "milesight.png" }
   ];
 })(window.SmartTech);

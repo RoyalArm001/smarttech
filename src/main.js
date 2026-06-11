@@ -1,5 +1,12 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer"];
+  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
+  var landingSlugs = [
+    "cctv-installation-yerevan",
+    "fire-alarm-systems-yerevan",
+    "electrical-installation-yerevan",
+    "access-control-yerevan",
+    "security-systems-yerevan"
+  ];
   var entryLoader = null;
   var shouldHideEntryLoaderAfterRender = false;
   var firstRenderDone = false;
@@ -11,6 +18,12 @@
   var chatQuestionLimit = 10;
   var chatUserQuestionCount = 0;
   var chatLimitReached = false;
+  var chatPageStorageKey = "smarttech.chatPage.v1";
+  var chatPageProfileKey = "smarttech.chatPage.profile.v1";
+  var chatPageClientIdKey = "smarttech.chatPage.clientId";
+  var chatPageWordLimit = 8000;
+  var chatPageQuestionLimit = 35;
+  var chatPageBlockMs = 2 * 24 * 60 * 60 * 1000;
   var chatSurveyState = null;
   var chatLatestSurveyPayload = null;
   var backToTopUi = null;
@@ -26,6 +39,7 @@
   var staticMetricsStorageKey = "smarttech.metrics.staticVisits";
   var firebaseAuthSessionKey = "smarttech.firebase.anonymousAuth";
   var chatDismissedSessionKey = "smarttech.chat.dismissed";
+  var chatQuestionSessionKey = "smarttech.quickChat.questions";
   var manualThemeStorageKey = "smarttech.theme";
   var adminAlbumSignature = "";
   var adminAlbumLoading = false;
@@ -48,6 +62,39 @@
 
   var googleAnalyticsMeasurementId = "G-1SC80R2NZE";
   var DISABLE_GOOGLE_TRANSLATE = true; // Set to true to disable Google Translate widget for faster performance
+
+  function runtimeConfig() {
+    return window.SmartTechRuntimeConfig || {};
+  }
+
+  function cmsApiBaseUrl() {
+    return String(runtimeConfig().cmsApiBaseUrl || "").replace(/\/+$/g, "");
+  }
+
+  function cmsApiUrl(path) {
+    var base = cmsApiBaseUrl();
+    return base ? base + path : path;
+  }
+
+  function cmsFetchCredentials() {
+    return cmsApiBaseUrl() ? "omit" : "same-origin";
+  }
+
+  function isAdminAlbumImagePath(value) {
+    try {
+      var url = new URL(String(value || ""), window.location.origin);
+      return /^\/img\/admin-album\/[A-Za-z0-9._-]+\.webp$/i.test(url.pathname);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function cmsAssetUrl(value) {
+    var image = String(value || "");
+    if (!image || /^https?:\/\//i.test(image)) return image;
+    var base = cmsApiBaseUrl();
+    return base && image.charAt(0) === "/" ? base + image : image;
+  }
 
   /* Mobile Bottom Navigation (must be defined early, before first render) */
   var mobileBottomNav = null;
@@ -199,7 +246,11 @@
           var openMenuToggle = document.querySelector(".nav-panel.is-open") ? document.querySelector(".nav-toggle") : null;
           if (openMenuToggle) openMenuToggle.click();
           setChatDismissed(false);
-          setChatOpen(true);
+          if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
+            redirectToFullChatPage();
+          } else {
+            setChatOpen(true);
+          }
           updateMobileBottomNavActive();
         }
       });
@@ -246,6 +297,18 @@
 
       if (page === "service" || page === "project" || page === "member") {
         return { page: page, id: id };
+      }
+
+      if (parts.length === 1 && landingSlugs.indexOf(parts[0]) >= 0) {
+        return { page: "landing", id: parts[0] };
+      }
+
+      if (parts[0] === "blog" && parts.length === 1) {
+        return { page: "blog", id: "" };
+      }
+
+      if (parts[0] === "blog" && parts.length === 2) {
+        return { page: "article", id: parts[1] };
       }
 
       return { page: pages.indexOf(page) >= 0 ? page : "home", id: "" };
@@ -304,6 +367,9 @@
     if (page === "help" || page === "faq" || page === "terms" || page === "privacy" || page === "disclaimer") {
       return infoPageMarkup(page);
     }
+    if (page === "landing") return site.sections.landingPage(currentRoute().id);
+    if (page === "blog") return site.sections.blogIndex();
+    if (page === "article") return site.sections.articlePage(currentRoute().id);
 
     return site.sections.hero();
   }
@@ -611,13 +677,13 @@
   function normalizeAdminAlbumPhoto(item) {
     item = item || {};
     var image = String(item.image || "");
-    if (!/^\/img\/admin-album\/[A-Za-z0-9._-]+\.webp$/i.test(image)) {
+    if (!isAdminAlbumImagePath(image)) {
       return null;
     }
     return {
       id: String(item.id || ""),
       section: item.section === "current" ? "current" : "completed",
-      image: image,
+      image: cmsAssetUrl(image),
       title: String(item.title || "Smart Tech").slice(0, 90),
       caption: String(item.caption || item.title || "Smart Tech").slice(0, 150),
       status: String(item.status || "").slice(0, 70),
@@ -629,9 +695,9 @@
     if (currentRoute().page !== "album" || adminAlbumLoading || typeof window.fetch !== "function") return;
     adminAlbumLoading = true;
 
-    window.fetch("/api/album", {
+    window.fetch(cmsApiUrl("/api/album"), {
       cache: "no-store",
-      credentials: "same-origin"
+      credentials: cmsFetchCredentials()
     })
       .then(function (response) {
         return response.ok ? response.json() : { photos: [] };
@@ -657,6 +723,10 @@
 
   function render() {
     var page = currentRoute().page;
+    var oldStickyDock = document.querySelector(".sticky-contact-dock");
+    if (oldStickyDock && oldStickyDock.parentNode) {
+      oldStickyDock.parentNode.removeChild(oldStickyDock);
+    }
     var main = document.getElementById("site-main");
     var preferredLang = activeUiLanguage();
     if (site.i18n.language !== preferredLang) {
@@ -665,6 +735,7 @@
     applyUiSettings();
     runRouteTransition();
     document.body.classList.remove("is-menu-open");
+    document.body.classList.toggle("is-chat-page", page === "chat");
     document.documentElement.lang = preferredLang;
     document.getElementById("site-header").innerHTML = site.sections.header();
     main.innerHTML = pageMarkup(page);
@@ -683,6 +754,7 @@
     setupRequestBuilder();
     setupReveal();
     setupRevealSlides();
+    setupHomeServiceStream();
     setupFooterYear();
     setupAutoChat();
     setupChatPage();
@@ -2215,8 +2287,76 @@
     });
   }
 
+  function setupHomeServiceStream() {
+    var timeline = document.querySelector(".home-service-timeline--desktop");
+    var items = document.querySelectorAll(".home-service-stream .home-service-reveal");
+    if (!items.length) return;
+
+    function revealItem(item) {
+      var delay = Number(item.getAttribute("data-reveal-delay") || 0);
+      window.setTimeout(function () {
+        item.classList.add("is-visible");
+        if (!timeline) return;
+        var posts = timeline.querySelectorAll(".home-service-post");
+        if (!posts.length) return;
+        var index = Number(item.getAttribute("data-spine-index"));
+        if (!Number.isFinite(index)) {
+          index = Array.prototype.indexOf.call(posts, item);
+        }
+        var progress = Math.min(100, ((index + 1) / posts.length) * 100);
+        var current = Number.parseFloat(timeline.style.getPropertyValue("--spine-progress")) || 0;
+        if (progress > current) {
+          timeline.style.setProperty("--spine-progress", progress + "%");
+        }
+      }, delay);
+    }
+
+    function activateSpine() {
+      if (!timeline || timeline.classList.contains("is-spine-live")) return;
+      timeline.classList.add("is-spine-live");
+    }
+
+    if (timeline) {
+      if (!uiSettings.motion || !("IntersectionObserver" in window)) {
+        activateSpine();
+      } else {
+        var timelineObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            activateSpine();
+            timelineObserver.unobserve(entry.target);
+          });
+        }, { threshold: 0.02, rootMargin: "0px 0px 12% 0px" });
+        timelineObserver.observe(timeline);
+        window.requestAnimationFrame(function () {
+          var rect = timeline.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) activateSpine();
+        });
+      }
+    }
+
+    if (!uiSettings.motion || !("IntersectionObserver" in window)) {
+      items.forEach(revealItem);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        revealItem(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
+
+    items.forEach(function (item) {
+      observer.observe(item);
+    });
+  }
+
   function setupRevealSlides() {
-    var items = document.querySelectorAll(".reveal-slide");
+    var items = Array.prototype.filter.call(document.querySelectorAll(".reveal-slide"), function (item) {
+      return !item.closest(".home-service-stream");
+    });
     if (!items.length) return;
 
     function revealItem(item) {
@@ -2246,7 +2386,9 @@
 
   function setupReveal() {
     var items = document.querySelectorAll(".reveal");
-    if (!("IntersectionObserver" in window)) {
+    if (!items.length) return;
+
+    if (!uiSettings.motion || !("IntersectionObserver" in window)) {
       items.forEach(function (item) {
         item.classList.add("is-visible");
       });
@@ -2260,10 +2402,20 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.14 });
+    }, { threshold: 0.12, rootMargin: "0px 0px -4% 0px" });
 
-    items.forEach(function (item, index) {
-      item.style.transitionDelay = Math.min(index * 78, 540) + "ms";
+    items.forEach(function (item) {
+      if (item.closest(".home-service-stream")) return;
+      var scopedParent = item.closest(".home-overview, .section-head, .home-contact-cta, .hero-grid");
+      var scopedItems = scopedParent
+        ? scopedParent.querySelectorAll(".reveal")
+        : [item];
+      var scopedIndex = Array.prototype.indexOf.call(scopedItems, item);
+      var delay = Number(item.getAttribute("data-reveal-delay"));
+      if (!Number.isFinite(delay)) {
+        delay = Math.min(Math.max(scopedIndex, 0) * 70, 280);
+      }
+      item.style.transitionDelay = delay + "ms";
       observer.observe(item);
     });
   }
@@ -2805,6 +2957,48 @@
     return normalizeChatLanguageCode(getOnlineLanguage());
   }
 
+  function isQuickChatQuotaError(error) {
+    if (!error) return false;
+    if (error.status === 429) return true;
+    var reply = String(error.reply || error.message || "");
+    return /10 հարց|10 question|10 вопрос|ծանրաբեռնված|rate limit|too many requests/i.test(reply);
+  }
+
+  function readQuickChatQuestionCount() {
+    try {
+      var stored = Number(window.sessionStorage.getItem(chatQuestionSessionKey));
+      return Number.isFinite(stored) && stored > 0 ? stored : 0;
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  function writeQuickChatQuestionCount() {
+    try {
+      window.sessionStorage.setItem(chatQuestionSessionKey, String(chatUserQuestionCount));
+    } catch (error) {
+      /* ignore */
+    }
+  }
+
+  function redirectToFullChatPage() {
+    if (currentRoute().page === "chat") return;
+    setChatOpen(false);
+    try {
+      window.sessionStorage.setItem("smarttech.chat.redirectFromQuick", "1");
+    } catch (error) {
+      /* ignore */
+    }
+    if (window.location.protocol === "file:") {
+      window.location.hash = "chat";
+      return;
+    }
+    var chatUrl = site.utils.pageUrl("chat");
+    if (window.location.pathname.replace(/\/+$/g, "") !== chatUrl.replace(/\/+$/g, "")) {
+      window.location.href = chatUrl;
+    }
+  }
+
   function chatDictionary(language) {
     var contacts = site.content.contacts || {};
     var emailText = contacts.email || "info@smarttechllc.am";
@@ -2822,9 +3016,33 @@
         sendLabel: "Ուղարկել",
         busyLabel: "Սպասեք",
         networkError: "Չհաջողվեց կապվել AI օգնականի հետ։ Փորձեք մի փոքր ուշ։",
-        limitReached: "Այս արագ չաթում արդեն օգտագործվել է 10 հարց։ Շարունակելու համար թողեք հեռախոսահամար կամ գրեք info@smarttechllc.am։",
-        limitButton: "Ավարտված",
+        limitReached: "Արագ չատի սահմանաչափը լրացել է։ Շարունակում ենք ամբողջական չատ էջում…",
+        limitButton: "Չատ էջ",
+        fullChatLabel: "Բացել չատ էջը",
         typing: "գրում է...",
+        pageIntro: "Բարև{greetingName}, ես Smart Tech-ի AI օգնականն եմ։\nԿարող եմ օգնել տեսահսկման, ցանցի, հրդեհային, մուտքի վերահսկման, էլեկտրամոնտաժի և ավտոմատացման հարցերում։ Գրեք ինչ է պետք, կամ սեղմեք +՝ նախագծի բրիֆի համար։",
+        profilePanelEyebrow: "Smart Tech AI",
+        profilePanelTitle: "Նախքան շարունակելը",
+        profilePanelLead: "Լրացրեք տվյալները մեկ անգամ՝ և անմիջապես կարող եք հարցնել։",
+        profilePanelSubmit: "Շարունակել չատը",
+        profilePurposeLabel: "Ինչու եք գրում",
+        profilePurposeCustom: "Իմ տարբերակը",
+        profileComplete: "Շնորհակալություն, {name}։ Հիմա կարող եք հարցնել ինչ ցանկանում եք։",
+        profileInvalidName: "Խնդրում ենք գրել առնվազն 2 նիշ։",
+        profileInvalidEmail: "Խնդրում ենք գրել վավեր էլ. հասցե, օրինակ՝ name@example.com",
+        profileInvalidPhone: "Խնդրում ենք գրել վավեր հեռախոսահամար (առնվազն 6 թվանշան)։",
+        profileQuestions: [
+          { id: "firstName", label: "Անուն", question: "Ինչո՞վ ենք դիմել ձեզ։ Գրեք անունը։" },
+          { id: "lastName", label: "Ազգանուն", question: "Գրեք ազգանունը։" },
+          { id: "email", label: "Էլ. փոստ", question: "Ինչ էլ. հասցեով կապվենք ձեզ հետ։" },
+          { id: "phone", label: "Հեռախոս", question: "Գրեք հեռախոսահամարը։" },
+          {
+            id: "purpose",
+            label: "Նպատակ",
+            question: "Ինչո՞վ ենք կարող օգնել։ Ընտրեք կամ գրեք ձեր տարբերակը։",
+            options: ["Տեսահսկում", "Գին և հաշվարկ", "Ժամկետներ", "Ծառայություններ", "Նախագծի բրիֆ", "Կապ մասնագետի հետ", "Այլ"]
+          }
+        ],
         greeting: "Բարև։ Ես SmartTech-ի արագ օգնականն եմ։ Գրեք ինչ է պետք, կամ սեղմեք «Նախագծի բրիֆ»՝ արագ հարցերով հայտ հավաքելու համար։",
         quickIntents: [
           { id: "survey", label: "Նախագծի բրիֆ" },
@@ -2901,9 +3119,33 @@
         sendLabel: "Send",
         busyLabel: "Wait",
         networkError: "Could not reach the AI assistant. Please try again shortly.",
-        limitReached: "This quick chat has reached the 10-question limit. To continue, leave your phone number or write to info@smarttechllc.am.",
-        limitButton: "Done",
+        limitReached: "Quick chat limit reached. Opening the full chat page…",
+        limitButton: "Chat page",
+        fullChatLabel: "Open chat page",
         typing: "typing...",
+        pageIntro: "Hi{greetingName}, I'm Smart Tech's AI assistant.\nI can help with CCTV, networks, fire alarm, access control, electrical works and automation. Tell me what you need, or tap + for a project brief.",
+        profilePanelEyebrow: "Smart Tech AI",
+        profilePanelTitle: "Before we start",
+        profilePanelLead: "Fill in your details once, then ask your question right away.",
+        profilePanelSubmit: "Continue to chat",
+        profilePurposeLabel: "Why are you here",
+        profilePurposeCustom: "My own reason",
+        profileComplete: "Thank you, {name}. You can ask your question now.",
+        profileInvalidName: "Please enter at least 2 characters.",
+        profileInvalidEmail: "Please enter a valid email, e.g. name@example.com",
+        profileInvalidPhone: "Please enter a valid phone number (at least 6 digits).",
+        profileQuestions: [
+          { id: "firstName", label: "First name", question: "What is your first name?" },
+          { id: "lastName", label: "Last name", question: "What is your last name?" },
+          { id: "email", label: "Email", question: "What email should we use to contact you?" },
+          { id: "phone", label: "Phone", question: "What is your phone number?" },
+          {
+            id: "purpose",
+            label: "Purpose",
+            question: "What do you need help with? Pick an option or type your own.",
+            options: ["CCTV", "Pricing / estimate", "Timeline", "Services", "Project brief", "Contact specialist", "Other"]
+          }
+        ],
         greeting: "Hi. I am SmartTech's quick assistant. Tell me what you need, or tap Project brief to assemble a request with quick questions.",
         quickIntents: [
           { id: "survey", label: "Project brief" },
@@ -2980,9 +3222,33 @@
         sendLabel: "Отправить",
         busyLabel: "Ждите",
         networkError: "Не удалось связаться с AI-ассистентом. Попробуйте немного позже.",
-        limitReached: "В этом быстром чате уже использовано 10 вопросов. Чтобы продолжить, оставьте телефон или напишите на info@smarttechllc.am.",
-        limitButton: "Готово",
+        limitReached: "Лимит быстрого чата исчерпан. Открываем полную страницу чата…",
+        limitButton: "Страница чата",
+        fullChatLabel: "Открыть страницу чата",
         typing: "печатает...",
+        pageIntro: "Здравствуйте{greetingName}, я AI-ассистент Smart Tech.\nМогу помочь с видеонаблюдением, сетями, пожарной сигнализацией, контролем доступа, электромонтажом и автоматизацией. Напишите, что нужно, или нажмите + для брифа проекта.",
+        profilePanelEyebrow: "Smart Tech AI",
+        profilePanelTitle: "Перед началом",
+        profilePanelLead: "Заполните данные один раз — и сразу можно задавать вопрос.",
+        profilePanelSubmit: "Перейти в чат",
+        profilePurposeLabel: "Зачем вы здесь",
+        profilePurposeCustom: "Свой вариант",
+        profileComplete: "Спасибо, {name}. Теперь можете задать вопрос.",
+        profileInvalidName: "Введите минимум 2 символа.",
+        profileInvalidEmail: "Введите корректный email, например name@example.com",
+        profileInvalidPhone: "Введите корректный номер телефона (минимум 6 цифр).",
+        profileQuestions: [
+          { id: "firstName", label: "Имя", question: "Как вас зовут? Напишите имя." },
+          { id: "lastName", label: "Фамилия", question: "Напишите фамилию." },
+          { id: "email", label: "Email", question: "На какой email связаться с вами?" },
+          { id: "phone", label: "Телефон", question: "Напишите номер телефона." },
+          {
+            id: "purpose",
+            label: "Цель",
+            question: "С чем можем помочь? Выберите вариант или напишите свой.",
+            options: ["Видеонаблюдение", "Стоимость / расчет", "Сроки", "Услуги", "Бриф проекта", "Связь со специалистом", "Другое"]
+          }
+        ],
         greeting: "Здравствуйте. Я быстрый ассистент SmartTech. Напишите, что нужно, или нажмите «Бриф проекта», чтобы быстро собрать заявку.",
         quickIntents: [
           { id: "survey", label: "Бриф проекта" },
@@ -3073,6 +3339,18 @@
       busyLabel: base.busyLabel || "Սպասեք",
       networkError: base.networkError || "Չհաջողվեց կապվել AI օգնականի հետ։ Խնդրում ենք փորձել քիչ անց։",
       typing: base.typing,
+      pageIntro: base.pageIntro || base.greeting,
+      profilePanelEyebrow: base.profilePanelEyebrow,
+      profilePanelTitle: base.profilePanelTitle,
+      profilePanelLead: base.profilePanelLead,
+      profilePanelSubmit: base.profilePanelSubmit,
+      profilePurposeLabel: base.profilePurposeLabel,
+      profilePurposeCustom: base.profilePurposeCustom,
+      profileComplete: base.profileComplete,
+      profileInvalidName: base.profileInvalidName,
+      profileInvalidEmail: base.profileInvalidEmail,
+      profileInvalidPhone: base.profileInvalidPhone,
+      profileQuestions: base.profileQuestions,
       greeting: translateTemplate(base.greeting, vars),
       quickIntents: simpleQuickIntents(activeLanguage),
       surveyIntro: base.surveyIntro,
@@ -3552,19 +3830,18 @@
 
   function setChatLimitReached(copy) {
     chatLimitReached = true;
-    if (!chatUi) return;
-    chatUi.root.classList.add("is-limit-reached");
-    chatUi.input.disabled = true;
-    chatUi.send.disabled = true;
-    chatUi.send.textContent = copy.limitButton || copy.sendLabel;
+    if (chatUi) {
+      chatUi.root.classList.add("is-limit-reached");
+      chatUi.input.disabled = true;
+      chatUi.send.disabled = true;
+      chatUi.send.textContent = copy.limitButton || copy.sendLabel;
+    }
+    redirectToFullChatPage();
   }
 
   function finishChatTurnIfLimited(copy) {
     if (chatUserQuestionCount < chatQuestionLimit || chatLimitReached) return;
-    window.setTimeout(function () {
-      appendChatMessage("bot", copy.limitReached);
-      setChatLimitReached(copy);
-    }, 760);
+    setChatLimitReached(copy);
   }
 
   function compactChatHistory() {
@@ -3594,6 +3871,7 @@
         if (!response.ok) {
           var error = new Error(data.reply || copy.networkError);
           error.reply = data.reply || copy.networkError;
+          error.status = response.status;
           throw error;
         }
         return data;
@@ -3647,13 +3925,13 @@
   function handleChatRequest(messageText, intent, copy) {
     if (chatUi && chatUi.root.classList.contains("is-busy")) return;
     if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
-      appendChatMessage("bot", copy.limitReached, { skipHistory: true });
       setChatLimitReached(copy);
       return;
     }
 
     var historySnapshot = compactChatHistory();
     chatUserQuestionCount += 1;
+    writeQuickChatQuestionCount();
     appendChatMessage("user", messageText);
 
     if (chatSurveyState && handleChatSurvey(messageText, copy)) {
@@ -3688,7 +3966,11 @@
       })
       .catch(function (error) {
         removeTyping(typingEl);
-        appendChatMessage("bot", chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError);
+        if (isQuickChatQuotaError(error)) {
+          setChatLimitReached(copy);
+          return;
+        }
+        appendChatMessage("bot", (error && error.reply) || chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError);
       })
       .then(function () {
         setChatBusy(false, copy);
@@ -3714,6 +3996,7 @@
             '<h3 class="auto-chat-title"></h3>' +
             '<p class="auto-chat-subtitle"></p>' +
           "</div>" +
+          '<a class="auto-chat-fullpage" href="' + site.utils.escapeHtml(site.utils.pageUrl("chat")) + '"></a>' +
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
         '<div class="auto-chat-messages" aria-live="polite"></div>' +
@@ -3740,6 +4023,7 @@
       statusText: host.querySelector(".auto-chat-status-text"),
       quickLabel: host.querySelector(".auto-chat-quick-label"),
       close: host.querySelector(".auto-chat-close"),
+      fullPage: host.querySelector(".auto-chat-fullpage"),
       messages: host.querySelector(".auto-chat-messages"),
       surveyOptions: host.querySelector("[data-chat-survey-options]"),
       quickActions: host.querySelector(".auto-chat-quick-actions"),
@@ -3749,12 +4033,25 @@
     };
 
     ui.trigger.addEventListener("click", function () {
+      if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
+        redirectToFullChatPage();
+        return;
+      }
       setChatOpen(!ui.root.classList.contains("is-open"));
     });
 
     ui.close.addEventListener("click", function () {
       setChatOpen(false);
     });
+
+    if (ui.fullPage) {
+      ui.fullPage.addEventListener("click", function (event) {
+        if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
+          event.preventDefault();
+          redirectToFullChatPage();
+        }
+      });
+    }
 
     ui.dismiss.addEventListener("click", function () {
       setChatDismissed(true);
@@ -3807,6 +4104,8 @@
 
     if (!chatUi) {
       chatUi = buildChatUi();
+      chatUserQuestionCount = readQuickChatQuestionCount();
+      chatLimitReached = chatUserQuestionCount >= chatQuestionLimit;
     }
     if (chatUi.root) {
       chatUi.root.hidden = false;
@@ -3829,6 +4128,10 @@
     chatUi.triggerText.textContent = copy.title;
     chatUi.trigger.setAttribute("aria-label", copy.openLabel);
     chatUi.close.setAttribute("aria-label", copy.closeLabel);
+    if (chatUi.fullPage) {
+      chatUi.fullPage.setAttribute("aria-label", copy.fullChatLabel || copy.openLabel);
+      chatUi.fullPage.setAttribute("title", copy.fullChatLabel || copy.openLabel);
+    }
     if (chatUi.dismiss) {
       chatUi.dismiss.setAttribute("aria-label", copy.hideLabel || copy.closeLabel);
     }
@@ -3840,8 +4143,8 @@
     if (chatLanguage !== lang) {
       chatLanguage = lang;
       chatHistory = [];
-      chatUserQuestionCount = 0;
-      chatLimitReached = false;
+      chatUserQuestionCount = readQuickChatQuestionCount();
+      chatLimitReached = chatUserQuestionCount >= chatQuestionLimit;
       if (chatUi) {
         chatUi.root.classList.remove("is-limit-reached");
         chatUi.input.disabled = false;
@@ -3854,10 +4157,164 @@
     }
 
     renderChatHistory(copy);
-    if (chatLimitReached) {
-      setChatLimitReached(copy);
+    if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
+      chatLimitReached = true;
+      if (chatUi) {
+        chatUi.root.classList.add("is-limit-reached");
+      }
     }
     setChatDismissed(isChatDismissed());
+  }
+
+  function chatPageClientId() {
+    try {
+      var existing = window.localStorage.getItem(chatPageClientIdKey);
+      if (existing) return existing;
+      var nextId = "cp_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+      window.localStorage.setItem(chatPageClientIdKey, nextId);
+      return nextId;
+    } catch (error) {
+      return "cp_anon";
+    }
+  }
+
+  function countChatWords(text) {
+    return String(text || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+  }
+
+  function countChatMessagesWords(entries) {
+    if (!Array.isArray(entries)) return 0;
+    return entries.reduce(function (sum, entry) {
+      return sum + countChatWords(entry && entry.text);
+    }, 0);
+  }
+
+  function chatPageLimitCopy(language) {
+    var lang = normalizeChatLanguageCode(language);
+    var copies = {
+      hy: {
+        saved: "Պահված զրույց · մոտ {used}/{limit} բառ",
+        cleared: "Զրույցի սահմանը լցվեց, պատմությունը ավտոմատ մաքրվեց։ Կարող եք նորից սկսել։",
+        blocked: "Չատը ժամանակավորապես կասեցված է 2 օրով՝ չափից շատ հարցերի պատճառով։",
+        blockedUntil: "Չատը կասեցված է մինչև {date}։"
+      },
+      en: {
+        saved: "Saved chat · about {used}/{limit} words",
+        cleared: "The chat memory limit was reached and the history was cleared automatically. You can start again.",
+        blocked: "Chat is temporarily paused for 2 days because of too many questions.",
+        blockedUntil: "Chat is paused until {date}."
+      },
+      ru: {
+        saved: "Сохраненный чат · около {used}/{limit} слов",
+        cleared: "Лимит памяти чата заполнен, история была автоматически очищена. Можно начать заново.",
+        blocked: "Чат временно остановлен на 2 дня из-за слишком большого числа вопросов.",
+        blockedUntil: "Чат остановлен до {date}."
+      }
+    };
+    return copies[lang] || copies.hy;
+  }
+
+  function loadChatPageState() {
+    try {
+      var raw = window.localStorage.getItem(chatPageStorageKey);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      parsed.messages = Array.isArray(parsed.messages) ? parsed.messages : [];
+      parsed.questionCount = Math.max(0, Number(parsed.questionCount) || 0);
+      parsed.wordCount = Math.max(0, Number(parsed.wordCount) || countChatMessagesWords(parsed.messages));
+      parsed.blockedUntil = Number(parsed.blockedUntil) || 0;
+      return parsed;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveChatPageState(state) {
+    try {
+      window.localStorage.setItem(chatPageStorageKey, JSON.stringify(state));
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  function clearChatPageState() {
+    try {
+      window.localStorage.removeItem(chatPageStorageKey);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  function loadChatPageProfile() {
+    try {
+      var raw = window.localStorage.getItem(chatPageProfileKey);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      return parsed;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveChatPageProfile(profile) {
+    try {
+      window.localStorage.setItem(chatPageProfileKey, JSON.stringify(profile));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function isChatPageProfileComplete(profile) {
+    if (!profile || typeof profile !== "object") return false;
+    return ["firstName", "lastName", "email", "phone", "purpose"].every(function (key) {
+      return String(profile[key] || "").trim().length > 0;
+    });
+  }
+
+  function getChatPageProfileLabels(copy) {
+    var labels = {};
+    (copy.profileQuestions || []).forEach(function (question) {
+      labels[question.id] = question.label || question.id;
+    });
+    return labels;
+  }
+
+  function getChatPageProfilePurposeOptions(copy) {
+    var purposeQuestion = (copy.profileQuestions || []).find(function (question) {
+      return question.id === "purpose";
+    });
+    return purposeQuestion && purposeQuestion.options ? purposeQuestion.options.slice() : [];
+  }
+
+  function validateChatPageProfileAnswer(questionId, value, copy) {
+    var text = String(value || "").trim();
+    if (questionId === "firstName" || questionId === "lastName") {
+      if (text.length < 2) return copy.profileInvalidName;
+      return "";
+    }
+    if (questionId === "email") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) return copy.profileInvalidEmail;
+      return "";
+    }
+    if (questionId === "phone") {
+      var digits = text.replace(/\D/g, "");
+      if (digits.length < 6) return copy.profileInvalidPhone;
+      return "";
+    }
+    if (questionId === "purpose") {
+      if (!text) return copy.profileInvalidName;
+      return "";
+    }
+    return text ? "" : copy.profileInvalidName;
   }
 
   function setupChatPage() {
@@ -3869,24 +4326,65 @@
     var input = root.querySelector("[data-chat-page-input]");
     var send = root.querySelector("[data-chat-page-send]");
     var status = root.querySelector("[data-chat-page-status]");
+    var limitNote = root.querySelector("[data-chat-page-limit]");
     var quick = root.querySelector("[data-chat-page-quick]");
     var surveyOptions = root.querySelector("[data-chat-page-survey-options]");
     var history = [];
     var copy = chatDictionary(activeChatLanguage());
+    var limitCopy = chatPageLimitCopy(activeChatLanguage());
     var pageSurveyState = null;
+    var userProfile = loadChatPageProfile();
+    var profileIntakeActive = !isChatPageProfileComplete(userProfile);
+    var profileLayer = root.querySelector("[data-chat-page-profile]");
+    var profileForm = root.querySelector("[data-chat-page-profile-form]");
+    var profileError = root.querySelector("[data-chat-page-profile-error]");
+    var profilePurposeOptions = root.querySelector("[data-chat-page-profile-purpose-options]");
+    var profilePurposeCustom = root.querySelector("[data-chat-page-profile-purpose-custom]");
+    var userBadge = root.querySelector("[data-chat-page-user-badge]");
+    var userBadgeName = root.querySelector("[data-chat-page-user-name]");
+    var userBadgeAvatar = root.querySelector("[data-chat-page-user-avatar]");
+    var selectedPurpose = "";
     var latestSurveyPayload = null;
     var busy = false;
+    var pageBlocked = false;
+    var pageSession = loadChatPageState() || {
+      version: 1,
+      updatedAt: Date.now(),
+      questionCount: 0,
+      wordCount: 0,
+      blockedUntil: 0,
+      chatHistoryStart: 0,
+      messages: []
+    };
+    if (!profileIntakeActive && isChatPageProfileComplete(userProfile) && !pageSession.chatHistoryStart) {
+      pageSession.chatHistoryStart = pageSession.messages.length;
+    }
 
     function append(role, text, typing) {
       var item = document.createElement("div");
       item.className = "chat-page-message chat-page-message-" + role + (typing ? " is-typing" : "");
       if (typing) {
-        item.innerHTML = '<span>' + site.utils.escapeHtml(text) + '</span><span class="chat-page-typing-dots"><span></span><span></span><span></span></span>';
+        var liveAnim = site.sections.chatLiveAnimation
+          ? site.sections.chatLiveAnimation("chat-live-animation-inline")
+          : "";
+        item.innerHTML =
+          '<div class="chat-page-typing-row">' +
+            liveAnim +
+            '<span class="chat-page-typing-text">' + site.utils.escapeHtml(text) + "</span>" +
+          "</div>";
       } else {
         item.textContent = text;
       }
       messages.appendChild(item);
-      messages.scrollTop = messages.scrollHeight;
+      if (role === "user") {
+        root.classList.add("has-conversation");
+      }
+      var scroll = root.querySelector(".chat-page-scroll");
+      if (scroll) {
+        scroll.scrollTop = scroll.scrollHeight;
+      } else {
+        messages.scrollTop = messages.scrollHeight;
+      }
       return item;
     }
 
@@ -3897,6 +4395,136 @@
           text: String(entry.text || "").slice(0, 360)
         };
       });
+    }
+
+    function formatBlockedDate(timestamp) {
+      try {
+        return new Date(timestamp).toLocaleString(activeChatLanguage() === "hy" ? "hy-AM" : activeChatLanguage());
+      } catch (error) {
+        return new Date(timestamp).toLocaleString();
+      }
+    }
+
+    function updateLimitFooter() {
+      if (!limitNote) return;
+      if (pageBlocked) {
+        if (pageSession.blockedUntil > Date.now()) {
+          limitNote.textContent = limitCopy.blockedUntil.replace("{date}", formatBlockedDate(pageSession.blockedUntil));
+        } else {
+          limitNote.textContent = limitCopy.blocked;
+        }
+        return;
+      }
+      var used = countChatMessagesWords(history);
+      limitNote.textContent = limitCopy.saved
+        .replace("{used}", String(used))
+        .replace("{limit}", String(chatPageWordLimit));
+    }
+
+    function persistPageSession() {
+      pageSession.messages = history.map(function (entry) {
+        return {
+          role: entry.role === "user" ? "user" : "bot",
+          text: String(entry.text || "").slice(0, 1200)
+        };
+      });
+      pageSession.wordCount = countChatMessagesWords(pageSession.messages);
+      pageSession.questionCount = pageSession.messages.filter(function (entry) {
+        return entry.role === "user";
+      }).length;
+      pageSession.updatedAt = Date.now();
+      saveChatPageState(pageSession);
+      updateLimitFooter();
+    }
+
+    function resetPageSession(notifyText) {
+      history = [];
+      pageSession.messages = [];
+      pageSession.wordCount = 0;
+      pageSession.questionCount = 0;
+      pageSession.updatedAt = Date.now();
+      if (messages) {
+        messages.querySelectorAll(".chat-page-message:not(.chat-page-message-intro)").forEach(function (node) {
+          node.parentNode.removeChild(node);
+        });
+      }
+      root.classList.remove("has-conversation");
+      saveChatPageState(pageSession);
+      updateLimitFooter();
+      if (notifyText) {
+        append("bot", notifyText);
+        history.push({ role: "bot", text: notifyText });
+        persistPageSession();
+      }
+    }
+
+    function setPageBlocked(reasonText, blockedUntil) {
+      pageBlocked = true;
+      pageSession.blockedUntil = blockedUntil || (Date.now() + chatPageBlockMs);
+      root.classList.add("is-blocked");
+      if (input) input.disabled = true;
+      if (send) send.disabled = true;
+      if (quick) {
+        quick.querySelectorAll("button").forEach(function (button) {
+          button.disabled = true;
+        });
+      }
+      saveChatPageState(pageSession);
+      updateLimitFooter();
+      if (reasonText) {
+        append("bot", reasonText);
+        history.push({ role: "bot", text: reasonText });
+        persistPageSession();
+      }
+    }
+
+    function ensurePageCanSend() {
+      if (pageSession.blockedUntil > Date.now()) {
+        if (!pageBlocked) {
+          setPageBlocked(limitCopy.blocked, pageSession.blockedUntil);
+        }
+        return false;
+      }
+      if (pageSession.blockedUntil && pageSession.blockedUntil <= Date.now()) {
+        pageSession.blockedUntil = 0;
+        pageBlocked = false;
+        root.classList.remove("is-blocked");
+        if (input) input.disabled = false;
+        if (send) send.disabled = false;
+        saveChatPageState(pageSession);
+      }
+      return !pageBlocked;
+    }
+
+    function trackPageUserMessage() {
+      var totalWords = countChatMessagesWords(history);
+      if (totalWords > chatPageWordLimit) {
+        resetPageSession(limitCopy.cleared);
+        return false;
+      }
+      var historyStart = Math.max(0, Number(pageSession.chatHistoryStart) || 0);
+      var userCount = history.slice(historyStart).filter(function (entry) {
+        return entry.role === "user";
+      }).length;
+      if (userCount > chatPageQuestionLimit) {
+        setPageBlocked(limitCopy.blocked, Date.now() + chatPageBlockMs);
+        return false;
+      }
+      return true;
+    }
+
+    function restorePageSession() {
+      if (!pageSession.messages.length) return false;
+      pageSession.messages.forEach(function (entry) {
+        if (entry.role === "user") {
+          append("user", entry.text);
+        } else {
+          append("bot", entry.text);
+        }
+        history.push({ role: entry.role === "user" ? "user" : "bot", text: entry.text });
+      });
+      updateLimitFooter();
+      return true;
     }
 
     function setBusy(next) {
@@ -3925,11 +4553,187 @@
       surveyOptions.innerHTML = "";
     }
 
+    function setProfileFormError(message) {
+      if (!profileError) return;
+      var text = String(message || "").trim();
+      profileError.hidden = !text;
+      profileError.textContent = text;
+    }
+
+    function profileFieldLabel(id) {
+      var labels = getChatPageProfileLabels(copy);
+      return labels[id] || id;
+    }
+
+    function updateUserBadge() {
+      if (!userBadge || !userProfile || !isChatPageProfileComplete(userProfile)) {
+        if (userBadge) userBadge.hidden = true;
+        return;
+      }
+      var fullName = [userProfile.firstName, userProfile.lastName].filter(Boolean).join(" ").trim();
+      var displayName = fullName || userProfile.firstName || "";
+      if (userBadgeName) userBadgeName.textContent = displayName;
+      if (userBadgeAvatar) {
+        userBadgeAvatar.textContent = String(displayName || "S").charAt(0).toUpperCase();
+      }
+      userBadge.hidden = !displayName;
+      root.classList.toggle("has-user-badge", !userBadge.hidden);
+    }
+
+    function personalizeWelcomeTitle() {
+      var welcomeTitle = root.querySelector(".chat-page-welcome h1");
+      if (!welcomeTitle || !userProfile || !userProfile.firstName) return;
+      var lang = activeChatLanguage();
+      welcomeTitle.textContent = lang === "hy"
+        ? "Բարև, " + userProfile.firstName
+        : (lang === "ru" ? "Здравствуйте, " : "Hi, ") + userProfile.firstName;
+    }
+
+    function initProfilePanelCopy() {
+      var eyebrow = root.querySelector("[data-chat-page-profile-eyebrow]");
+      var title = root.querySelector("[data-chat-page-profile-title]");
+      var lead = root.querySelector("[data-chat-page-profile-lead]");
+      var submit = root.querySelector("[data-chat-page-profile-submit]");
+      var purposeLabel = root.querySelector("[data-chat-page-profile-purpose-label]");
+      if (eyebrow) eyebrow.textContent = copy.profilePanelEyebrow || "Smart Tech AI";
+      if (title) title.textContent = copy.profilePanelTitle || "";
+      if (lead) lead.textContent = copy.profilePanelLead || "";
+      if (submit) submit.textContent = copy.profilePanelSubmit || "";
+      if (purposeLabel) purposeLabel.textContent = copy.profilePurposeLabel || "";
+      var labelFirst = root.querySelector("[data-chat-page-profile-label-first]");
+      var labelLast = root.querySelector("[data-chat-page-profile-label-last]");
+      var labelEmail = root.querySelector("[data-chat-page-profile-label-email]");
+      var labelPhone = root.querySelector("[data-chat-page-profile-label-phone]");
+      if (labelFirst) labelFirst.textContent = profileFieldLabel("firstName");
+      if (labelLast) labelLast.textContent = profileFieldLabel("lastName");
+      if (labelEmail) labelEmail.textContent = profileFieldLabel("email");
+      if (labelPhone) labelPhone.textContent = profileFieldLabel("phone");
+    }
+
+    function renderProfilePurposeOptions() {
+      if (!profilePurposeOptions) return;
+      profilePurposeOptions.innerHTML = "";
+      selectedPurpose = "";
+      getChatPageProfilePurposeOptions(copy).forEach(function (option) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "chat-page-profile-purpose-btn";
+        button.textContent = option;
+        button.addEventListener("click", function () {
+          selectedPurpose = option;
+          profilePurposeOptions.querySelectorAll(".chat-page-profile-purpose-btn").forEach(function (node) {
+            node.classList.toggle("is-active", node === button);
+          });
+          if (profilePurposeCustom) {
+            var isCustomPurpose = ["Այլ", "Other", "Другое"].indexOf(option) >= 0;
+            profilePurposeCustom.hidden = !isCustomPurpose;
+            if (!isCustomPurpose) {
+              profilePurposeCustom.value = "";
+            } else {
+              profilePurposeCustom.placeholder = copy.profilePurposeCustom || "";
+              profilePurposeCustom.focus();
+            }
+          }
+          setProfileFormError("");
+        });
+        profilePurposeOptions.appendChild(button);
+      });
+    }
+
+    function openProfilePanel() {
+      profileIntakeActive = true;
+      initProfilePanelCopy();
+      renderProfilePurposeOptions();
+      setProfileFormError("");
+      if (profileForm) profileForm.reset();
+      if (profileLayer) {
+        profileLayer.hidden = false;
+        window.requestAnimationFrame(function () {
+          root.classList.add("is-profile-open");
+        });
+      }
+      updateProfileUi();
+      var firstInput = root.querySelector("[data-chat-page-profile-first]");
+      if (firstInput) window.setTimeout(function () { firstInput.focus(); }, 180);
+    }
+
+    function closeProfilePanel() {
+      if (profileLayer) profileLayer.hidden = true;
+      root.classList.remove("is-profile-open");
+    }
+
+    function updateProfileUi() {
+      root.classList.toggle("is-profile-intake", profileIntakeActive);
+      if (quick) quick.hidden = profileIntakeActive;
+      var surveyAddon = root.querySelector('[data-chat-page-intent="survey"]');
+      if (surveyAddon) surveyAddon.hidden = profileIntakeActive;
+      if (input) input.disabled = profileIntakeActive || busy || pageBlocked;
+      if (send) send.disabled = profileIntakeActive || busy || pageBlocked;
+    }
+
+    function completeProfileIntake(answers) {
+      userProfile = {
+        firstName: String(answers.firstName || "").trim(),
+        lastName: String(answers.lastName || "").trim(),
+        email: String(answers.email || "").trim(),
+        phone: String(answers.phone || "").trim(),
+        purpose: String(answers.purpose || "").trim(),
+        completedAt: Date.now()
+      };
+      saveChatPageProfile(userProfile);
+      profileIntakeActive = false;
+      pageSession.chatHistoryStart = history.length;
+      closeProfilePanel();
+      updateProfileUi();
+      updateUserBadge();
+      personalizeWelcomeTitle();
+      playPageWelcome();
+    }
+
+    function handleProfileFormSubmit(event) {
+      if (event) event.preventDefault();
+      if (!profileForm || busy) return;
+
+      var formData = new FormData(profileForm);
+      var answers = {
+        firstName: String(formData.get("firstName") || "").trim(),
+        lastName: String(formData.get("lastName") || "").trim(),
+        email: String(formData.get("email") || "").trim(),
+        phone: String(formData.get("phone") || "").trim(),
+        purpose: selectedPurpose
+      };
+      var customPurpose = String(formData.get("purposeCustom") || "").trim();
+      if (!answers.purpose && customPurpose) answers.purpose = customPurpose;
+      if (["Այլ", "Other", "Другое"].indexOf(answers.purpose) >= 0) {
+        answers.purpose = customPurpose || answers.purpose;
+      }
+
+      var validationError =
+        validateChatPageProfileAnswer("firstName", answers.firstName, copy) ||
+        validateChatPageProfileAnswer("lastName", answers.lastName, copy) ||
+        validateChatPageProfileAnswer("email", answers.email, copy) ||
+        validateChatPageProfileAnswer("phone", answers.phone, copy) ||
+        validateChatPageProfileAnswer("purpose", answers.purpose, copy);
+
+      if (validationError) {
+        setProfileFormError(validationError);
+        return;
+      }
+
+      setProfileFormError("");
+      completeProfileIntake(answers);
+    }
+
+    function startProfileIntake() {
+      openProfilePanel();
+    }
+
     function showPageSurveyQuestion() {
       var question = getActiveSurveyQuestion(copy, pageSurveyState);
       if (!question) return;
       append("bot", question.question);
       history.push({ role: "bot", text: question.question });
+      persistPageSession();
       renderSurveyOptionBar(surveyOptions, question, copy, function (option) {
         sendMessage(option);
       }, "chat-page-survey-option");
@@ -3940,7 +4744,7 @@
       quick.innerHTML = "";
       simpleQuickIntents(activeChatLanguage()).forEach(function (item) {
         var button = document.createElement("button");
-        button.className = "chat-page-quick-btn" + (item.id === "survey" ? " chat-page-quick-btn-primary" : "");
+        button.className = "chat-page-chip chat-page-quick-btn" + (item.id === "survey" ? " chat-page-quick-btn-primary" : "");
         button.type = "button";
         button.setAttribute("data-chat-page-intent", item.id);
         button.textContent = item.label;
@@ -3976,6 +4780,7 @@
       messages.scrollTop = messages.scrollHeight;
       history.push({ role: "bot", text: summaryText });
       latestSurveyPayload = payload || null;
+      persistPageSession();
     }
 
     function startPageSurvey() {
@@ -3983,6 +4788,7 @@
       latestSurveyPayload = null;
       append("bot", copy.surveyIntro);
       history.push({ role: "bot", text: copy.surveyIntro });
+      persistPageSession();
       setBusy(true);
       var typing = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
       window.setTimeout(function () {
@@ -4053,9 +4859,18 @@
       var message = String(text || "").trim();
       if (!message || busy) return;
 
+      if (profileIntakeActive) return;
+
+      if (!ensurePageCanSend()) return;
+
       var historySnapshot = pageHistory();
       append("user", message);
       history.push({ role: "user", text: message });
+      if (!trackPageUserMessage()) {
+        persistPageSession();
+        return;
+      }
+      persistPageSession();
 
       if (handlePageSurveyAnswer(message)) {
         return;
@@ -4068,11 +4883,6 @@
         return;
       }
 
-      if (isLocalChatIntent(intent)) {
-        appendPageIntentReply(intent);
-        return;
-      }
-
       setBusy(true);
 
       var typing = append("bot", status && status.getAttribute("data-typing-label") || "...", true);
@@ -4082,7 +4892,10 @@
         body: JSON.stringify({
           message: message,
           page: window.location.pathname,
-          history: historySnapshot
+          history: historySnapshot,
+          language: activeChatLanguage(),
+          clientId: chatPageClientId(),
+          userProfile: userProfile || null
         })
       })
         .then(function (response) {
@@ -4100,11 +4913,21 @@
           var reply = data.reply || "Խնդրում ենք հարցը գրել մի փոքր ավելի հստակ։";
           append("bot", reply);
           history.push({ role: "bot", text: reply });
+          if (countChatMessagesWords(history) > chatPageWordLimit) {
+            resetPageSession(limitCopy.cleared);
+            return;
+          }
+          persistPageSession();
         })
         .catch(function (error) {
           if (typing && typing.parentNode) typing.parentNode.removeChild(typing);
-          error.reply = chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError;
-          append("bot", error.reply || "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։");
+          var failReply = (error && error.reply) || chatReplyForIntent(intent, copy, activeChatLanguage()) || copy.networkError;
+          if (error && error.reply && /2 օր|2 day|2 дня/i.test(String(error.reply))) {
+            setPageBlocked(failReply, Date.now() + chatPageBlockMs);
+            return;
+          }
+          append("bot", failReply || "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։");
+          persistPageSession();
         })
         .then(function () {
           setBusy(false);
@@ -4112,19 +4935,108 @@
         });
     }
 
+    function playPageWelcome() {
+      var introEl = messages ? messages.querySelector("[data-chat-page-intro]") : null;
+      var greetingName = userProfile && userProfile.firstName
+        ? (activeChatLanguage() === "hy" ? ", " + userProfile.firstName : " " + userProfile.firstName)
+        : "";
+      var introText = translateTemplate(String(copy.pageIntro || copy.greeting || "").trim(), {
+        greetingName: greetingName
+      });
+      if (!introEl || !introText) return;
+
+      function finishWelcome() {
+        introEl.textContent = introText;
+        history.push({ role: "bot", text: introText });
+        persistPageSession();
+        setBusy(false);
+        if (input) input.focus();
+      }
+
+      if (!uiSettings.motion) {
+        finishWelcome();
+        return;
+      }
+
+      introEl.textContent = "";
+      setBusy(true);
+      var typingEl = append("bot", status && status.getAttribute("data-typing-label") || copy.typing || "...", true);
+
+      window.setTimeout(function () {
+        if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+
+        var index = 0;
+        function typeNext() {
+          if (index >= introText.length) {
+            history.push({ role: "bot", text: introText });
+            persistPageSession();
+            setBusy(false);
+            if (input) input.focus();
+            return;
+          }
+
+          var char = introText.charAt(index);
+          introEl.textContent += char;
+          index += 1;
+
+          var scroll = root.querySelector(".chat-page-scroll");
+          if (scroll) scroll.scrollTop = scroll.scrollHeight;
+
+          var delay = char === "\n" ? 320 : (char === " " || char === "…" ? 28 : 20);
+          window.setTimeout(typeNext, delay);
+        }
+
+        typeNext();
+      }, 680);
+    }
+
     if (quick) {
       refreshPageQuickButtons();
-      quick.addEventListener("click", function (event) {
-        var button = event.target.closest("[data-chat-page-question], [data-chat-page-intent]");
-        if (!button) return;
-        var intent = button.getAttribute("data-chat-page-intent") || "";
-        if (intent === "survey") {
-          sendMessage(button.textContent || "Project brief", intent);
-          return;
-        }
-        sendMessage(button.getAttribute("data-chat-page-question") || button.textContent, intent);
-      });
     }
+    initProfilePanelCopy();
+    if (profileForm) {
+      profileForm.addEventListener("submit", handleProfileFormSubmit);
+    }
+    updateUserBadge();
+    if (isChatPageProfileComplete(userProfile)) {
+      personalizeWelcomeTitle();
+    }
+    updateProfileUi();
+
+    if (pageSession.blockedUntil > Date.now()) {
+      restorePageSession();
+      pageBlocked = true;
+      root.classList.add("is-blocked");
+      if (input) input.disabled = true;
+      if (send) send.disabled = true;
+    } else if (profileIntakeActive) {
+      if (pageSession.messages.length) {
+        resetPageSession();
+      }
+      startProfileIntake();
+    } else if (restorePageSession()) {
+      var introEl = messages ? messages.querySelector("[data-chat-page-intro]") : null;
+      if (introEl) {
+        introEl.textContent = "";
+      }
+    } else {
+      playPageWelcome();
+    }
+
+    updateLimitFooter();
+
+    root.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-chat-page-question], [data-chat-page-intent]");
+      if (!button || busy || profileIntakeActive) return;
+      var intent = button.getAttribute("data-chat-page-intent") || "";
+      if (intent) {
+        sendMessage(button.getAttribute("aria-label") || button.textContent || "", intent);
+        return;
+      }
+      if (button.hasAttribute("data-chat-page-question")) {
+        sendMessage(button.getAttribute("data-chat-page-question") || button.textContent, "");
+      }
+    });
 
     if (messages) {
       messages.addEventListener("click", function (event) {
@@ -4180,9 +5092,9 @@
       return Promise.resolve(false);
     }
 
-    return window.fetch("/api/content", {
+    return window.fetch(cmsApiUrl("/api/content"), {
       cache: "no-store",
-      credentials: "same-origin"
+      credentials: cmsFetchCredentials()
     }).then(function (response) {
       return response.ok ? response.json() : null;
     }).then(function (payload) {

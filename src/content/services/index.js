@@ -1,12 +1,12 @@
-﻿(function (site) {
+(function (site) {
   var img = "/img/services/";
   site.content.services = [
     {
       id: "systems-design",
       title: "Համակարգերի նախագծում",
       lead: "Նախագծում ենք էլեկտրամատակարարման, թույլ հոսանքի, ավտոմատացման և կառավարման համակարգերը՝ հաշվի առնելով օբյեկտի ռիսկերը, բեռները և հետագա ընդլայնումը։",
-      image: img + "systems_design.jpg",
-      gallery: [img + "systems_design.jpg", img + "technical_drawing.jpg", img + "full_design_integrated.jpg", img + "bms_office.jpg"],
+      image: img + "full_design_integrated.jpg",
+      gallery: [img + "full_design_integrated.jpg", img + "technical_drawing.jpg", img + "systems_design.jpg", img + "bms_office.jpg"],
       tags: ["Նախագիծ", "Հաշվարկ", "Ինժեներական լուծում", "BMS"]
     },
     {
@@ -29,8 +29,8 @@
       id: "automation-cabinets",
       title: "Ավտոմատիկայի պահարանների հավաքում",
       lead: "Հավաքում ենք ավտոմատիկայի պահարաններ՝ նախագծային փաստաթղթերին համապատասխան, կատարում ենք controller-ների նախնական կարգաբերում և անվտանգության ստուգումներ։",
-      image: img + "automation_cabinets.jpg",
-      gallery: [img + "automation_cabinets.jpg", img + "commissioning_programming.jpg", img + "electrical_installation_works.jpg", img + "smart_systems.jpg"],
+      image: img + "wacker_installation.jpg",
+      gallery: [img + "wacker_installation.jpg", img + "automation_cabinets.jpg", img + "commissioning_programming.jpg", img + "electrical_installation_works.jpg"],
       tags: ["Ավտոմատիկա", "Պահարան", "Հավաքում"]
     },
     {
@@ -69,8 +69,8 @@
       id: "networks",
       title: "Ցանցերի տեղադրում",
       lead: "Կառուցում ենք կառուցվածքային մալուխային համակարգեր, rack և Wi-Fi ցանցեր՝ կայուն կապով և ընդլայնման պաշարով։",
-      image: img + "installation_networks.jpg",
-      gallery: [img + "installation_networks.jpg", img + "server_rack.jpg", img + "network_patch_panel.jpg", img + "cabling_installation.jpg"],
+      image: img + "network_patch_panel.jpg",
+      gallery: [img + "network_patch_panel.jpg", img + "installation_networks.jpg", img + "server_rack.jpg", img + "cabling_installation.jpg"],
       tags: ["LAN", "Wi-Fi", "Rack"]
     },
     {
@@ -85,9 +85,17 @@
       id: "automation",
       title: "Ավտոմատացում և smart համակարգեր",
       lead: "Ինտեգրում ենք BMS և smart կառավարման լուծումներ՝ մուտքի, լուսավորության, կլիմայի և անվտանգության միասնական հսկողության համար։",
-      image: img + "smart_systems.jpg",
-      gallery: [img + "smart_systems.jpg", img + "building_management_automation.jpg", img + "access_control_door.jpg", img + "interfaces_ui.jpg"],
+      image: img + "building_management_automation.jpg",
+      gallery: [img + "building_management_automation.jpg", img + "smart_systems.jpg", img + "access_control_door.jpg", img + "interfaces_ui.jpg"],
       tags: ["BMS", "Մուտքի վերահսկում", "Smart կառավարում"]
+    },
+    {
+      id: "engineering-monitoring",
+      title: "24/7 Մոնիթորինգ և ավարուժ սպասարձում",
+      lead: "Մոնիթորինգ սերվերը 24/7 ստուգում է CCTV, NVR, ցանցը, UPS-ը, սերվերները և անվտանգությունը։ Խնդրի դեպքում ահազանգում եք ստանում SMS, email կամ Telegram-ով։",
+      image: img + "surveillance_indoor.jpg",
+      gallery: [img + "surveillance_indoor.jpg", img + "interfaces_ui.jpg", img + "server_rack.jpg", img + "commissioning_programming.jpg"],
+      tags: ["SMS ահազանգում", "Dashboard", "Սերվեր/NVR", "24/7"]
     },
     {
       id: "full-design",

@@ -1,0 +1,450 @@
+/* Engineering monitoring service page */
+
+.detail-page--monitoring .detail-body {
+  padding-top: clamp(40px, 5vw, 56px);
+}
+
+.monitor-page {
+  display: grid;
+  gap: clamp(44px, 6vw, 68px);
+}
+
+.monitor-section {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 24px);
+}
+
+.monitor-section-head {
+  max-width: 760px;
+}
+
+.monitor-section-head h2 {
+  margin: 8px 0 0;
+  max-width: 700px;
+  font-size: clamp(1.55rem, 2.8vw, 2.35rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.monitor-section-head p,
+.monitor-lead {
+  margin: 12px 0 0;
+  max-width: 720px;
+  color: var(--ink-soft, #5a6672);
+  font-size: 1.02rem;
+  line-height: 1.72;
+}
+
+.monitor-dual {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.monitor-panel {
+  display: grid;
+  gap: 14px;
+  padding: clamp(20px, 2.8vw, 28px);
+  border: 1px solid var(--line, rgba(20, 33, 38, 0.1));
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(20, 33, 38, 0.05);
+}
+
+.monitor-panel h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.monitor-panel > p {
+  margin: 0;
+  color: var(--ink-soft, #5a6672);
+  line-height: 1.65;
+}
+
+.monitor-checklist {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.monitor-checklist li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--ink, #142126);
+  line-height: 1.55;
+  font-weight: 650;
+}
+
+.monitor-checklist li::before {
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  color: var(--brand, #0aa896);
+  font-weight: 900;
+  content: "✓";
+}
+
+.monitor-systems {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.monitor-system-card {
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line, rgba(20, 33, 38, 0.1));
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.monitor-system-photo {
+  display: block;
+  height: 132px;
+  background-position: center;
+  background-size: cover;
+}
+
+.monitor-system-card div {
+  display: grid;
+  gap: 6px;
+  padding: 0 16px 16px;
+}
+
+.monitor-system-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.monitor-system-card p {
+  margin: 0;
+  color: var(--ink-soft, #5a6672);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.monitor-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.monitor-step {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line, rgba(20, 33, 38, 0.1));
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.monitor-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0aa896, #0d7fbd);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.monitor-step strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.monitor-step p {
+  margin: 0;
+  color: var(--ink-soft, #5a6672);
+  font-size: 0.88rem;
+  line-height: 1.58;
+}
+
+.monitor-channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.monitor-channel {
+  padding: 8px 14px;
+  border: 1px solid rgba(10, 168, 150, 0.22);
+  border-radius: 999px;
+  color: var(--ink, #142126);
+  background: rgba(10, 168, 150, 0.08);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.monitor-pricing {
+  display: grid;
+  gap: 22px;
+  padding: clamp(22px, 3vw, 32px);
+  color: #ffffff;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(74, 132, 255, 0.22), transparent 34%),
+    linear-gradient(145deg, #07101f, #0d1a32 55%, #08111f);
+}
+
+.monitor-pricing .monitor-section-head p {
+  color: rgba(226, 236, 255, 0.72);
+}
+
+.monitor-pricing .monitor-section-head h2 {
+  color: #ffffff;
+}
+
+.monitor-packages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.monitor-package {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgba(120, 168, 255, 0.16);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.monitor-package--featured {
+  border-color: rgba(56, 214, 168, 0.45);
+  box-shadow: 0 0 0 1px rgba(56, 214, 168, 0.2);
+}
+
+.monitor-package-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #04241f;
+  background: #38d6a8;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.monitor-package-photo {
+  display: block;
+  height: 120px;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.88;
+}
+
+.monitor-package-body {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.monitor-package-body h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.monitor-package-nodes {
+  margin: 0;
+  color: rgba(226, 236, 255, 0.62);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.monitor-package-features {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.monitor-package-features li {
+  position: relative;
+  padding-left: 16px;
+  color: rgba(226, 236, 255, 0.82);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.monitor-package-features li::before {
+  position: absolute;
+  left: 0;
+  color: #38d6a8;
+  content: "•";
+}
+
+.monitor-package-prices {
+  display: grid;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(120, 168, 255, 0.14);
+}
+
+.monitor-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  color: rgba(226, 236, 255, 0.58);
+}
+
+.monitor-price-row strong {
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.monitor-price-row strong em {
+  margin-left: 4px;
+  color: rgba(226, 236, 255, 0.62);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.monitor-price-row--accent strong {
+  color: #38d6a8;
+  font-size: 1.08rem;
+}
+
+.monitor-package-cta {
+  justify-self: start;
+  margin-top: 4px;
+}
+
+.monitor-stack-list {
+  display: grid;
+  gap: 10px;
+}
+
+.monitor-stack-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid rgba(120, 168, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.monitor-stack-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-position: center;
+  background-size: cover;
+}
+
+.monitor-stack-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.monitor-stack-row > div strong {
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.monitor-stack-row > div span {
+  color: rgba(226, 236, 255, 0.55);
+  font-size: 0.8rem;
+}
+
+.monitor-stack-price {
+  color: #ffffff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.monitor-agenda-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.monitor-agenda-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid rgba(120, 168, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.monitor-agenda-day {
+  padding: 6px 10px;
+  border-radius: 10px;
+  color: #38d6a8;
+  background: rgba(56, 214, 168, 0.12);
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.monitor-agenda-step strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.monitor-agenda-step p {
+  margin: 0;
+  color: rgba(226, 236, 255, 0.62);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.monitor-footnote {
+  margin: 0;
+  color: rgba(226, 236, 255, 0.45);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 1024px) {
+  .monitor-systems,
+  .monitor-steps,
+  .monitor-packages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .monitor-dual,
+  .monitor-systems,
+  .monitor-steps,
+  .monitor-packages {
+    grid-template-columns: 1fr;
+  }
+
+  .monitor-stack-row {
+    grid-template-columns: 48px 1fr;
+  }
+
+  .monitor-stack-price {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

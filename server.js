@@ -4,11 +4,21 @@ const crypto = require("crypto");
 const { execFile } = require("child_process");
 const { URL } = require("url");
 const express = require("express");
-const rateLimit = require("express-rate-limit");
+const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 const sharp = require("sharp");
 const { GoogleGenAI } = require("@google/genai");
-const cms = require("./admin/cms-store");
+const OpenAI = require("openai");
+let cmsModule = null;
+function cms() {
+  if (!cmsModule) {
+    cmsModule = require("./admin/cms-store");
+  }
+  return cmsModule;
+}
 const seo = require("./lib/seo-config");
+const chatLocalKnowledge = require("./lib/chat-local-knowledge");
+const appMode = require("./lib/app-mode");
+const cmsPublish = require("./lib/cms-publish");
 
 function parseEnvLine(line) {
   const trimmed = String(line || "").trim();
@@ -67,16 +77,21 @@ const adminSessionCookie = "smarttech_admin";
 const adminSessionTtlMs = 8 * 60 * 60 * 1000;
 const adminUploadMaxBytes = 7 * 1024 * 1024;
 const adminAllowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+const defaultAdminPassword = "SmartTech@2026";
 
 loadEnvFile(path.resolve(rootDir, ".env"));
 loadEnvFile(path.resolve(rootDir, ".env.local"));
 
 const app = express();
-const requestedPort = Number(process.env.WEB_PORT || process.env.PORT || 3000);
-const defaultPort = Number.isNaN(requestedPort) ? 3000 : requestedPort;
+const requestedPort = Number(
+  appMode.isAdmin()
+    ? (process.env.ADMIN_PORT || process.env.PORT || 3001)
+    : (process.env.WEB_PORT || process.env.PORT || 3000)
+);
+const defaultPort = Number.isNaN(requestedPort) ? (appMode.isAdmin() ? 3001 : 3000) : requestedPort;
 const defaultGeminiModel = envValue(["GEMINI_MODEL", "GOOGLE_GEMINI_MODEL"], "gemini-2.5-flash");
 const defaultGeminiApiKey = envValue(["GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GOOGLE_API_KEY"], "");
-const defaultOpenAiModel = envValue(["OPENAI_MODEL", "CHATGPT_MODEL"], "gpt-4o-mini");
+const defaultOpenAiModel = envValue(["OPENAI_MODEL", "CHATGPT_MODEL"], "gpt-5.4-mini");
 const defaultOpenAiApiKey = envValue(["OPENAI_API_KEY", "CHATGPT_API_KEY"], "");
 const defaultRequestEmailTo = envValue(["REQUEST_EMAIL_TO", "SMARTTECH_REQUEST_EMAIL"], "support@smarttechllc.am");
 const defaultRequestEmailFrom = envValue(["REQUEST_EMAIL_FROM", "SMARTTECH_REQUEST_EMAIL_FROM"], "Smart Tech <order@smarttechllc.am>");
@@ -86,7 +101,29 @@ const defaultSmtpPort = Number(envValue(["SMTP_PORT", "MAIL_PORT"], "465"));
 const defaultSmtpSecure = envValue(["SMTP_SECURE", "MAIL_SECURE"], "true") !== "false";
 const defaultSmtpUser = envValue(["SMTP_USER", "MAIL_USER", "SMTP_EMAIL"], "");
 const defaultSmtpPass = envValue(["SMTP_PASS", "MAIL_PASS", "SMTP_PASSWORD"], "");
-const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից:";
+const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։";
+const chatPageBlockMessage = "Չատը ժամանակավորապես կասեցված է 2 օրով՝ չափից շատ հարցերի պատճառով։";
+const chatOpenAIQuotaMessage = "ChatGPT-ը հասանելի չէ՝ OpenAI հաշվի բալانسը սպառված է։ Ավելացրեք վճարում platform.openai.com/settings/billing-ում, ապա նորից փորձեք։";
+const chatOpenAINotConfiguredMessage = "ChatGPT-ը դեռ միացված չէ։ Ավելացրեք OPENAI_API_KEY server-ի .env կամ Vercel Environment Variables-ում։";
+const chatOpenAIDeveloperInstruction = [
+  "Դու Smart Tech AI-ն ես՝ Smart Tech LLC-ի պաշտոնական խելացի օգնականը (https://smarttechllc.am/).",
+  "",
+  "Քո դերն է խելացի, մարդկային և գեղեցիկ կերպով ուղղակի պատասխանել հարցին։",
+  "Մի սկսիր անմիջապես առաջարկներով, գնահարումով կամ «թողեք հեռախոսահամար»-ով, եթե հաճախորդը ինքը չի խնդրել պատվեր կամ գնահարում։",
+  "Նախ պատասխանիր հարցին, ապա՝ միայն անհրաժեշտության դեպքում՝ մեկ կարճ հարց կամ հաջորդ քայլ։",
+  "Մի օգտագործիր անգլերեն «ask» բառը։ Փոխարենը գրիր «գրեք», «պատասխանեք», «ասեք» կամ համարժեք բնական ձևակերպում օգտատիրոջ լեզվով։",
+  "",
+  "Եթե հաճախորդը ուզում է նախագիծ հավաքել, բրիֆ կազմել կամ հարցաշար անցնել՝ սկսիր խորհրդատվությունից և հարցեր տուր հերթականությամբ, մեկ-մեկ։ Մի տուր կոնտակտային տվյալներ, եթե հաճախորդը ինքը չի խնդրել։",
+  "",
+  "Կարող ես խոսել միայն այս թեմաներից՝ տեսահսկում, հրդեհային/ահազանգային համակարգեր, մուտքի վերահսկում, դոմոֆոն, ցանցեր, IT, էլեկտրամոնտաժ, ավտոմատացում, smart home, աուդիո, ինժեներական նախագծում, սարքավորումների մատակարարում։",
+  "Եթե հարցը դուրս է այս սահմաններից, քաղաքավարի մերժիր և ասա, որ դու Smart Tech AI ես։",
+  "",
+  "Լեզուներ՝ հայերեն, անգլերեն, ռուսերեն։ Պատասխանիր օգտատիրոջ լեզվով։",
+  "Մի հորինիր գներ, ժամկետներ, պահեստ կամ իրավական երաշխիքներ։",
+  "Եթե տեղեկություն չունես, ասա՝ «Խնդրում եմ կապ հաստատել մեր մասնագետների հետ»։",
+  "",
+  "Կոնտակտներ՝ +374 77 424 643, +374 96 424 643, info@smarttechllc.am, support@smarttechllc.am, Երևան, Վազգեն Սարգսյան 10։"
+].join("\n");
 const chatFallbackMessage = "Կներեք, այս պահին չաթը չի կարող պատասխանել։ Խնդրում ենք փորձել քիչ անց։";
 const chatSystemInstruction = [
   "Դու հանդիսանում ես \"SmartTech LLC\" (սմարթ տեք) ընկերության պաշտոնական, բարեհամբույր և պրոֆեսիոնալ AI օգնականը:",
@@ -122,7 +159,12 @@ const chatSystemInstructionV2 = [
   "Brands and technology families that may be relevant: Hikvision, Dahua, Uniview, Axis, Hanwha, Bosch, Ajax, DSC, Paradox, Satel, Honeywell, ZKTeco, Suprema, HID, Akuvox, BAS-IP, 2N, Cisco, MikroTik, UniFi, Aruba, TP-Link Omada, Schneider Electric, ABB, Legrand, Eaton, Siemens, KNX, HDL, Zennio, Crestron, Control4, Yamaha, Bosch Audio, TOA and JBL Professional. Mention brands as examples, not guaranteed stock.",
   "Projects visible on the website include Abovyan 5/5 Hotel, Amiryan Business Center, Eria Hotel, Dalan Technopark, Wyndham Grand Tsaghkadzor, Only One residential complex, Bedeck Davtashen, Pallada Tsaghkadzor, ULS Data Center, ACBA Bank Sebastia 80, Evocabank, Movenpick Hotel and Wildberries.",
   "Current in-progress projects: Dalan Technopark, Abovyan 5/5 Hotel, Wyndham Grand Tsaghkadzor, Only One Residential Complex, Bedeck Davtashen Residential Complex and Pallada Tsaghkadzor. Wildberries and all other listed projects are completed.",
-  "Contact details: email info@smarttechllc.am, phones +37477424643 and +37496424643, address 10 Vazgen Sargsyan St, Yerevan.",
+  "Contact details: general email info@smarttechllc.am, request/support email support@smarttechllc.am, phones +37477424643 and +37496424643, address 10 Vazgen Sargsyan St, Yerevan.",
+  "Company facts: operating since 2012, 100+ completed projects, 88 engineering and technical staff, licensed design and installation of engineering systems.",
+  "Smart Tech delivers end-to-end: survey/measurement, design, equipment supply, installation, commissioning, programming, client training and maintenance.",
+  "Residential complexes and hotels often need combined CCTV, access control, intercom, Wi-Fi, fire alarm, public address and BMS in one coordinated project.",
+  "For domophones and intercom: IP intercom panels, apartment monitors, mobile app door opening, video calls and event logs.",
+  "Powder coating and metal finishing is also available for protective coatings and custom RAL/NCS colors.",
   "Do not invent exact prices, stock, deadlines, legal guarantees or engineering calculations. For price questions explain that cost depends on object survey, equipment class, cable routes, camera/device count, archive duration and deadlines.",
   "When a visitor wants a quote, order, request, application or project brief, collect a short questionnaire one question at a time: required service, object type, city/address, approximate scope or device count, deadline, contact person and phone/email. After collecting enough details, summarize the brief and tell them SmartTech can follow up by phone/email.",
   "If the visitor gives several details at once, do not repeat them; ask only the next missing practical detail.",
@@ -137,7 +179,11 @@ const chatSystemInstructionV2 = [
   "Use Armenian terms naturally when replying in Armenian: տեսահսկում, հրդեհային ազդանշան, մուտքի վերահսկում, ցանց, էլեկտրամոնտաժ, ավտոմատացում, չափագրում, գնային առաջարկ."
 ].join("\n");
 let geminiClient = null;
+let openaiClient = null;
 let smtpTransporter = null;
+
+const seoLandings = require("./lib/seo-landings");
+const seoArticles = require("./lib/seo-articles");
 
 const pageShellAliases = {
   help: "about.html",
@@ -145,8 +191,35 @@ const pageShellAliases = {
   licenses: "about.html",
   terms: "about.html",
   privacy: "about.html",
-  disclaimer: "about.html"
+  disclaimer: "about.html",
+  blog: "blog.html",
+  landing: "landing.html",
+  article: "article.html"
 };
+
+seoLandings.landingPages.forEach(function (landing) {
+  pageShellAliases[landing.slug] = "landing.html";
+});
+
+seoArticles.articles.forEach(function (article) {
+  pageShellAliases["blog/" + article.slug] = "article.html";
+});
+
+function writeSeoBundles() {
+  const bundle = [
+    "(function (window) {",
+    "  window.SmartTechSeoLandings = " + JSON.stringify(seoLandings.landingPages) + ";",
+    "  window.SmartTechSeoArticles = " + JSON.stringify(seoArticles.articles) + ";",
+    "  window.SmartTechSeoDistricts = " + JSON.stringify(seoLandings.yerevanDistricts) + ";",
+    "})(window);",
+    ""
+  ].join("\n");
+  const bundlePath = path.resolve(rootDir, "src/content/seo-bundles.js");
+  fs.mkdirSync(path.dirname(bundlePath), { recursive: true });
+  fs.writeFileSync(bundlePath, bundle);
+}
+
+writeSeoBundles();
 
 function resolvePagesDir() {
   const primary = path.resolve(siteDir, "pages");
@@ -284,11 +357,49 @@ function getGeminiClient() {
   return geminiClient;
 }
 
+function getOpenAIClient() {
+  if (!defaultOpenAiApiKey) return null;
+  if (!openaiClient) {
+    openaiClient = new OpenAI({ apiKey: defaultOpenAiApiKey });
+  }
+  return openaiClient;
+}
+
+function openAITextParts(text) {
+  return [{ type: "text", text: String(text || "") }];
+}
+
+function extractOpenAIReplyContent(content) {
+  if (!content) return "";
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content.map((part) => (part && part.text) || "").join("");
+  }
+  return String(content);
+}
+
 function cleanChatText(value, maxLength) {
   return String(value || "")
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, maxLength);
+}
+
+function formatChatUserProfile(profile) {
+  if (!profile || typeof profile !== "object") return "";
+  const firstName = cleanChatText(profile.firstName, 80);
+  const lastName = cleanChatText(profile.lastName, 80);
+  const email = cleanChatText(profile.email, 120);
+  const phone = cleanChatText(profile.phone, 40);
+  const purpose = cleanChatText(profile.purpose, 160);
+  if (!firstName && !lastName && !email && !phone && !purpose) return "";
+  return [
+    "Visitor profile:",
+    firstName || lastName ? "Name: " + [firstName, lastName].filter(Boolean).join(" ") : "",
+    email ? "Email: " + email : "",
+    phone ? "Phone: " + phone : "",
+    purpose ? "Purpose: " + purpose : ""
+  ].filter(Boolean).join("\n");
 }
 
 function cleanAdminText(value, maxLength) {
@@ -423,8 +534,16 @@ function timingSafeStringEquals(actual, expected) {
   return crypto.timingSafeEqual(actualHash, expectedHash);
 }
 
-function adminPassword() {
+function configuredAdminPassword() {
   return envValue(["SMARTTECH_ADMIN_PASSWORD", "ADMIN_PASSWORD"], "");
+}
+
+function adminPassword() {
+  return configuredAdminPassword() || defaultAdminPassword;
+}
+
+function adminPasswordUsingDefault() {
+  return !configuredAdminPassword();
 }
 
 function getAdminSession(request) {
@@ -559,10 +678,37 @@ function writeAlbumStore(store) {
   });
 }
 
-function publicAlbumPayload() {
+function liveAlbumPayload() {
   const store = readAlbumStore();
   const photos = store.photos.slice().sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
   return { photos };
+}
+
+function webAlbumPayload() {
+  if (appMode.isWeb()) {
+    return cmsPublish.readAlbumPayload();
+  }
+  return liveAlbumPayload();
+}
+
+function publicAlbumPayload() {
+  return liveAlbumPayload();
+}
+
+function publishSiteSnapshot() {
+  if (!appMode.isAdminEnabled()) return;
+  try {
+    cmsPublish.writeSnapshot(cms().publicPayload(), liveAlbumPayload());
+  } catch (error) {
+    console.warn("CMS publish failed:", error && error.message);
+  }
+}
+
+function publicCmsPayload() {
+  if (appMode.isCombined()) {
+    return cms().publicPayload();
+  }
+  return cmsPublish.readCmsPayload();
 }
 
 function uploadedImageFilePath(publicPath) {
@@ -974,11 +1120,23 @@ async function submitPublicRequest(body, request) {
   };
 }
 
-function detectChatLanguage(text) {
-  const value = String(text || "");
+function detectChatLanguage(text, fallbackLanguage) {
+  const value = String(text || "").trim();
   if (/[Ա-Ֆա-ֆև]/.test(value)) return "Armenian";
   if (/[А-Яа-яЁё]/.test(value)) return "Russian";
-  if (/[A-Za-z]/.test(value)) return "English";
+  if (/[A-Za-z]/.test(value)) {
+    if (value.length <= 8 && fallbackLanguage) {
+      return fallbackLanguage;
+    }
+    return "English";
+  }
+  return fallbackLanguage || "Armenian";
+}
+
+function normalizeChatUiLanguage(language) {
+  const code = String(language || "").toLowerCase();
+  if (code.indexOf("en") === 0) return "English";
+  if (code.indexOf("ru") === 0) return "Russian";
   return "Armenian";
 }
 
@@ -1008,7 +1166,7 @@ function normalizeOpenAIChatHistory(history) {
       const role = entry && entry.role === "user" ? "user" : "assistant";
       const content = cleanChatText(entry && entry.text, 360);
       if (!content) return null;
-      return { role, content };
+      return { role, content: openAITextParts(content) };
     })
     .filter(Boolean);
 }
@@ -1019,53 +1177,91 @@ function isGeminiRateLimitError(error) {
   return [429, 503].indexOf(Number(status)) >= 0 || message.indexOf("429") >= 0 || message.indexOf("503") >= 0 || /rate|quota|exhausted|overload|unavailable/i.test(message);
 }
 
-function isOpenAIRateLimitError(error) {
-  const status = Number(error && (error.status || error.statusCode));
+function isOpenAIQuotaError(error) {
   const message = String((error && error.message) || "");
-  return status === 429 || status === 503 || /rate|quota|exhausted|overload|unavailable/i.test(message);
+  return /quota|billing|insufficient funds|exceeded your current/i.test(message);
 }
 
-async function generateOpenAIChatReply({ message, pagePath, replyLanguage, history }) {
-  if (!defaultOpenAiApiKey) {
+function isOpenAIRateLimitError(error) {
+  if (isOpenAIQuotaError(error)) return false;
+  const status = Number(error && (error.status || error.statusCode));
+  const message = String((error && error.message) || "");
+  return status === 429 || status === 503 || /rate|exhausted|overload|unavailable/i.test(message);
+}
+
+async function generateGeminiChatReply({ message, pagePath, replyLanguage, history, userProfile }) {
+  const client = getGeminiClient();
+  if (!client) {
+    throw httpError(503, "Gemini API key is not configured");
+  }
+
+  const profileText = formatChatUserProfile(userProfile);
+  const contents = normalizeChatHistory(history);
+  contents.push({
+    role: "user",
+    parts: [{
+      text: [
+        "Current site page: " + (pagePath || "/"),
+        "Detected visitor language: " + replyLanguage + ". Reply only in this language unless it is not Armenian, English or Russian.",
+        profileText,
+        "Visitor message: " + message
+      ].filter(Boolean).join("\n")
+    }]
+  });
+
+  const geminiResponse = await client.models.generateContent({
+    model: runtimeGeminiModel(),
+    contents,
+    config: {
+      systemInstruction: chatSystemInstructionV2,
+      thinkingConfig: {
+        thinkingBudget: 0
+      },
+      temperature: 0.2,
+      maxOutputTokens: 150
+    }
+  });
+
+  const reply = cleanChatText(geminiResponse.text, 900);
+  return reply || "Կարո՞ղ եք հարցը մի փոքր ավելի հստակ գրել։";
+}
+
+async function generateOpenAIChatReply({ message, pagePath, replyLanguage, history, userProfile }) {
+  const client = getOpenAIClient();
+  if (!client) {
     throw httpError(503, "OpenAI API key is not configured");
   }
 
   const messages = [
-    { role: "system", content: chatSystemInstructionV2 },
+    {
+      role: "developer",
+      content: openAITextParts(chatOpenAIDeveloperInstruction)
+    },
     ...normalizeOpenAIChatHistory(history),
     {
       role: "user",
-      content: [
+      content: openAITextParts([
         "Current site page: " + (pagePath || "/"),
         "Detected visitor language: " + replyLanguage + ". Reply only in this language unless it is not Armenian, English or Russian.",
+        formatChatUserProfile(userProfile),
         "Visitor message: " + message
-      ].join("\n")
+      ].filter(Boolean).join("\n"))
     }
   ];
 
-  const openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + defaultOpenAiApiKey
-    },
-    body: JSON.stringify({
-      model: defaultOpenAiModel,
-      messages,
-      temperature: 0.2,
-      max_tokens: 200
-    })
+  const completion = await client.chat.completions.create({
+    model: defaultOpenAiModel,
+    messages,
+    response_format: { type: "text" },
+    verbosity: "medium",
+    reasoning_effort: "medium",
+    store: false
   });
 
-  const payload = await openAiResponse.json().catch(() => ({}));
-  if (!openAiResponse.ok) {
-    const error = new Error((payload.error && payload.error.message) || "OpenAI request failed");
-    error.status = openAiResponse.status;
-    throw error;
-  }
-
   const reply = cleanChatText(
-    payload.choices && payload.choices[0] && payload.choices[0].message && payload.choices[0].message.content,
+    extractOpenAIReplyContent(
+      completion.choices && completion.choices[0] && completion.choices[0].message && completion.choices[0].message.content
+    ),
     900
   );
   return reply || "Կարո՞ղ եք հարցը մի փոքր ավելի հստակ գրել։";
@@ -1075,11 +1271,17 @@ function chatLimiterHandler(request, response) {
   response.status(429).json({ reply: chatRateLimitMessage });
 }
 
+function chatUserLimiterKey(request) {
+  return ipKeyGenerator(request);
+}
+
 const chatUserLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { ip: false },
+  keyGenerator: chatUserLimiterKey,
   handler: chatLimiterHandler
 });
 
@@ -1099,6 +1301,24 @@ const chatPageGlobalLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: () => "openai-chat-page-global",
   handler: chatLimiterHandler
+});
+
+function chatPageClientKey(request) {
+  const clientId = cleanChatText(request.body && request.body.clientId, 80);
+  if (clientId) return "chat-page:" + clientId;
+  return "chat-page-ip:" + ipKeyGenerator(request);
+}
+
+const chatPageAbuseLimiter = rateLimit({
+  windowMs: 2 * 24 * 60 * 60 * 1000,
+  limit: 40,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { ip: false },
+  keyGenerator: chatPageClientKey,
+  handler: (request, response) => {
+    response.status(429).json({ reply: chatPageBlockMessage, provider: "system", blocked: true });
+  }
 });
 
 function adminLimiterHandler(request, response) {
@@ -1168,6 +1388,31 @@ app.use((request, response, next) => {
   next();
 });
 
+if (appMode.isWeb()) {
+  app.use((request, response, next) => {
+    const pathname = String(request.path || "");
+    if (pathname === "/admin" || pathname.indexOf("/admin/") === 0 || pathname.indexOf("/api/admin") === 0) {
+      response.status(404).json({ error: "Not found" });
+      return;
+    }
+    next();
+  });
+}
+
+if (appMode.isAdmin()) {
+  app.use((request, response, next) => {
+    const pathname = String(request.path || "");
+    const blockedPublicApi = ["/api/chat", "/api/chat-page", "/api/request", "/api/content", "/api/album", "/api/status"];
+    for (const prefix of blockedPublicApi) {
+      if (pathname === prefix || pathname.indexOf(prefix + "/") === 0) {
+        response.status(404).json({ error: "Not found" });
+        return;
+      }
+    }
+    next();
+  });
+}
+
 app.get("/robots.txt", publicApiLimiter, (request, response) => {
   response.setHeader("Content-Type", "text/plain; charset=utf-8");
   response.setHeader("Cache-Control", "public, max-age=3600");
@@ -1180,52 +1425,13 @@ app.get("/sitemap.xml", publicApiLimiter, (request, response) => {
   response.status(200).send(seo.sitemapXml());
 });
 
+if (appMode.isWebEnabled()) {
 app.get("/api/album", publicApiLimiter, (request, response) => {
-  jsonResponse(response, 200, publicAlbumPayload());
+  jsonResponse(response, 200, webAlbumPayload());
 });
 
 app.get("/api/content", publicApiLimiter, (request, response) => {
-  jsonResponse(response, 200, cms.publicPayload());
-});
-
-app.get("/api/admin/cms", adminApiLimiter, requireAdmin, (request, response) => {
-  jsonResponse(response, 200, { collections: cms.listCollections() });
-});
-
-app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, (request, response) => {
-  try {
-    jsonResponse(response, 200, cms.adminCollectionPayload(cleanAdminText(request.params.collection, 40)));
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS read failed" });
-  }
-});
-
-app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
-  try {
-    const collection = cleanAdminText(request.params.collection, 40);
-    const saved = cms.writeCollection(collection, request.body || {});
-    jsonResponse(response, 200, {
-      collection: collection,
-      data: saved,
-      collections: cms.listCollections()
-    });
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS save failed" });
-  }
-});
-
-app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
-  try {
-    const collection = cleanAdminText(request.params.collection, 40);
-    cms.deleteCollection(collection);
-    jsonResponse(response, 200, {
-      collection: collection,
-      deleted: true,
-      collections: cms.listCollections()
-    });
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS delete failed" });
-  }
+  jsonResponse(response, 200, publicCmsPayload());
 });
 
 app.get("/api/status", publicApiLimiter, (request, response) => {
@@ -1243,9 +1449,6 @@ app.get("/api/status", publicApiLimiter, (request, response) => {
     chat: {
       gemini: !!defaultGeminiApiKey,
       openai: !!defaultOpenAiApiKey
-    },
-    admin: {
-      passwordConfigured: !!adminPassword()
     },
     hint: emailReady
       ? "Email env vars are loaded."
@@ -1267,13 +1470,58 @@ app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, expre
     });
   }
 });
+}
+
+if (appMode.isAdminEnabled()) {
+app.get("/api/admin/cms", adminApiLimiter, requireAdmin, (request, response) => {
+  jsonResponse(response, 200, { collections: cms().listCollections() });
+});
+
+app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, (request, response) => {
+  try {
+    jsonResponse(response, 200, cms().adminCollectionPayload(cleanAdminText(request.params.collection, 40)));
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS read failed" });
+  }
+});
+
+app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const collection = cleanAdminText(request.params.collection, 40);
+    const saved = cms().writeCollection(collection, request.body || {});
+    publishSiteSnapshot();
+    jsonResponse(response, 200, {
+      collection: collection,
+      data: saved,
+      collections: cms().listCollections()
+    });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS save failed" });
+  }
+});
+
+app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const collection = cleanAdminText(request.params.collection, 40);
+    cms().deleteCollection(collection);
+    publishSiteSnapshot();
+    jsonResponse(response, 200, {
+      collection: collection,
+      deleted: true,
+      collections: cms().listCollections()
+    });
+  } catch (error) {
+    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS delete failed" });
+  }
+});
 
 app.get("/api/admin/session", adminApiLimiter, (request, response) => {
   const session = getAdminSession(request);
   if (!session) {
     jsonResponse(response, 200, {
       authenticated: false,
-      adminPasswordConfigured: !!adminPassword()
+      adminPasswordConfigured: !!adminPassword(),
+      adminPasswordUsingDefault: adminPasswordUsingDefault()
     });
     return;
   }
@@ -1283,6 +1531,7 @@ app.get("/api/admin/session", adminApiLimiter, (request, response) => {
     csrfToken: session.csrfToken,
     expiresAt: new Date(session.expiresAt).toISOString(),
     adminPasswordConfigured: !!adminPassword(),
+    adminPasswordUsingDefault: adminPasswordUsingDefault(),
     album: publicAlbumPayload(),
     admin: adminSettingsPayload()
   });
@@ -1364,6 +1613,7 @@ app.post("/api/admin/album/images", adminApiLimiter, express.json({ limit: "10mb
     const store = readAlbumStore();
     store.photos.unshift(record);
     writeAlbumStore(store);
+    publishSiteSnapshot();
     jsonResponse(response, 201, { photo: record, album: publicAlbumPayload() });
   } catch (error) {
     jsonResponse(response, error.statusCode || 500, { error: error.message || "Image upload failed" });
@@ -1383,55 +1633,38 @@ app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requ
     const remaining = store.photos.filter((photo) => photo.id !== id);
     writeAlbumStore({ photos: remaining });
     deleteUploadedImageIfUnused(target.image, remaining);
+    publishSiteSnapshot();
     jsonResponse(response, 200, { deleted: true, album: publicAlbumPayload() });
   } catch (error) {
     jsonResponse(response, error.statusCode || 500, { error: error.message || "Image delete failed" });
   }
 });
+}
 
+if (appMode.isWebEnabled()) {
 app.post("/api/chat", chatUserLimiter, chatGlobalLimiter, express.json({ limit: "8kb" }), async (request, response) => {
   const message = cleanChatText(request.body && request.body.message, 700);
   const pagePath = cleanChatText(request.body && request.body.page, 120);
-  const replyLanguage = detectChatLanguage(message);
+  const uiLanguage = normalizeChatUiLanguage(request.body && request.body.language);
+  const replyLanguage = detectChatLanguage(message, uiLanguage);
 
   if (!message) {
     response.status(400).json({ reply: "Խնդրում ենք գրել հարցը։" });
     return;
   }
 
-  const client = getGeminiClient();
-  if (!client) {
+  if (!getGeminiClient()) {
     response.status(503).json({ reply: "AI չաթը դեռ կարգավորված չէ։ Խնդրում ենք ավելացնել GEMINI_API_KEY server-ի .env ֆայլում։" });
     return;
   }
 
   try {
-    const contents = normalizeChatHistory(request.body && request.body.history);
-    contents.push({
-      role: "user",
-      parts: [{
-        text: [
-          "Current site page: " + (pagePath || "/"),
-          "Detected visitor language: " + replyLanguage + ". Reply only in this language unless it is not Armenian, English or Russian.",
-          "Visitor message: " + message
-        ].join("\n")
-      }]
+    const reply = await generateGeminiChatReply({
+      message,
+      pagePath,
+      replyLanguage,
+      history: request.body && request.body.history
     });
-
-    const geminiResponse = await client.models.generateContent({
-      model: runtimeGeminiModel(),
-      contents,
-      config: {
-        systemInstruction: chatSystemInstructionV2,
-        thinkingConfig: {
-          thinkingBudget: 0
-        },
-        temperature: 0.2,
-        maxOutputTokens: 150
-      }
-    });
-
-    const reply = cleanChatText(geminiResponse.text, 900) || "Կարո՞ղ եք հարցը մի փոքր ավելի հստակ գրել։";
     response.json({ reply });
   } catch (error) {
     if (isGeminiRateLimitError(error)) {
@@ -1444,39 +1677,88 @@ app.post("/api/chat", chatUserLimiter, chatGlobalLimiter, express.json({ limit: 
   }
 });
 
-app.post("/api/chat-page", chatUserLimiter, chatPageGlobalLimiter, express.json({ limit: "8kb" }), async (request, response) => {
+app.post("/api/chat-page", chatUserLimiter, chatPageAbuseLimiter, chatPageGlobalLimiter, express.json({ limit: "8kb" }), async (request, response) => {
   const message = cleanChatText(request.body && request.body.message, 700);
   const pagePath = cleanChatText(request.body && request.body.page, 120);
-  const replyLanguage = detectChatLanguage(message);
+  const uiLanguage = normalizeChatUiLanguage(request.body && request.body.language);
+  const replyLanguage = detectChatLanguage(message, uiLanguage);
 
   if (!message) {
     response.status(400).json({ reply: "Խնդրում ենք գրել հարցը։" });
     return;
   }
 
-  if (!defaultOpenAiApiKey) {
-    response.status(503).json({ reply: "Smart Tech AI-ն դեռ կարգավորված չէ։ Խնդրում ենք ավելացնել OPENAI_API_KEY server-ի .env ֆայլում։" });
-    return;
-  }
+  const history = request.body && request.body.history;
+  const userProfile = request.body && request.body.userProfile;
+  const chatInput = { message, pagePath, replyLanguage, history, userProfile };
 
   try {
-    const reply = await generateOpenAIChatReply({
-      message,
-      pagePath,
-      replyLanguage,
-      history: request.body && request.body.history
-    });
-    response.json({ reply });
+    const localReply = chatLocalKnowledge.matchLocalChatReply(message, replyLanguage, history);
+    if (localReply && localReply.reply) {
+      response.json({ reply: localReply.reply, provider: "local", topic: localReply.id });
+      return;
+    }
+
+    if (defaultOpenAiApiKey) {
+      try {
+        const reply = await generateOpenAIChatReply(chatInput);
+        response.json({ reply, provider: "openai" });
+        return;
+      } catch (openAiError) {
+        if (isOpenAIQuotaError(openAiError)) {
+          response.status(503).json({ reply: chatOpenAIQuotaMessage, provider: "openai" });
+          return;
+        }
+        if (isOpenAIRateLimitError(openAiError)) {
+          response.status(429).json({ reply: chatRateLimitMessage, provider: "openai" });
+          return;
+        }
+        console.error("OpenAI chat-page error:", openAiError && (openAiError.status || openAiError.message || openAiError));
+        throw openAiError;
+      }
+    }
+
+    if (getGeminiClient()) {
+      const reply = await generateGeminiChatReply(chatInput);
+      response.json({ reply, provider: "gemini", note: "openai_not_configured" });
+      return;
+    }
+
+    response.status(503).json({ reply: chatOpenAINotConfiguredMessage, provider: "none" });
   } catch (error) {
-    if (isOpenAIRateLimitError(error)) {
+    if (isOpenAIRateLimitError(error) || isGeminiRateLimitError(error)) {
       response.status(429).json({ reply: chatRateLimitMessage });
       return;
     }
 
-    console.error("OpenAI chat-page error:", error && (error.status || error.message || error));
+    console.error("Chat-page error:", error && (error.status || error.message || error));
     response.status(500).json({ reply: chatFallbackMessage });
   }
 });
+}
+
+if (appMode.isAdmin()) {
+  app.get("/admin/runtime.js", publicApiLimiter, (request, response) => {
+    const content = [
+      "(function (window) {",
+      "  window.SMARTTECH_WEB_ORIGIN = " + jsString(appMode.webOrigin()) + ";",
+      "})(window);",
+      ""
+    ].join("\n");
+    response.setHeader("Content-Type", "application/javascript; charset=utf-8");
+    response.setHeader("Cache-Control", "no-store");
+    response.status(200).send(content);
+  });
+
+  app.post("/api/admin/publish", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+    publishSiteSnapshot();
+    jsonResponse(response, 200, {
+      published: true,
+      publishedAt: new Date().toISOString(),
+      snapshot: cmsPublish.snapshotFile
+    });
+  });
+}
 
 app.use((error, request, response, next) => {
   if (error && error.type === "entity.parse.failed") {
@@ -1491,7 +1773,15 @@ app.use((request, response) => {
     response.status(404).json({ error: "Not found" });
     return;
   }
-  serveWeb(request, response);
+  if (appMode.isAdmin()) {
+    serveAdmin(request, response);
+    return;
+  }
+  if (appMode.isWebEnabled()) {
+    serveWeb(request, response);
+    return;
+  }
+  response.status(404).send("Not found");
 });
 
 function safeWebPath(urlPath) {
@@ -1509,6 +1799,10 @@ function safeWebPath(urlPath) {
     normalized = "";
   }
   if (path.isAbsolute(normalized) || normalized.indexOf("..") === 0) {
+    return null;
+  }
+
+  if (appMode.isWeb() && (normalized === "admin" || normalized.indexOf("admin/") === 0)) {
     return null;
   }
 
@@ -1599,7 +1893,7 @@ function resolveStaticTarget(targetInfo) {
 
   const pageRelative = relative.startsWith("pages/") ? relative.slice("pages/".length) : relative;
   const pageKey = pageRelative.replace(/\.html$/i, "");
-  if (pageKey === "admin") {
+  if (appMode.isAdminEnabled() && pageKey === "admin") {
     candidates.unshift(path.resolve(siteDir, "admin", "index.html"));
   }
   const aliasedPage = pageShellAliases[pageKey];
@@ -1619,6 +1913,46 @@ function resolveStaticTarget(targetInfo) {
   }
 
   return direct;
+}
+
+function serveAdmin(request, response) {
+  const requestUrl = new URL(request.url, "http://localhost");
+  const pathname = requestUrl.pathname || "/";
+
+  if (pathname === "/" || pathname === "") {
+    response.writeHead(302, { location: "/admin" });
+    response.end();
+    return;
+  }
+
+  if (pathname === "/admin" || pathname === "/admin/") {
+    sendStatic(response, path.resolve(siteDir, "admin", "index.html"));
+    return;
+  }
+
+  if (pathname.indexOf("/admin/") === 0) {
+    const asset = pathname.slice("/admin/".length);
+    const target = path.resolve(siteDir, "admin", asset);
+    if (target.startsWith(path.resolve(siteDir, "admin") + path.sep) && fs.existsSync(target) && fs.statSync(target).isFile()) {
+      sendStatic(response, target);
+      return;
+    }
+  }
+
+  const sharedPrefixes = ["/img/", "/src/styles/", "/manifest.json", "/admin/runtime.js"];
+  for (const prefix of sharedPrefixes) {
+    if (pathname === prefix.replace(/\/$/, "") || pathname.indexOf(prefix) === 0) {
+      const relative = pathname.replace(/^\/+/, "");
+      const target = path.resolve(siteDir, relative);
+      if (target.startsWith(siteDir + path.sep) && fs.existsSync(target)) {
+        sendStatic(response, target);
+        return;
+      }
+    }
+  }
+
+  response.writeHead(404);
+  response.end("Not found");
 }
 
 function serveWeb(request, response) {
@@ -1644,6 +1978,12 @@ function serveWeb(request, response) {
 
   if (targetInfo.relative.replace(/\\/g, "/") === "src/core/runtime-config.js") {
     const firebaseConfig = runtimeFirebaseConfig();
+    const cmsApiBaseUrl = envValue([
+      "SMARTTECH_CMS_API_BASE_URL",
+      "CMS_API_BASE_URL",
+      "VITE_SMARTTECH_CMS_API_BASE_URL",
+      "NEXT_PUBLIC_SMARTTECH_CMS_API_BASE_URL"
+    ], "");
 
     const configContent = [
       "(function (window) {",
@@ -1651,7 +1991,8 @@ function serveWeb(request, response) {
       "    firebaseDatabaseUrl: " + jsString(firebaseConfig.databaseUrl) + ",",
       "    firebaseStatsPath: " + jsString(firebaseConfig.statsPath) + ",",
       "    firebaseApiKey: " + jsString(firebaseConfig.apiKey) + ",",
-      "    firebaseAuthToken: " + jsString(firebaseConfig.authToken),
+      "    firebaseAuthToken: " + jsString(firebaseConfig.authToken) + ",",
+      "    cmsApiBaseUrl: " + jsString(cmsApiBaseUrl),
       "  });",
       "})(window);",
       ""
@@ -1691,6 +2032,14 @@ function openBrowser(url) {
 function startServer(portToUse) {
   const server = app.listen(portToUse, () => {
     const localUrl = "http://localhost:" + portToUse + "/";
+    if (appMode.isAdmin()) {
+      console.log("Smart Tech admin server is running (isolated):");
+      console.log("  Admin: http://localhost:" + portToUse + "/admin");
+      console.log("  Public web: " + appMode.webOrigin() + "/");
+      console.log("  CMS publishes to: " + cmsPublish.snapshotFile);
+      openBrowser("http://localhost:" + portToUse + "/admin");
+      return;
+    }
     console.log("Smart Tech web server is running:");
     console.log("  Web: " + localUrl);
     openBrowser(localUrl);
@@ -1700,8 +2049,15 @@ function startServer(portToUse) {
     if (error.code === "EADDRINUSE") {
       console.warn("Port " + portToUse + " is already in use.");
       if (portToUse < 3010) {
+        var nextPort = portToUse + 1;
+        if (appMode.isWeb()) {
+          var reservedAdminPort = Number(process.env.ADMIN_PORT || 3001);
+          if (nextPort === reservedAdminPort) {
+            nextPort += 1;
+          }
+        }
         console.log("Trying next available port...");
-        startServer(portToUse + 1);
+        startServer(nextPort);
         return;
       }
     }

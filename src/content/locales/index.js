@@ -171,6 +171,11 @@
           lead: "Շենքերի կառավարման, մուտքի վերահսկման և սարքերի ինտեգրված կառավարման լուծումներ։",
           tags: ["BMS", "Access control", "Smart logic"]
         },
+        "engineering-monitoring": {
+          title: "24/7 Մոնիթորինգ և ավարուժ սպասարձում",
+          lead: "Մոնիթորինգ սերվերը 24/7 ստուգում է CCTV, NVR, ցանցը, UPS-ը, սերվերները և անվտանգությունը։ Խնդրի դեպքում ահազանգում եք ստանում SMS, email կամ Telegram-ով։",
+          tags: ["SMS ահազանգում", "Dashboard", "Սերվեր/NVR", "24/7"]
+        },
         "audio-systems": {
           title: "Աուդիո համակարգերի տեղադրում",
           lead: "Ֆոնային երաժշտության, public address, կոնֆերանսային և ձայնային ծանուցման համակարգերի նախագծում, տեղադրում և կարգաբերում։",
@@ -387,6 +392,7 @@
         networks: { title: "Network installation", lead: "Structured cabling, racks, Wi-Fi coverage and stable internal connectivity.", tags: ["LAN", "Wi-Fi", "Rack"] },
         electrical: { title: "Electrical installation works", lead: "Electrical network design, installation, lighting and distribution panel assembly.", tags: ["Lighting", "Panels", "Cable routes"] },
         automation: { title: "Automation and smart systems", lead: "Building management, access control and integrated device control solutions.", tags: ["BMS", "Access control", "Smart logic"] },
+        "engineering-monitoring": { title: "24/7 Monitoring and engineering support", lead: "The monitoring server checks CCTV, NVR, network, UPS, servers and security 24/7. On issues you receive alerts via SMS, email or Telegram.", tags: ["SMS alerts", "Dashboard", "Server/NVR", "24/7"] },
         "audio-systems": { title: "Audio system installation", lead: "Design, installation and setup of background music, public address, conference audio and voice notification systems.", tags: ["Public Address", "Background music", "Conference audio"] },
         wacker: { title: "Wacker system installation", lead: "Precise installation and setup of technical systems according to facility requirements.", tags: ["Installation", "Setup", "Service"] },
         "powder-coating": { title: "Powder coating", lead: "Protective and aesthetic powder coating for metal details with an even finish.", tags: ["Metal", "Coating", "Production quality"] },
@@ -576,6 +582,7 @@
         networks: { title: "Монтаж сетей", lead: "Структурированные кабельные системы, rack-шкафы, Wi-Fi покрытие и стабильная внутренняя связь.", tags: ["LAN", "Wi-Fi", "Rack"] },
         electrical: { title: "Электромонтажные работы", lead: "Проектирование электросетей, монтаж, освещение и сборка распределительных щитов.", tags: ["Освещение", "Щиты", "Кабельные трассы"] },
         automation: { title: "Автоматизация и smart-системы", lead: "Решения для управления зданиями, контроля доступа и интегрированного управления устройствами.", tags: ["BMS", "Контроль доступа", "Smart logic"] },
+        "engineering-monitoring": { title: "Круглосуточный мониторинг и инженерная поддержка", lead: "Сервер мониторинга 24/7 проверяет CCTV, NVR, сеть, UPS, серверы и безопасность. При сбое вы получаете оповещение по SMS, email или Telegram.", tags: ["SMS-оповещения", "Dashboard", "Сервер/NVR", "24/7"] },
         "audio-systems": { title: "Монтаж аудиосистем", lead: "Проектирование, монтаж и настройка фоновой музыки, public address, конференц-аудио и голосового оповещения.", tags: ["Public Address", "Фоновая музыка", "Conference audio"] },
         "systems-design": { title: "Проектирование систем", lead: "Электроснабжения, автоматизации и диспетчеризации зданий, слаботочные системы и сети, включая акустическое сопровождение, системы видеофиксации, кондиционирования, вентиляции и отопления.", tags: ["Проектирование", "Автоматизация", "Электроснабжение", "BMS"] },
         wacker: { title: "Монтаж систем Wacker", lead: "Точный монтаж и настройка технических систем под требования объекта.", tags: ["Монтаж", "Настройка", "Сервис"] },
@@ -807,6 +814,11 @@
         lead: "BMS, մուտքի վերահսկում, կառավարման սցենարներ և սարքերի ինտեգրում՝ շենքը դարձնելու ավելի հարմար, անվտանգ և վերահսկելի։",
         tags: ["BMS", "Մուտքի վերահսկում", "Smart կառավարում"]
       },
+      "engineering-monitoring": {
+        title: "24/7 Մոնիթորինգ և ավարուժ սպասարձում",
+        lead: "Մոնիթորինգը ձեր օբյեկտի համակարգերի շարունակական վերահսկումն է՝ CCTV, NVR, սերվեր, ցանց, UPS և անվտանգություն։ Խնդրի դեպքում SMS, email և Telegram ահազանգում՝ նախքան դադարը։",
+        tags: ["SMS ահազանգում", "Dashboard", "Սերվեր/NVR", "24/7"]
+      },
       "audio-systems": {
         title: "Աուդիո համակարգերի տեղադրում",
         lead: "Ֆոնային երաժշտություն, PA համակարգ, ձայնային ծանուցում և կոնֆերանսային աուդիո՝ ճիշտ գոտիավորմամբ և հավասարակշռված ձայնով։",
@@ -884,6 +896,11 @@
         lead: "BMS, access control, control scenarios and device integration that make the building more comfortable, secure and manageable.",
         tags: ["BMS", "Access control", "Smart logic"]
       },
+      "engineering-monitoring": {
+        title: "24/7 Monitoring and engineering support",
+        lead: "The monitoring server checks CCTV, NVR, network, UPS, servers and security 24/7. On issues you receive alerts via SMS, email or Telegram.",
+        tags: ["SMS alerts", "Dashboard", "Server/NVR", "24/7"]
+      },
       "audio-systems": {
         title: "Audio system installation",
         lead: "Background music, Public Address, voice notification and conference audio with proper zoning and balanced sound.",
@@ -960,6 +977,11 @@
         title: "Автоматизация и smart-системы",
         lead: "BMS, контроль доступа, сценарии управления и интеграция устройств, чтобы здание было удобнее, безопаснее и понятнее в управлении.",
         tags: ["BMS", "Контроль доступа", "Smart logic"]
+      },
+      "engineering-monitoring": {
+        title: "Круглосуточный мониторинг и инженерная поддержка",
+        lead: "Сервер мониторинга 24/7 проверяет CCTV, NVR, сеть, UPS, серверы и безопасность. При сбое вы получаете оповещение по SMS, email или Telegram.",
+        tags: ["SMS-оповещения", "Dashboard", "Сервер/NVR", "24/7"]
       },
       "audio-systems": {
         title: "Монтаж аудиосистем",
@@ -1128,52 +1150,82 @@
 
   site.content.locales.hy = mergeLocale(site.content.locales.hy, {
     home: {
-      servedClientsEyebrow: "Մատուցված ծառայություններ",
-      servedClientsTitle: "Որոշ կազմակերպություններ, որոնց սպասարկել ենք",
-      servedClientsText: "Սրանք գործընկերներ չեն․ ներկայացված են մի քանի կազմակերպություններ, որոնց օբյեկտներում Smart Tech-ը ծառայություններ է մատուցել։",
-      servedClientsButton: "Տեսնել բոլորը"
+      servedClientsEyebrow: "Սարքավորումների բրենդներ",
+      servedClientsTitle: "Բրենդներ, որոնց հետ աշխատում ենք",
+      servedClientsText: "Մեր նախագծերում կիրառված արտադրողներ՝ տեսահսկում, անվտանգություն, BMS, ցանց և աուդիո լուծումների համար։",
+      servedClientsButton: "Տեսնել բոլորը",
+      servicesBenefitsTitle: "Ձեր օգուտը",
+      servicesExplore: "Տեսնել ավելին",
+      servicesCatalogEyebrow: "Կատալոգ",
+      servicesCatalogTitle: "Այլ ծառայություններ",
+      servicesCatalogText: "Սեղմեք քարտին՝ բացելու համար լրիվ ծառայության էջը։"
+    },
+    projectsPage: {
+      ongoingHighlight: "Ընթացիկ",
+      carouselPrev: "Նախորդ նախագիծ",
+      carouselNext: "Հաջորդ նախագիծ"
     },
     nav: {
-      partners: "Հաճախորդներ"
+      partners: "Բրենդներ"
     },
     partnersPage: {
-      eyebrow: "Մատուցված ծառայություններ",
-      title: "Կազմակերպություններ և բրենդներ, որոնց հետ աշխատել ենք",
-      text: "Այս բաժնում ներկայացված են կազմակերպություններ, որոնց օբյեկտներում ծառայություն ենք մատուցել, և սարքավորումների բրենդներ, որոնք կիրառվել են մեր նախագծերում։"
+      eyebrow: "Սարքավորումների բրենդներ",
+      title: "Բրենդներ, որոնց հետ աշխատում ենք",
+      text: "Սարքավորումների արտադրողներ, որոնց լուծումներով իրականացվել են Smart Tech-ի անվտանգության, BMS, կապի, էլեկտրամոնտաժի և աուդիո նախագծերը։"
     }
   });
 
   site.content.locales.en = mergeLocale(site.content.locales.en, {
     home: {
-      servedClientsEyebrow: "Delivered services",
-      servedClientsTitle: "Some organizations we have served",
-      servedClientsText: "These are not formal partners; they are selected organizations where Smart Tech has provided services.",
-      servedClientsButton: "View all"
+      servedClientsEyebrow: "Equipment brands",
+      servedClientsTitle: "Brands we work with",
+      servedClientsText: "Manufacturers used in our projects for CCTV, security, BMS, networking and audio solutions.",
+      servedClientsButton: "View all",
+      servicesBenefitsTitle: "Your benefits",
+      servicesExplore: "See more",
+      servicesCatalogEyebrow: "Catalog",
+      servicesCatalogTitle: "More services",
+      servicesCatalogText: "Tap a card to open the full service page."
+    },
+    projectsPage: {
+      ongoingHighlight: "Ongoing",
+      carouselPrev: "Previous project",
+      carouselNext: "Next project"
     },
     nav: {
-      partners: "Clients"
+      partners: "Brands"
     },
     partnersPage: {
-      eyebrow: "Delivered services",
-      title: "Organizations and brands we have worked with",
-      text: "This section shows organizations where we provided services and equipment brands used in Smart Tech projects."
+      eyebrow: "Equipment brands",
+      title: "Brands we work with",
+      text: "Equipment manufacturers used in Smart Tech security, BMS, communication, electrical and audio projects."
     }
   });
 
   site.content.locales.ru = mergeLocale(site.content.locales.ru, {
     home: {
-      servedClientsEyebrow: "Оказанные услуги",
-      servedClientsTitle: "Некоторые организации, которым мы предоставляли услуги",
-      servedClientsText: "Это не официальные партнёры, а выбранные организации, на объектах которых Smart Tech предоставляла услуги.",
-      servedClientsButton: "Смотреть все"
+      servedClientsEyebrow: "Бренды оборудования",
+      servedClientsTitle: "Бренды, с которыми мы работаем",
+      servedClientsText: "Производители, применяемые в наших проектах видеонаблюдения, безопасности, BMS, сетей и аудио.",
+      servedClientsButton: "Смотреть все",
+      servicesBenefitsTitle: "Ваши преимущества",
+      servicesExplore: "Подробнее",
+      servicesCatalogEyebrow: "Каталог",
+      servicesCatalogTitle: "Другие услуги",
+      servicesCatalogText: "Нажмите на карточку, чтобы открыть полную страницу услуги."
+    },
+    projectsPage: {
+      ongoingHighlight: "Текущие",
+      carouselPrev: "Предыдущий проект",
+      carouselNext: "Следующий проект"
     },
     nav: {
-      partners: "Клиенты"
+      partners: "Бренды"
     },
     partnersPage: {
-      eyebrow: "Оказанные услуги",
-      title: "Организации и бренды, с которыми мы работали",
-      text: "В этом разделе представлены организации, которым мы предоставляли услуги, и бренды оборудования, применявшиеся в проектах Smart Tech."
+      eyebrow: "Бренды оборудования",
+      title: "Бренды, с которыми мы работаем",
+      text: "Производители оборудования, использованные в проектах Smart Tech по безопасности, BMS, связи, электромонтажу и аудио."
     }
   });
 

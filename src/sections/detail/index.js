@@ -87,6 +87,12 @@
             text: "Smart և BMS լուծումներում ամենակարևորը սարքերի կապակցված աշխատանքն է՝ մուտք, լույս, կլիմա, անվտանգություն և հեռահար կառավարում։",
             suggestion: "Սկսեք այն գործողություններից, որոնք ցանկանում եք ավտոմատացնել, հետո կընտրենք controller-ները և կառավարման ինտերֆեյսը։"
           },
+          "engineering-monitoring": {
+            eyebrow: "24/7 վերահսկում",
+            title: "Մոնիթորինգ սերվեր՝ օբյեկտի համակարգերի վերահսկման համար",
+            text: "Սերվերը 24/7 ստուգում է CCTV, NVR, ցանցը, UPS-ը և անվտանգությունը։ Խնդրի դեպքում ահազանգումը հասնում է SMS, email կամ Telegram-ով։",
+            suggestion: "Նշեք օբյեկտի տեսակը, սարքերի քանակը և ցանկալի ահազանգման ալիքները՝ SMS, email, Telegram։"
+          },
           "systems-design": {
             eyebrow: "Նախագծային հիմք",
             title: "Հաշվարկ, սխեմա և համակարգերի ճիշտ դասավորում",
@@ -139,6 +145,12 @@
             text: "In smart and BMS solutions, coordinated operation matters: access, lighting, climate, security and remote control.",
             suggestion: "Start with the actions you want automated, then we choose controllers and the control interface."
           },
+          "engineering-monitoring": {
+            eyebrow: "24/7 supervision",
+            title: "Monitoring, alerts and fast response",
+            text: "The client sees facility status in real time via SMS, email, app and dashboard. Servers, NVR, network, UPS, CCTV and security systems are supervised continuously; issues are resolved before downtime.",
+            suggestion: "Specify which systems matter — CCTV, server, network, fire alarm, access control — and preferred alerts: SMS, email, Telegram."
+          },
           "systems-design": {
             eyebrow: "Design foundation",
             title: "Calculations, diagrams and correct system layout",
@@ -190,6 +202,12 @@
             title: "Сценарии, управление и интеграция систем",
             text: "В smart и BMS решениях важна согласованная работа: доступ, свет, климат, безопасность и удаленное управление.",
             suggestion: "Начните с действий, которые хотите автоматизировать, затем подберем контроллеры и интерфейс."
+          },
+          "engineering-monitoring": {
+            eyebrow: "Круглосуточный контроль",
+            title: "Мониторинг, оповещения и быстрая реакция",
+            text: "Клиент видит состояние объекта в реальном времени через SMS, email, приложение и dashboard. Серверы, NVR, сеть, UPS, CCTV и системы безопасности контролируются постоянно; проблемы решаются до простоя.",
+            suggestion: "Укажите важные системы — видеонаблюдение, сервер, сеть, пожарная, доступ — и желаемые оповещения: SMS, email, Telegram."
           },
           "systems-design": {
             eyebrow: "Проектная основа",
@@ -326,8 +344,352 @@
       "</section>";
   }
 
+  function formatMonitorPrice(value, currencyLabel) {
+    var label = currencyLabel || "֏";
+    return Number(value).toLocaleString("hy-AM") + " " + label;
+  }
+
+  function engineeringMonitoringPageMarkup() {
+    var e = site.utils.escapeHtml;
+    var language = site.i18n.language || "hy";
+    var requestHref = site.utils.pageUrl("request");
+    var img = "/img/services/";
+    var packages = [
+      {
+        name: "Starter NOC",
+        nodesHy: "մինչև 20", nodesEn: "up to 20", nodesRu: "до 20",
+        setup: 390000, server: 528000, os: 180000, monthly: 54000,
+        image: img + "commissioning_programming.jpg",
+        featuresHy: ["Zabbix + Grafana dashboard", "SMS/Telegram ահազանգում", "CCTV, NVR, UPS, ցանց", "Հեռահար դիտարկում"],
+        featuresEn: ["Zabbix + Grafana dashboard", "SMS/Telegram alerts", "CCTV, NVR, UPS, network", "Remote supervision"],
+        featuresRu: ["Zabbix + Grafana dashboard", "SMS/Telegram оповещения", "CCTV, NVR, UPS, сеть", "Удаленный контроль"],
+        featured: false
+      },
+      {
+        name: "Business NOC",
+        nodesHy: "մինչև 60", nodesEn: "up to 60", nodesRu: "до 60",
+        setup: 720000, server: 864000, os: 180000, monthly: 114000,
+        image: img + "server_rack.jpg",
+        featuresHy: ["Starter + SLA արձագանք", "Firewall և BMS ինտեգրացիա", "Backup և event log", "Ամսական health report"],
+        featuresEn: ["Starter + SLA response", "Firewall and BMS integration", "Backup and event log", "Monthly health report"],
+        featuresRu: ["Starter + SLA реакция", "Firewall и BMS интеграция", "Backup и event log", "Ежемесячный health report"],
+        featured: true
+      },
+      {
+        name: "Enterprise NOC",
+        nodesHy: "60+", nodesEn: "60+", nodesRu: "60+",
+        setup: 1440000, server: 1416000, os: 336000, monthly: 216000,
+        image: img + "bms_office.jpg",
+        featuresHy: ["Կրկնակի սերվեր / redundancy", "Windows կամ Linux stack", "PRTG/Zabbix enterprise", "Անհատական SLA և NOC"],
+        featuresEn: ["Dual server / redundancy", "Windows or Linux stack", "PRTG/Zabbix enterprise", "Custom SLA and NOC"],
+        featuresRu: ["Двойной сервер / redundancy", "Windows или Linux stack", "PRTG/Zabbix enterprise", "Индивидуальный SLA и NOC"],
+        featured: false
+      }
+    ];
+    var stackRows = [
+      { nameHy: "Mini NOC սերվեր (4c / 16GB / 512GB SSD)", nameEn: "Mini NOC server (4c / 16GB / 512GB SSD)", nameRu: "Mini NOC сервер (4c / 16GB / 512GB SSD)", noteHy: "Մինչև 25 հանգույց", noteEn: "Up to 25 nodes", noteRu: "До 25 узлов", price: 528000, image: img + "server_rack.jpg" },
+      { nameHy: "Standard NOC սերվեր (8c / 32GB / 1TB RAID)", nameEn: "Standard NOC server (8c / 32GB / 1TB RAID)", nameRu: "Standard NOC сервер (8c / 32GB / 1TB RAID)", noteHy: "Մինչև 80 հանգույց", noteEn: "Up to 80 nodes", noteRu: "До 80 узлов", price: 864000, image: img + "server_rack.jpg" },
+      { nameHy: "Linux + Zabbix + Grafana տեղադրում", nameEn: "Linux + Zabbix + Grafana deployment", nameRu: "Linux + Zabbix + Grafana внедрение", noteHy: "Open-source stack", noteEn: "Open-source stack", noteRu: "Open-source stack", price: 180000, image: img + "interfaces_ui.jpg" },
+      { nameHy: "Windows Server 2022 + կարգավորում", nameEn: "Windows Server 2022 + setup", nameRu: "Windows Server 2022 + настройка", noteHy: "PRTG / Active Directory", noteEn: "PRTG / Active Directory", noteRu: "PRTG / Active Directory", price: 336000, image: img + "commissioning_programming.jpg" }
+    ];
+    var copyByLanguage = {
+      hy: {
+        introEyebrow: "Ինչ է մոնիթորինգը",
+        introTitle: "Ձեր օբյեկտի համակարգերի 24/7 վերահսկում",
+        introText: "Մոնիթորինգ սերվերը շարունակաբար ստուգում է, արդյոք CCTV, NVR, ցանցը, UPS-ը, սերվերները և անվտանգության համակարգերը աշխատում են։ Խնդրի դեպքում դուք ահազանգում եք ստանում SMS, email կամ Telegram-ով՝ նախքան դադարը կամ մեծ վնասը։",
+        whyTitle: "Ինչի համար է",
+        whyLead: "Շատ օբյեկտներում խնդիրները նկատվում են ուշ, երբ արդեն վնաս է կամ դադար է առաջացել։",
+        whyItems: [
+          "Տեսախցիկը կամ NVR-ը անջատված է, բայց դուք դա չեք իմանում",
+          "UPS-ը դատարկվում է, արխիվը կորում է, բիզնեսը կանգնում է",
+          "Ցանցի խափանումը ազդում է ամբողջ օբյեկտի աշխատանքի վրա",
+          "24/7 դաշտային աշխատակից պահելը թանկ և անարդյունավետ է"
+        ],
+        providesTitle: "Ինչ է ապահովում",
+        providesItems: [
+          "24/7 ավտոմատ վերահսկում բոլոր կարևոր սարքերի",
+          "SMS, email, Telegram և web dashboard ահազանգում",
+          "Իրադարձությունների մատյան և օբյեկտի ընդհանուր վիճակ",
+          "Ինժեներական արձագանք, troubleshooting և պլանային սպասարձում",
+          "Հեռահար դիտարկում առանց օբյեկտ գնալու"
+        ],
+        systemsTitle: "Ինչ համակարգեր ենք վերահսկում",
+        systems: [
+          { title: "Տեսահսկում", text: "Տեսախցիկներ, NVR, արխիվ, դիսկի տարածություն", image: img + "server_rack.jpg" },
+          { title: "Ցանց և UPS", text: "Switch, router, PoE, UPS լարում և մարտկոց", image: img + "commissioning_programming.jpg" },
+          { title: "Սերվերներ", text: "CPU, RAM, դիսկ, ծառայություններ, backup", image: img + "bms_office.jpg" },
+          { title: "Անվտանգություն", text: "Հրդեհային, մուտքի վերահսկում, ազդանշան", image: img + "interfaces_ui.jpg" }
+        ],
+        howTitle: "Ինչպես է աշխատում",
+        howSteps: [
+          { title: "Ստուգագիծ", text: "Հավաքում ենք սարքերի ցանկը, ցանցի սխեման և ահազանգման կանոնները։" },
+          { title: "Տեղադրում", text: "Տեղադրում և կարգավորում ենք մոնիթորինգ սերվերը (Zabbix/PRTG)։" },
+          { title: "Ինտեգրացիա", text: "Միացնում ենք CCTV, NVR, UPS, ցանց և անվտանգության համակարգերը։" },
+          { title: "24/7 ահազանգում", text: "Խնդրի դեպքում ահազանգումը հասնում է ձեզ, ինժեներն արձագանքում է։" }
+        ],
+        channelsTitle: "Ահազանգման ալիքներ",
+        channels: ["SMS", "Email", "Telegram", "Push հավելված", "Web dashboard", "Իրադարձությունների մատյան"],
+        pricingEyebrow: "Գներ",
+        pricingTitle: "Մոնիթորինգի փաթեթներ",
+        pricingText: "Գները հիմնված են շուկայական միջինների վրա՝ Smart Tech 20% ծառայության մարժայով։ Վերջնական գինը հաստատվում է ստուգագծից հետո։",
+        packagesHint: "Մեկ անգամյա ներդրում + ամսական սպասարձում",
+        featuredBadge: "Ամենաշատ ընտրված",
+        perMonth: "/ամիս",
+        monthlyLabel: "Ամսական",
+        oneTime: "միանգամյա",
+        nodesLabel: "հանգույց",
+        cta: "Պատվիրել ստուգագիծ",
+        stackTitle: "Սերվեր և ծրագրային ապահովում",
+        stackHint: "Առանձին կամ փաթեթի մեջ",
+        agendaTitle: "Տեղադրման օրակարգ (≈10 օր)",
+        agendaSteps: [
+          { day: "1–2", title: "Ստուգագիծ", text: "Հանգույցների ցանկ, ցանցային սխեմա, ահազանգման կանոններ։" },
+          { day: "3–5", title: "Սերվեր և OS", text: "Hardware, Linux/Windows, Zabbix կամ PRTG։" },
+          { day: "6–8", title: "Ինտեգրացիա", text: "CCTV, NVR, UPS, switch, հրդեհային/մուտքի համակարգեր։" },
+          { day: "9–10", title: "Թեստ և գործարկում", text: "Ահազանգումներ, փորձարկում, 24/7 մոնիթորինգի մեկնարկ։" }
+        ],
+        footnote: "* Գները ներառում են Smart Tech 20% ծառայության մարժան։ SMS և էլեկտրաէներգիայի ծախսերը՝ ըստ փաստացի օգտագործման։"
+      },
+      en: {
+        introEyebrow: "What is monitoring",
+        introTitle: "24/7 supervision of your facility systems",
+        introText: "A monitoring server continuously checks whether CCTV, NVR, network, UPS, servers and security systems are working. When something fails, you get an alert via SMS, email or Telegram — before downtime or major damage.",
+        whyTitle: "Why you need it",
+        whyLead: "On many sites, problems are noticed too late — after archive loss, downtime or damage.",
+        whyItems: [
+          "A camera or NVR is offline but nobody knows",
+          "UPS battery drains, archive stops, business is affected",
+          "Network failure impacts the whole facility",
+          "Keeping on-site staff 24/7 is expensive and inefficient"
+        ],
+        providesTitle: "What you get",
+        providesItems: [
+          "24/7 automatic supervision of all critical devices",
+          "SMS, email, Telegram and web dashboard alerts",
+          "Event log and overall facility health view",
+          "Engineering response, troubleshooting and scheduled maintenance",
+          "Remote supervision without visiting the site"
+        ],
+        systemsTitle: "What we monitor",
+        systems: [
+          { title: "CCTV", text: "Cameras, NVR, archive, disk space", image: img + "server_rack.jpg" },
+          { title: "Network and UPS", text: "Switch, router, PoE, UPS voltage and battery", image: img + "commissioning_programming.jpg" },
+          { title: "Servers", text: "CPU, RAM, disk, services, backup", image: img + "bms_office.jpg" },
+          { title: "Security", text: "Fire alarm, access control, intrusion", image: img + "interfaces_ui.jpg" }
+        ],
+        howTitle: "How it works",
+        howSteps: [
+          { title: "Site survey", text: "We list devices, network diagram and alert rules." },
+          { title: "Deployment", text: "We install and configure the monitoring server (Zabbix/PRTG)." },
+          { title: "Integration", text: "We connect CCTV, NVR, UPS, network and security systems." },
+          { title: "24/7 alerts", text: "On issues you are notified and engineers respond." }
+        ],
+        channelsTitle: "Alert channels",
+        channels: ["SMS", "Email", "Telegram", "Push app", "Web dashboard", "Event log"],
+        pricingEyebrow: "Pricing",
+        pricingTitle: "Monitoring packages",
+        pricingText: "Prices are based on typical market rates plus a 20% Smart Tech service margin. Final pricing is confirmed after site survey.",
+        packagesHint: "One-time setup + monthly support",
+        featuredBadge: "Most popular",
+        perMonth: "/month",
+        monthlyLabel: "Monthly",
+        oneTime: "one-time",
+        nodesLabel: "nodes",
+        cta: "Request survey",
+        stackTitle: "Server and software",
+        stackHint: "Standalone or inside a package",
+        agendaTitle: "Deployment agenda (≈10 days)",
+        agendaSteps: [
+          { day: "1–2", title: "Site survey", text: "Node list, network diagram, alert rules." },
+          { day: "3–5", title: "Server and OS", text: "Hardware, Linux/Windows, Zabbix or PRTG." },
+          { day: "6–8", title: "Integration", text: "CCTV, NVR, UPS, switch, fire/access systems." },
+          { day: "9–10", title: "Test and go-live", text: "Alerts, testing, 24/7 monitoring start." }
+        ],
+        footnote: "* Prices include a 20% Smart Tech service margin. SMS and power costs depend on actual usage."
+      },
+      ru: {
+        introEyebrow: "Что такое мониторинг",
+        introTitle: "Круглосуточный контроль систем объекта",
+        introText: "Сервер мониторинга постоянно проверяет работу CCTV, NVR, сети, UPS, серверов и систем безопасности. При сбое вы получаете оповещение по SMS, email или Telegram — до простоя или серьезного ущерба.",
+        whyTitle: "Зачем это нужно",
+        whyLead: "На многих объектах проблемы замечают слишком поздно — когда уже есть простой или потеря архива.",
+        whyItems: [
+          "Камера или NVR отключены, но об этом не знают",
+          "UPS разряжается, архив останавливается, страдает бизнес",
+          "Сбой сети влияет на весь объект",
+          "Держать дежурного на объекте 24/7 дорого и неэффективно"
+        ],
+        providesTitle: "Что вы получаете",
+        providesItems: [
+          "Круглосуточный автоматический контроль всех важных устройств",
+          "Оповещения SMS, email, Telegram и web dashboard",
+          "Журнал событий и общая картина состояния объекта",
+          "Инженерная реакция, troubleshooting и плановое обслуживание",
+          "Удаленный контроль без выезда на объект"
+        ],
+        systemsTitle: "Что контролируем",
+        systems: [
+          { title: "Видеонаблюдение", text: "Камеры, NVR, архив, дисковое пространство", image: img + "server_rack.jpg" },
+          { title: "Сеть и UPS", text: "Switch, router, PoE, напряжение и батарея UPS", image: img + "commissioning_programming.jpg" },
+          { title: "Серверы", text: "CPU, RAM, диск, службы, backup", image: img + "bms_office.jpg" },
+          { title: "Безопасность", text: "Пожарная, СКУД, охранная сигнализация", image: img + "interfaces_ui.jpg" }
+        ],
+        howTitle: "Как это работает",
+        howSteps: [
+          { title: "Обследование", text: "Составляем список устройств, схему сети и правила оповещения." },
+          { title: "Внедрение", text: "Устанавливаем и настраиваем сервер мониторинга (Zabbix/PRTG)." },
+          { title: "Интеграция", text: "Подключаем CCTV, NVR, UPS, сеть и системы безопасности." },
+          { title: "24/7 оповещения", text: "При сбое вы получаете уведомление, инженеры реагируют." }
+        ],
+        channelsTitle: "Каналы оповещения",
+        channels: ["SMS", "Email", "Telegram", "Push-приложение", "Web dashboard", "Журнал событий"],
+        pricingEyebrow: "Цены",
+        pricingTitle: "Пакеты мониторинга",
+        pricingText: "Цены основаны на среднерыночных ставках плюс 20% сервисная маржа Smart Tech. Итоговая цена подтверждается после обследования.",
+        packagesHint: "Разовое внедрение + ежемесячная поддержка",
+        featuredBadge: "Популярный",
+        perMonth: "/мес",
+        monthlyLabel: "Ежемесячно",
+        oneTime: "разово",
+        nodesLabel: "узлов",
+        cta: "Заказать обследование",
+        stackTitle: "Сервер и ПО",
+        stackHint: "Отдельно или в пакете",
+        agendaTitle: "График внедрения (≈10 дней)",
+        agendaSteps: [
+          { day: "1–2", title: "Обследование", text: "Список узлов, схема сети, правила оповещения." },
+          { day: "3–5", title: "Сервер и ОС", text: "Hardware, Linux/Windows, Zabbix или PRTG." },
+          { day: "6–8", title: "Интеграция", text: "CCTV, NVR, UPS, switch, пожарная/СКУД." },
+          { day: "9–10", title: "Тест и запуск", text: "Оповещения, тестирование, старт 24/7 мониторинга." }
+        ],
+        footnote: "* Цены включают 20% сервисную маржу Smart Tech. Расходы на SMS и электроэнергию — по факту."
+      }
+    };
+    var copy = site.i18n.pickLanguageDictionary(copyByLanguage, language);
+    var langKey = language === "en" ? "En" : language === "ru" ? "Ru" : "Hy";
+
+    function checklist(items) {
+      return '<ul class="monitor-checklist">' + items.map(function (item) {
+        return "<li>" + e(item) + "</li>";
+      }).join("") + "</ul>";
+    }
+
+    var systemsMarkup = copy.systems.map(function (item) {
+      return "" +
+        '<article class="monitor-system-card">' +
+          '<span class="monitor-system-photo" style="background-image:url(&quot;' + e(item.image) + '&quot;)"></span>' +
+          "<div><h3>" + e(item.title) + "</h3><p>" + e(item.text) + "</p></div>" +
+        "</article>";
+    }).join("");
+
+    var stepsMarkup = copy.howSteps.map(function (step, index) {
+      return "" +
+        '<li class="monitor-step">' +
+          '<span class="monitor-step-num">0' + (index + 1) + "</span>" +
+          "<div><strong>" + e(step.title) + "</strong><p>" + e(step.text) + "</p></div>" +
+        "</li>";
+    }).join("");
+
+    var channelsMarkup = copy.channels.map(function (ch) {
+      return '<span class="monitor-channel">' + e(ch) + "</span>";
+    }).join("");
+
+    var packageMarkup = packages.map(function (pkg) {
+      var total = pkg.setup + pkg.server + pkg.os;
+      var nodes = pkg["nodes" + langKey];
+      var features = pkg["features" + langKey];
+      var featureMarkup = features.map(function (item) {
+        return "<li>" + e(item) + "</li>";
+      }).join("");
+      return "" +
+        '<article class="monitor-package' + (pkg.featured ? " monitor-package--featured" : "") + '">' +
+          (pkg.featured ? '<span class="monitor-package-badge">' + e(copy.featuredBadge) + "</span>" : "") +
+          '<span class="monitor-package-photo" style="background-image:url(&quot;' + e(pkg.image) + '&quot;)"></span>' +
+          '<div class="monitor-package-body">' +
+            "<h3>" + e(pkg.name) + "</h3>" +
+            '<p class="monitor-package-nodes">' + e(nodes) + " " + e(copy.nodesLabel) + "</p>" +
+            '<ul class="monitor-package-features">' + featureMarkup + "</ul>" +
+            '<div class="monitor-package-prices">' +
+              '<div class="monitor-price-row"><span>' + e(copy.oneTime) + "</span><strong>" + e(formatMonitorPrice(total)) + "</strong></div>" +
+              '<div class="monitor-price-row monitor-price-row--accent"><span>' + e(copy.monthlyLabel) + "</span><strong>" + e(formatMonitorPrice(pkg.monthly)) + "<em>" + e(copy.perMonth) + "</em></strong></div>" +
+            "</div>" +
+            '<a class="button button-primary monitor-package-cta" href="' + e(requestHref) + '">' + e(copy.cta) + "</a>" +
+          "</div>" +
+        "</article>";
+    }).join("");
+
+    var stackMarkup = stackRows.map(function (row) {
+      return "" +
+        '<article class="monitor-stack-row">' +
+          '<span class="monitor-stack-thumb" style="background-image:url(&quot;' + e(row.image) + '&quot;)"></span>' +
+          "<div>" +
+            "<strong>" + e(row["name" + langKey]) + "</strong>" +
+            "<span>" + e(row["note" + langKey]) + "</span>" +
+          "</div>" +
+          '<strong class="monitor-stack-price">' + e(formatMonitorPrice(row.price)) + "</strong>" +
+        "</article>";
+    }).join("");
+
+    var agendaMarkup = copy.agendaSteps.map(function (step) {
+      return "" +
+        '<li class="monitor-agenda-step">' +
+          '<span class="monitor-agenda-day">' + e(step.day) + "</span>" +
+          "<div><strong>" + e(step.title) + "</strong><p>" + e(step.text) + "</p></div>" +
+        "</li>";
+    }).join("");
+
+    return "" +
+      '<div class="monitor-page">' +
+        '<section class="monitor-section reveal">' +
+          '<div class="monitor-section-head">' +
+            '<span class="eyebrow">' + e(copy.introEyebrow) + "</span>" +
+            "<h2>" + e(copy.introTitle) + "</h2>" +
+            '<p class="monitor-lead">' + e(copy.introText) + "</p>" +
+          "</div>" +
+        "</section>" +
+        '<section class="monitor-section reveal">' +
+          '<div class="monitor-dual">' +
+            '<div class="monitor-panel">' +
+              "<h3>" + e(copy.whyTitle) + "</h3>" +
+              "<p>" + e(copy.whyLead) + "</p>" +
+              checklist(copy.whyItems) +
+            "</div>" +
+            '<div class="monitor-panel">' +
+              "<h3>" + e(copy.providesTitle) + "</h3>" +
+              checklist(copy.providesItems) +
+            "</div>" +
+          "</div>" +
+        "</section>" +
+        '<section class="monitor-section reveal">' +
+          '<div class="monitor-section-head"><h2>' + e(copy.systemsTitle) + "</h2></div>" +
+          '<div class="monitor-systems">' + systemsMarkup + "</div>" +
+        "</section>" +
+        '<section class="monitor-section reveal">' +
+          '<div class="monitor-section-head"><h2>' + e(copy.howTitle) + "</h2></div>" +
+          '<ol class="monitor-steps">' + stepsMarkup + "</ol>" +
+        "</section>" +
+        '<section class="monitor-section reveal">' +
+          '<div class="monitor-section-head"><h2>' + e(copy.channelsTitle) + "</h2></div>" +
+          '<div class="monitor-channels">' + channelsMarkup + "</div>" +
+        "</section>" +
+        '<section class="monitor-section monitor-pricing reveal">' +
+          '<div class="monitor-section-head">' +
+            '<span class="eyebrow">' + e(copy.pricingEyebrow) + "</span>" +
+            "<h2>" + e(copy.pricingTitle) + "</h2>" +
+            "<p>" + e(copy.pricingText) + "</p>" +
+            "<p>" + e(copy.packagesHint) + "</p>" +
+          "</div>" +
+          '<div class="monitor-packages">' + packageMarkup + "</div>" +
+          '<div class="monitor-section-head"><h2>' + e(copy.stackTitle) + "</h2><p>" + e(copy.stackHint) + "</p></div>" +
+          '<div class="monitor-stack-list">' + stackMarkup + "</div>" +
+          '<div class="monitor-section-head"><h2>' + e(copy.agendaTitle) + "</h2></div>" +
+          '<ol class="monitor-agenda-list">' + agendaMarkup + "</ol>" +
+          '<p class="monitor-footnote">' + e(copy.footnote) + "</p>" +
+        "</section>" +
+      "</div>";
+  }
   function serviceApproachMarkup(id) {
-    if (id === "video-surveillance") return "";
+    if (id === "video-surveillance" || id === "engineering-monitoring") return "";
     var e = site.utils.escapeHtml;
     var language = site.i18n.language || "hy";
     var service = site.content.services.find(function (item) {
@@ -398,6 +760,7 @@
       networks: ["LAN", "RACK", "Wi-Fi", "TEST"],
       electrical: ["DB", "MCB", "LINE", "LUX"],
       automation: ["BMS", "SENS", "ACS", "HVAC"],
+      "engineering-monitoring": ["SMS", "NOC", "SVR", "APP"],
       "full-design": ["PLAN", "LOW", "PWR", "DOC"],
       "audio-systems": ["SPK", "AMP", "MIC", "ZONE"],
       wacker: ["KIT", "CTRL", "LINE", "SET"],
@@ -552,6 +915,11 @@
           stages: ["Ավտոմատացման սցենարների սահմանում", "Controller-ների և սենսորների մոնտաժ", "Ինտեգրում և ծրագրավորում", "Թեստ և օգտագործման հրահանգ"],
           result: "Ստանում եք միասնական, հարմար և վերահսկելի smart կառավարման համակարգ։"
         },
+        "engineering-monitoring": {
+          includes: ["24/7 մոնիթորինգ՝ CCTV, NVR, սերվեր, ցանց, UPS, հրդեհային/ազդանշան", "SMS, email, Telegram/push ահազանգումներ", "Կենտրոնացված dashboard և իրադարձությունների մատյան", "Սերվերային կառավարում, backup, թեստավորում և troubleshooting"],
+          stages: ["Համակարգերի ինվենտար և մոնիթորինգի պլան", "Ահազանգման կանոնների և ալիքների կարգավորում", "Սերվեր/dashboard ծրագրավորում և ինտեգրացիա", "Թեստավորում, հանձնում և շարունակական ավարուժ սպասարձում"],
+          result: "Պատվիրատուն 24/7 տեսնում է օբյեկտի վիճակը, ժամանակին ստանում է SMS/email ահազանգում, խնդիրները լուծվում են նախքան մեծ վնասի առաջացումը։"
+        },
         "full-design": {
           includes: ["Բոլոր ինժեներական համակարգերի համալիր նախագիծ", "Սարքերի դասավորություն և հաշվարկներ", "Ռեզերվներ և ընդլայնման պաշար", "Շահագործման տրամաբանություն և փաստաթղթեր"],
           stages: ["Օբյեկտի համալիր ուսումնասիրություն", "Համակարգերի համատեղ կոնցեպտ", "Հաշվարկներ, գծագրեր և կազմ", "Համաձայնեցում և հանձնում"],
@@ -628,6 +996,11 @@
           includes: ["BMS controllers and sensors", "Access, lighting and climate integration", "Control scenarios", "Monitoring dashboard and remote access"],
           stages: ["Automation scenario definition", "Controller and sensor mounting", "Integration and programming", "Testing and usage guide"],
           result: "You get a unified, comfortable and controllable smart management system."
+        },
+        "engineering-monitoring": {
+          includes: ["24/7 monitoring: CCTV, NVR, server, network, UPS, fire/alarm", "SMS, email, Telegram/push alerts", "Central dashboard and event log", "Server management, backup, testing and troubleshooting"],
+          stages: ["System inventory and monitoring plan", "Alert rules and channel setup", "Server/dashboard programming and integration", "Testing, handover and ongoing engineering support"],
+          result: "The client sees facility status 24/7, receives timely SMS/email alerts, and issues are resolved before major damage or downtime."
         },
         "full-design": {
           includes: ["Integrated design of all engineering systems", "Device layout and calculations", "Redundancy and expansion reserve", "Operation logic and documentation"],
@@ -706,6 +1079,11 @@
           stages: ["Определение сценариев автоматизации", "Монтаж контроллеров и датчиков", "Интеграция и программирование", "Тестирование и инструкция по использованию"],
           result: "Вы получаете единую, удобную и управляемую систему smart-управления."
         },
+        "engineering-monitoring": {
+          includes: ["Круглосуточный мониторинг: CCTV, NVR, сервер, сеть, UPS, пожарная/охрана", "SMS, email, Telegram/push-уведомления", "Центральный dashboard и журнал событий", "Управление серверами, backup, тестирование и troubleshooting"],
+          stages: ["Инвентаризация систем и план мониторинга", "Настройка правил и каналов оповещения", "Программирование сервера/dashboard и интеграция", "Тестирование, сдача и постоянная инженерная поддержка"],
+          result: "Заказчик видит состояние объекта 24/7, своевременно получает SMS/email-оповещения, проблемы решаются до серьезного ущерба или простоя."
+        },
         "full-design": {
           includes: ["Комплексный проект всех инженерных систем", "Расположение устройств и расчеты", "Резерв и запас на расширение", "Логика эксплуатации и документация"],
           stages: ["Комплексное обследование объекта", "Совместная концепция систем", "Расчеты, чертежи и состав", "Согласование и сдача"],
@@ -746,6 +1124,7 @@
       "video-surveillance": "security",
       "fire-security": "security",
       automation: "security",
+      "engineering-monitoring": "network",
       networks: "network",
       electrical: "electrical",
       "audio-systems": "audio",
@@ -1083,14 +1462,18 @@
     var e = site.utils.escapeHtml;
     var heroImage = images[0] || data.image || "";
     var systemGallery = systemGalleryMarkup(systemItems || []);
-    var serviceShowcase = id === "video-surveillance" ? videoSurveillanceShowcaseMarkup() : serviceApproachMarkup(id);
+    var serviceShowcase = id === "video-surveillance"
+      ? videoSurveillanceShowcaseMarkup()
+      : id === "engineering-monitoring"
+        ? engineeringMonitoringPageMarkup()
+        : serviceApproachMarkup(id);
     var galleryCopy = detailGalleryCopy(kind, id);
     var serviceScope = kind === "service" ? serviceScopeMarkup(id, chips || []) : "";
-    var serviceEquipment = kind === "service" ? serviceEquipmentMarkup(id, chips || []) : "";
+    var serviceEquipment = kind === "service" && id !== "engineering-monitoring" ? serviceEquipmentMarkup(id, chips || []) : "";
     var projectStory = kind === "project" ? projectStoryMarkup(data, chips || []) : "";
     var projectAgenda = kind === "project" ? projectAgendaMarkup(data, chips || []) : "";
     var activeBanner = kind === "project" ? currentProjectBanner(data) : "";
-    var gallerySection = kind === "service" ? "" +
+    var gallerySection = kind === "service" && id !== "engineering-monitoring" ? "" +
       '<section class="detail-gallery-section reveal">' +
         '<div class="section-head">' +
           "<div>" +
@@ -1130,9 +1513,8 @@
       ) : "")
     ) : "";
 
-    return "" +
-      '<section class="detail-page">' +
-        '<div class="detail-hero" style="--detail-image: url(' + e(heroImage) + ')">' +
+    var pageClass = "detail-page" + (id === "engineering-monitoring" ? " detail-page--monitoring" : "");
+    var heroMarkup = '<div class="detail-hero" style="--detail-image: url(' + e(heroImage) + ')">' +
           '<div class="container detail-hero-inner reveal">' +
             '<a class="detail-back" href="' + e(backHref) + '">&lt; ' + e(site.i18n.get("detail.back")) + "</a>" +
             '<span class="eyebrow">' + e(type) + "</span>" +
@@ -1140,14 +1522,16 @@
             "<p>" + e(lead) + "</p>" +
             '<div class="tag-row detail-tags">' + tagMarkup(chips) + "</div>" +
           "</div>" +
-        "</div>" +
-        '<div class="container detail-body">' +
+        "</div>";
+
+    return "" +
+      '<section class="' + pageClass + '">' +
+        heroMarkup +
+        '<div class="container detail-body' + (id === "engineering-monitoring" ? " detail-body--monitoring" : "") + '">' +
           (kind === "project" ? projectBody : (
           activeBanner +
           projectStory +
-          serviceScope +
-          serviceEquipment +
-          serviceShowcase +
+          (id === "engineering-monitoring" ? serviceShowcase : serviceScope + serviceEquipment + serviceShowcase) +
           (systemGallery ? (
             '<div class="section-head detail-system-head">' +
               "<div>" +
