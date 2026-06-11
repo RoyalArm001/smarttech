@@ -219,7 +219,13 @@ function writeSeoBundles() {
   fs.writeFileSync(bundlePath, bundle);
 }
 
-writeSeoBundles();
+if (!process.env.VERCEL) {
+  try {
+    writeSeoBundles();
+  } catch (error) {
+    console.warn("SEO bundle generation skipped:", error && error.message);
+  }
+}
 
 function resolvePagesDir() {
   const primary = path.resolve(siteDir, "pages");
