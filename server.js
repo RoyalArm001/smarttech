@@ -103,7 +103,7 @@ const defaultSmtpUser = envValue(["SMTP_USER", "MAIL_USER", "SMTP_EMAIL"], "");
 const defaultSmtpPass = envValue(["SMTP_PASS", "MAIL_PASS", "SMTP_PASSWORD"], "");
 const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։";
 const chatPageBlockMessage = "Չատը ժամանակավորապես կասեցված է 2 օրով՝ չափից շատ հարցերի պատճառով։";
-const chatOpenAIQuotaMessage = "ChatGPT-ը հասանելի չէ՝ OpenAI հաշվի բալانسը սպառված է։ Ավելացրեք վճարում platform.openai.com/settings/billing-ում, ապա նորից փորձեք։";
+const chatOpenAIUnavailableMessage = "Այս պահին AI օգնականը ժամանակավորապես անհասանելի է։ Խնդրում ենք փորձել քիչ անց կամ կապ հաստատել մեր մասնագետների հետ։";
 const chatOpenAINotConfiguredMessage = "ChatGPT-ը դեռ միացված չէ։ Ավելացրեք OPENAI_API_KEY server-ի .env կամ Vercel Environment Variables-ում։";
 const chatOpenAIDeveloperInstruction = [
   "Դու Smart Tech AI-ն ես՝ Smart Tech LLC-ի պաշտոնական խելացի օգնականը (https://smarttechllc.am/).",
@@ -1195,6 +1195,19 @@ function isOpenAIRateLimitError(error) {
   return status === 429 || status === 503 || /rate|exhausted|overload|unavailable/i.test(message);
 }
 
+async function tryGeminiChatPageFallback(chatInput, response, note) {
+  if (!getGeminiClient()) return false;
+
+  try {
+    const reply = await generateGeminiChatReply(chatInput);
+    response.json({ reply, provider: "gemini", note: note || "openai_fallback" });
+    return true;
+  } catch (geminiError) {
+    console.error("Gemini chat-page fallback error:", geminiError && (geminiError.status || geminiError.message || geminiError));
+    return false;
+  }
+}
+
 async function generateGeminiChatReply({ message, pagePath, replyLanguage, history, userProfile }) {
   const client = getGeminiClient();
   if (!client) {
@@ -1712,14 +1725,23 @@ app.post("/api/chat-page", chatUserLimiter, chatPageAbuseLimiter, chatPageGlobal
         return;
       } catch (openAiError) {
         if (isOpenAIQuotaError(openAiError)) {
-          response.status(503).json({ reply: chatOpenAIQuotaMessage, provider: "openai" });
-          return;
-        }
-        if (isOpenAIRateLimitError(openAiError)) {
+          console.warn("OpenAI quota exceeded, trying Gemini fallback");
+        } else if (isOpenAIRateLimitError(openAiError)) {
+          if (await tryGeminiChatPageFallback(chatInput, response, "openai_rate_limited")) return;
           response.status(429).json({ reply: chatRateLimitMessage, provider: "openai" });
           return;
+        } else {
+          console.error("OpenAI chat-page error:", openAiError && (openAiError.status || openAiError.message || openAiError));
         }
-        console.error("OpenAI chat-page error:", openAiError && (openAiError.status || openAiError.message || openAiError));
+
+        const fallbackNote = isOpenAIQuotaError(openAiError) ? "openai_quota_exceeded" : "openai_error";
+        if (await tryGeminiChatPageFallback(chatInput, response, fallbackNote)) return;
+
+        if (isOpenAIQuotaError(openAiError)) {
+          response.status(503).json({ reply: chatOpenAIUnavailableMessage, provider: "openai" });
+          return;
+        }
+
         throw openAiError;
       }
     }
