@@ -57,6 +57,20 @@
     { name: "Grandstream", logo: techBase + "grandstream.png" },
     { name: "Satel", logo: techBase + "satel.png" },
     { name: "Tiandy", logo: techBase + "tiandy.png" },
-    { name: "Milesight", logo: techBase + "milesight.png" }
+    { name: "Milesight", logo: techBase + "milesight.png" },
+    { name: "ASUS", logo: techBase + "asus.png" },
+    { name: "HP", logo: techBase + "hp.png" },
+    { name: "Dell", logo: techBase + "dell.png" },
+    { name: "Lenovo", logo: techBase + "lenovo.png" },
+    { name: "MSI", logo: techBase + "msi.png" },
+    { name: "Intel", logo: techBase + "intel.png" },
+    { name: "AMD", logo: techBase + "amd.png" },
+    { name: "Samsung", logo: techBase + "samsung.png" },
+    { name: "Acer", logo: techBase + "acer.png" },
+    { name: "LG", logo: techBase + "lg.png" },
+    { name: "APC", logo: techBase + "apc.png" },
+    { name: "Synology", logo: techBase + "synology.png" },
+    { name: "QNAP", logo: techBase + "qnap.png" },
+    { name: "Supermicro", logo: techBase + "supermicro.png" }
   ];
 })(window.SmartTech);
