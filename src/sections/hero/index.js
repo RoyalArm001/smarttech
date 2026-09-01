@@ -7,31 +7,43 @@
       hy: {
         primary: site.i18n.get("common.requestSurvey", "Պատվիրել չափագրում"),
         secondary: site.i18n.get("common.proposal", "Ստանալ կոմերցիոն առաջարկ"),
-        panelEyebrow: "Ինչու ընտրել Smart Tech",
+        panelEyebrow: "Մեր ծառայությունները",
         panelPoints: [
-          "Մեկ թիմ՝ նախագծումից մինչև սպասարկում",
-          "Լիցենզավորված և փորձառու ինժեներական կազմ",
-          "Չափագրում + հաշվարկ + հստակ իրականացում"
+          "Աուդիո համակարգեր և ինտեգրացիա",
+          "Տեսահսկման համակարգեր",
+          "Հրդեհային ազդարարման ու մուտքի վերահսկում",
+          "Ցանցեր, Wi‑Fi և լարանցում",
+          "Շենքերի ավտոմատացում և BMS",
+          "Էլեկտրամոնտաժային աշխատանքներ",
+          "24/7 մոնիթորինգ և սպասարկում"
         ]
       },
       en: {
         primary: site.i18n.get("common.requestSurvey", "Request site survey"),
         secondary: site.i18n.get("common.proposal", "Get commercial proposal"),
-        panelEyebrow: "Why choose Smart Tech",
+        panelEyebrow: "What we do",
         panelPoints: [
-          "One team from design to maintenance",
-          "Licensed and experienced engineering staff",
-          "Survey + calculation + clear execution plan"
+          "Audio systems and integration",
+          "CCTV and video surveillance",
+          "Fire alarm and access control",
+          "Networking, Wi‑Fi and cabling",
+          "Smart building automation and BMS",
+          "Electrical installation works",
+          "24/7 monitoring and support"
         ]
       },
       ru: {
         primary: site.i18n.get("common.requestSurvey", "Заказать замер объекта"),
         secondary: site.i18n.get("common.proposal", "Получить коммерческое предложение"),
-        panelEyebrow: "Почему выбирают Smart Tech",
+        panelEyebrow: "Что мы делаем",
         panelPoints: [
-          "Одна команда от проекта до сервиса",
-          "Лицензированный и опытный инженерный состав",
-          "Замер + расчет + понятный план реализации"
+          "Аудиосистемы и интеграция",
+          "Видеонаблюдение и CCTV",
+          "Пожарная сигнализация и контроль доступа",
+          "Сети, Wi‑Fi и кабельная разводка",
+          "Автоматизация зданий и BMS",
+          "Электромонтажные работы",
+          "24/7 мониторинг и обслуживание"
         ]
       }
     }, language);
@@ -39,8 +51,8 @@
     var heroTitleMarkup = heroTitle === company.name
       ? '<h1 class="hero-title notranslate" translate="no" lang="en" data-no-translate="brand" data-i18n-key="hero.title">' + e(heroTitle) + '</h1>'
       : '<h1 class="hero-title" data-i18n-key="hero.title">' + e(heroTitle) + '</h1>';
-    var panelPoints = heroActionCopy.panelPoints.map(function (item) {
-      return "<li>" + e(item) + "</li>";
+    var panelPoints = heroActionCopy.panelPoints.map(function (item, index) {
+      return '<li style="--delay:' + index + '">' + e(item) + "</li>";
     }).join("");
 
     var heroImage = company.heroImages[0];

@@ -1144,15 +1144,16 @@
 
       toggle.addEventListener("click", function (event) {
         event.preventDefault();
-        var opening = !switcher.classList.contains("is-open");
-        if (opening) {
-          if (typeof closeSiteMenuHandler === "function") {
-            closeSiteMenuHandler(false);
-          }
-          closeAllLanguageSwitchers();
+        if (typeof closeSiteMenuHandler === "function") {
+          closeSiteMenuHandler(false);
         }
-        var isOpen = switcher.classList.toggle("is-open");
-        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        closeAllLanguageSwitchers();
+
+        var cycle = ["hy", "ru", "en"];
+        var current = normalizeLanguageCode(getOnlineLanguage());
+        var index = cycle.indexOf(current);
+        var next = cycle[(index >= 0 ? index + 1 : 0) % cycle.length];
+        applyOnlineLanguage(next);
       });
 
       switcher.addEventListener("keydown", function (event) {
