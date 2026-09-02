@@ -4,6 +4,13 @@
     firebaseStatsPath: "",
     firebaseApiKey: "",
     firebaseAuthToken: "",
-    cmsApiBaseUrl: ""
+    cmsApiBaseUrl: "",
+    supabaseUrl: "",
+    supabaseAnonKey: "",
+    supabasePublishableKey: "",
+    postgresUrl: "",
+    postgresHost: "",
+    postgresDatabase: "",
+    postgresPassword: ""
   });
 })(window);

@@ -974,6 +974,27 @@
             "</article>" +
           "</div>" +
         "</div>" +
-      "</section>";
+      "</section>" +
+      "<script>" +
+      "(function(){" +
+        "fetch('/api/users/employee/" + e(member.id) + "')" +
+        ".then(function(res){ if(!res.ok) throw new Error(); return res.json(); })" +
+        ".then(function(data){ " +
+          "var p = data.profile;" +
+          "if (p.picture) { var img = document.querySelector('.member-photo'); if (img) img.src = p.picture; }" +
+          "if (p.email) { " +
+            "var links = document.querySelector('.member-social-links');" +
+            "if (links && !links.innerHTML.includes('mailto:')) { " +
+              "links.innerHTML += '<a class=\"member-social-link member-social-link-email\" href=\"mailto:' + p.email + '\"><span>' + p.email + '</span></a>';" +
+            "}" +
+          "}" +
+          "if (p.message) { " +
+            "var meta = document.querySelector('.member-meta');" +
+            "if (meta) { meta.insertAdjacentHTML('afterend', '<div style=\"margin: 20px 0; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; font-style: italic;\">\"' + p.message + '\"</div>'); }" +
+          "}" +
+        "})" +
+        ".catch(function(){});" +
+      "})();" +
+      "</script>";
   };
 })(window.SmartTech);

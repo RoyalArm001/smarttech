@@ -6,6 +6,7 @@ const { URL } = require("url");
 const express = require("express");
 const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 const sharp = require("sharp");
+const { createClient } = require("@supabase/supabase-js");
 const { GoogleGenAI } = require("@google/genai");
 const OpenAI = require("openai");
 let cmsModule = null;
@@ -15,6 +16,7 @@ function cms() {
   }
   return cmsModule;
 }
+const usersStore = require("./admin/users-store");
 const seo = require("./lib/seo-config");
 const chatLocalKnowledge = require("./lib/chat-local-knowledge");
 const appMode = require("./lib/app-mode");
@@ -101,6 +103,13 @@ const defaultSmtpPort = Number(envValue(["SMTP_PORT", "MAIL_PORT"], "465"));
 const defaultSmtpSecure = envValue(["SMTP_SECURE", "MAIL_SECURE"], "true") !== "false";
 const defaultSmtpUser = envValue(["SMTP_USER", "MAIL_USER", "SMTP_EMAIL"], "");
 const defaultSmtpPass = envValue(["SMTP_PASS", "MAIL_PASS", "SMTP_PASSWORD"], "");
+const defaultSupabaseUrl = envValue(["SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL"], "");
+const defaultSupabaseAnonKey = envValue(["SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"], "");
+const defaultSupabasePublishableKey = envValue(["NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "SUPABASE_ANON_KEY"], "");
+const defaultPostgresUrl = envValue(["POSTGRES_URL", "POSTGRES_PRISMA_URL", "DATABASE_URL"], "");
+const defaultPostgresHost = envValue(["POSTGRES_HOST"], "");
+const defaultPostgresDatabase = envValue(["POSTGRES_DATABASE"], "");
+const defaultPostgresPassword = envValue(["POSTGRES_PASSWORD"], "");
 const chatRateLimitMessage = "Համակարգը ծանրաբեռնված է, խնդրում ենք փորձել 1 րոպեից։";
 const chatPageBlockMessage = "Չատը ժամանակավորապես կասեցված է 2 օրով՝ չափից շատ հարցերի պատճառով։";
 const chatOpenAIUnavailableMessage = "Այս պահին AI օգնականը ժամանակավորապես անհասանելի է։ Խնդրում ենք փորձել քիչ անց կամ կապ հաստատել մեր մասնագետների հետ։";
@@ -262,6 +271,8 @@ if (process.env.VERCEL || process.env.SMARTTECH_TRUST_PROXY) {
 }
 
 const adminSessions = new Map();
+const userSessions = new Map();
+const userSessionCookie = "smarttech_user";
 let geminiClientApiKey = "";
 
 const defaultFirebaseDatabaseUrl = envValue([
@@ -351,6 +362,126 @@ function runtimeFirebaseConfig(settings) {
     apiKey: settingValue(source, "firebaseApiKey", defaultFirebaseApiKey),
     authToken: settingValue(source, "firebaseAuthToken", defaultFirebaseAuthToken)
   };
+}
+
+function runtimeSupabaseConfig(settings) {
+  const source = settings || readAdminSettings();
+  return {
+    url: settingValue(source, "supabaseUrl", defaultSupabaseUrl),
+    anonKey: settingValue(source, "supabaseAnonKey", defaultSupabaseAnonKey),
+    publishableKey: settingValue(source, "supabasePublishableKey", defaultSupabasePublishableKey),
+    postgresUrl: settingValue(source, "postgresUrl", defaultPostgresUrl),
+    postgresHost: settingValue(source, "postgresHost", defaultPostgresHost),
+    postgresDatabase: settingValue(source, "postgresDatabase", defaultPostgresDatabase),
+    postgresPassword: settingValue(source, "postgresPassword", defaultPostgresPassword)
+  };
+}
+
+function getSupabaseClient() {
+  const config = runtimeSupabaseConfig();
+  if (!config.url || !config.anonKey) return null;
+  return createClient(config.url, config.anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  });
+}
+
+function getSupabaseAdminClient() {
+  const config = runtimeSupabaseConfig();
+  const serviceRoleKey = envValue(["SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SERVICE_ROLE"], "");
+  if (!config.url || !serviceRoleKey) return null;
+  return createClient(config.url, serviceRoleKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  });
+}
+
+function normalizeSupabasePublicData(payload) {
+  const output = { source: payload && payload.source ? payload.source : "supabase" };
+  if (payload && Array.isArray(payload.team)) output.team = payload.team;
+  if (payload && Array.isArray(payload.projects)) output.projects = payload.projects;
+  if (payload && Array.isArray(payload.services)) output.services = payload.services;
+  if (payload && payload.company && typeof payload.company === "object") output.company = payload.company;
+  if (payload && payload.contacts && typeof payload.contacts === "object") output.contacts = payload.contacts;
+  if (payload && Array.isArray(payload.navigation)) output.navigation = payload.navigation;
+  if (payload && Array.isArray(payload.partners)) output.partners = payload.partners;
+  return output;
+}
+
+function supabaseAssetUrl(bucket, storagePath) {
+  const client = getSupabaseAdminClient();
+  if (!client || !storagePath) return storagePath;
+  return client.storage.from(bucket).getPublicUrl(String(storagePath).replace(/^\/+/, '')).data.publicUrl;
+}
+
+function replaceAssetPaths(value) {
+  if (Array.isArray(value)) return value.map(replaceAssetPaths);
+  if (!value || typeof value !== 'object') {
+    if (typeof value !== 'string') return value;
+    const clean = value.replace(/^\/+/, '');
+    if (clean.startsWith('img/')) return supabaseAssetUrl('project-images', clean.slice(4));
+    if (clean.startsWith('src/assets/team/')) return supabaseAssetUrl('avatars', 'team/' + clean.slice('src/assets/team/'.length));
+    return value;
+  }
+  return Object.fromEntries(Object.entries(value).map(([k,v]) => [k, replaceAssetPaths(v)]));
+}
+
+async function fetchSupabasePublicData() {
+  const client = getSupabaseAdminClient();
+  if (!client) return null;
+
+  try {
+    const [teamResult, projectResult, serviceResult] = await Promise.all([
+      client.from("team_members").select("*").order("display_order", { ascending: true }),
+      client.from("projects").select("*").order("display_order", { ascending: true }),
+      client.from("content_collections").select("id,payload").eq("is_public", true)
+    ]);
+
+    if (teamResult.error) throw teamResult.error;
+    if (projectResult.error) throw projectResult.error;
+    if (serviceResult.error) throw serviceResult.error;
+    const collections = Object.fromEntries((serviceResult.data || []).map(row => [row.id, row.payload]));
+
+    const normalizedTeam = (teamResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
+      order: row.display_order, roleLevel: row.role_level, managerId: row.manager_id,
+      image: supabaseAssetUrl('avatars', row.image_path), coverImage: supabaseAssetUrl('avatars', row.cover_image_path)
+    }));
+    const normalizedProjects = (projectResult.data || []).map(row => replaceAssetPaths(Object.assign({}, row.source_data || {}, row, {
+      order: row.display_order, featured: row.featured, systemImages: row.system_images
+    })));
+    return normalizeSupabasePublicData({
+      source: "supabase",
+      team: normalizedTeam,
+      projects: normalizedProjects,
+      services: collections.services || [],
+      company: collections.company || {},
+      contacts: collections.contacts || {},
+      navigation: collections.navigation || [],
+      partners: collections.partners || []
+    });
+  } catch (error) {
+    console.warn("Supabase public content fetch failed:", error && error.message ? error.message : error);
+    return null;
+  }
+}
+
+function getSupabaseSessionToken(request) {
+  const cookieHeader = String(request.headers.cookie || "");
+  const cookies = parseCookies(request);
+  const bearer = String(request.headers.authorization || "");
+  if (bearer && /^Bearer\s+/i.test(bearer)) {
+    return bearer.replace(/^Bearer\s+/i, "").trim();
+  }
+  if (cookies.smarttech_profile_session) {
+    return decodeURIComponent(cookies.smarttech_profile_session);
+  }
+  return "";
 }
 
 function getGeminiClient() {
@@ -579,6 +710,51 @@ function requireAdmin(request, response, next) {
   next();
 }
 
+function getUserSession(request) {
+  const cookies = parseCookies(request);
+  const token = cookies[userSessionCookie];
+  if (!token) return null;
+
+  const session = userSessions.get(token);
+  if (!session) return null;
+
+  if (session.expiresAt <= Date.now()) {
+    userSessions.delete(token);
+    return null;
+  }
+
+  session.expiresAt = Date.now() + adminSessionTtlMs;
+  return session;
+}
+
+function requireUser(request, response, next) {
+  const session = getUserSession(request);
+  if (!session) {
+    jsonResponse(response, 401, { error: "Unauthorized" });
+    return;
+  }
+  request.userSession = session;
+  next();
+}
+
+function userSessionCookieString(token, request) {
+  const parts = [
+    userSessionCookie + "=" + encodeURIComponent(token),
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Strict",
+    "Max-Age=" + Math.floor(adminSessionTtlMs / 1000)
+  ];
+  if (isHttpsRequest(request)) {
+    parts.push("Secure");
+  }
+  return parts.join("; ");
+}
+
+function clearUserSessionCookie() {
+  return userSessionCookie + "=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
+}
+
 function requireCsrf(request, response, next) {
   const session = request.adminSession || getAdminSession(request);
   const token = cleanAdminText(request.headers["x-csrf-token"], 160);
@@ -762,17 +938,22 @@ async function saveAlbumUpload(upload) {
 
   fs.mkdirSync(adminAlbumUploadDir, { recursive: true });
   const fileName = Date.now() + "-" + randomToken(8) + ".webp";
-  const target = path.resolve(adminAlbumUploadDir, fileName);
-  if (target !== adminAlbumUploadDir && !target.startsWith(adminAlbumUploadDir + path.sep)) {
-    throw httpError(400, "Invalid upload target");
-  }
-
-  await sharp(sourceBuffer, { failOn: "warning" })
+  const optimized = await sharp(sourceBuffer, { failOn: "warning" })
     .rotate()
     .resize({ width: 1600, height: 1200, fit: "inside", withoutEnlargement: true })
     .webp({ quality: 82 })
-    .toFile(target);
-
+    .toBuffer();
+  const client = getSupabaseAdminClient();
+  if (client) {
+    const objectPath = "album/" + fileName;
+    const uploaded = await client.storage.from("project-images").upload(objectPath, optimized, { upsert: true, contentType: "image/webp" });
+    if (uploaded.error) throw httpError(502, uploaded.error.message);
+    await client.from("media_assets").upsert({ bucket_id:"project-images", storage_path:objectPath, original_name:fileName, mime_type:"image/webp", size_bytes:optimized.length, metadata:{ source_path:"album" } }, { onConflict:"bucket_id,storage_path" });
+    return supabaseAssetUrl("project-images", objectPath);
+  }
+  fs.mkdirSync(adminAlbumUploadDir, { recursive: true });
+  const target = path.resolve(adminAlbumUploadDir, fileName);
+  await fs.promises.writeFile(target, optimized);
   return "/img/admin-album/" + fileName;
 }
 
@@ -1096,6 +1277,7 @@ async function sendRequestNotificationEmail(entry) {
   return false;
 }
 
+
 async function submitPublicRequest(body, request) {
   const entry = normalizeRequestPayload(body, request);
   appendRequestLog(entry);
@@ -1119,6 +1301,7 @@ async function submitPublicRequest(body, request) {
     );
     throw httpError(503, "Delivery failed");
   }
+
 
   return {
     ok: true,
@@ -1445,12 +1628,20 @@ app.get("/sitemap.xml", publicApiLimiter, (request, response) => {
 });
 
 if (appMode.isWebEnabled()) {
-app.get("/api/album", publicApiLimiter, (request, response) => {
+app.get("/api/album", publicApiLimiter, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (client) {
+    const result = await client.from('media_assets').select('id,bucket_id,storage_path,original_name,metadata,created_at').eq('bucket_id','project-images').order('created_at',{ascending:false});
+    if (!result.error && result.data) {
+      return jsonResponse(response, 200, { photos: result.data.map(row => ({ id: row.id, image: supabaseAssetUrl(row.bucket_id,row.storage_path), title: row.metadata && row.metadata.title || row.original_name || '', caption: row.metadata && row.metadata.caption || '', section: row.metadata && row.metadata.section || 'projects', createdAt: row.created_at })) });
+    }
+  }
   jsonResponse(response, 200, webAlbumPayload());
 });
 
-app.get("/api/content", publicApiLimiter, (request, response) => {
-  jsonResponse(response, 200, publicCmsPayload());
+app.get("/api/content", publicApiLimiter, async (request, response) => {
+  const supabaseData = await fetchSupabasePublicData();
+  jsonResponse(response, 200, supabaseData || publicCmsPayload());
 });
 
 app.get("/api/status", publicApiLimiter, (request, response) => {
@@ -1491,47 +1682,139 @@ app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, expre
 });
 }
 
+if (appMode.isWebEnabled()) {
+  app.post("/api/auth/login", express.json({ limit: "4kb" }), async (request, response) => {
+    const email = String((request.body && request.body.email) || "").trim().toLowerCase();
+    const password = String((request.body && request.body.password) || "");
+    const client = getSupabaseClient();
+
+    if (!client) {
+      jsonResponse(response, 503, { error: "Supabase Auth is not configured. Add SUPABASE_URL and SUPABASE_ANON_KEY." });
+      return;
+    }
+
+    if (!email || !password) {
+      jsonResponse(response, 400, { error: "Email and password are required." });
+      return;
+    }
+
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
+    if (error || !data || !data.user || !data.session) {
+      jsonResponse(response, 401, { error: error && error.message ? error.message : "Invalid credentials." });
+      return;
+    }
+
+    try {
+      const profileClient = getSupabaseAdminClient() || client;
+      await profileClient.from("profiles").upsert({
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
+        avatar_url: data.user.user_metadata && data.user.user_metadata.avatar_url ? data.user.user_metadata.avatar_url : null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "id" }).select();
+    } catch (profileError) {
+      console.warn("Supabase profile sync skipped:", profileError && profileError.message ? profileError.message : profileError);
+    }
+
+    const token = randomToken(32);
+    userSessions.set(token, {
+      userId: data.user.id,
+      email: data.user.email,
+      full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
+      expiresAt: Date.now() + adminSessionTtlMs,
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token
+    });
+    response.setHeader("Set-Cookie", userSessionCookieString(token, request));
+
+    jsonResponse(response, 200, {
+      authenticated: true,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
+      },
+      session: {
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+        expires_at: data.session.expires_at
+      }
+    });
+  });
+
+  app.get("/api/auth/session", async (request, response) => {
+    const cookieSession = getUserSession(request);
+    if (cookieSession && cookieSession.userId) {
+      jsonResponse(response, 200, {
+        authenticated: true,
+        user: {
+          id: cookieSession.userId,
+          email: cookieSession.email,
+          full_name: cookieSession.full_name || null
+        }
+      });
+      return;
+    }
+
+    const authHeader = String(request.headers.authorization || "");
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const client = getSupabaseClient();
+
+    if (!client || !token) {
+      jsonResponse(response, 200, { authenticated: false, user: null });
+      return;
+    }
+
+    const { data, error } = await client.auth.getUser(token);
+    if (error || !data || !data.user) {
+      jsonResponse(response, 200, { authenticated: false, user: null });
+      return;
+    }
+
+    jsonResponse(response, 200, {
+      authenticated: true,
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
+      }
+    });
+  });
+}
+
 if (appMode.isAdminEnabled()) {
-app.get("/api/admin/cms", adminApiLimiter, requireAdmin, (request, response) => {
-  jsonResponse(response, 200, { collections: cms().listCollections() });
+app.get("/api/admin/cms", adminApiLimiter, requireAdmin, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("content_collections").select("id,updated_at").order("id");
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  jsonResponse(response, 200, { collections: (result.data || []).map(x => x.id) });
 });
 
-app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, (request, response) => {
-  try {
-    jsonResponse(response, 200, cms().adminCollectionPayload(cleanAdminText(request.params.collection, 40)));
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS read failed" });
-  }
+app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, async (request, response) => {
+  const id = cleanAdminText(request.params.collection, 40); const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("content_collections").select("id,payload,updated_at").eq("id", id).maybeSingle();
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  if (!result.data) return jsonResponse(response, 404, { error: "Collection not found" });
+  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:{ updatedAt:result.data.updated_at } });
 });
 
-app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
-  try {
-    const collection = cleanAdminText(request.params.collection, 40);
-    const saved = cms().writeCollection(collection, request.body || {});
-    publishSiteSnapshot();
-    jsonResponse(response, 200, {
-      collection: collection,
-      data: saved,
-      collections: cms().listCollections()
-    });
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS save failed" });
-  }
+app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const id = cleanAdminText(request.params.collection, 40); const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("content_collections").upsert({ id, payload:request.body || {}, is_public:true, updated_at:new Date().toISOString() }, {onConflict:"id"}).select("id,payload,updated_at").single();
+  if (result.error) return jsonResponse(response, 400, { error: result.error.message });
+  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:{updatedAt:result.data.updated_at} });
 });
 
-app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
-  try {
-    const collection = cleanAdminText(request.params.collection, 40);
-    cms().deleteCollection(collection);
-    publishSiteSnapshot();
-    jsonResponse(response, 200, {
-      collection: collection,
-      deleted: true,
-      collections: cms().listCollections()
-    });
-  } catch (error) {
-    jsonResponse(response, error.statusCode || 500, { error: error.message || "CMS delete failed" });
-  }
+app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const id = cleanAdminText(request.params.collection, 40); const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("content_collections").delete().eq("id", id);
+  if (result.error) return jsonResponse(response, 400, { error: result.error.message });
+  jsonResponse(response, 200, { collection:id, deleted:true });
 });
 
 app.get("/api/admin/session", adminApiLimiter, (request, response) => {
@@ -1642,6 +1925,16 @@ app.post("/api/admin/album/images", adminApiLimiter, express.json({ limit: "10mb
 app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
   try {
     const id = cleanAdminText(request.params.id, 90);
+    const client = getSupabaseAdminClient();
+    if (client) {
+      return (async () => {
+        const found = await client.from('media_assets').select('bucket_id,storage_path').eq('id', id).maybeSingle();
+        if (found.error || !found.data) return jsonResponse(response, 404, { error: 'Image not found' });
+        await client.storage.from(found.data.bucket_id).remove([found.data.storage_path]);
+        await client.from('media_assets').delete().eq('id', id);
+        return jsonResponse(response, 200, { deleted:true });
+      })().catch(error => jsonResponse(response, 500, { error:error.message || 'Image delete failed' }));
+    }
     const store = readAlbumStore();
     const target = store.photos.find((photo) => photo.id === id);
     if (!target) {
@@ -1657,6 +1950,238 @@ app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requ
   } catch (error) {
     jsonResponse(response, error.statusCode || 500, { error: error.message || "Image delete failed" });
   }
+});
+
+// Users API Endpoints
+app.post("/api/auth/login", express.json({ limit: "2kb" }), sameOriginGuard, (request, response) => {
+  try {
+    const username = cleanAdminText(request.body && request.body.username, 80);
+    const password = cleanAdminText(request.body && request.body.password, 400);
+
+    if (!username || !password) {
+      jsonResponse(response, 400, { error: "Username and password required" });
+      return;
+    }
+
+    const user = usersStore.authenticateUser(username, password);
+    if (!user) {
+      jsonResponse(response, 401, { error: "Invalid credentials" });
+      return;
+    }
+
+    const token = randomToken(32);
+    const session = {
+      csrfToken: randomToken(24),
+      userId: user.id,
+      role: user.role,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + adminSessionTtlMs
+    };
+    userSessions.set(token, session);
+    response.setHeader("Set-Cookie", userSessionCookieString(token, request));
+
+    jsonResponse(response, 200, {
+      authenticated: true,
+      csrfToken: session.csrfToken,
+      expiresAt: new Date(session.expiresAt).toISOString(),
+      user: user
+    });
+  } catch (error) {
+    jsonResponse(response, 500, { error: error.message || "Login failed" });
+  }
+});
+
+app.post("/api/auth/logout", sameOriginGuard, requireUser, (request, response) => {
+  const cookies = parseCookies(request);
+  if (cookies[userSessionCookie]) {
+    userSessions.delete(cookies[userSessionCookie]);
+  }
+  response.setHeader("Set-Cookie", clearUserSessionCookie());
+  jsonResponse(response, 200, { authenticated: false });
+});
+
+app.get("/api/auth/me", requireUser, async (request, response) => {
+  const userBySession = request.userSession && request.userSession.email ? {
+    id: request.userSession.userId,
+    email: request.userSession.email,
+    full_name: request.userSession.full_name || null
+  } : null;
+
+  if (userBySession) {
+    jsonResponse(response, 200, { user: userBySession });
+    return;
+  }
+
+  const user = usersStore.getUserById(request.userSession.userId);
+  if (!user) {
+    jsonResponse(response, 404, { error: "User not found" });
+    return;
+  }
+  delete user.salt;
+  delete user.hash;
+  jsonResponse(response, 200, { user });
+});
+
+app.get("/api/profile", requireUser, async (request, response) => {
+  const userId = request.userSession && request.userSession.userId;
+  const client = getSupabaseClient();
+
+  if (client && userId) {
+    const { data, error } = await client.from("profiles").select("*").eq("id", userId).maybeSingle();
+    if (!error && data) {
+      jsonResponse(response, 200, { profile: {
+        id: data.id,
+        email: data.email,
+        full_name: data.full_name,
+        avatar_url: data.avatar_url,
+        bio: data.bio,
+        phone: data.phone,
+        role: data.role
+      } });
+      return;
+    }
+  }
+
+  const user = usersStore.getUserById(userId);
+  if (!user) {
+    jsonResponse(response, 404, { error: "User not found" });
+    return;
+  }
+  delete user.salt;
+  delete user.hash;
+  jsonResponse(response, 200, { profile: user });
+});
+
+app.put("/api/profile", express.json({ limit: "500kb" }), requireUser, async (request, response) => {
+  try {
+    const userId = request.userSession && request.userSession.userId;
+    const client = getSupabaseClient();
+    const data = request.body || {};
+
+    if (client && userId) {
+      const updatePayload = {
+        id: userId,
+        email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
+        full_name: data.full_name !== undefined ? cleanAdminText(data.full_name, 140) : undefined,
+        avatar_url: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined,
+        bio: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
+        updated_at: new Date().toISOString()
+      };
+      const { data: saved, error } = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("*").single();
+      if (!error && saved) {
+        jsonResponse(response, 200, { profile: {
+          id: saved.id,
+          email: saved.email,
+          full_name: saved.full_name,
+          avatar_url: saved.avatar_url,
+          bio: saved.bio,
+          phone: saved.phone,
+          role: saved.role
+        } });
+        return;
+      }
+    }
+
+    const user = usersStore.getUserById(userId);
+    if (!user) {
+      jsonResponse(response, 404, { error: "User not found" });
+      return;
+    }
+
+    const updated = usersStore.updateUser(user.id, {
+      email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
+      message: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
+      picture: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined
+    }, data.newPassword);
+
+    jsonResponse(response, 200, { profile: updated });
+  } catch (error) {
+    jsonResponse(response, 500, { error: error.message || "Profile update failed" });
+  }
+});
+
+// Admin Users API Endpoints
+app.get("/api/admin/users", adminApiLimiter, requireAdmin, (request, response) => {
+  jsonResponse(response, 200, { users: usersStore.listUsers() });
+});
+
+app.post("/api/admin/users", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const data = request.body || {};
+    const password = data.password;
+    if (!password) {
+      jsonResponse(response, 400, { error: "Password required" });
+      return;
+    }
+    const newUser = usersStore.createUser({
+      username: cleanAdminText(data.username, 80),
+      role: cleanAdminText(data.role, 20),
+      employeeId: cleanAdminText(data.employeeId, 80),
+      email: cleanAdminText(data.email, 120),
+      message: cleanAdminText(data.message, 1000),
+      picture: cleanAdminText(data.picture, 240)
+    }, password);
+    jsonResponse(response, 201, { user: newUser, users: usersStore.listUsers() });
+  } catch (error) {
+    jsonResponse(response, 400, { error: error.message || "User creation failed" });
+  }
+});
+
+app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const id = cleanAdminText(request.params.id, 80);
+    const data = request.body || {};
+    const updatedUser = usersStore.updateUser(id, {
+      username: data.username !== undefined ? cleanAdminText(data.username, 80) : undefined,
+      role: data.role !== undefined ? cleanAdminText(data.role, 20) : undefined,
+      employeeId: data.employeeId !== undefined ? cleanAdminText(data.employeeId, 80) : undefined,
+      email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
+      message: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
+      picture: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined
+    }, data.password);
+    jsonResponse(response, 200, { user: updatedUser, users: usersStore.listUsers() });
+  } catch (error) {
+    jsonResponse(response, 400, { error: error.message || "User update failed" });
+  }
+});
+
+app.delete("/api/admin/users/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+  try {
+    const id = cleanAdminText(request.params.id, 80);
+    const success = usersStore.deleteUser(id);
+    if (!success) {
+      jsonResponse(response, 404, { error: "User not found" });
+      return;
+    }
+    jsonResponse(response, 200, { deleted: true, users: usersStore.listUsers() });
+  } catch (error) {
+    jsonResponse(response, 500, { error: error.message || "User deletion failed" });
+  }
+});
+
+// Public Employee Profile Endpoint
+app.get("/api/users/employee/:employeeId", (request, response) => {
+  const employeeId = cleanAdminText(request.params.employeeId, 80);
+  if (!employeeId) {
+    jsonResponse(response, 400, { error: "Invalid employee ID" });
+    return;
+  }
+
+  const users = usersStore.listUsers();
+  const user = users.find(u => u.employeeId === employeeId);
+
+  if (!user) {
+    jsonResponse(response, 404, { error: "Profile not found" });
+    return;
+  }
+
+  jsonResponse(response, 200, {
+    profile: {
+      email: user.email,
+      picture: user.picture,
+      message: user.message
+    }
+  });
 });
 }
 

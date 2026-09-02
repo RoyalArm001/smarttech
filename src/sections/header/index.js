@@ -55,6 +55,14 @@
       '</svg>';
   }
 
+  function profilePageSvg() {
+    return '' +
+      '<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">' +
+        '<circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.7"></circle>' +
+        '<path d="M4.8 20c.55-3.35 3.25-5.35 7.2-5.35s6.65 2 7.2 5.35" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>' +
+      '</svg>';
+  }
+
   site.sections.header = function header() {
     var e = site.utils.escapeHtml;
     var company = site.content.company;
@@ -204,6 +212,11 @@
       '<a class="chat-page-link' + (page === "chat" ? " is-active" : "") + '" href="' + e(site.utils.pageUrl("chat")) + '" aria-label="' + e(chatLabel) + '" title="' + e(chatLabel) + '">' +
         chatPageSvg() +
       "</a>";
+    var profileLabel = site.i18n.get("nav.profile", "Profile");
+    var profilePageLink = '' +
+      '<a class="profile-page-link' + (page === "profile" ? " is-active" : "") + '" href="' + e(site.utils.pageUrl("profile")) + '" aria-label="' + e(profileLabel) + '" title="' + e(profileLabel) + '">' +
+        profilePageSvg() +
+      "</a>";
 
     return '' +
       '<div class="container header-inner">' +
@@ -232,6 +245,7 @@
           '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-menu-panel">' +
             '<span></span><span></span><span></span>' +
           '</button>' +
+          profilePageLink +
           chatPageLink +
           headerLanguageSwitcher +
           themeToggle +

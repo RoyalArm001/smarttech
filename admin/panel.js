@@ -124,14 +124,20 @@
     var cms = byId("admin-workspace-cms");
     var album = byId("admin-workspace-album");
     var api = byId("admin-workspace-api");
+    var users = byId("admin-workspace-users");
     if (cms) cms.hidden = name !== "cms";
     if (album) album.hidden = name !== "album";
     if (api) api.hidden = name !== "api";
+    if (users) users.hidden = name !== "users";
 
-    ["cms", "album", "api"].forEach(function (tabName) {
+    ["cms", "album", "api", "users"].forEach(function (tabName) {
       var tab = byId("admin-tab-" + tabName);
       if (tab) tab.classList.toggle("is-active", tabName === name);
     });
+
+    if (name === "users") {
+      fetchUsers();
+    }
 
     if (name === "cms" && window.SmartTechAdminCms && typeof window.SmartTechAdminCms.open === "function") {
       window.SmartTechAdminCms.open();
@@ -410,12 +416,127 @@
     });
   }
 
+  function fetchUsers() {
+    requestJson("/api/admin/users")
+      .then(function(payload) {
+        renderUsers(payload.users || []);
+      })
+      .catch(function(err) {
+        setStatus("Failed to load users: " + err.message, true);
+      });
+  }
+
+  function renderUsers(users) {
+    var list = byId("admin-users-list");
+    if (!list) return;
+
+    if (!users.length) {
+      list.innerHTML = "<p>No users found.</p>";
+      return;
+    }
+
+    var html = users.map(function(u) {
+      return "<div class='admin-card' style='margin-bottom: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);'>" +
+        "<strong>" + escapeHtml(u.username) + "</strong> (" + escapeHtml(u.role) + ")<br>" +
+        "<small>Email: " + escapeHtml(u.email || "-") + " | Team ID: " + escapeHtml(u.employeeId || "-") + "</small><br>" +
+        "<div style='margin-top: 8px;'><button type='button' class='admin-btn-secondary' onclick='window.editUser(\"" + u.id + "\")'>Edit</button> " +
+        "<button type='button' class='admin-btn-secondary' onclick='window.deleteUser(\"" + u.id + "\")'>Delete</button></div>" +
+        "</div>";
+    }).join("");
+    list.innerHTML = html;
+
+    window.allUsers = users;
+  }
+
+  window.editUser = function(id) {
+    if (!window.allUsers) return;
+    var user = window.allUsers.find(function(u) { return u.id === id; });
+    if (!user) return;
+
+    byId("user-id").value = user.id;
+    byId("user-username").value = user.username;
+    byId("user-role").value = user.role;
+    byId("user-employee-id").value = user.employeeId || "";
+    byId("user-cancel-btn").hidden = false;
+    byId("user-password").required = false;
+    window.scrollTo(0, 0);
+  };
+
+  window.deleteUser = function(id) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    requestJson("/api/admin/users/" + id, { method: "DELETE" })
+      .then(function(payload) {
+        setStatus("User deleted");
+        renderUsers(payload.users || []);
+      })
+      .catch(function(err) {
+        setStatus("Failed to delete user: " + err.message, true);
+      });
+  };
+
+  function setupUsersForm() {
+    var form = byId("admin-user-form");
+    var cancelBtn = byId("user-cancel-btn");
+
+    if (!form) return;
+
+    function resetForm() {
+      form.reset();
+      byId("user-id").value = "";
+      cancelBtn.hidden = true;
+      byId("user-password").required = true;
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", resetForm);
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      var id = byId("user-id").value;
+      var body = {
+        username: byId("user-username").value,
+        role: byId("user-role").value,
+        employeeId: byId("user-employee-id").value
+      };
+
+      var pw = byId("user-password").value;
+      if (pw) body.password = pw;
+
+      var isEdit = !!id;
+      var endpoint = isEdit ? "/api/admin/users/" + id : "/api/admin/users";
+      var method = isEdit ? "PUT" : "POST";
+
+      setBusy(form, true);
+      setStatus("Saving user...");
+
+      requestJson(endpoint, {
+        method: method,
+        body: body
+      })
+      .then(function(payload) {
+        setStatus("User saved successfully.");
+        renderUsers(payload.users || []);
+        resetForm();
+      })
+      .catch(function(err) {
+        setStatus(err.message, true);
+      })
+      .finally(function() {
+        setBusy(form, false);
+      });
+    });
+  }
+
   function init() {
     bindWebLinks();
     setupLoginForm();
     setupAlbumForm();
     setupAlbumList();
     setupSettingsForm();
+    setupUsersForm();
     setupLogout();
     setupWorkspaceTabs();
     if (window.SmartTechAdminCms && typeof window.SmartTechAdminCms.init === "function") {

@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
+  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "profile", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
   var landingSlugs = [
     "cctv-installation-yerevan",
     "fire-alarm-systems-yerevan",
@@ -136,7 +136,7 @@
       activeRoutes: ["team", "member"],
       labelKey: "nav.team",
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.2" cy="8.3" r="2.45"></circle><path d="M4.1 17.6c0-1.95 1.4-3.55 3.1-3.55s3.1 1.6 3.1 3.55H4.1Z"></path><circle cx="16.8" cy="8.3" r="2.45"></circle><path d="M13.7 17.6c0-1.95 1.4-3.55 3.1-3.55s3.1 1.6 3.1 3.55h-6.2Z"></path><circle cx="12" cy="9.7" r="2.85"></circle><path d="M6.9 20c0-2.75 2.25-5 5.1-5s5.1 2.25 5.1 5H6.9Z"></path></svg>'
-    }
+    },
   ];
 
   function bottomNavLabel(tab) {
@@ -738,7 +738,11 @@
     document.body.classList.toggle("is-chat-page", page === "chat");
     document.documentElement.lang = preferredLang;
     document.getElementById("site-header").innerHTML = site.sections.header();
-    main.innerHTML = pageMarkup(page);
+    // The profile page owns its authenticated form markup and event bindings.
+    // Preserve it instead of replacing it with the generic route fallback.
+    if (page !== "profile") {
+      main.innerHTML = pageMarkup(page);
+    }
     animateRoute(main, page);
     document.getElementById("site-footer").innerHTML = site.sections.footer();
     applyTranslationBoundaries(page);

@@ -61,6 +61,7 @@
         <div class="admin-workspace-tabs" role="tablist" aria-label="Admin workspaces">
           <button type="button" class="admin-workspace-tab is-active" id="admin-tab-cms" data-admin-workspace="cms">CMS</button>
           <button type="button" class="admin-workspace-tab" id="admin-tab-album" data-admin-workspace="album">Album</button>
+          <button type="button" class="admin-workspace-tab" id="admin-tab-users" data-admin-workspace="users">Users</button>
           <button type="button" class="admin-workspace-tab" id="admin-tab-api" data-admin-workspace="api">API settings</button>
         </div>
 
@@ -192,6 +193,55 @@
               <div class="admin-api-state" id="admin-api-state"></div>
             </article>
           </div>
+        </section>
+      </section>
+
+      <section id="admin-workspace-users" hidden>
+        <div class="admin-grid">
+          <article class="admin-card admin-card-wide">
+            <div class="admin-card-head">
+              <div>
+                <span class="admin-kicker">Users</span>
+                <h2>Add / Edit User</h2>
+              </div>
+            </div>
+            <form id="admin-user-form" class="admin-form">
+              <input type="hidden" id="user-id">
+              <label>
+                <span>Username</span>
+                <input type="text" id="user-username" required>
+              </label>
+              <label>
+                <span>Password (leave blank to keep current if editing)</span>
+                <input type="password" id="user-password">
+              </label>
+              <label>
+                <span>Role</span>
+                <select id="user-role">
+                  <option value="employee">Employee</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+              <label>
+                <span>Team Member ID (optional, to link with team section)</span>
+                <input type="text" id="user-employee-id">
+              </label>
+              <div class="admin-actions">
+                <button type="submit">Save User</button>
+                <button type="button" id="user-cancel-btn" class="admin-btn-secondary" hidden>Cancel Edit</button>
+              </div>
+            </form>
+          </article>
+        </div>
+
+        <section class="admin-card" style="margin-top: 32px;">
+          <div class="admin-card-head">
+            <div>
+              <span class="admin-kicker">Users</span>
+              <h2>All Users</h2>
+            </div>
+          </div>
+          <div id="admin-users-list" class="admin-users-list"></div>
         </section>
       </section>
     </main>

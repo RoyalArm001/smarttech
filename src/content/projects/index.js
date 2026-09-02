@@ -86,6 +86,28 @@
 
   site.content.projects = [
     {
+      id: "atlantis-yerevan",
+      title: "Atlantis Yerevan",
+      works: ["Էլեկտրամոնտաժային աշխատանքներ", "Հրդեհային ազդարարման համակարգ"],
+      images: [jobBase + "atlantis-yerevan.webp"],
+      systemImages: [system.electrical, system.alarmPanel],
+      translations: {
+        en: { title: "Atlantis Yerevan", works: ["Electrical installation works", "Fire alarm system"] },
+        ru: { title: "Atlantis Yerevan", works: ["Электромонтажные работы", "Система пожарной сигнализации"] }
+      }
+    },
+    {
+      id: "sunday-towers",
+      title: "Sunday Towers",
+      works: ["Էլեկտրամոնտաժային աշխատանքներ"],
+      images: [jobBase + "sunday-towers.webp"],
+      systemImages: [system.electrical],
+      translations: {
+        en: { title: "Sunday Towers", works: ["Electrical installation works"] },
+        ru: { title: "Sunday Towers", works: ["Электромонтажные работы"] }
+      }
+    },
+    {
       id: "abovyan",
       title: "Abovyan 5/5 Hotel (Multi Group)",
       works: ["Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում", "Էլեկտրական տաքացվող հատակներ"],
@@ -228,8 +250,8 @@
     }
   ];
 
-  var activeProjectIds = ["dalan", "abovyan", "wyndham", "only-one", "bidek", "pallada-tsaghkadzor"];
-  site.content.featuredProjectId = "wyndham";
+  var activeProjectIds = ["atlantis-yerevan", "sunday-towers", "dalan", "abovyan", "wyndham", "only-one", "bidek", "pallada-tsaghkadzor"];
+  site.content.featuredProjectId = "atlantis-yerevan";
   site.content.activeProjectIds = activeProjectIds;
   var projectStatusLabels = {
     current: {

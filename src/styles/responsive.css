@@ -322,11 +322,14 @@
 }
 
 @media (max-width: 768px) {
+  .header-actions .nav-toggle {
+    display: none !important;
+  }
+
   .mobile-bottom-nav {
     display: block;
   }
 
-  /* On mobile the chat opens from the bottom dock, so no stray floating controls remain on screen. */
   .auto-chat-shell {
     bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
     z-index: 260;
@@ -336,7 +339,6 @@
     display: none !important;
   }
 
-  /* Keep page-end actions and footer links above the fixed bottom navigation. */
   #site-main {
     padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
     min-height: calc(100svh - var(--smarttech-header-bottom, 70px));

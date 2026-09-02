@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="hy">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#101417">
+    <title>Profile | Smart Tech</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/icons/smarttech-favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../img/icons/smarttech-apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../src/styles/base.css">
+    <link rel="stylesheet" href="../src/styles/layout.css">
+    <link rel="stylesheet" href="../src/sections/header/header.css">
+    <link rel="stylesheet" href="../src/sections/footer/footer.css">
+    <link rel="stylesheet" href="../src/sections/profile/profile.css">
+    <link rel="stylesheet" href="../src/styles/responsive.css">
+  </head>
+  <body>
+    <header id="site-header" class="site-header"></header>
+    <main id="site-main">
+      <section class="profile-section">
+        <div class="profile-container">
+          <div id="profile-login-view" class="profile-view">
+            <form id="profile-login-form">
+              <label>
+                <span>Էլ. հասցե</span>
+                <input type="email" id="login-email" autocomplete="email" required>
+              </label>
+              <label>
+                <span>Գաղտնաբառ</span>
+                <input type="password" id="login-password" autocomplete="current-password" required>
+              </label>
+              <button type="submit" class="btn btn-primary">Մուտք</button>
+            </form>
+            <div id="login-error" class="error-msg"></div>
+          </div>
+
+          <div id="profile-edit-view" class="profile-view" hidden>
+            <h2>Իմ էջը</h2>
+            <form id="profile-edit-form">
+              <label>
+                <span>Անձնական նկարի հղում (օր․ /img/team/user.jpg)</span>
+                <input type="text" id="edit-picture">
+              </label>
+              <label>
+                <span>Էլ. հասցե</span>
+                <input type="email" id="edit-email">
+              </label>
+              <label>
+                <span>Ուղերձ կամ կենսագրություն</span>
+                <textarea id="edit-message" rows="4"></textarea>
+              </label>
+              <div class="profile-actions">
+                <button type="submit" class="btn btn-primary">Պահպանել</button>
+                <button type="button" id="profile-logout-btn" class="btn btn-secondary">Ելք</button>
+                <a href="/admin" id="profile-admin-btn" class="btn btn-secondary" hidden>Ադմին պանել</a>
+              </div>
+            </form>
+            <div id="edit-status" class="status-msg"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer id="site-footer"></footer>
+
+    <script defer src="../src/core/namespace.js"></script>
+    <script defer src="../src/core/utils.js"></script>
+    <script defer src="../src/content/company/index.js"></script>
+    <script defer src="../src/content/navigation/index.js"></script>
+    <script defer src="../src/content/services/index.js"></script>
+    <script defer src="../src/content/projects/index.js"></script>
+    <script defer src="../src/content/partners/index.js"></script>
+    <script defer src="../src/content/team/index.js"></script>
+    <script defer src="../src/content/contacts/index.js"></script>
+    <script defer src="../src/content/locales/index.js"></script>
+    <script defer src="../src/core/i18n.js"></script>
+    <script defer src="../src/core/runtime-config.js"></script>
+    <script defer src="../src/sections/header/index.js"></script>
+    <script defer src="../src/sections/footer/index.js"></script>
+    <script defer src="../src/sections/profile/index.js"></script>
+    <script defer src="../src/core/cms-merge.js"></script>
+    <script defer src="../src/main.js"></script>
+  </body>
+</html>

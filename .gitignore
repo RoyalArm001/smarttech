@@ -10,6 +10,7 @@ admin/data/*.json
 admin/data/*.jsonl
 admin/data/cms/*.json
 img/admin-album/
+.mobile-menu-*.png
 
 # Ignore legacy images directory to keep them off git
 images/
