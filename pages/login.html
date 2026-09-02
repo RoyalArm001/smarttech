@@ -131,10 +131,6 @@
             throw new Error(payload && payload.error ? payload.error : 'Login failed.');
           }
 
-          if (payload && payload.user) {
-            localStorage.setItem('smarttech.supabase.user', JSON.stringify(payload.user));
-          }
-
           setMessage('Login successful. Your browser session is now active.', 'success');
           form.reset();
         } catch (error) {

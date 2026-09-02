@@ -16,7 +16,6 @@ function cms() {
   }
   return cmsModule;
 }
-const usersStore = require("./admin/users-store");
 const seo = require("./lib/seo-config");
 const chatLocalKnowledge = require("./lib/chat-local-knowledge");
 const appMode = require("./lib/app-mode");
@@ -79,7 +78,6 @@ const adminSessionCookie = "smarttech_admin";
 const adminSessionTtlMs = 8 * 60 * 60 * 1000;
 const adminUploadMaxBytes = 7 * 1024 * 1024;
 const adminAllowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
-const defaultAdminPassword = "SmartTech@2026";
 
 loadEnvFile(path.resolve(rootDir, ".env"));
 loadEnvFile(path.resolve(rootDir, ".env.local"));
@@ -270,8 +268,6 @@ if (process.env.VERCEL || process.env.SMARTTECH_TRUST_PROXY) {
   app.set("trust proxy", process.env.SMARTTECH_TRUST_PROXY || 1);
 }
 
-const adminSessions = new Map();
-const userSessions = new Map();
 const userSessionCookie = "smarttech_user";
 let geminiClientApiKey = "";
 
@@ -647,13 +643,18 @@ function isHttpsRequest(request) {
   return request.secure || String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim() === "https";
 }
 
-function sessionCookie(token, request) {
+function sessionMaxAge(expiresAt) {
+  const remaining = Math.floor((Number(expiresAt || 0) - Date.now()) / 1000);
+  return Math.max(0, Math.min(Math.floor(adminSessionTtlMs / 1000), remaining || 0));
+}
+
+function sessionCookie(token, request, expiresAt) {
   const parts = [
     adminSessionCookie + "=" + encodeURIComponent(token),
     "Path=/",
     "HttpOnly",
     "SameSite=Strict",
-    "Max-Age=" + Math.floor(adminSessionTtlMs / 1000)
+    "Max-Age=" + sessionMaxAge(expiresAt)
   ];
   if (isHttpsRequest(request)) {
     parts.push("Secure");
@@ -665,85 +666,98 @@ function clearSessionCookie() {
   return adminSessionCookie + "=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
 }
 
-function timingSafeStringEquals(actual, expected) {
-  const actualHash = crypto.createHash("sha256").update(String(actual || "")).digest();
-  const expectedHash = crypto.createHash("sha256").update(String(expected || "")).digest();
-  return crypto.timingSafeEqual(actualHash, expectedHash);
+function adminCsrfToken(accessToken) {
+  const secret = envValue(["SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SERVICE_ROLE"], "");
+  if (!secret || !accessToken) return "";
+  return crypto.createHmac("sha256", secret).update(String(accessToken)).digest("base64url");
 }
 
-function configuredAdminPassword() {
-  return envValue(["SMARTTECH_ADMIN_PASSWORD", "ADMIN_PASSWORD"], "");
-}
-
-function adminPassword() {
-  return configuredAdminPassword() || defaultAdminPassword;
-}
-
-function adminPasswordUsingDefault() {
-  return !configuredAdminPassword();
-}
-
-function getAdminSession(request) {
-  const cookies = parseCookies(request);
-  const token = cookies[adminSessionCookie];
-  if (!token) return null;
-
-  const session = adminSessions.get(token);
-  if (!session) return null;
-
-  if (session.expiresAt <= Date.now()) {
-    adminSessions.delete(token);
-    return null;
+function jwtExpiresAt(accessToken) {
+  try {
+    const payload = JSON.parse(Buffer.from(String(accessToken).split(".")[1], "base64url").toString("utf8"));
+    return Number(payload.exp || 0) * 1000;
+  } catch (error) {
+    return 0;
   }
+}
 
-  session.expiresAt = Date.now() + adminSessionTtlMs;
-  return session;
+async function getAdminSession(request) {
+  const cookies = parseCookies(request);
+  const accessToken = cookies[adminSessionCookie];
+  const authClient = getSupabaseClient();
+  const adminClient = getSupabaseAdminClient();
+  if (!accessToken || !authClient || !adminClient) return null;
+
+  const authResult = await authClient.auth.getUser(accessToken);
+  const user = authResult.data && authResult.data.user;
+  if (authResult.error || !user) return null;
+
+  const profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", user.id).maybeSingle();
+  if (profileResult.error || !profileResult.data || profileResult.data.role !== "admin") return null;
+
+  const expiresAt = jwtExpiresAt(accessToken);
+
+  return {
+    userId: user.id,
+    email: user.email,
+    fullName: profileResult.data.full_name,
+    role: profileResult.data.role,
+    accessToken,
+    csrfToken: adminCsrfToken(accessToken),
+    expiresAt: expiresAt || Date.now() + 60 * 60 * 1000
+  };
 }
 
 function requireAdmin(request, response, next) {
-  const session = getAdminSession(request);
-  if (!session) {
-    jsonResponse(response, 401, { error: "Unauthorized" });
-    return;
-  }
-  request.adminSession = session;
-  next();
+  getAdminSession(request)
+    .then((session) => {
+      if (!session) {
+        jsonResponse(response, 401, { error: "Unauthorized" });
+        return;
+      }
+      request.adminSession = session;
+      next();
+    })
+    .catch(() => jsonResponse(response, 401, { error: "Unauthorized" }));
 }
 
-function getUserSession(request) {
+async function getUserSession(request) {
   const cookies = parseCookies(request);
-  const token = cookies[userSessionCookie];
-  if (!token) return null;
-
-  const session = userSessions.get(token);
-  if (!session) return null;
-
-  if (session.expiresAt <= Date.now()) {
-    userSessions.delete(token);
-    return null;
-  }
-
-  session.expiresAt = Date.now() + adminSessionTtlMs;
-  return session;
+  const accessToken = cookies[userSessionCookie];
+  const client = getSupabaseClient();
+  if (!accessToken || !client) return null;
+  const result = await client.auth.getUser(accessToken);
+  const user = result.data && result.data.user;
+  if (result.error || !user) return null;
+  return {
+    userId: user.id,
+    email: user.email,
+    full_name: user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : null,
+    accessToken,
+    expiresAt: jwtExpiresAt(accessToken)
+  };
 }
 
 function requireUser(request, response, next) {
-  const session = getUserSession(request);
-  if (!session) {
-    jsonResponse(response, 401, { error: "Unauthorized" });
-    return;
-  }
-  request.userSession = session;
-  next();
+  getUserSession(request)
+    .then((session) => {
+      if (!session) {
+        jsonResponse(response, 401, { error: "Unauthorized" });
+        return;
+      }
+      request.userSession = session;
+      next();
+    })
+    .catch(() => jsonResponse(response, 401, { error: "Unauthorized" }));
 }
 
-function userSessionCookieString(token, request) {
+function userSessionCookieString(token, request, expiresAt) {
   const parts = [
     userSessionCookie + "=" + encodeURIComponent(token),
     "Path=/",
     "HttpOnly",
     "SameSite=Strict",
-    "Max-Age=" + Math.floor(adminSessionTtlMs / 1000)
+    "Max-Age=" + sessionMaxAge(expiresAt)
   ];
   if (isHttpsRequest(request)) {
     parts.push("Secure");
@@ -756,7 +770,7 @@ function clearUserSessionCookie() {
 }
 
 function requireCsrf(request, response, next) {
-  const session = request.adminSession || getAdminSession(request);
+  const session = request.adminSession;
   const token = cleanAdminText(request.headers["x-csrf-token"], 160);
   if (!session || !token || token !== session.csrfToken) {
     jsonResponse(response, 403, { error: "CSRF token is invalid" });
@@ -1683,7 +1697,7 @@ app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, expre
 }
 
 if (appMode.isWebEnabled()) {
-  app.post("/api/auth/login", express.json({ limit: "4kb" }), async (request, response) => {
+  app.post("/api/auth/login", express.json({ limit: "4kb" }), sameOriginGuard, async (request, response) => {
     const email = String((request.body && request.body.email) || "").trim().toLowerCase();
     const password = String((request.body && request.body.password) || "");
     const client = getSupabaseClient();
@@ -1706,27 +1720,24 @@ if (appMode.isWebEnabled()) {
 
     try {
       const profileClient = getSupabaseAdminClient() || client;
-      await profileClient.from("profiles").upsert({
-        id: data.user.id,
+      const profileData = {
         email: data.user.email,
         full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
         avatar_url: data.user.user_metadata && data.user.user_metadata.avatar_url ? data.user.user_metadata.avatar_url : null,
         updated_at: new Date().toISOString()
-      }, { onConflict: "id" }).select();
+      };
+      const existingProfile = await profileClient.from("profiles").select("id").eq("id", data.user.id).maybeSingle();
+      if (existingProfile.data) {
+        await profileClient.from("profiles").update(profileData).eq("id", data.user.id);
+      } else if (!existingProfile.error) {
+        await profileClient.from("profiles").insert(Object.assign({ id: data.user.id, role: "user" }, profileData));
+      }
     } catch (profileError) {
       console.warn("Supabase profile sync skipped:", profileError && profileError.message ? profileError.message : profileError);
     }
 
-    const token = randomToken(32);
-    userSessions.set(token, {
-      userId: data.user.id,
-      email: data.user.email,
-      full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
-      expiresAt: Date.now() + adminSessionTtlMs,
-      accessToken: data.session.access_token,
-      refreshToken: data.session.refresh_token
-    });
-    response.setHeader("Set-Cookie", userSessionCookieString(token, request));
+    const expiresAt = Number(data.session.expires_at || 0) * 1000;
+    response.setHeader("Set-Cookie", userSessionCookieString(data.session.access_token, request, expiresAt));
 
     jsonResponse(response, 200, {
       authenticated: true,
@@ -1734,17 +1745,12 @@ if (appMode.isWebEnabled()) {
         id: data.user.id,
         email: data.user.email,
         full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
-      },
-      session: {
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-        expires_at: data.session.expires_at
       }
     });
   });
 
   app.get("/api/auth/session", async (request, response) => {
-    const cookieSession = getUserSession(request);
+    const cookieSession = await getUserSession(request);
     if (cookieSession && cookieSession.userId) {
       jsonResponse(response, 200, {
         authenticated: true,
@@ -1780,6 +1786,60 @@ if (appMode.isWebEnabled()) {
         full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
       }
     });
+  });
+
+  app.post("/api/auth/logout", sameOriginGuard, (request, response) => {
+    response.setHeader("Set-Cookie", clearUserSessionCookie());
+    jsonResponse(response, 200, { authenticated: false });
+  });
+
+  app.get("/api/auth/me", requireUser, (request, response) => {
+    jsonResponse(response, 200, {
+      user: {
+        id: request.userSession.userId,
+        email: request.userSession.email,
+        full_name: request.userSession.full_name || null
+      }
+    });
+  });
+
+  app.get("/api/profile", requireUser, async (request, response) => {
+    const client = getSupabaseAdminClient();
+    if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+    const result = await client.from("profiles").select("id,email,full_name,avatar_url,bio,phone,role").eq("id", request.userSession.userId).maybeSingle();
+    if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+    if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
+    jsonResponse(response, 200, { profile: result.data });
+  });
+
+  app.put("/api/profile", express.json({ limit: "500kb" }), sameOriginGuard, requireUser, async (request, response) => {
+    const client = getSupabaseAdminClient();
+    if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+    const data = request.body || {};
+    const userId = request.userSession.userId;
+    const newPassword = String(data.newPassword || "");
+
+    if (newPassword && newPassword.length < 8) {
+      return jsonResponse(response, 400, { error: "Password must contain at least 8 characters" });
+    }
+
+    if (newPassword) {
+      const authUpdate = await client.auth.admin.updateUserById(userId, { password: newPassword });
+      if (authUpdate.error) return jsonResponse(response, 400, { error: authUpdate.error.message });
+    }
+
+    const updatePayload = {
+      id: userId,
+      email: request.userSession.email,
+      full_name: data.full_name !== undefined ? cleanAdminText(data.full_name, 140) : undefined,
+      avatar_url: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined,
+      bio: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
+      phone: data.phone !== undefined ? cleanAdminText(data.phone, 60) : undefined,
+      updated_at: new Date().toISOString()
+    };
+    const saved = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("id,email,full_name,avatar_url,bio,phone,role").single();
+    if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
+    jsonResponse(response, 200, { profile: saved.data });
   });
 }
 
@@ -1817,13 +1877,12 @@ app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requi
   jsonResponse(response, 200, { collection:id, deleted:true });
 });
 
-app.get("/api/admin/session", adminApiLimiter, (request, response) => {
-  const session = getAdminSession(request);
+app.get("/api/admin/session", adminApiLimiter, async (request, response) => {
+  const session = await getAdminSession(request);
   if (!session) {
     jsonResponse(response, 200, {
       authenticated: false,
-      adminPasswordConfigured: !!adminPassword(),
-      adminPasswordUsingDefault: adminPasswordUsingDefault()
+      authProvider: "supabase"
     });
     return;
   }
@@ -1832,48 +1891,76 @@ app.get("/api/admin/session", adminApiLimiter, (request, response) => {
     authenticated: true,
     csrfToken: session.csrfToken,
     expiresAt: new Date(session.expiresAt).toISOString(),
-    adminPasswordConfigured: !!adminPassword(),
-    adminPasswordUsingDefault: adminPasswordUsingDefault(),
+    authProvider: "supabase",
+    user: {
+      id: session.userId,
+      email: session.email,
+      full_name: session.fullName,
+      role: session.role
+    },
     album: publicAlbumPayload(),
     admin: adminSettingsPayload()
   });
 });
 
-app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "2kb" }), sameOriginGuard, (request, response) => {
-  const password = adminPassword();
-  if (!password) {
-    jsonResponse(response, 503, { error: "Admin password is not configured" });
+app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), sameOriginGuard, async (request, response) => {
+  const email = cleanAdminText(request.body && request.body.email, 160).toLowerCase();
+  const password = String((request.body && request.body.password) || "");
+  const authClient = getSupabaseClient();
+  const adminClient = getSupabaseAdminClient();
+
+  if (!authClient || !adminClient) {
+    jsonResponse(response, 503, { error: "Supabase Auth is not configured" });
     return;
   }
 
-  const provided = cleanAdminText(request.body && request.body.password, 400);
-  if (!provided || !timingSafeStringEquals(provided, password)) {
-    jsonResponse(response, 401, { error: "Invalid admin password" });
+  if (!email || !password) {
+    jsonResponse(response, 400, { error: "Email and password are required" });
     return;
   }
 
-  const token = randomToken(32);
+  const authResult = await authClient.auth.signInWithPassword({ email, password });
+  const authUser = authResult.data && authResult.data.user;
+  const authSession = authResult.data && authResult.data.session;
+  if (authResult.error || !authUser || !authSession) {
+    jsonResponse(response, 401, { error: "Invalid credentials" });
+    return;
+  }
+
+  const profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", authUser.id).maybeSingle();
+  if (profileResult.error || !profileResult.data || profileResult.data.role !== "admin") {
+    await authClient.auth.signOut();
+    jsonResponse(response, 403, { error: "Admin access is not allowed for this account" });
+    return;
+  }
+
   const session = {
-    csrfToken: randomToken(24),
-    createdAt: Date.now(),
-    expiresAt: Date.now() + adminSessionTtlMs
+    userId: authUser.id,
+    email: authUser.email,
+    fullName: profileResult.data.full_name,
+    role: profileResult.data.role,
+    accessToken: authSession.access_token,
+    csrfToken: adminCsrfToken(authSession.access_token),
+    expiresAt: Number(authSession.expires_at || 0) * 1000
   };
-  adminSessions.set(token, session);
-  response.setHeader("Set-Cookie", sessionCookie(token, request));
+  response.setHeader("Set-Cookie", sessionCookie(authSession.access_token, request, session.expiresAt));
   jsonResponse(response, 200, {
     authenticated: true,
     csrfToken: session.csrfToken,
     expiresAt: new Date(session.expiresAt).toISOString(),
+    authProvider: "supabase",
+    user: {
+      id: session.userId,
+      email: session.email,
+      full_name: session.fullName,
+      role: session.role
+    },
     album: publicAlbumPayload(),
     admin: adminSettingsPayload()
   });
 });
 
-app.post("/api/admin/logout", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
-  const cookies = parseCookies(request);
-  if (cookies[adminSessionCookie]) {
-    adminSessions.delete(cookies[adminSessionCookie]);
-  }
+app.post("/api/admin/logout", adminApiLimiter, sameOriginGuard, (request, response) => {
   response.setHeader("Set-Cookie", clearSessionCookie());
   jsonResponse(response, 200, { authenticated: false });
 });
@@ -1952,234 +2039,150 @@ app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requ
   }
 });
 
-// Users API Endpoints
-app.post("/api/auth/login", express.json({ limit: "2kb" }), sameOriginGuard, (request, response) => {
-  try {
-    const username = cleanAdminText(request.body && request.body.username, 80);
-    const password = cleanAdminText(request.body && request.body.password, 400);
-
-    if (!username || !password) {
-      jsonResponse(response, 400, { error: "Username and password required" });
-      return;
-    }
-
-    const user = usersStore.authenticateUser(username, password);
-    if (!user) {
-      jsonResponse(response, 401, { error: "Invalid credentials" });
-      return;
-    }
-
-    const token = randomToken(32);
-    const session = {
-      csrfToken: randomToken(24),
-      userId: user.id,
-      role: user.role,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + adminSessionTtlMs
-    };
-    userSessions.set(token, session);
-    response.setHeader("Set-Cookie", userSessionCookieString(token, request));
-
-    jsonResponse(response, 200, {
-      authenticated: true,
-      csrfToken: session.csrfToken,
-      expiresAt: new Date(session.expiresAt).toISOString(),
-      user: user
-    });
-  } catch (error) {
-    jsonResponse(response, 500, { error: error.message || "Login failed" });
-  }
-});
-
-app.post("/api/auth/logout", sameOriginGuard, requireUser, (request, response) => {
-  const cookies = parseCookies(request);
-  if (cookies[userSessionCookie]) {
-    userSessions.delete(cookies[userSessionCookie]);
-  }
-  response.setHeader("Set-Cookie", clearUserSessionCookie());
-  jsonResponse(response, 200, { authenticated: false });
-});
-
-app.get("/api/auth/me", requireUser, async (request, response) => {
-  const userBySession = request.userSession && request.userSession.email ? {
-    id: request.userSession.userId,
-    email: request.userSession.email,
-    full_name: request.userSession.full_name || null
-  } : null;
-
-  if (userBySession) {
-    jsonResponse(response, 200, { user: userBySession });
-    return;
-  }
-
-  const user = usersStore.getUserById(request.userSession.userId);
-  if (!user) {
-    jsonResponse(response, 404, { error: "User not found" });
-    return;
-  }
-  delete user.salt;
-  delete user.hash;
-  jsonResponse(response, 200, { user });
-});
-
-app.get("/api/profile", requireUser, async (request, response) => {
-  const userId = request.userSession && request.userSession.userId;
-  const client = getSupabaseClient();
-
-  if (client && userId) {
-    const { data, error } = await client.from("profiles").select("*").eq("id", userId).maybeSingle();
-    if (!error && data) {
-      jsonResponse(response, 200, { profile: {
-        id: data.id,
-        email: data.email,
-        full_name: data.full_name,
-        avatar_url: data.avatar_url,
-        bio: data.bio,
-        phone: data.phone,
-        role: data.role
-      } });
-      return;
-    }
-  }
-
-  const user = usersStore.getUserById(userId);
-  if (!user) {
-    jsonResponse(response, 404, { error: "User not found" });
-    return;
-  }
-  delete user.salt;
-  delete user.hash;
-  jsonResponse(response, 200, { profile: user });
-});
-
-app.put("/api/profile", express.json({ limit: "500kb" }), requireUser, async (request, response) => {
-  try {
-    const userId = request.userSession && request.userSession.userId;
-    const client = getSupabaseClient();
-    const data = request.body || {};
-
-    if (client && userId) {
-      const updatePayload = {
-        id: userId,
-        email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
-        full_name: data.full_name !== undefined ? cleanAdminText(data.full_name, 140) : undefined,
-        avatar_url: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined,
-        bio: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
-        updated_at: new Date().toISOString()
-      };
-      const { data: saved, error } = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("*").single();
-      if (!error && saved) {
-        jsonResponse(response, 200, { profile: {
-          id: saved.id,
-          email: saved.email,
-          full_name: saved.full_name,
-          avatar_url: saved.avatar_url,
-          bio: saved.bio,
-          phone: saved.phone,
-          role: saved.role
-        } });
-        return;
-      }
-    }
-
-    const user = usersStore.getUserById(userId);
-    if (!user) {
-      jsonResponse(response, 404, { error: "User not found" });
-      return;
-    }
-
-    const updated = usersStore.updateUser(user.id, {
-      email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
-      message: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
-      picture: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined
-    }, data.newPassword);
-
-    jsonResponse(response, 200, { profile: updated });
-  } catch (error) {
-    jsonResponse(response, 500, { error: error.message || "Profile update failed" });
-  }
-});
-
 // Admin Users API Endpoints
-app.get("/api/admin/users", adminApiLimiter, requireAdmin, (request, response) => {
-  jsonResponse(response, 200, { users: usersStore.listUsers() });
+async function listSupabaseUsers(client) {
+  const authResult = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (authResult.error) throw authResult.error;
+  const authUsers = authResult.data && authResult.data.users ? authResult.data.users : [];
+  const ids = authUsers.map((user) => user.id);
+  const profileResult = ids.length
+    ? await client.from("profiles").select("id,email,full_name,avatar_url,bio,phone,role").in("id", ids)
+    : { data: [], error: null };
+  if (profileResult.error) throw profileResult.error;
+  const profilesById = new Map((profileResult.data || []).map((profile) => [profile.id, profile]));
+  return authUsers.map((user) => {
+    const profile = profilesById.get(user.id) || {};
+    return {
+      id: user.id,
+      username: user.email || profile.email || "",
+      email: user.email || profile.email || "",
+      role: profile.role || "user",
+      employeeId: user.user_metadata && user.user_metadata.employee_id ? user.user_metadata.employee_id : "",
+      fullName: profile.full_name || (user.user_metadata && user.user_metadata.full_name) || "",
+      picture: profile.avatar_url || "",
+      message: profile.bio || "",
+      createdAt: user.created_at
+    };
+  });
+}
+
+app.get("/api/admin/users", adminApiLimiter, requireAdmin, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  try {
+    jsonResponse(response, 200, { users: await listSupabaseUsers(client) });
+  } catch (error) {
+    jsonResponse(response, 500, { error: error.message || "User list failed" });
+  }
 });
 
-app.post("/api/admin/users", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+app.post("/api/admin/users", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   try {
     const data = request.body || {};
-    const password = data.password;
-    if (!password) {
-      jsonResponse(response, 400, { error: "Password required" });
-      return;
+    const email = cleanAdminText(data.username || data.email, 160).toLowerCase();
+    const password = String(data.password || "");
+    const role = cleanAdminText(data.role, 20) === "admin" ? "admin" : "user";
+    const employeeId = cleanAdminText(data.employeeId, 80);
+    if (!email || !password) return jsonResponse(response, 400, { error: "Email and password are required" });
+
+    const created = await client.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { employee_id: employeeId || null }
+    });
+    if (created.error || !created.data.user) throw created.error || new Error("User creation failed");
+
+    const profile = await client.from("profiles").upsert({
+      id: created.data.user.id,
+      email,
+      role,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "id" });
+    if (profile.error) {
+      await client.auth.admin.deleteUser(created.data.user.id);
+      throw profile.error;
     }
-    const newUser = usersStore.createUser({
-      username: cleanAdminText(data.username, 80),
-      role: cleanAdminText(data.role, 20),
-      employeeId: cleanAdminText(data.employeeId, 80),
-      email: cleanAdminText(data.email, 120),
-      message: cleanAdminText(data.message, 1000),
-      picture: cleanAdminText(data.picture, 240)
-    }, password);
-    jsonResponse(response, 201, { user: newUser, users: usersStore.listUsers() });
+
+    const users = await listSupabaseUsers(client);
+    jsonResponse(response, 201, { user: users.find((user) => user.id === created.data.user.id), users });
   } catch (error) {
     jsonResponse(response, 400, { error: error.message || "User creation failed" });
   }
 });
 
-app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   try {
     const id = cleanAdminText(request.params.id, 80);
     const data = request.body || {};
-    const updatedUser = usersStore.updateUser(id, {
-      username: data.username !== undefined ? cleanAdminText(data.username, 80) : undefined,
-      role: data.role !== undefined ? cleanAdminText(data.role, 20) : undefined,
-      employeeId: data.employeeId !== undefined ? cleanAdminText(data.employeeId, 80) : undefined,
-      email: data.email !== undefined ? cleanAdminText(data.email, 120) : undefined,
-      message: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
-      picture: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined
-    }, data.password);
-    jsonResponse(response, 200, { user: updatedUser, users: usersStore.listUsers() });
+    const current = await client.auth.admin.getUserById(id);
+    if (current.error || !current.data.user) return jsonResponse(response, 404, { error: "User not found" });
+    const email = data.username !== undefined || data.email !== undefined
+      ? cleanAdminText(data.username || data.email, 160).toLowerCase()
+      : current.data.user.email;
+    const employeeId = data.employeeId !== undefined
+      ? cleanAdminText(data.employeeId, 80)
+      : (current.data.user.user_metadata && current.data.user.user_metadata.employee_id) || "";
+    const authChanges = {
+      email,
+      email_confirm: true,
+      user_metadata: Object.assign({}, current.data.user.user_metadata || {}, { employee_id: employeeId || null })
+    };
+    if (data.password) authChanges.password = String(data.password);
+    const updated = await client.auth.admin.updateUserById(id, authChanges);
+    if (updated.error) throw updated.error;
+
+    const profileChanges = {
+      id,
+      email,
+      updated_at: new Date().toISOString()
+    };
+    if (data.role !== undefined) profileChanges.role = cleanAdminText(data.role, 20) === "admin" ? "admin" : "user";
+    const profile = await client.from("profiles").upsert(profileChanges, { onConflict: "id" });
+    if (profile.error) throw profile.error;
+
+    const users = await listSupabaseUsers(client);
+    jsonResponse(response, 200, { user: users.find((user) => user.id === id), users });
   } catch (error) {
     jsonResponse(response, 400, { error: error.message || "User update failed" });
   }
 });
 
-app.delete("/api/admin/users/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, (request, response) => {
+app.delete("/api/admin/users/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   try {
     const id = cleanAdminText(request.params.id, 80);
-    const success = usersStore.deleteUser(id);
-    if (!success) {
-      jsonResponse(response, 404, { error: "User not found" });
-      return;
-    }
-    jsonResponse(response, 200, { deleted: true, users: usersStore.listUsers() });
+    if (id === request.adminSession.userId) return jsonResponse(response, 400, { error: "You cannot delete the active admin account" });
+    const deleted = await client.auth.admin.deleteUser(id);
+    if (deleted.error) throw deleted.error;
+    jsonResponse(response, 200, { deleted: true, users: await listSupabaseUsers(client) });
   } catch (error) {
     jsonResponse(response, 500, { error: error.message || "User deletion failed" });
   }
 });
 
 // Public Employee Profile Endpoint
-app.get("/api/users/employee/:employeeId", (request, response) => {
+app.get("/api/users/employee/:employeeId", async (request, response) => {
   const employeeId = cleanAdminText(request.params.employeeId, 80);
   if (!employeeId) {
     jsonResponse(response, 400, { error: "Invalid employee ID" });
     return;
   }
-
-  const users = usersStore.listUsers();
-  const user = users.find(u => u.employeeId === employeeId);
-
-  if (!user) {
-    jsonResponse(response, 404, { error: "Profile not found" });
-    return;
-  }
-
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("team_members").select("id,email,image_path,text").eq("id", employeeId).maybeSingle();
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
   jsonResponse(response, 200, {
     profile: {
-      email: user.email,
-      picture: user.picture,
-      message: user.message
+      email: result.data.email,
+      picture: result.data.image_path,
+      message: result.data.text
     }
   });
 });

@@ -106,11 +106,7 @@
     byId("admin-panel").hidden = true;
     byId("admin-logout").hidden = true;
     var hint = byId("admin-login-hint");
-    if (hint && payload && payload.adminPasswordUsingDefault === true) {
-      hint.textContent = "Default password: SmartTech@2026. Change it later by setting SMARTTECH_ADMIN_PASSWORD.";
-    } else if (hint && payload && payload.adminPasswordConfigured === false) {
-      hint.textContent = "Admin password is not configured on the server. Set SMARTTECH_ADMIN_PASSWORD or ADMIN_PASSWORD.";
-    }
+    if (hint) hint.textContent = "Sign in with a Supabase account whose profile role is admin.";
   }
 
   function showPanel() {
@@ -260,11 +256,14 @@
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       setBusy(form, true);
-      setStatus("Checking password...");
+      setStatus("Checking Supabase account...");
 
       requestJson("/api/admin/login", {
         method: "POST",
-        body: { password: byId("admin-password").value }
+        body: {
+          email: byId("admin-email").value,
+          password: byId("admin-password").value
+        }
       })
         .then(function (payload) {
           byId("admin-password").value = "";

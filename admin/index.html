@@ -33,8 +33,12 @@
         <div class="admin-login-panel">
           <span class="admin-kicker">Protected access</span>
           <h1>Admin login</h1>
-          <p id="admin-login-hint">Enter the server admin password to manage CMS content, album images and API settings.</p>
+          <p id="admin-login-hint">Sign in with a Supabase account whose profile role is admin.</p>
           <form id="admin-login-form" class="admin-form">
+            <label>
+              <span>Email</span>
+              <input type="email" id="admin-email" autocomplete="email" required>
+            </label>
             <label>
               <span>Password</span>
               <input type="password" id="admin-password" autocomplete="current-password" required>
@@ -208,8 +212,8 @@
             <form id="admin-user-form" class="admin-form">
               <input type="hidden" id="user-id">
               <label>
-                <span>Username</span>
-                <input type="text" id="user-username" required>
+                <span>Email</span>
+                <input type="email" id="user-username" autocomplete="email" required>
               </label>
               <label>
                 <span>Password (leave blank to keep current if editing)</span>
@@ -218,7 +222,7 @@
               <label>
                 <span>Role</span>
                 <select id="user-role">
-                  <option value="employee">Employee</option>
+                  <option value="user">User / Employee</option>
                   <option value="admin">Admin</option>
                 </select>
               </label>

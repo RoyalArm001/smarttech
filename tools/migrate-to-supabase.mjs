@@ -34,6 +34,7 @@ async function main() {
   const normalizedPgUrl = pgUrl.replace(/[?&]sslmode=[^&]*/i, '').replace(/[?&]$/, '');
   const pool = new pg.Pool({ connectionString: normalizedPgUrl, ssl: { rejectUnauthorized: false } });
   await pool.query(fs.readFileSync(path.join(root, 'sql/001_supabase_core.sql'), 'utf8'));
+  await pool.query(fs.readFileSync(path.join(root, 'sql/002_supabase_auth_only.sql'), 'utf8'));
   const content = localContent(); const team = (content.team || []).map(normTeam); const projects = (content.projects || []).map(normProject);
   console.log(`Migrating ${team.length} team members and ${projects.length} projects${dryRun ? ' (dry run)' : ''}`);
   if (!dryRun) {

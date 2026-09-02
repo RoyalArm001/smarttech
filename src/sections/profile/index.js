@@ -124,7 +124,6 @@
 
       const payload = {
         picture: document.getElementById("edit-picture").value.trim(),
-        email: document.getElementById("edit-email").value.trim(),
         message: document.getElementById("edit-message").value.trim()
       };
 
