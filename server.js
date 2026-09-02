@@ -423,6 +423,7 @@ function replaceAssetPaths(value) {
     const clean = value.replace(/^\/+/, '');
     if (clean.startsWith('img/')) return supabaseAssetUrl('project-images', clean.slice(4));
     if (clean.startsWith('src/assets/team/')) return supabaseAssetUrl('avatars', 'team/' + clean.slice('src/assets/team/'.length));
+    if (clean.startsWith('src/assets/')) return supabaseAssetUrl('project-images', clean.slice('src/assets/'.length));
     return value;
   }
   return Object.fromEntries(Object.entries(value).map(([k,v]) => [k, replaceAssetPaths(v)]));
@@ -446,21 +447,21 @@ async function fetchSupabasePublicData() {
 
     const normalizedTeam = (teamResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
       order: row.display_order, roleLevel: row.role_level, managerId: row.manager_id,
-      image: supabaseAssetUrl('avatars', row.image_path), coverImage: supabaseAssetUrl('avatars', row.cover_image_path)
+      image: row.image_path || (row.source_data && row.source_data.image) || null,
+      coverImage: row.cover_image_path || (row.source_data && row.source_data.coverImage) || null
     }));
-    const normalizedProjects = (projectResult.data || []).map(row => replaceAssetPaths(Object.assign({}, row.source_data || {}, row, {
+    const normalizedProjects = (projectResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
       order: row.display_order, featured: row.featured, systemImages: row.system_images
-    })));
-    return normalizeSupabasePublicData({
+    }));
+    return {
+      version: 1,
+      updatedAt: new Date().toISOString(),
       source: "supabase",
-      team: normalizedTeam,
-      projects: normalizedProjects,
-      services: collections.services || [],
-      company: collections.company || {},
-      contacts: collections.contacts || {},
-      navigation: collections.navigation || [],
-      partners: collections.partners || []
-    });
+      collections: replaceAssetPaths(Object.assign({}, collections, {
+        team: normalizedTeam,
+        projects: normalizedProjects
+      }))
+    };
   } catch (error) {
     console.warn("Supabase public content fetch failed:", error && error.message ? error.message : error);
     return null;

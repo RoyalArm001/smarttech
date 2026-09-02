@@ -96,13 +96,19 @@
     applyProjectStatusesAndOrder();
   }
 
-  function applyPartnersCms(partners) {
-    if (!partners || typeof partners !== "object" || Array.isArray(partners)) return;
+  function applyPartnersCms(partners, technologyPartners) {
+    if (Array.isArray(partners)) {
+      site.content.partners = partners.slice();
+    } else if (partners && typeof partners === "object") {
     if (Array.isArray(partners.partners)) {
       site.content.partners = partners.partners.slice();
     }
     if (Array.isArray(partners.technologyPartners)) {
       site.content.technologyPartners = partners.technologyPartners.slice();
+    }
+    }
+    if (Array.isArray(technologyPartners)) {
+      site.content.technologyPartners = technologyPartners.slice();
     }
   }
 
@@ -131,8 +137,8 @@
       if (collections.team) {
         site.content.team = mergeArrayById(site.content.team || [], collections.team, "id");
       }
-      if (collections.partners) {
-        applyPartnersCms(collections.partners);
+      if (collections.partners || collections.technologyPartners) {
+        applyPartnersCms(collections.partners, collections.technologyPartners);
       }
       if (collections.navigation) {
         site.content.navigation = collections.navigation.slice();
