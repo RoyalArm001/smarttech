@@ -2,24 +2,60 @@
 <html lang="hy">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#101417">
-    <title>Profile | Smart Tech</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="../img/icons/smarttech-favicon-32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../img/icons/smarttech-apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="../src/styles/base.css">
-    <link rel="stylesheet" href="../src/styles/layout.css">
-    <link rel="stylesheet" href="../src/sections/header/header.css">
-    <link rel="stylesheet" href="../src/sections/footer/footer.css">
-    <link rel="stylesheet" href="../src/sections/profile/profile.css">
-    <link rel="stylesheet" href="../src/styles/responsive.css">
+    <title>Login | Smart Tech</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/smarttech-favicon-32.png">
+    <link rel="stylesheet" href="/src/styles/base.css">
+    <link rel="stylesheet" href="/src/styles/layout.css">
+    <link rel="stylesheet" href="/src/sections/header/header.css">
+    <link rel="stylesheet" href="/src/sections/footer/footer.css">
+    <link rel="stylesheet" href="/src/sections/profile/profile.css">
+    <link rel="stylesheet" href="/src/styles/responsive.css">
   </head>
-  <body>
+  <body class="profile-page-shell">
     <header id="site-header" class="site-header"></header>
     <main id="site-main">
       <section class="profile-section">
         <div class="profile-container">
+          <div id="profile-public-view" class="profile-public-view" hidden>
+            <img id="public-profile-picture" alt="" hidden>
+            <h1 id="public-profile-name"></h1>
+            <p id="public-profile-username"></p>
+            <p id="public-profile-bio"></p>
+            <a id="public-profile-email" href="" hidden></a>
+          </div>
+          <div id="profile-edit-view" class="profile-view profile-edit-view" hidden>
+            <div class="profile-edit-heading">
+              <div class="profile-avatar-wrap">
+                <img id="profile-avatar-preview" alt="Անձնական նկար" hidden>
+                <span id="profile-avatar-fallback">ST</span>
+              </div>
+              <div>
+                <span class="profile-eyebrow">Իմ անձնական էջը</span>
+                <h1 id="profile-heading-name">Աշխատակից</h1>
+                <a id="profile-public-link" href="#" target="_blank" rel="noopener">Դիտել հրապարակային էջը</a>
+              </div>
+            </div>
+            <form id="profile-edit-form">
+              <div class="profile-form-grid">
+                <label><span>Անուն / ցուցադրվող անուն</span><input type="text" id="edit-full-name" maxlength="140" required></label>
+                <label><span>Username</span><input type="text" id="edit-username" minlength="3" maxlength="80" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,79}" required></label>
+                <label><span>Էլ․ հասցե</span><input type="email" id="edit-email" readonly></label>
+                <label><span>Հեռախոս</span><input type="tel" id="edit-phone" maxlength="60"></label>
+                <label class="profile-span-2"><span>Անձնական նկարի URL</span><input type="text" id="edit-picture"></label>
+                <label class="profile-avatar-upload profile-span-2"><span>Փոխել անձնական նկարը</span><input type="file" id="edit-picture-file" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG կամ WEBP, մինչև 7MB</small></label>
+                <label class="profile-span-2"><span>Իմ մասին</span><textarea id="edit-message" rows="6" maxlength="1000"></textarea></label>
+                <label class="profile-span-2"><span>Նոր գաղտնաբառ</span><input type="password" id="edit-new-password" minlength="8" autocomplete="new-password" placeholder="Դատարկ թողնել՝ ընթացիկը պահելու համար"></label>
+              </div>
+              <div class="profile-actions">
+                <button type="submit" class="btn btn-primary">Պահպանել</button>
+                <button type="button" id="profile-logout-btn" class="btn btn-secondary">Ելք</button>
+                <a href="/admin" id="profile-admin-btn" class="btn btn-secondary" hidden>Ադմին վահանակ</a>
+              </div>
+            </form>
+            <div id="edit-status" class="status-msg" role="status" aria-live="polite"></div>
+          </div>
           <div id="profile-login-view" class="profile-view">
             <form id="profile-login-form">
               <label>
@@ -31,54 +67,33 @@
                 <input type="password" id="login-password" autocomplete="current-password" required>
               </label>
               <button type="submit" class="btn btn-primary">Մուտք</button>
+              <button type="button" id="save-password-btn" class="save-password-toggle" aria-pressed="false">
+                <span class="save-password-switch" aria-hidden="true"><span></span></span>
+                <span class="save-password-label">Հիշել էլ. հասցեն</span>
+              </button>
             </form>
             <div id="login-error" class="error-msg"></div>
-          </div>
-
-          <div id="profile-edit-view" class="profile-view" hidden>
-            <h2>Իմ էջը</h2>
-            <form id="profile-edit-form">
-              <label>
-                <span>Անձնական նկարի հղում (օր․ /img/team/user.jpg)</span>
-                <input type="text" id="edit-picture">
-              </label>
-              <label>
-                <span>Էլ. հասցե</span>
-                <input type="email" id="edit-email" readonly>
-              </label>
-              <label>
-                <span>Ուղերձ կամ կենսագրություն</span>
-                <textarea id="edit-message" rows="4"></textarea>
-              </label>
-              <div class="profile-actions">
-                <button type="submit" class="btn btn-primary">Պահպանել</button>
-                <button type="button" id="profile-logout-btn" class="btn btn-secondary">Ելք</button>
-                <a href="/admin" id="profile-admin-btn" class="btn btn-secondary" hidden>Ադմին պանել</a>
-              </div>
-            </form>
-            <div id="edit-status" class="status-msg"></div>
           </div>
         </div>
       </section>
     </main>
     <footer id="site-footer"></footer>
-
-    <script defer src="../src/core/namespace.js"></script>
-    <script defer src="../src/core/utils.js"></script>
-    <script defer src="../src/content/company/index.js"></script>
-    <script defer src="../src/content/navigation/index.js"></script>
-    <script defer src="../src/content/services/index.js"></script>
-    <script defer src="../src/content/projects/index.js"></script>
-    <script defer src="../src/content/partners/index.js"></script>
-    <script defer src="../src/content/team/index.js"></script>
-    <script defer src="../src/content/contacts/index.js"></script>
-    <script defer src="../src/content/locales/index.js"></script>
-    <script defer src="../src/core/i18n.js"></script>
-    <script defer src="../src/core/runtime-config.js"></script>
-    <script defer src="../src/sections/header/index.js"></script>
-    <script defer src="../src/sections/footer/index.js"></script>
-    <script defer src="../src/sections/profile/index.js"></script>
-    <script defer src="../src/core/cms-merge.js"></script>
-    <script defer src="../src/main.js"></script>
+    <script defer src="/src/core/namespace.js"></script>
+    <script defer src="/src/core/utils.js"></script>
+    <script defer src="/src/content/company/index.js"></script>
+    <script defer src="/src/content/navigation/index.js"></script>
+    <script defer src="/src/content/services/index.js"></script>
+    <script defer src="/src/content/projects/index.js"></script>
+    <script defer src="/src/content/partners/index.js"></script>
+    <script defer src="/src/content/team/index.js"></script>
+    <script defer src="/src/content/contacts/index.js"></script>
+    <script defer src="/src/content/locales/index.js"></script>
+    <script defer src="/src/core/i18n.js"></script>
+    <script defer src="/src/core/runtime-config.js"></script>
+    <script defer src="/src/sections/header/index.js"></script>
+    <script defer src="/src/sections/footer/index.js"></script>
+    <script defer src="/src/sections/profile/index.js"></script>
+    <script defer src="/src/core/cms-merge.js"></script>
+    <script defer src="/src/main.js"></script>
   </body>
 </html>

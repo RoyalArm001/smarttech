@@ -50,6 +50,33 @@
       '</dl>';
   }
 
+  function workProgress(project, index) {
+    var progress = project && Array.isArray(project.workProgress) ? project.workProgress[index] : null;
+    if (progress && typeof progress === "object") {
+      progress = progress.progress;
+    }
+    if (progress === undefined || progress === null) {
+      return project && project.status === "completed" ? 100 : null;
+    }
+    progress = Number(progress);
+    return Number.isFinite(progress) ? Math.max(0, Math.min(100, Math.round(progress))) : null;
+  }
+
+  function workMarkup(project, works, tagName) {
+    var e = site.utils.escapeHtml;
+    var tag = tagName || "li";
+    return (works || []).map(function (work, index) {
+      var label = work && typeof work === "object" ? (work.title || work.name || "") : work;
+      var progress = work && typeof work === "object" && work.progress !== undefined
+        ? Number(work.progress)
+        : workProgress(project, index);
+      var progressMarkup = Number.isFinite(progress)
+        ? ' <span class="project-work-progress">' + e(String(Math.max(0, Math.min(100, Math.round(progress))))) + '%</span>'
+        : "";
+      return "<" + tag + ">" + e(label) + progressMarkup + "</" + tag + ">";
+    }).join("");
+  }
+
   function currentProjectsOrdered(projects) {
     var activeIds = site.content.activeProjectIds || [];
     var byId = {};
@@ -72,9 +99,7 @@
     var text = site.i18n.project(project);
     var statusLabels = project.statusLabels || {};
     var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
-    var works = (text.works || []).map(function (work) {
-      return "<li>" + e(work) + "</li>";
-    }).join("");
+    var works = workMarkup(project, text.works);
     var isActive = index === 0;
     var slideClass = "featured-project current-project-slide" + (isActive ? " is-active" : "");
 
@@ -107,9 +132,7 @@
     }).join("");
     var rail = currentList.map(function (project, index) {
       var text = site.i18n.project(project);
-      var works = (text.works || []).slice(0, 2).map(function (work) {
-        return '<span>' + e(work) + '</span>';
-      }).join("");
+      var works = workMarkup(project, (text.works || []).slice(0, 2), "span");
       return "" +
         '<button type="button" class="current-projects-rail-item' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '">' +
           '<b>' + e(String(index + 1).padStart(2, "0")) + "</b>" +
@@ -151,9 +174,7 @@
       var text = site.i18n.project(project);
       var statusLabels = project.statusLabels || {};
       var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
-      var works = (text.works || []).slice(0, 2).map(function (work) {
-        return '<li>' + e(work) + '</li>';
-      }).join("");
+      var works = workMarkup(project, (text.works || []).slice(0, 2));
 
       return '' +
         '<a class="project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +

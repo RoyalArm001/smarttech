@@ -68,7 +68,7 @@
       if (page === "service" || page === "project" || page === "member") {
         return id ? "/" + page + "?id=" + encodeURIComponent(id) : "/" + page;
       }
-      return "/" + page;
+      return page === "profile" ? "/login" : "/" + page;
     }
   }
 

@@ -214,10 +214,9 @@
       "</a>";
     var profileLabel = site.i18n.get("nav.profile", "Profile");
     var profilePageLink = '' +
-      '<a class="profile-page-link' + (page === "profile" ? " is-active" : "") + '" href="' + e(site.utils.pageUrl("profile")) + '" aria-label="' + e(profileLabel) + '" title="' + e(profileLabel) + '">' +
+      '<a class="profile-page-link' + (page === "profile" || page === "login" ? " is-active" : "") + '" href="/login" aria-label="' + e(profileLabel) + '" title="' + e(profileLabel) + '">' +
         profilePageSvg() +
       "</a>";
-
     return '' +
       '<div class="container header-inner">' +
         '<a class="brand ' + (hasLogo ? "" : "brand-no-logo ") + 'notranslate" href="' + e(site.utils.pageUrl("home")) + '" aria-label="Smart Tech home" translate="no">' +

@@ -4,6 +4,8 @@
   var state = {
     csrfToken: "",
     album: { photos: [] },
+    media: [],
+    teamOptions: [],
     admin: null
   };
 
@@ -106,7 +108,7 @@
     byId("admin-panel").hidden = true;
     byId("admin-logout").hidden = true;
     var hint = byId("admin-login-hint");
-    if (hint) hint.textContent = "Sign in with a Supabase account whose profile role is admin.";
+    if (hint) hint.textContent = "Մուտք գործեք Supabase-ում գրանցված ադմին հաշվով։";
   }
 
   function showPanel() {
@@ -118,15 +120,19 @@
 
   function switchWorkspace(name) {
     var cms = byId("admin-workspace-cms");
+    var media = byId("admin-workspace-media");
     var album = byId("admin-workspace-album");
     var api = byId("admin-workspace-api");
     var users = byId("admin-workspace-users");
+    var collections = byId("admin-sidebar-collections");
     if (cms) cms.hidden = name !== "cms";
+    if (media) media.hidden = name !== "media";
     if (album) album.hidden = name !== "album";
     if (api) api.hidden = name !== "api";
     if (users) users.hidden = name !== "users";
+    if (collections) collections.hidden = name !== "cms";
 
-    ["cms", "album", "api", "users"].forEach(function (tabName) {
+    ["cms", "media", "album", "api", "users"].forEach(function (tabName) {
       var tab = byId("admin-tab-" + tabName);
       if (tab) tab.classList.toggle("is-active", tabName === name);
     });
@@ -135,16 +141,46 @@
       fetchUsers();
     }
 
+    if (name === "media") {
+      fetchMedia();
+    }
+
     if (name === "cms" && window.SmartTechAdminCms && typeof window.SmartTechAdminCms.open === "function") {
       window.SmartTechAdminCms.open();
     }
+
+    closeSidebar();
   }
+
+  window.adminSwitchWorkspace = switchWorkspace;
 
   function setupWorkspaceTabs() {
     document.querySelectorAll("[data-admin-workspace]").forEach(function (button) {
       button.addEventListener("click", function () {
         switchWorkspace(button.getAttribute("data-admin-workspace"));
       });
+    });
+  }
+
+  function closeSidebar() {
+    var sidebar = byId("admin-sidebar");
+    var toggle = byId("admin-sidebar-toggle");
+    if (sidebar) sidebar.classList.remove("is-open");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+  }
+
+  function setupSidebar() {
+    var sidebar = byId("admin-sidebar");
+    var toggle = byId("admin-sidebar-toggle");
+    if (!sidebar || !toggle) return;
+    toggle.addEventListener("click", function () {
+      var open = sidebar.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.addEventListener("click", function (event) {
+      if (window.innerWidth > 820 || !sidebar.classList.contains("is-open")) return;
+      if (sidebar.contains(event.target) || toggle.contains(event.target)) return;
+      closeSidebar();
     });
   }
 
@@ -248,6 +284,105 @@
       };
       reader.readAsDataURL(file);
     });
+  }
+
+  function fetchMedia() {
+    setStatus("Նկարները բեռնվում են...");
+    return requestJson("/api/admin/media")
+      .then(function (payload) {
+        state.media = payload.assets || [];
+        renderMedia(state.media);
+        setStatus("");
+      })
+      .catch(function (error) {
+        setStatus("Նկարները չբեռնվեցին․ " + error.message, true);
+      });
+  }
+
+  function renderMedia(assets) {
+    var list = byId("admin-media-list");
+    var count = byId("admin-media-count");
+    if (count) count.textContent = String((assets || []).length);
+    if (!list) return;
+    if (!assets || !assets.length) {
+      list.innerHTML = '<p class="admin-empty">Storage-ում դեռ նկարներ չկան։</p>';
+      return;
+    }
+    list.innerHTML = assets.map(function (asset) {
+      return '' +
+        '<article class="admin-media-card">' +
+          '<img src="' + escapeHtml(asset.url) + '" alt="' + escapeHtml(asset.title || asset.originalName || "Media") + '" loading="lazy" decoding="async">' +
+          '<div class="admin-media-meta">' +
+            '<strong>' + escapeHtml(asset.title || asset.originalName || "Նկար") + '</strong>' +
+            '<small>' + escapeHtml(asset.bucket + "/" + asset.path) + '</small>' +
+            '<div class="admin-media-actions">' +
+              '<button type="button" data-copy-media="' + escapeHtml(asset.url) + '">Պատճենել URL</button>' +
+              '<button type="button" data-delete-media="' + escapeHtml(asset.id) + '">Ջնջել</button>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+    }).join("");
+  }
+
+  function setupMedia() {
+    var form = byId("admin-media-form");
+    var list = byId("admin-media-list");
+    var refresh = byId("admin-media-refresh");
+    if (refresh) refresh.addEventListener("click", fetchMedia);
+
+    if (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var input = byId("media-file");
+        var file = input && input.files && input.files[0];
+        if (!file) return setStatus("Ընտրեք նկարը։", true);
+        if (file.size > 7 * 1024 * 1024) return setStatus("Նկարը պետք է լինի մինչև 7MB։", true);
+        setBusy(form, true);
+        setStatus("Նկարը բեռնվում է Supabase Storage...");
+        fileToDataUrl(file)
+          .then(function (dataUrl) {
+            return requestJson("/api/admin/media/images", {
+              method: "POST",
+              body: {
+                folder: byId("media-folder").value,
+                title: byId("media-title").value,
+                file: { name: file.name, mime: file.type, data: dataUrl }
+              }
+            });
+          })
+          .then(function (payload) {
+            if (payload.asset) state.media.unshift(payload.asset);
+            renderMedia(state.media);
+            form.reset();
+            setStatus("Նկարը հաջողությամբ բեռնվեց։");
+          })
+          .catch(function (error) { setStatus(error.message, true); })
+          .finally(function () { setBusy(form, false); });
+      });
+    }
+
+    if (list) {
+      list.addEventListener("click", function (event) {
+        var copyButton = event.target.closest("[data-copy-media]");
+        if (copyButton) {
+          var url = copyButton.getAttribute("data-copy-media") || "";
+          navigator.clipboard.writeText(url).then(function () { setStatus("Նկարի URL-ը պատճենված է։"); });
+          return;
+        }
+        var deleteButton = event.target.closest("[data-delete-media]");
+        if (!deleteButton) return;
+        var id = deleteButton.getAttribute("data-delete-media");
+        if (!id || !window.confirm("Ջնջե՞լ այս նկարը Storage-ից։")) return;
+        deleteButton.disabled = true;
+        requestJson("/api/admin/media/" + encodeURIComponent(id), { method: "DELETE" })
+          .then(function () {
+            state.media = state.media.filter(function (asset) { return asset.id !== id; });
+            renderMedia(state.media);
+            setStatus("Նկարը ջնջված է։");
+          })
+          .catch(function (error) { deleteButton.disabled = false; setStatus(error.message, true); });
+      });
+    }
   }
 
   function setupLoginForm() {
@@ -416,13 +551,30 @@
   }
 
   function fetchUsers() {
-    requestJson("/api/admin/users")
-      .then(function(payload) {
-        renderUsers(payload.users || []);
+    Promise.all([
+      requestJson("/api/admin/users"),
+      requestJson("/api/admin/team-options")
+    ])
+      .then(function(payloads) {
+        state.teamOptions = payloads[1].members || [];
+        renderTeamOptions(state.teamOptions);
+        renderUsers(payloads[0].users || []);
       })
       .catch(function(err) {
         setStatus("Failed to load users: " + err.message, true);
       });
+  }
+
+  function renderTeamOptions(members) {
+    var select = byId("user-employee-id");
+    if (!select) return;
+    var selected = select.value;
+    select.innerHTML = '<option value="">— Ընտրել թիմի անդամին —</option>' + (members || []).map(function (member) {
+      var label = member.name || member.title || member.id;
+      if (member.title && member.title !== label) label += " — " + member.title;
+      if (member.account && member.account.email) label += " · login՝ " + member.account.email;
+      return '<option value="' + escapeHtml(member.id) + '"' + (selected === member.id ? " selected" : "") + '>' + escapeHtml(label) + '</option>';
+    }).join("");
   }
 
   function renderUsers(users) {
@@ -435,12 +587,20 @@
     }
 
     var html = users.map(function(u) {
-      return "<div class='admin-card' style='margin-bottom: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);'>" +
-        "<strong>" + escapeHtml(u.username) + "</strong> (" + escapeHtml(u.role) + ")<br>" +
-        "<small>Email: " + escapeHtml(u.email || "-") + " | Team ID: " + escapeHtml(u.employeeId || "-") + "</small><br>" +
-        "<div style='margin-top: 8px;'><button type='button' class='admin-btn-secondary' onclick='window.editUser(\"" + u.id + "\")'>Edit</button> " +
-        "<button type='button' class='admin-btn-secondary' onclick='window.deleteUser(\"" + u.id + "\")'>Delete</button></div>" +
-        "</div>";
+      var ownerNote = u.owner ? " <em>(Owner — պաշտպանված)</em>" : "";
+      var actions = u.owner
+        ? "<span class='admin-users-protected'>Պաշտպանված հաշիվ</span>"
+        : "<button type='button' class='admin-btn-secondary' onclick='window.editUser(\"" + u.id + "\")'>Խմբագրել</button> " +
+          "<button type='button' class='admin-btn-secondary admin-btn-danger' onclick='window.deleteUser(\"" + u.id + "\")'>Ջնջել</button>";
+      var member = u.teamMember || {};
+      var avatar = member.image || u.picture || "";
+      return "<article class='admin-user-card'>" +
+        (avatar ? "<img src='" + escapeHtml(avatar) + "' alt='' loading='lazy'>" : "<span class='admin-user-avatar'>" + escapeHtml(String(member.name || u.username || "U").charAt(0).toUpperCase()) + "</span>") +
+        "<div class='admin-user-main'><div class='admin-user-title'><strong>" + escapeHtml(member.name || u.fullName || u.username) + "</strong>" + ownerNote + "<span>" + escapeHtml(u.role) + "</span></div>" +
+        "<p>" + escapeHtml(member.title || "Թիմի անդամը ընտրված չէ") + "</p>" +
+        "<small>Login: " + escapeHtml(u.email || "-") + " · Profile: /profile/" + escapeHtml(u.username || "-") + "</small></div>" +
+        "<div class='admin-user-actions'>" + actions + "</div>" +
+        "</article>";
     }).join("");
     list.innerHTML = html;
 
@@ -453,7 +613,8 @@
     if (!user) return;
 
     byId("user-id").value = user.id;
-    byId("user-username").value = user.username;
+    byId("user-username").value = user.username || "";
+    byId("user-email").value = user.email || "";
     byId("user-role").value = user.role;
     byId("user-employee-id").value = user.employeeId || "";
     byId("user-cancel-btn").hidden = false;
@@ -477,6 +638,7 @@
   function setupUsersForm() {
     var form = byId("admin-user-form");
     var cancelBtn = byId("user-cancel-btn");
+    var teamSelect = byId("user-employee-id");
 
     if (!form) return;
 
@@ -491,12 +653,26 @@
       cancelBtn.addEventListener("click", resetForm);
     }
 
+    if (teamSelect) {
+      teamSelect.addEventListener("change", function () {
+        var member = state.teamOptions.find(function (item) { return item.id === teamSelect.value; });
+        if (!member) return;
+        if (!byId("user-username").value.trim()) {
+          byId("user-username").value = String(member.id || "").toLowerCase().replace(/[^a-z0-9._-]/g, "-").slice(0, 80);
+        }
+        if (!byId("user-email").value.trim() && member.email) {
+          byId("user-email").value = member.email;
+        }
+      });
+    }
+
     form.addEventListener("submit", function(e) {
       e.preventDefault();
 
       var id = byId("user-id").value;
       var body = {
-        username: byId("user-username").value,
+        username: byId("user-username").value.trim(),
+        email: byId("user-email").value.trim(),
         role: byId("user-role").value,
         employeeId: byId("user-employee-id").value
       };
@@ -504,6 +680,10 @@
       var pw = byId("user-password").value;
       if (pw) body.password = pw;
 
+      if (!/^[A-Za-z0-9][A-Za-z0-9._-]{2,79}$/.test(body.username)) {
+        setStatus("Username must contain 3-80 latin characters.", true);
+        return;
+      }
       var isEdit = !!id;
       var endpoint = isEdit ? "/api/admin/users/" + id : "/api/admin/users";
       var method = isEdit ? "PUT" : "POST";
@@ -534,10 +714,12 @@
     setupLoginForm();
     setupAlbumForm();
     setupAlbumList();
+    setupMedia();
     setupSettingsForm();
     setupUsersForm();
     setupLogout();
     setupWorkspaceTabs();
+    setupSidebar();
     if (window.SmartTechAdminCms && typeof window.SmartTechAdminCms.init === "function") {
       window.SmartTechAdminCms.init();
     }

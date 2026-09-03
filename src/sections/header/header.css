@@ -1543,7 +1543,11 @@ body.ui-theme-dark .nav-toggle {
 
 @media (max-width: 700px) {
   .site-header {
+    position: fixed;
+    left: 0;
+    right: 0;
     top: 0;
+    width: 100%;
     padding-top: max(4px, env(safe-area-inset-top, 0px));
     background: linear-gradient(180deg, rgba(248, 252, 251, 0.99), rgba(238, 247, 245, 0.98));
   }

@@ -1,5 +1,5 @@
 (function (site) {
-  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "profile", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
+  var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "profile", "login", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
   var landingSlugs = [
     "cctv-installation-yerevan",
     "fire-alarm-systems-yerevan",
@@ -738,9 +738,7 @@
     document.body.classList.toggle("is-chat-page", page === "chat");
     document.documentElement.lang = preferredLang;
     document.getElementById("site-header").innerHTML = site.sections.header();
-    // The profile page owns its authenticated form markup and event bindings.
-    // Preserve it instead of replacing it with the generic route fallback.
-    if (page !== "profile") {
+    if (page !== "profile" && page !== "login") {
       main.innerHTML = pageMarkup(page);
     }
     animateRoute(main, page);

@@ -1,257 +1,147 @@
 <!doctype html>
-<html lang="en">
+<html lang="hy">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
-    <meta name="theme-color" content="#101417">
-    <title>Smart Tech Admin</title>
+    <meta name="theme-color" content="#0b302f">
+    <title>Smart Tech CMS</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../img/icons/smarttech-favicon-32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../img/icons/smarttech-apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="../src/styles/base.css">
-    <link rel="stylesheet" href="./panel.css">
+    <link rel="stylesheet" href="/admin/panel.css">
   </head>
   <body class="admin-body">
     <main class="admin-app" id="admin-app">
       <header class="admin-topbar">
-        <a class="admin-brand" href="/home" aria-label="Open Smart Tech home">
-          <img src="../img/icons/smarttech-favicon-32.png" alt="" width="32" height="32" decoding="async">
-          <span>
-            <strong>Smart Tech</strong>
-            <small>Admin Panel</small>
-          </span>
+        <a class="admin-brand" href="/home" aria-label="Բացել Smart Tech կայքը">
+          <img src="../img/icons/smarttech-favicon-32.png" alt="" width="36" height="36" decoding="async">
+          <span><strong>Smart Tech</strong><small>Content Management</small></span>
         </a>
-        <nav class="admin-topnav" aria-label="Admin links">
-          <a href="/album">Album</a>
-          <a href="/home">Site</a>
-          <button type="button" id="admin-logout" hidden>Log out</button>
+        <nav class="admin-topnav" aria-label="Արագ հղումներ">
+          <a href="/home">Դիտել կայքը</a>
+          <button type="button" id="admin-logout" hidden>Ելք</button>
         </nav>
       </header>
 
       <section class="admin-login" id="admin-login">
         <div class="admin-login-panel">
-          <span class="admin-kicker">Protected access</span>
-          <h1>Admin login</h1>
-          <p id="admin-login-hint">Sign in with a Supabase account whose profile role is admin.</p>
+          <span class="admin-kicker">Պաշտպանված մուտք</span>
+          <h1>Ադմին վահանակ</h1>
+          <p id="admin-login-hint">Մուտք գործեք Supabase-ում գրանցված ադմին հաշվով։</p>
           <form id="admin-login-form" class="admin-form">
-            <label>
-              <span>Email</span>
-              <input type="email" id="admin-email" autocomplete="email" required>
-            </label>
-            <label>
-              <span>Password</span>
-              <input type="password" id="admin-password" autocomplete="current-password" required>
-            </label>
-            <button type="submit">Log in</button>
+            <label><span>Էլ․ հասցե</span><input type="email" id="admin-email" autocomplete="email" required></label>
+            <label><span>Գաղտնաբառ</span><input type="password" id="admin-password" autocomplete="current-password" required></label>
+            <button type="submit">Մուտք</button>
           </form>
         </div>
       </section>
 
       <section class="admin-panel" id="admin-panel" hidden>
-        <div class="admin-hero">
-          <div>
-            <span class="admin-kicker">Workspace</span>
-            <h1>Smart Tech CMS</h1>
-            <p>Manage public content without editing code. Changes are stored on the Node server and merged into the live site through <code>/api/content</code>.</p>
-          </div>
-          <div class="admin-session-card">
-            <small>Session</small>
-            <strong id="admin-session-state">Active</strong>
-            <span id="admin-session-expiry">-</span>
-          </div>
-        </div>
-
-        <div class="admin-workspace-tabs" role="tablist" aria-label="Admin workspaces">
-          <button type="button" class="admin-workspace-tab is-active" id="admin-tab-cms" data-admin-workspace="cms">CMS</button>
-          <button type="button" class="admin-workspace-tab" id="admin-tab-album" data-admin-workspace="album">Album</button>
-          <button type="button" class="admin-workspace-tab" id="admin-tab-users" data-admin-workspace="users">Users</button>
-          <button type="button" class="admin-workspace-tab" id="admin-tab-api" data-admin-workspace="api">API settings</button>
-        </div>
-
-        <div class="admin-status" id="admin-status" role="status" aria-live="polite"></div>
-
-        <section id="admin-workspace-cms">
-          <div class="cms-shell">
-            <aside class="cms-sidebar">
-              <div class="cms-sidebar-head">
-                <span class="admin-kicker">Collections</span>
-                <h2>Content types</h2>
-              </div>
+        <div class="admin-dashboard-shell">
+          <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="admin-sidebar-heading"><span class="admin-kicker">Կառավարում</span><strong>Կայքի բաժիններ</strong></div>
+            <nav class="admin-primary-nav" aria-label="CMS բաժիններ">
+              <button type="button" class="admin-workspace-tab is-active" id="admin-tab-cms" data-admin-workspace="cms"><span class="admin-nav-icon" aria-hidden="true">▦</span><span>Կայքի բովանդակություն</span></button>
+              <button type="button" class="admin-workspace-tab" id="admin-tab-media" data-admin-workspace="media"><span class="admin-nav-icon" aria-hidden="true">▧</span><span>Նկարներ և ֆայլեր</span></button>
+              <button type="button" class="admin-workspace-tab" id="admin-tab-album" data-admin-workspace="album"><span class="admin-nav-icon" aria-hidden="true">◫</span><span>Ալբոմ</span></button>
+              <button type="button" class="admin-workspace-tab" id="admin-tab-users" data-admin-workspace="users"><span class="admin-nav-icon" aria-hidden="true">♙</span><span>Օգտատերեր</span></button>
+              <button type="button" class="admin-workspace-tab" id="admin-tab-api" data-admin-workspace="api"><span class="admin-nav-icon" aria-hidden="true">⚙</span><span>Կարգավորումներ</span></button>
+            </nav>
+            <div class="admin-sidebar-collections" id="admin-sidebar-collections">
+              <span class="admin-sidebar-label">Բովանդակության տեսակներ</span>
               <div class="cms-collection-nav" id="cms-collection-nav"></div>
-            </aside>
-            <article class="cms-editor">
-              <div class="cms-editor-head">
-                <div>
-                  <span class="admin-kicker">Editor</span>
-                  <h2 id="cms-editor-title">Contacts</h2>
-                  <p id="cms-editor-subtitle">Email, phones, address and social links shown across the site.</p>
-                </div>
-              </div>
-              <div id="cms-editor-panel"></div>
-            </article>
-          </div>
-        </section>
-
-        <section id="admin-workspace-album" hidden>
-          <div class="admin-grid">
-            <article class="admin-card admin-card-wide">
-              <div class="admin-card-head">
-                <div>
-                  <span class="admin-kicker">Album</span>
-                  <h2>Add image</h2>
-                </div>
-                <strong id="admin-album-count">0</strong>
-              </div>
-              <form id="admin-album-form" class="admin-form admin-album-form">
-                <label>
-                  <span>Section</span>
-                  <select id="album-section">
-                    <option value="completed">Completed works</option>
-                    <option value="current">Active works</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Title</span>
-                  <input type="text" id="album-title" maxlength="90" placeholder="Project or object name" required>
-                </label>
-                <label>
-                  <span>Caption</span>
-                  <input type="text" id="album-caption" maxlength="150" placeholder="Short work description">
-                </label>
-                <label>
-                  <span>Status label</span>
-                  <input type="text" id="album-status" maxlength="70" placeholder="Completed work">
-                </label>
-                <label class="admin-file-field">
-                  <span>Image</span>
-                  <input type="file" id="album-file" accept="image/jpeg,image/png,image/webp" required>
-                </label>
-                <button type="submit">Add image</button>
-              </form>
-            </article>
-
-            <article class="admin-card">
-              <div class="admin-card-head">
-                <div>
-                  <span class="admin-kicker">Security</span>
-                  <h2>Tools</h2>
-                </div>
-              </div>
-              <ul class="admin-security-list" id="admin-security-list"></ul>
-            </article>
-          </div>
-
-          <section class="admin-card admin-album-manager">
-            <div class="admin-card-head">
-              <div>
-                <span class="admin-kicker">Album manager</span>
-                <h2>Uploaded images</h2>
-              </div>
             </div>
-            <div class="admin-album-list" id="admin-album-list"></div>
-          </section>
-        </section>
+            <div class="admin-session-card"><small>Supabase session</small><strong id="admin-session-state">● Ակտիվ</strong><span id="admin-session-expiry">-</span></div>
+          </aside>
 
-        <section id="admin-workspace-api" hidden>
-          <div class="admin-grid">
-            <article class="admin-card admin-card-wide">
-              <div class="admin-card-head">
-                <div>
-                  <span class="admin-kicker">API</span>
-                  <h2>Important settings</h2>
-                </div>
-              </div>
-              <form id="admin-settings-form" class="admin-form admin-settings-form">
-                <label>
-                  <span>Gemini model</span>
-                  <input type="text" id="settings-gemini-model" autocomplete="off">
-                </label>
-                <label>
-                  <span>Firebase database URL</span>
-                  <input type="url" id="settings-firebase-url" autocomplete="off">
-                </label>
-                <label>
-                  <span>Firebase stats path</span>
-                  <input type="text" id="settings-firebase-path" autocomplete="off">
-                </label>
-                <label>
-                  <span>New Gemini API key</span>
-                  <input type="password" id="settings-gemini-key" autocomplete="new-password" placeholder="Leave empty to keep current">
-                </label>
-                <label>
-                  <span>New Firebase API key</span>
-                  <input type="password" id="settings-firebase-key" autocomplete="new-password" placeholder="Leave empty to keep current">
-                </label>
-                <label>
-                  <span>New Firebase auth token</span>
-                  <input type="password" id="settings-firebase-token" autocomplete="new-password" placeholder="Leave empty to keep current">
-                </label>
-                <div class="admin-checks">
-                  <label><input type="checkbox" id="clear-gemini-key"> Clear admin Gemini key override</label>
-                  <label><input type="checkbox" id="clear-firebase-key"> Clear admin Firebase key override</label>
-                  <label><input type="checkbox" id="clear-firebase-token"> Clear admin Firebase token override</label>
-                </div>
-                <button type="submit">Save API settings</button>
-              </form>
-              <div class="admin-api-state" id="admin-api-state"></div>
-            </article>
-          </div>
-        </section>
-      </section>
-
-      <section id="admin-workspace-users" hidden>
-        <div class="admin-grid">
-          <article class="admin-card admin-card-wide">
-            <div class="admin-card-head">
-              <div>
-                <span class="admin-kicker">Users</span>
-                <h2>Add / Edit User</h2>
-              </div>
+          <div class="admin-content">
+            <div class="admin-hero">
+              <button type="button" class="admin-sidebar-toggle" id="admin-sidebar-toggle" aria-label="Բացել մենյուն" aria-expanded="false">☰</button>
+              <div><span class="admin-kicker">Smart Tech workspace</span><h1>Կայքի կառավարման վահանակ</h1><p>Ավելացրեք կամ խմբագրեք նախագծերը, ծառայությունները, աշխատակիցներին, տեքստերը և նկարները՝ առանց կոդ փոխելու։</p></div>
             </div>
-            <form id="admin-user-form" class="admin-form">
-              <input type="hidden" id="user-id">
-              <label>
-                <span>Email</span>
-                <input type="email" id="user-username" autocomplete="email" required>
-              </label>
-              <label>
-                <span>Password (leave blank to keep current if editing)</span>
-                <input type="password" id="user-password">
-              </label>
-              <label>
-                <span>Role</span>
-                <select id="user-role">
-                  <option value="user">User / Employee</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </label>
-              <label>
-                <span>Team Member ID (optional, to link with team section)</span>
-                <input type="text" id="user-employee-id">
-              </label>
-              <div class="admin-actions">
-                <button type="submit">Save User</button>
-                <button type="button" id="user-cancel-btn" class="admin-btn-secondary" hidden>Cancel Edit</button>
+            <div class="admin-status" id="admin-status" role="status" aria-live="polite"></div>
+
+            <section id="admin-workspace-cms" class="admin-workspace">
+              <article class="cms-editor">
+                <div class="cms-editor-head"><div><span class="admin-kicker">Խմբագրիչ</span><h2 id="cms-editor-title">Բովանդակություն</h2><p id="cms-editor-subtitle">Ընտրեք բաժինը ձախ մենյուից։</p></div></div>
+                <div id="cms-editor-panel"></div>
+              </article>
+            </section>
+
+            <section id="admin-workspace-media" class="admin-workspace" hidden>
+              <div class="admin-page-heading"><div><span class="admin-kicker">Storage</span><h2>Նկարներ և ֆայլեր</h2><p>Նկարները պահվում են Supabase Storage-ում, իսկ կայքում օգտագործվում է դրանց URL-ը։</p></div><strong id="admin-media-count">0</strong></div>
+              <div class="admin-grid">
+                <article class="admin-card admin-card-wide">
+                  <div class="admin-card-head"><div><span class="admin-kicker">Նոր նկար</span><h2>Բեռնել Storage</h2></div></div>
+                  <form id="admin-media-form" class="admin-form admin-media-form">
+                    <label><span>Բաժին</span><select id="media-folder"><option value="projects">Նախագծեր / պրոդուկտներ</option><option value="services">Ծառայություններ</option><option value="team">Աշխատակիցներ</option><option value="partners">Գործընկերներ</option><option value="general">Այլ</option></select></label>
+                    <label><span>Անվանում</span><input type="text" id="media-title" maxlength="120" placeholder="Նկարի կարճ անունը"></label>
+                    <label class="admin-file-field"><span>Նկար (JPG, PNG կամ WEBP, մինչև 7MB)</span><input type="file" id="media-file" accept="image/jpeg,image/png,image/webp" required></label>
+                    <button type="submit">Բեռնել նկարը</button>
+                  </form>
+                </article>
+                <article class="admin-card"><div class="admin-card-head"><div><span class="admin-kicker">Հուշում</span><h2>Ինչպես օգտագործել</h2></div></div><p class="admin-help">Բեռնված նկարի URL-ը կարող եք պատճենել կամ ընտրել անմիջապես նախագծի, ծառայության և աշխատակցի խմբագրիչում։</p></article>
               </div>
-            </form>
-          </article>
+              <section class="admin-card admin-media-manager"><div class="admin-card-head"><div><span class="admin-kicker">Media library</span><h2>Բոլոր նկարները</h2></div><button type="button" class="admin-btn-secondary" id="admin-media-refresh">Թարմացնել</button></div><div class="admin-media-list" id="admin-media-list"></div></section>
+            </section>
+
+            <section id="admin-workspace-album" class="admin-workspace" hidden>
+              <div class="admin-page-heading"><div><span class="admin-kicker">Ալբոմ</span><h2>Աշխատանքների նկարներ</h2><p>Կառավարեք հրապարակային ալբոմի ընթացիկ և ավարտված աշխատանքները։</p></div><strong id="admin-album-count">0</strong></div>
+              <div class="admin-grid">
+                <article class="admin-card admin-card-wide">
+                  <form id="admin-album-form" class="admin-form admin-album-form">
+                    <label><span>Բաժին</span><select id="album-section"><option value="completed">Ավարտված աշխատանք</option><option value="current">Ընթացիկ աշխատանք</option></select></label>
+                    <label><span>Վերնագիր</span><input type="text" id="album-title" maxlength="90" required></label>
+                    <label><span>Նկարագրություն</span><input type="text" id="album-caption" maxlength="150"></label>
+                    <label><span>Կարգավիճակ</span><input type="text" id="album-status" maxlength="70"></label>
+                    <label class="admin-file-field"><span>Նկար</span><input type="file" id="album-file" accept="image/jpeg,image/png,image/webp" required></label>
+                    <button type="submit">Ավելացնել ալբոմում</button>
+                  </form>
+                </article>
+                <article class="admin-card"><div class="admin-card-head"><div><span class="admin-kicker">Անվտանգություն</span><h2>Վերբեռնում</h2></div></div><ul class="admin-security-list" id="admin-security-list"></ul></article>
+              </div>
+              <section class="admin-card admin-album-manager"><div class="admin-card-head"><div><span class="admin-kicker">Album manager</span><h2>Բեռնված նկարներ</h2></div></div><div class="admin-album-list" id="admin-album-list"></div></section>
+            </section>
+
+            <section id="admin-workspace-users" class="admin-workspace" hidden>
+              <div class="admin-page-heading"><div><span class="admin-kicker">Supabase Auth</span><h2>Օգտատերեր</h2><p>Ստեղծեք և կառավարեք մուտքի հաշիվներն ու իրավասությունները։</p></div></div>
+              <div class="admin-grid"><article class="admin-card admin-card-wide">
+                <div class="admin-card-head"><div><span class="admin-kicker">Հաշիվ</span><h2>Ավելացնել / խմբագրել</h2></div></div>
+                <form id="admin-user-form" class="admin-form admin-user-form">
+                  <input type="hidden" id="user-id">
+                  <label><span>Username (profile address)</span><input type="text" id="user-username" autocomplete="username" minlength="3" maxlength="80" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,79}" required></label>
+                  <label><span>Email (login)</span><input type="email" id="user-email" autocomplete="email" required></label>
+                  <label><span>Նոր գաղտնաբառ (առնվազն 8 նիշ)</span><input type="password" id="user-password" minlength="8" autocomplete="new-password"></label>
+                  <label><span>Իրավասություն</span><select id="user-role"><option value="member">Աշխատակից</option><option value="manager">Manager</option><option value="admin">Admin</option></select></label>
+                  <label class="admin-user-team-field"><span>Կապել թիմի անդամին</span><select id="user-employee-id" required><option value="">— Ընտրել թիմի անդամին —</option></select><small>Ընտրեք՝ ում համար եք ստեղծում login և password։</small></label>
+                  <div class="admin-actions"><button type="submit">Պահպանել օգտատիրոջը</button><button type="button" id="user-cancel-btn" class="admin-btn-secondary" hidden>Չեղարկել</button></div>
+                </form>
+              </article></div>
+              <section class="admin-card admin-users-manager"><div class="admin-card-head"><div><span class="admin-kicker">Accounts</span><h2>Բոլոր օգտատերերը</h2></div></div><div id="admin-users-list" class="admin-users-list"></div></section>
+            </section>
+
+            <section id="admin-workspace-api" class="admin-workspace" hidden>
+              <div class="admin-page-heading"><div><span class="admin-kicker">Կարգավորումներ</span><h2>API և ինտեգրացիաներ</h2><p>Գաղտնի բանալիները պահվում են միայն server-side միջավայրում։</p></div></div>
+              <div class="admin-grid"><article class="admin-card admin-card-wide">
+                <form id="admin-settings-form" class="admin-form admin-settings-form">
+                  <label><span>Gemini model</span><input type="text" id="settings-gemini-model" autocomplete="off"></label>
+                  <label><span>Firebase database URL</span><input type="url" id="settings-firebase-url" autocomplete="off"></label>
+                  <label><span>Firebase stats path</span><input type="text" id="settings-firebase-path" autocomplete="off"></label>
+                  <label><span>New Gemini API key</span><input type="password" id="settings-gemini-key" autocomplete="new-password" placeholder="Դատարկ թողնել՝ ընթացիկը պահելու համար"></label>
+                  <label><span>New Firebase API key</span><input type="password" id="settings-firebase-key" autocomplete="new-password"></label>
+                  <label><span>New Firebase auth token</span><input type="password" id="settings-firebase-token" autocomplete="new-password"></label>
+                  <div class="admin-checks"><label><input type="checkbox" id="clear-gemini-key"> Մաքրել Gemini override-ը</label><label><input type="checkbox" id="clear-firebase-key"> Մաքրել Firebase key override-ը</label><label><input type="checkbox" id="clear-firebase-token"> Մաքրել Firebase token override-ը</label></div>
+                  <button type="submit">Պահպանել կարգավորումները</button>
+                </form>
+                <div class="admin-api-state" id="admin-api-state"></div>
+              </article></div>
+            </section>
+          </div>
         </div>
-
-        <section class="admin-card" style="margin-top: 32px;">
-          <div class="admin-card-head">
-            <div>
-              <span class="admin-kicker">Users</span>
-              <h2>All Users</h2>
-            </div>
-          </div>
-          <div id="admin-users-list" class="admin-users-list"></div>
-        </section>
       </section>
     </main>
-
     <script defer src="/admin/runtime.js"></script>
-    <script defer src="./panel.js"></script>
-    <script defer src="./cms-editor.js"></script>
+    <script defer src="/admin/panel.js"></script>
+    <script defer src="/admin/cms-editor.js"></script>
   </body>
 </html>

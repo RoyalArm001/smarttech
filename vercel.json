@@ -8,6 +8,9 @@
   "trailingSlash": false,
   "cleanUrls": true,
   "regions": ["fra1"],
+  "rewrites": [
+    { "source": "/profile/:username", "destination": "/profile" }
+  ],
   "functions": {
     "api/[...path].js": {
       "maxDuration": 30
@@ -53,7 +56,22 @@
     { "source": "/pages/about", "destination": "/about", "permanent": true },
     { "source": "/pages/about.html", "destination": "/about", "permanent": true },
     { "source": "/pages/contact", "destination": "/contact", "permanent": true },
-    { "source": "/pages/contact.html", "destination": "/contact", "permanent": true }
+    { "source": "/pages/contact.html", "destination": "/contact", "permanent": true },
+    {
+      "source": "/img/:path*",
+      "destination": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/src/assets/brand/:path*",
+      "destination": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/brand/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/src/assets/team/:path*",
+      "destination": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/:path*",
+      "permanent": false
+    }
   ],
   "headers": [
     {

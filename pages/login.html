@@ -120,19 +120,30 @@
 
         try {
           setMessage('Signing in…', '');
-          const response = await fetch('/api/auth/login', {
+          let response = await fetch('/api/admin/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
           });
           const payload = await response.json();
 
-          if (!response.ok) {
-            throw new Error(payload && payload.error ? payload.error : 'Login failed.');
+          if (response.ok && payload && payload.user) {
+            window.location.assign('/admin');
+            return;
           }
 
-          setMessage('Login successful. Your browser session is now active.', 'success');
-          form.reset();
+          response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const userPayload = await response.json();
+          if (!response.ok) {
+            throw new Error(userPayload && userPayload.error ? userPayload.error : 'Login failed.');
+          }
+          if (userPayload && userPayload.user && userPayload.user.username) {
+            window.location.assign('/profile/' + encodeURIComponent(userPayload.user.username));
+          }
         } catch (error) {
           setMessage(error && error.message ? error.message : 'Unable to sign in.', 'error');
         }

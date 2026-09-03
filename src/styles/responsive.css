@@ -736,6 +736,7 @@ body.ui-theme-dark .mobile-bottom-nav .bottom-nav-item.is-active svg {
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    padding-top: var(--smarttech-header-bottom, 70px);
     min-height: calc(var(--app-vh, 100svh) - var(--smarttech-header-bottom, 70px));
   }
 

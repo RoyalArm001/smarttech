@@ -95,6 +95,8 @@ const defaultOpenAiModel = envValue(["OPENAI_MODEL", "CHATGPT_MODEL"], "gpt-5.4-
 const defaultOpenAiApiKey = envValue(["OPENAI_API_KEY", "CHATGPT_API_KEY"], "");
 const defaultRequestEmailTo = envValue(["REQUEST_EMAIL_TO", "SMARTTECH_REQUEST_EMAIL"], "support@smarttechllc.am");
 const defaultRequestEmailFrom = envValue(["REQUEST_EMAIL_FROM", "SMARTTECH_REQUEST_EMAIL_FROM"], "Smart Tech <order@smarttechllc.am>");
+const ownerAdminEmail = envValue(["SMARTTECH_OWNER_EMAIL", "OWNER_ADMIN_EMAIL"], "admin@smarttechllc.am").toLowerCase();
+const ownerAdminUsername = envValue(["SMARTTECH_OWNER_USERNAME", "OWNER_ADMIN_USERNAME"], "admin001").toLowerCase();
 const defaultResendApiKey = envValue(["RESEND_API_KEY"], "");
 const defaultSmtpHost = envValue(["SMTP_HOST", "MAIL_HOST"], "");
 const defaultSmtpPort = Number(envValue(["SMTP_PORT", "MAIL_PORT"], "465"));
@@ -433,39 +435,47 @@ async function fetchSupabasePublicData() {
   const client = getSupabaseAdminClient();
   if (!client) return null;
 
-  try {
-    const [teamResult, projectResult, serviceResult] = await Promise.all([
-      client.from("team_members").select("*").order("display_order", { ascending: true }),
-      client.from("projects").select("*").order("display_order", { ascending: true }),
-      client.from("content_collections").select("id,payload").eq("is_public", true)
-    ]);
+  let lastError = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const [teamResult, projectResult, serviceResult] = await Promise.all([
+        client.from("team_members").select("*").order("display_order", { ascending: true }),
+        client.from("projects").select("*").order("display_order", { ascending: true }),
+        client.from("content_collections").select("id,payload").eq("is_public", true)
+      ]);
 
-    if (teamResult.error) throw teamResult.error;
-    if (projectResult.error) throw projectResult.error;
-    if (serviceResult.error) throw serviceResult.error;
-    const collections = Object.fromEntries((serviceResult.data || []).map(row => [row.id, row.payload]));
+      if (teamResult.error) throw teamResult.error;
+      if (projectResult.error) throw projectResult.error;
+      if (serviceResult.error) throw serviceResult.error;
+      const collections = Object.fromEntries((serviceResult.data || []).map(row => [row.id, row.payload]));
 
-    const normalizedTeam = (teamResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
-      order: row.display_order, roleLevel: row.role_level, managerId: row.manager_id,
-      image: row.image_path || (row.source_data && row.source_data.image) || null,
-      coverImage: row.cover_image_path || (row.source_data && row.source_data.coverImage) || null
-    }));
-    const normalizedProjects = (projectResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
-      order: row.display_order, featured: row.featured, systemImages: row.system_images
-    }));
-    return {
-      version: 1,
-      updatedAt: new Date().toISOString(),
-      source: "supabase",
-      collections: replaceAssetPaths(Object.assign({}, collections, {
-        team: normalizedTeam,
-        projects: normalizedProjects
-      }))
-    };
-  } catch (error) {
-    console.warn("Supabase public content fetch failed:", error && error.message ? error.message : error);
-    return null;
+      const normalizedTeam = (teamResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
+        order: row.display_order, roleLevel: row.role_level, managerId: row.manager_id,
+        image: row.image_path || (row.source_data && row.source_data.image) || null,
+        coverImage: row.cover_image_path || (row.source_data && row.source_data.coverImage) || null
+      }));
+      const normalizedProjects = (projectResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
+        order: row.display_order, featured: row.featured, systemImages: row.system_images
+      }));
+      return {
+        version: 1,
+        updatedAt: new Date().toISOString(),
+        source: "supabase",
+        collections: replaceAssetPaths(Object.assign({}, collections, {
+          team: normalizedTeam,
+          projects: normalizedProjects
+        }))
+      };
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+      }
+    }
   }
+
+  console.warn("Supabase public content fetch failed after 3 attempts:", lastError && lastError.message ? lastError.message : lastError);
+  return null;
 }
 
 function getSupabaseSessionToken(request) {
@@ -693,8 +703,13 @@ async function getAdminSession(request) {
   const user = authResult.data && authResult.data.user;
   if (authResult.error || !user) return null;
 
-  const profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", user.id).maybeSingle();
-  if (profileResult.error || !profileResult.data || profileResult.data.role !== "admin") return null;
+  let profileResult = await adminClient.from("profiles").select("id,email,full_name,username,role").eq("id", user.id).maybeSingle();
+  if (profileResult.error) {
+    profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", user.id).maybeSingle();
+  }
+  if (profileResult.error || !profileResult.data) return null;
+  const isOwner = String(user.email || "").toLowerCase() === ownerAdminEmail;
+  if (!isOwner && profileResult.data.role !== "admin") return null;
 
   const expiresAt = jwtExpiresAt(accessToken);
 
@@ -702,6 +717,7 @@ async function getAdminSession(request) {
     userId: user.id,
     email: user.email,
     fullName: profileResult.data.full_name,
+    username: profileResult.data.username || (isOwner ? ownerAdminUsername : ""),
     role: profileResult.data.role,
     accessToken,
     csrfToken: adminCsrfToken(accessToken),
@@ -885,6 +901,7 @@ function webAlbumPayload() {
   if (appMode.isWeb()) {
     return cmsPublish.readAlbumPayload();
   }
+
   return liveAlbumPayload();
 }
 
@@ -970,6 +987,63 @@ async function saveAlbumUpload(upload) {
   const target = path.resolve(adminAlbumUploadDir, fileName);
   await fs.promises.writeFile(target, optimized);
   return "/img/admin-album/" + fileName;
+}
+
+async function saveCmsMediaUpload(upload, folder, title, ownerId) {
+  const mime = cleanAdminText(upload && upload.mime, 80).toLowerCase();
+  const dataUrl = String((upload && upload.data) || "");
+  const dataUrlMatch = dataUrl.match(/^data:([^;]+);base64,(.*)$/);
+  const detectedMime = cleanAdminText(dataUrlMatch ? dataUrlMatch[1] : mime, 80).toLowerCase();
+  const base64 = dataUrlMatch ? dataUrlMatch[2] : dataUrl;
+  if (adminAllowedImageTypes.indexOf(detectedMime) < 0 || (mime && mime !== detectedMime)) {
+    throw httpError(400, "Only JPG, PNG and WEBP images are allowed");
+  }
+  if (!/^[A-Za-z0-9+/=\r\n]+$/.test(base64) || base64.length > Math.ceil(adminUploadMaxBytes * 1.38)) {
+    throw httpError(400, "Image data is invalid or too large");
+  }
+  const sourceBuffer = Buffer.from(base64, "base64");
+  if (!sourceBuffer.length || sourceBuffer.length > adminUploadMaxBytes) {
+    throw httpError(400, "Image size must be 7 MB or less");
+  }
+
+  const safeFolder = cleanAdminText(folder, 40).toLowerCase().replace(/[^a-z0-9_-]/g, "") || "general";
+  const bucket = safeFolder === "team" ? "avatars" : "project-images";
+  const fileName = Date.now() + "-" + randomToken(8) + ".webp";
+  const objectPath = "cms/" + safeFolder + "/" + fileName;
+  const optimized = await sharp(sourceBuffer, { failOn: "warning" })
+    .rotate()
+    .resize({ width: 1800, height: 1400, fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 84 })
+    .toBuffer();
+  const client = getSupabaseAdminClient();
+  if (!client) throw httpError(503, "Supabase is not configured");
+  const uploaded = await client.storage.from(bucket).upload(objectPath, optimized, { upsert: false, contentType: "image/webp" });
+  if (uploaded.error) throw httpError(502, uploaded.error.message);
+
+  const metadata = { source_path: "cms", folder: safeFolder, title: cleanAdminText(title, 120) };
+  const recorded = await client.from("media_assets").upsert({
+    bucket_id: bucket,
+    storage_path: objectPath,
+    original_name: cleanAdminText(upload && upload.name, 180) || fileName,
+    mime_type: "image/webp",
+    size_bytes: optimized.length,
+    metadata,
+    owner_id: ownerId || null,
+    updated_at: new Date().toISOString()
+  }, { onConflict: "bucket_id,storage_path" }).select("id,bucket_id,storage_path,original_name,metadata,created_at").single();
+  if (recorded.error) {
+    await client.storage.from(bucket).remove([objectPath]);
+    throw httpError(502, recorded.error.message);
+  }
+  return {
+    id: recorded.data.id,
+    bucket,
+    path: objectPath,
+    originalName: recorded.data.original_name,
+    title: metadata.title,
+    url: supabaseAssetUrl(bucket, objectPath),
+    createdAt: recorded.data.created_at
+  };
 }
 
 function configuredSecurityStatus() {
@@ -1719,6 +1793,9 @@ if (appMode.isWebEnabled()) {
       return;
     }
 
+    const expiresAt = Number(data.session.expires_at || 0) * 1000;
+    let profileUsername = "";
+    let profileRole = "member";
     try {
       const profileClient = getSupabaseAdminClient() || client;
       const profileData = {
@@ -1727,25 +1804,45 @@ if (appMode.isWebEnabled()) {
         avatar_url: data.user.user_metadata && data.user.user_metadata.avatar_url ? data.user.user_metadata.avatar_url : null,
         updated_at: new Date().toISOString()
       };
-      const existingProfile = await profileClient.from("profiles").select("id").eq("id", data.user.id).maybeSingle();
+      let existingProfile = await profileClient.from("profiles").select("id,username,role,full_name").eq("id", data.user.id).maybeSingle();
+      if (existingProfile.error) {
+        existingProfile = await profileClient.from("profiles").select("id,role,full_name").eq("id", data.user.id).maybeSingle();
+      }
+      profileUsername = existingProfile.data && existingProfile.data.username ? existingProfile.data.username : "";
+      if (!profileUsername && String(data.user.email || "").toLowerCase() === ownerAdminEmail) {
+        profileUsername = ownerAdminUsername;
+      }
+      profileRole = existingProfile.data && existingProfile.data.role ? existingProfile.data.role : "member";
+      if (String(data.user.email || "").toLowerCase() === ownerAdminEmail) {
+        profileRole = "admin";
+      }
+      if (profileRole === "admin") {
+        response.setHeader("Set-Cookie", [
+          userSessionCookieString(data.session.access_token, request, expiresAt),
+          sessionCookie(data.session.access_token, request, expiresAt)
+        ]);
+      }
       if (existingProfile.data) {
         await profileClient.from("profiles").update(profileData).eq("id", data.user.id);
       } else if (!existingProfile.error) {
-        await profileClient.from("profiles").insert(Object.assign({ id: data.user.id, role: "user" }, profileData));
+        await profileClient.from("profiles").insert(Object.assign({ id: data.user.id, role: "member" }, profileData));
       }
     } catch (profileError) {
       console.warn("Supabase profile sync skipped:", profileError && profileError.message ? profileError.message : profileError);
     }
 
-    const expiresAt = Number(data.session.expires_at || 0) * 1000;
-    response.setHeader("Set-Cookie", userSessionCookieString(data.session.access_token, request, expiresAt));
+    if (!response.getHeader("Set-Cookie")) {
+      response.setHeader("Set-Cookie", userSessionCookieString(data.session.access_token, request, expiresAt));
+    }
 
     jsonResponse(response, 200, {
       authenticated: true,
       user: {
         id: data.user.id,
         email: data.user.email,
-        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
+        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
+        username: profileUsername,
+        role: profileRole
       }
     });
   });
@@ -1807,7 +1904,7 @@ if (appMode.isWebEnabled()) {
   app.get("/api/profile", requireUser, async (request, response) => {
     const client = getSupabaseAdminClient();
     if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
-    const result = await client.from("profiles").select("id,email,full_name,avatar_url,bio,phone,role").eq("id", request.userSession.userId).maybeSingle();
+    const result = await client.from("profiles").select("id,email,full_name,username,avatar_url,bio,phone,role,is_active").eq("id", request.userSession.userId).maybeSingle();
     if (result.error) return jsonResponse(response, 500, { error: result.error.message });
     if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
     jsonResponse(response, 200, { profile: result.data });
@@ -1833,14 +1930,126 @@ if (appMode.isWebEnabled()) {
       id: userId,
       email: request.userSession.email,
       full_name: data.full_name !== undefined ? cleanAdminText(data.full_name, 140) : undefined,
+      username: data.username !== undefined ? cleanAdminText(data.username, 80).toLowerCase().replace(/[^a-z0-9._-]/g, "") : undefined,
       avatar_url: data.picture !== undefined ? cleanAdminText(data.picture, 240) : undefined,
       bio: data.message !== undefined ? cleanAdminText(data.message, 1000) : undefined,
       phone: data.phone !== undefined ? cleanAdminText(data.phone, 60) : undefined,
       updated_at: new Date().toISOString()
     };
-    const saved = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("id,email,full_name,avatar_url,bio,phone,role").single();
+    if (updatePayload.username && !/^[a-z0-9][a-z0-9._-]{2,79}$/.test(updatePayload.username)) {
+      return jsonResponse(response, 400, { error: "Username must contain 3-80 latin characters" });
+    }
+    const saved = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("id,email,full_name,username,avatar_url,bio,phone,role,is_active").single();
     if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
+
+    const authUser = await client.auth.admin.getUserById(userId);
+    const employeeId = authUser.data && authUser.data.user && authUser.data.user.user_metadata && authUser.data.user.user_metadata.employee_id;
+    if (employeeId) {
+      const member = await client.from("team_members").select("id,source_data").eq("id", employeeId).maybeSingle();
+      if (!member.error && member.data) {
+        const sourceData = Object.assign({}, member.data.source_data || {}, {
+          fullName: saved.data.full_name || "",
+          username: saved.data.username || "",
+          phone: saved.data.phone || "",
+          image: saved.data.avatar_url || "",
+          text: saved.data.bio || ""
+        });
+        await client.from("team_members").update({
+          email: saved.data.email,
+          image_path: saved.data.avatar_url || "",
+          text: saved.data.bio || "",
+          source_data: sourceData,
+          updated_at: new Date().toISOString()
+        }).eq("id", employeeId);
+      }
+    }
     jsonResponse(response, 200, { profile: saved.data });
+  });
+
+  app.post("/api/profile/avatar", express.json({ limit: "10mb" }), sameOriginGuard, requireUser, async (request, response) => {
+    try {
+      const asset = await saveCmsMediaUpload(
+        request.body && request.body.file,
+        "team",
+        "Profile avatar",
+        request.userSession.userId
+      );
+      return jsonResponse(response, 201, { url: asset.url, asset });
+    } catch (error) {
+      return jsonResponse(response, error.statusCode || 500, { error: error.message || "Avatar upload failed" });
+    }
+  });
+}
+
+app.get("/api/profile/public/:username", async (request, response) => {
+  const username = cleanAdminText(request.params.username, 80).toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]{2,79}$/.test(username)) {
+    return jsonResponse(response, 400, { error: "Invalid username" });
+  }
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("profiles")
+    .select("id,email,full_name,username,avatar_url,bio,phone,role,is_active")
+    .eq("username", username)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
+  return jsonResponse(response, 200, { profile: result.data });
+});
+
+const adminCmsMetadata = {
+  contacts: { label: "Կոնտակտներ", description: "Էլ․ հասցե, հեռախոսներ, հասցե և սոցիալական հղումներ։", kind: "object" },
+  company: { label: "Գլխավոր էջ և ընկերություն", description: "Գլխավոր վերնագրեր, նկարագրություն, թվեր և ընկերության մասին բովանդակություն։", kind: "object" },
+  services: { label: "Ծառայություններ", description: "Ծառայությունների քարտեր, տեքստեր, նկարներ և մանրամասներ։", kind: "array" },
+  projects: { label: "Նախագծեր / պրոդուկտներ", description: "Նախագծերի ավելացում, խմբագրում, նկարներ, աշխատանքներ և կարգավիճակ։", kind: "array" },
+  activeProjectIds: { label: "Ընթացիկ նախագծեր", description: "Գլխավոր էջում ցուցադրվող ընթացիկ նախագծերի հերթականությունը։", kind: "array" },
+  completedGallery: { label: "Ավարտված աշխատանքներ", description: "Ավարտված աշխատանքների պատկերասրահը։", kind: "array" },
+  team: { label: "Աշխատակիցներ", description: "Թիմի անդամներ, պաշտոններ, նկարներ և կոնտակտային տվյալներ։", kind: "array" },
+  partners: { label: "Գործընկերներ", description: "Հաճախորդ գործընկերների անուններ և լոգոներ։", kind: "array" },
+  technologyPartners: { label: "Տեխնոլոգիական գործընկերներ", description: "Ապրանքանիշեր և տեխնոլոգիական գործընկերների լոգոներ։", kind: "array" },
+  navigation: { label: "Մենյու և հղումներ", description: "Կայքի հիմնական մենյուի կետերը և հղումները։", kind: "array" },
+  locales: { label: "Թարգմանություններ", description: "Հայերեն, անգլերեն և ռուսերեն տեքստերի ամբողջական կարգավորումներ։", kind: "object" },
+  seoLandings: { label: "SEO էջեր", description: "Որոնողական landing էջերի բովանդակություն։", kind: "array" },
+  seoArticles: { label: "Բլոգ", description: "Հոդվածների վերնագրեր, նկարներ և բովանդակություն։", kind: "array" }
+};
+
+function adminCmsMeta(id) {
+  return Object.assign({ label: id, description: "Կայքի բովանդակության բաժին։", kind: "object" }, adminCmsMetadata[id] || {});
+}
+
+function normalizeProjectAdminRow(row) {
+  return Object.assign({}, row.source_data || {}, {
+    id: row.id,
+    title: row.title,
+    status: row.status || "current",
+    order: row.display_order || 0,
+    featured: !!row.featured,
+    works: row.works || [],
+    images: row.images || [],
+    systemImages: row.system_images || [],
+    sector: row.sector || null,
+    translations: row.translations || null
+  });
+}
+
+function normalizeTeamAdminRow(row) {
+  return Object.assign({}, row.source_data || {}, {
+    id: row.id,
+    order: row.display_order || 0,
+    department: row.department || "",
+    roleLevel: row.role_level || "",
+    managerId: row.manager_id || "",
+    title: row.title || "",
+    text: row.text || "",
+    accent: row.accent || "",
+    color: row.color || "",
+    email: row.email || "",
+    image: row.image_path || "",
+    coverImage: row.cover_image_path || "",
+    focus: row.focus || [],
+    socials: row.socials || [],
+    certificates: row.certificates || []
   });
 }
 
@@ -1850,24 +2059,122 @@ app.get("/api/admin/cms", adminApiLimiter, requireAdmin, async (request, respons
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   const result = await client.from("content_collections").select("id,updated_at").order("id");
   if (result.error) return jsonResponse(response, 500, { error: result.error.message });
-  jsonResponse(response, 200, { collections: (result.data || []).map(x => x.id) });
+  const rows = result.data || [];
+  const ids = rows.map((row) => row.id);
+  ["projects", "team"].forEach((id) => { if (ids.indexOf(id) < 0) ids.push(id); });
+  jsonResponse(response, 200, {
+    collections: ids.map((id) => {
+      const row = rows.find((item) => item.id === id);
+      return Object.assign({ id, hasData: true, updatedAt: row && row.updated_at || null }, adminCmsMeta(id));
+    })
+  });
 });
 
 app.get("/api/admin/cms/:collection", adminApiLimiter, requireAdmin, async (request, response) => {
   const id = cleanAdminText(request.params.collection, 40); const client = getSupabaseAdminClient();
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  if (id === "projects") {
+    const projects = await client.from("projects").select("*").order("display_order", { ascending: true });
+    if (projects.error) return jsonResponse(response, 500, { error: projects.error.message });
+    return jsonResponse(response, 200, { collection: id, data: (projects.data || []).map(normalizeProjectAdminRow), meta: adminCmsMeta(id) });
+  }
+  if (id === "team") {
+    const team = await client.from("team_members").select("*").order("display_order", { ascending: true });
+    if (team.error) return jsonResponse(response, 500, { error: team.error.message });
+    return jsonResponse(response, 200, { collection: id, data: (team.data || []).map(normalizeTeamAdminRow), meta: adminCmsMeta(id) });
+  }
   const result = await client.from("content_collections").select("id,payload,updated_at").eq("id", id).maybeSingle();
   if (result.error) return jsonResponse(response, 500, { error: result.error.message });
   if (!result.data) return jsonResponse(response, 404, { error: "Collection not found" });
-  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:{ updatedAt:result.data.updated_at } });
+  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:Object.assign({ updatedAt:result.data.updated_at }, adminCmsMeta(id)) });
 });
 
 app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "640kb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
   const id = cleanAdminText(request.params.collection, 40); const client = getSupabaseAdminClient();
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  if (id === "projects") {
+    const items = Array.isArray(request.body) ? request.body : [];
+    const invalidProject = items.find((item) => {
+      const projectId = cleanAdminText(item && item.id, 90).toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
+      return !/^[a-z0-9][a-z0-9._-]{1,89}$/.test(projectId) || !cleanAdminText(item && item.title, 180);
+    });
+    if (invalidProject) return jsonResponse(response, 400, { error: "Յուրաքանչյուր նախագիծ պետք է ունենա ID և վերնագիր" });
+    const rows = items.map((item, index) => {
+      const projectId = cleanAdminText(item && item.id, 90).toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
+      const title = cleanAdminText(item && item.title, 180);
+      return {
+        id: projectId,
+        title,
+        status: cleanAdminText(item.status, 30) || "current",
+        display_order: Number.isFinite(Number(item.order)) ? Number(item.order) : index,
+        featured: !!item.featured,
+        works: Array.isArray(item.works) ? item.works.map((value) => cleanAdminText(value, 240)).filter(Boolean) : [],
+        images: Array.isArray(item.images) ? item.images.map((value) => cleanAdminText(value, 600)).filter(Boolean) : [],
+        system_images: Array.isArray(item.systemImages) ? item.systemImages : [],
+        sector: item.sector && typeof item.sector === "object" ? item.sector : null,
+        translations: item.translations && typeof item.translations === "object" ? item.translations : null,
+        source_data: item,
+        updated_at: new Date().toISOString()
+      };
+    });
+    const saved = rows.length ? await client.from("projects").upsert(rows, { onConflict: "id" }) : { error: null };
+    if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
+    const existing = await client.from("projects").select("id");
+    if (existing.error) return jsonResponse(response, 400, { error: existing.error.message });
+    const keep = new Set(rows.map((row) => row.id));
+    const removed = (existing.data || []).map((row) => row.id).filter((projectId) => !keep.has(projectId));
+    if (removed.length) {
+      const deleted = await client.from("projects").delete().in("id", removed);
+      if (deleted.error) return jsonResponse(response, 400, { error: deleted.error.message });
+    }
+    await client.from("content_collections").upsert({ id, payload: items, is_public: true, updated_at: new Date().toISOString() }, { onConflict: "id" });
+    return jsonResponse(response, 200, { collection: id, data: rows.map(normalizeProjectAdminRow), meta: adminCmsMeta(id) });
+  }
+  if (id === "team") {
+    const items = Array.isArray(request.body) ? request.body : [];
+    const invalidMember = items.find((item) => {
+      const memberId = cleanAdminText(item && item.id, 90).toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
+      return !/^[a-z0-9][a-z0-9._-]{1,89}$/.test(memberId);
+    });
+    if (invalidMember) return jsonResponse(response, 400, { error: "Յուրաքանչյուր աշխատակից պետք է ունենա ID" });
+    const rows = items.map((item, index) => {
+      const memberId = cleanAdminText(item && item.id, 90).toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
+      return {
+        id: memberId,
+        display_order: Number.isFinite(Number(item.order)) ? Number(item.order) : index,
+        department: cleanAdminText(item.department, 100),
+        role_level: cleanAdminText(item.roleLevel, 60),
+        manager_id: cleanAdminText(item.managerId, 90) || null,
+        title: cleanAdminText(item.title, 180),
+        text: cleanAdminText(item.text, 1500),
+        accent: cleanAdminText(item.accent, 20),
+        color: cleanAdminText(item.color, 30),
+        email: cleanAdminText(item.email, 180),
+        image_path: cleanAdminText(item.image, 600),
+        cover_image_path: cleanAdminText(item.coverImage, 600),
+        focus: Array.isArray(item.focus) ? item.focus : [],
+        socials: Array.isArray(item.socials) ? item.socials : [],
+        certificates: Array.isArray(item.certificates) ? item.certificates : [],
+        source_data: item,
+        updated_at: new Date().toISOString()
+      };
+    });
+    const saved = rows.length ? await client.from("team_members").upsert(rows, { onConflict: "id" }) : { error: null };
+    if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
+    const existing = await client.from("team_members").select("id");
+    if (existing.error) return jsonResponse(response, 400, { error: existing.error.message });
+    const keep = new Set(rows.map((row) => row.id));
+    const removed = (existing.data || []).map((row) => row.id).filter((memberId) => !keep.has(memberId));
+    if (removed.length) {
+      const deleted = await client.from("team_members").delete().in("id", removed);
+      if (deleted.error) return jsonResponse(response, 400, { error: deleted.error.message });
+    }
+    await client.from("content_collections").upsert({ id, payload: items, is_public: true, updated_at: new Date().toISOString() }, { onConflict: "id" });
+    return jsonResponse(response, 200, { collection: id, data: rows.map(normalizeTeamAdminRow), meta: adminCmsMeta(id) });
+  }
   const result = await client.from("content_collections").upsert({ id, payload:request.body || {}, is_public:true, updated_at:new Date().toISOString() }, {onConflict:"id"}).select("id,payload,updated_at").single();
   if (result.error) return jsonResponse(response, 400, { error: result.error.message });
-  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:{updatedAt:result.data.updated_at} });
+  jsonResponse(response, 200, { collection:id, data:result.data.payload, meta:Object.assign({updatedAt:result.data.updated_at}, adminCmsMeta(id)) });
 });
 
 app.delete("/api/admin/cms/:collection", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
@@ -1928,18 +2235,23 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
     return;
   }
 
-  const profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", authUser.id).maybeSingle();
-  if (profileResult.error || !profileResult.data || profileResult.data.role !== "admin") {
+  let profileResult = await adminClient.from("profiles").select("id,email,full_name,username,role,is_active").eq("id", authUser.id).maybeSingle();
+  if (profileResult.error) {
+    profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", authUser.id).maybeSingle();
+  }
+  const isOwner = String(authUser.email || "").toLowerCase() === ownerAdminEmail;
+  if (profileResult.error || (!profileResult.data && !isOwner) || (profileResult.data && profileResult.data.is_active === false && !isOwner)) {
     await authClient.auth.signOut();
-    jsonResponse(response, 403, { error: "Admin access is not allowed for this account" });
+    jsonResponse(response, 403, { error: "This profile is inactive or not configured" });
     return;
   }
 
   const session = {
     userId: authUser.id,
     email: authUser.email,
-    fullName: profileResult.data.full_name,
-    role: profileResult.data.role,
+    fullName: profileResult.data && profileResult.data.full_name,
+    role: isOwner ? "admin" : profileResult.data.role,
+    username: profileResult.data && profileResult.data.username || (isOwner ? ownerAdminUsername : ""),
     accessToken: authSession.access_token,
     csrfToken: adminCsrfToken(authSession.access_token),
     expiresAt: Number(authSession.expires_at || 0) * 1000
@@ -1954,7 +2266,8 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
       id: session.userId,
       email: session.email,
       full_name: session.fullName,
-      role: session.role
+      role: session.role,
+      username: session.username
     },
     album: publicAlbumPayload(),
     admin: adminSettingsPayload()
@@ -2040,32 +2353,129 @@ app.delete("/api/admin/album/images/:id", adminApiLimiter, sameOriginGuard, requ
   }
 });
 
+app.get("/api/admin/media", adminApiLimiter, requireAdmin, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("media_assets")
+    .select("id,bucket_id,storage_path,original_name,metadata,created_at")
+    .in("bucket_id", ["project-images", "avatars"])
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  return jsonResponse(response, 200, {
+    assets: (result.data || []).map((row) => ({
+      id: row.id,
+      bucket: row.bucket_id,
+      path: row.storage_path,
+      originalName: row.original_name || "",
+      title: row.metadata && row.metadata.title || "",
+      url: supabaseAssetUrl(row.bucket_id, row.storage_path),
+      createdAt: row.created_at
+    }))
+  });
+});
+
+app.post("/api/admin/media/images", adminApiLimiter, express.json({ limit: "10mb" }), sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  try {
+    const asset = await saveCmsMediaUpload(
+      request.body && request.body.file,
+      request.body && request.body.folder,
+      request.body && request.body.title,
+      request.adminSession && request.adminSession.userId
+    );
+    return jsonResponse(response, 201, { asset });
+  } catch (error) {
+    return jsonResponse(response, error.statusCode || 500, { error: error.message || "Image upload failed" });
+  }
+});
+
+app.delete("/api/admin/media/:id", adminApiLimiter, sameOriginGuard, requireAdmin, requireCsrf, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const id = cleanAdminText(request.params.id, 90);
+  const found = await client.from("media_assets").select("bucket_id,storage_path").eq("id", id).maybeSingle();
+  if (found.error) return jsonResponse(response, 500, { error: found.error.message });
+  if (!found.data) return jsonResponse(response, 404, { error: "Image not found" });
+  const removed = await client.storage.from(found.data.bucket_id).remove([found.data.storage_path]);
+  if (removed.error) return jsonResponse(response, 500, { error: removed.error.message });
+  const deleted = await client.from("media_assets").delete().eq("id", id);
+  if (deleted.error) return jsonResponse(response, 500, { error: deleted.error.message });
+  return jsonResponse(response, 200, { deleted: true });
+});
+
 // Admin Users API Endpoints
 async function listSupabaseUsers(client) {
   const authResult = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (authResult.error) throw authResult.error;
   const authUsers = authResult.data && authResult.data.users ? authResult.data.users : [];
   const ids = authUsers.map((user) => user.id);
-  const profileResult = ids.length
-    ? await client.from("profiles").select("id,email,full_name,avatar_url,bio,phone,role").in("id", ids)
+  let profileResult = ids.length
+    ? await client.from("profiles").select("id,email,username,full_name,avatar_url,bio,phone,role").in("id", ids)
     : { data: [], error: null };
+  if (profileResult.error && /username/i.test(profileResult.error.message || "")) {
+    profileResult = await client.from("profiles").select("id,email,full_name,avatar_url,bio,phone,role").in("id", ids);
+  }
   if (profileResult.error) throw profileResult.error;
   const profilesById = new Map((profileResult.data || []).map((profile) => [profile.id, profile]));
+  const employeeIds = authUsers.map((user) => cleanAdminText(user.user_metadata && user.user_metadata.employee_id, 80)).filter(Boolean);
+  const teamResult = employeeIds.length
+    ? await client.from("team_members").select("id,title,email,image_path,source_data").in("id", employeeIds)
+    : { data: [], error: null };
+  if (teamResult.error) throw teamResult.error;
+  const teamById = new Map((teamResult.data || []).map((member) => [member.id, member]));
   return authUsers.map((user) => {
     const profile = profilesById.get(user.id) || {};
+    const employeeId = user.user_metadata && user.user_metadata.employee_id ? user.user_metadata.employee_id : "";
+    const member = teamById.get(employeeId) || null;
+    const memberSource = member && member.source_data || {};
     return {
       id: user.id,
-      username: user.email || profile.email || "",
+      username: profile.username || String(user.email || profile.email || "").split("@")[0].toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 80),
+      owner: (user.email || profile.email || "").toLowerCase() === ownerAdminEmail,
       email: user.email || profile.email || "",
-      role: profile.role || "user",
-      employeeId: user.user_metadata && user.user_metadata.employee_id ? user.user_metadata.employee_id : "",
+      role: profile.role || "member",
+      employeeId,
       fullName: profile.full_name || (user.user_metadata && user.user_metadata.full_name) || "",
       picture: profile.avatar_url || "",
       message: profile.bio || "",
+      teamMember: member ? {
+        id: member.id,
+        name: memberSource.fullName || memberSource.name || memberSource.cardTitle || member.title || member.id,
+        title: member.title || memberSource.title || "",
+        email: member.email || "",
+        image: member.image_path || memberSource.image || ""
+      } : null,
       createdAt: user.created_at
     };
   });
 }
+
+app.get("/api/admin/team-options", adminApiLimiter, requireAdmin, async (request, response) => {
+  const client = getSupabaseAdminClient();
+  if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
+  const result = await client.from("team_members").select("id,title,email,image_path,display_order,source_data").order("display_order", { ascending: true });
+  if (result.error) return jsonResponse(response, 500, { error: result.error.message });
+  const authResult = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (authResult.error) return jsonResponse(response, 500, { error: authResult.error.message });
+  const accountsByMember = new Map();
+  (authResult.data.users || []).forEach((user) => {
+    const linkedId = user.user_metadata && user.user_metadata.employee_id;
+    if (linkedId) accountsByMember.set(linkedId, { userId: user.id, email: user.email || "" });
+  });
+  return jsonResponse(response, 200, {
+    members: (result.data || []).map((member) => {
+      const source = member.source_data || {};
+      return {
+        id: member.id,
+        name: source.fullName || source.name || source.cardTitle || member.title || member.id,
+        title: member.title || source.title || "",
+        email: member.email || "",
+        image: member.image_path || source.image || "",
+        account: accountsByMember.get(member.id) || null
+      };
+    })
+  });
+});
 
 app.get("/api/admin/users", adminApiLimiter, requireAdmin, async (request, response) => {
   const client = getSupabaseAdminClient();
@@ -2082,24 +2492,43 @@ app.post("/api/admin/users", adminApiLimiter, express.json({ limit: "10kb" }), s
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   try {
     const data = request.body || {};
-    const email = cleanAdminText(data.username || data.email, 160).toLowerCase();
+    const email = cleanAdminText(data.email, 160).toLowerCase();
+    const username = cleanAdminText(data.username, 80).toLowerCase().replace(/[^a-z0-9._-]/g, "");
     const password = String(data.password || "");
-    const role = cleanAdminText(data.role, 20) === "admin" ? "admin" : "user";
+    const requestedRole = cleanAdminText(data.role, 20);
+    const role = requestedRole === "admin" || requestedRole === "manager" ? requestedRole : "member";
     const employeeId = cleanAdminText(data.employeeId, 80);
-    if (!email || !password) return jsonResponse(response, 400, { error: "Email and password are required" });
+    if (!email || !password || !employeeId || !/^[a-z0-9][a-z0-9._-]{2,79}$/.test(username)) return jsonResponse(response, 400, { error: "Email, username, password and team member are required" });
+    if (password.length < 8) return jsonResponse(response, 400, { error: "Password must contain at least 8 characters" });
+
+    const memberResult = await client.from("team_members").select("id,title,text,email,image_path,source_data").eq("id", employeeId).maybeSingle();
+    if (memberResult.error) throw memberResult.error;
+    if (!memberResult.data) return jsonResponse(response, 400, { error: "Selected team member does not exist" });
+    const memberSource = memberResult.data.source_data || {};
+    const memberName = memberSource.fullName || memberSource.name || memberSource.cardTitle || memberResult.data.title || username;
+    const memberAvatar = memberResult.data.image_path || memberSource.image || "";
+    const existingAccounts = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (existingAccounts.error) throw existingAccounts.error;
+    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.user_metadata && user.user_metadata.employee_id === employeeId);
+    if (duplicateAccount) return jsonResponse(response, 409, { error: "This team member already has a login account" });
 
     const created = await client.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { employee_id: employeeId || null }
+      user_metadata: { employee_id: employeeId, full_name: memberName, avatar_url: memberAvatar || null }
     });
     if (created.error || !created.data.user) throw created.error || new Error("User creation failed");
 
     const profile = await client.from("profiles").upsert({
       id: created.data.user.id,
       email,
+      username,
       role,
+      full_name: memberName,
+      avatar_url: memberAvatar || null,
+      bio: memberResult.data.text || memberSource.text || "",
+      phone: memberSource.phone || null,
       updated_at: new Date().toISOString()
     }, { onConflict: "id" });
     if (profile.error) {
@@ -2122,18 +2551,38 @@ app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" })
     const data = request.body || {};
     const current = await client.auth.admin.getUserById(id);
     if (current.error || !current.data.user) return jsonResponse(response, 404, { error: "User not found" });
-    const email = data.username !== undefined || data.email !== undefined
-      ? cleanAdminText(data.username || data.email, 160).toLowerCase()
+    const isOwner = String(current.data.user.email || "").toLowerCase() === ownerAdminEmail;
+    if (isOwner && (data.role !== undefined || data.username !== undefined || data.email !== undefined)) {
+      return jsonResponse(response, 403, { error: "The owner profile cannot be changed from CMS" });
+    }
+    const email = data.email !== undefined
+      ? cleanAdminText(data.email, 160).toLowerCase()
       : current.data.user.email;
+    const username = data.username !== undefined
+      ? cleanAdminText(data.username, 80).toLowerCase().replace(/[^a-z0-9._-]/g, "")
+      : undefined;
+    const previousEmployeeId = (current.data.user.user_metadata && current.data.user.user_metadata.employee_id) || "";
     const employeeId = data.employeeId !== undefined
       ? cleanAdminText(data.employeeId, 80)
-      : (current.data.user.user_metadata && current.data.user.user_metadata.employee_id) || "";
+      : previousEmployeeId;
+    if (!employeeId) return jsonResponse(response, 400, { error: "A team member must be selected" });
+    const memberResult = await client.from("team_members").select("id,title,email,image_path,source_data").eq("id", employeeId).maybeSingle();
+    if (memberResult.error) throw memberResult.error;
+    if (!memberResult.data) return jsonResponse(response, 400, { error: "Selected team member does not exist" });
+    const memberSource = memberResult.data.source_data || {};
+    const memberName = memberSource.fullName || memberSource.name || memberSource.cardTitle || memberResult.data.title || username || email;
+    const memberAvatar = memberResult.data.image_path || memberSource.image || "";
+    const existingAccounts = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (existingAccounts.error) throw existingAccounts.error;
+    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.id !== id && user.user_metadata && user.user_metadata.employee_id === employeeId);
+    if (duplicateAccount) return jsonResponse(response, 409, { error: "This team member already has a login account" });
     const authChanges = {
       email,
       email_confirm: true,
-      user_metadata: Object.assign({}, current.data.user.user_metadata || {}, { employee_id: employeeId || null })
+      user_metadata: Object.assign({}, current.data.user.user_metadata || {}, { employee_id: employeeId, full_name: memberName, avatar_url: memberAvatar || null })
     };
     if (data.password) authChanges.password = String(data.password);
+    if (data.password && String(data.password).length < 8) return jsonResponse(response, 400, { error: "Password must contain at least 8 characters" });
     const updated = await client.auth.admin.updateUserById(id, authChanges);
     if (updated.error) throw updated.error;
 
@@ -2142,7 +2591,18 @@ app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" })
       email,
       updated_at: new Date().toISOString()
     };
-    if (data.role !== undefined) profileChanges.role = cleanAdminText(data.role, 20) === "admin" ? "admin" : "user";
+    if (employeeId !== previousEmployeeId) {
+      profileChanges.full_name = memberName;
+      profileChanges.avatar_url = memberAvatar || null;
+    }
+    if (username !== undefined) {
+      if (!/^[a-z0-9][a-z0-9._-]{2,79}$/.test(username)) return jsonResponse(response, 400, { error: "Invalid username" });
+      profileChanges.username = username;
+    }
+    if (data.role !== undefined) {
+      const requestedRole = cleanAdminText(data.role, 20);
+      profileChanges.role = requestedRole === "admin" || requestedRole === "manager" ? requestedRole : "member";
+    }
     const profile = await client.from("profiles").upsert(profileChanges, { onConflict: "id" });
     if (profile.error) throw profile.error;
 
@@ -2158,7 +2618,11 @@ app.delete("/api/admin/users/:id", adminApiLimiter, sameOriginGuard, requireAdmi
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   try {
     const id = cleanAdminText(request.params.id, 80);
-    if (id === request.adminSession.userId) return jsonResponse(response, 400, { error: "You cannot delete the active admin account" });
+    const current = await client.auth.admin.getUserById(id);
+    if (current.error || !current.data.user) return jsonResponse(response, 404, { error: "User not found" });
+    if (id === request.adminSession.userId || String(current.data.user.email || "").toLowerCase() === ownerAdminEmail) {
+      return jsonResponse(response, 400, { error: "The owner profile cannot be deleted" });
+    }
     const deleted = await client.auth.admin.deleteUser(id);
     if (deleted.error) throw deleted.error;
     jsonResponse(response, 200, { deleted: true, users: await listSupabaseUsers(client) });
@@ -2294,7 +2758,7 @@ app.post("/api/chat-page", chatUserLimiter, chatPageAbuseLimiter, chatPageGlobal
 });
 }
 
-if (appMode.isAdmin()) {
+if (appMode.isAdminEnabled()) {
   app.get("/admin/runtime.js", publicApiLimiter, (request, response) => {
     const content = [
       "(function (window) {",
@@ -2325,12 +2789,28 @@ app.use((error, request, response, next) => {
   next(error);
 });
 
+app.get("/login", (request, response) => {
+  sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
+});
+
+app.get("/profile", (request, response) => {
+  sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
+});
+
+app.get(/^\/profile\/[a-z0-9][a-z0-9._-]{2,79}\/?$/i, (request, response) => {
+  sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
+});
+
 app.use((request, response) => {
   if (request.path && request.path.indexOf("/api/") === 0) {
     response.status(404).json({ error: "Not found" });
     return;
   }
   if (appMode.isAdmin()) {
+    serveAdmin(request, response);
+    return;
+  }
+  if (appMode.isCombined() && (request.path === "/admin" || request.path.indexOf("/admin/") === 0)) {
     serveAdmin(request, response);
     return;
   }
@@ -2425,6 +2905,33 @@ function sendStatic(response, targetPath) {
 
   fs.readFile(targetPath, encoding, (error, file) => {
     if (error) {
+      if (error.code === "ENOENT") {
+        const relative = path.relative(siteDir, targetPath).split(path.sep).join("/");
+        if (relative.startsWith("img/")) {
+          const remoteUrl = supabaseAssetUrl("project-images", relative.slice("img/".length));
+          if (remoteUrl && remoteUrl !== relative) {
+            response.writeHead(302, { Location: remoteUrl });
+            response.end();
+            return;
+          }
+        }
+        if (relative.startsWith("src/assets/brand/")) {
+          const remoteUrl = supabaseAssetUrl("project-images", relative.slice("src/assets/".length));
+          if (remoteUrl && remoteUrl !== relative) {
+            response.writeHead(302, { Location: remoteUrl });
+            response.end();
+            return;
+          }
+        }
+        if (relative.startsWith("src/assets/team/")) {
+          const remoteUrl = supabaseAssetUrl("avatars", "team/" + relative.slice("src/assets/team/".length));
+          if (remoteUrl && remoteUrl !== relative) {
+            response.writeHead(302, { Location: remoteUrl });
+            response.end();
+            return;
+          }
+        }
+      }
       response.writeHead(error.code === "ENOENT" ? 404 : 500);
       response.end(error.code === "ENOENT" ? "Not found" : "Server error");
       return;
@@ -2531,6 +3038,11 @@ function serveWeb(request, response) {
     return;
   }
 
+  if (/^profile\/[a-z0-9][a-z0-9._-]{2,79}$/i.test(targetInfo.relative.replace(/\\/g, "/").replace(/\/+$/, ""))) {
+    sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
+    return;
+  }
+
   let target = resolveStaticTarget(targetInfo);
 
   if (targetInfo.relative.replace(/\\/g, "/") === "src/core/runtime-config.js") {
@@ -2597,8 +3109,11 @@ function startServer(portToUse) {
       openBrowser("http://localhost:" + portToUse + "/admin");
       return;
     }
-    console.log("Smart Tech web server is running:");
+    console.log(appMode.isCombined() ? "Smart Tech web and profile server is running:" : "Smart Tech web server is running:");
     console.log("  Web: " + localUrl);
+    if (appMode.isAdminEnabled()) {
+      console.log("  Admin: " + localUrl + "admin");
+    }
     openBrowser(localUrl);
   });
 

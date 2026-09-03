@@ -29,3 +29,6 @@ http://smarttechllc.am/* https://smarttechllc.am/:splat 301
 /pages/about.html /about 301
 /pages/contact /contact 301
 /pages/contact.html /contact 301
+/img/* https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/:splat 302
+/src/assets/brand/* https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/brand/:splat 302
+/src/assets/team/* https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/:splat 302
