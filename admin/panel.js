@@ -569,12 +569,18 @@
     var select = byId("user-employee-id");
     if (!select) return;
     var selected = select.value;
-    select.innerHTML = '<option value="">— Ընտրել թիմի անդամին —</option>' + (members || []).map(function (member) {
+    function optionMarkup(member) {
       var label = member.name || member.title || member.id;
       if (member.title && member.title !== label) label += " — " + member.title;
       if (member.account && member.account.email) label += " · login՝ " + member.account.email;
       return '<option value="' + escapeHtml(member.id) + '"' + (selected === member.id ? " selected" : "") + '>' + escapeHtml(label) + '</option>';
-    }).join("");
+    }
+    var allMembers = members || [];
+    var specialists = allMembers.filter(function (member) { return member.roleLevel === "specialist"; });
+    var others = allMembers.filter(function (member) { return member.roleLevel !== "specialist"; });
+    select.innerHTML = '<option value="">— Ընտրել մասնագետին —</option>' +
+      (specialists.length ? '<optgroup label="Մասնագետներ (' + specialists.length + ')">' + specialists.map(optionMarkup).join("") + '</optgroup>' : "") +
+      (others.length ? '<optgroup label="Ղեկավարներ և այլ թիմի անդամներ (' + others.length + ')">' + others.map(optionMarkup).join("") + '</optgroup>' : "");
   }
 
   function renderUsers(users) {
@@ -657,6 +663,9 @@
       teamSelect.addEventListener("change", function () {
         var member = state.teamOptions.find(function (item) { return item.id === teamSelect.value; });
         if (!member) return;
+        if (!byId("user-id").value && member.roleLevel === "specialist") {
+          byId("user-role").value = "member";
+        }
         if (!byId("user-username").value.trim()) {
           byId("user-username").value = String(member.id || "").toLowerCase().replace(/[^a-z0-9._-]/g, "-").slice(0, 80);
         }

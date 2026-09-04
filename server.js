@@ -455,7 +455,11 @@ async function fetchSupabasePublicData() {
         coverImage: row.cover_image_path || (row.source_data && row.source_data.coverImage) || null
       }));
       const normalizedProjects = (projectResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
-        order: row.display_order, featured: row.featured, systemImages: row.system_images
+        order: row.display_order,
+        featured: row.featured,
+        systemImages: row.system_images,
+        progress: Number.isFinite(Number(row.progress)) ? Number(row.progress) : ((row.source_data && row.source_data.progress) || 0),
+        phase: row.phase || (row.source_data && row.source_data.phase) || ""
       }));
       return {
         version: 1,
@@ -2023,6 +2027,8 @@ function normalizeProjectAdminRow(row) {
     id: row.id,
     title: row.title,
     status: row.status || "current",
+    progress: Number.isFinite(Number(row.progress)) ? Number(row.progress) : ((row.source_data && row.source_data.progress) || 0),
+    phase: row.phase || (row.source_data && row.source_data.phase) || "",
     order: row.display_order || 0,
     featured: !!row.featured,
     works: row.works || [],
@@ -2031,6 +2037,11 @@ function normalizeProjectAdminRow(row) {
     sector: row.sector || null,
     translations: row.translations || null
   });
+}
+
+function normalizeProjectStatus(value) {
+  const status = cleanAdminText(value, 30).toLowerCase();
+  return ["current", "partial", "completed"].includes(status) ? status : "current";
 }
 
 function normalizeTeamAdminRow(row) {
@@ -2059,7 +2070,7 @@ app.get("/api/admin/cms", adminApiLimiter, requireAdmin, async (request, respons
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   const result = await client.from("content_collections").select("id,updated_at").order("id");
   if (result.error) return jsonResponse(response, 500, { error: result.error.message });
-  const rows = result.data || [];
+  const rows = (result.data || []).filter((row) => row.id !== "activeProjectIds");
   const ids = rows.map((row) => row.id);
   ["projects", "team"].forEach((id) => { if (ids.indexOf(id) < 0) ids.push(id); });
   jsonResponse(response, 200, {
@@ -2102,10 +2113,15 @@ app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "64
     const rows = items.map((item, index) => {
       const projectId = cleanAdminText(item && item.id, 90).toLowerCase().replace(/[^a-z0-9._-]/g, "-").replace(/-+/g, "-");
       const title = cleanAdminText(item && item.title, 180);
+      const status = normalizeProjectStatus(item.status);
+      const progress = status === "completed" ? 100 : (status === "partial" ? 50 : 0);
+      const phase = cleanAdminText(item.phase, 240);
       return {
         id: projectId,
         title,
-        status: cleanAdminText(item.status, 30) || "current",
+        status,
+        progress,
+        phase,
         display_order: Number.isFinite(Number(item.order)) ? Number(item.order) : index,
         featured: !!item.featured,
         works: Array.isArray(item.works) ? item.works.map((value) => cleanAdminText(value, 240)).filter(Boolean) : [],
@@ -2113,7 +2129,7 @@ app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "64
         system_images: Array.isArray(item.systemImages) ? item.systemImages : [],
         sector: item.sector && typeof item.sector === "object" ? item.sector : null,
         translations: item.translations && typeof item.translations === "object" ? item.translations : null,
-        source_data: item,
+        source_data: Object.assign({}, item, { status, progress, phase }),
         updated_at: new Date().toISOString()
       };
     });
@@ -2453,7 +2469,7 @@ async function listSupabaseUsers(client) {
 app.get("/api/admin/team-options", adminApiLimiter, requireAdmin, async (request, response) => {
   const client = getSupabaseAdminClient();
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
-  const result = await client.from("team_members").select("id,title,email,image_path,display_order,source_data").order("display_order", { ascending: true });
+  const result = await client.from("team_members").select("id,title,email,image_path,display_order,department,role_level,source_data").order("display_order", { ascending: true });
   if (result.error) return jsonResponse(response, 500, { error: result.error.message });
   const authResult = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
   if (authResult.error) return jsonResponse(response, 500, { error: authResult.error.message });
@@ -2469,6 +2485,8 @@ app.get("/api/admin/team-options", adminApiLimiter, requireAdmin, async (request
         id: member.id,
         name: source.fullName || source.name || source.cardTitle || member.title || member.id,
         title: member.title || source.title || "",
+        roleLevel: member.role_level || source.roleLevel || "specialist",
+        department: member.department || source.department || "",
         email: member.email || "",
         image: member.image_path || source.image || "",
         account: accountsByMember.get(member.id) || null

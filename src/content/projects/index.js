@@ -86,6 +86,20 @@
 
   site.content.projects = [
     {
+      id: "e1-residence",
+      title: "E1 Residence",
+      status: "completed",
+      progress: 100,
+      phase: "Էլեկտրամոնտաժային աշխատանքներն ավարտված են",
+      works: ["Էլեկտրամոնտաժային աշխատանքներ"],
+      images: ["https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/e1-residence.webp"],
+      systemImages: [system.electrical],
+      translations: {
+        en: { title: "E1 Residence", works: ["Electrical installation works"], phase: "Electrical installation works completed" },
+        ru: { title: "E1 Residence", works: ["Электромонтажные работы"], phase: "Электромонтажные работы завершены" }
+      }
+    },
+    {
       id: "atlantis-yerevan",
       title: "Atlantis Yerevan",
       works: ["Էլեկտրամոնտաժային աշխատանքներ", "Հրդեհային ազդարարման համակարգ"],
@@ -259,6 +273,11 @@
       en: "In progress",
       ru: "В работе"
     },
+    partial: {
+      hy: "Մասամբ ավարտված",
+      en: "Partially completed",
+      ru: "Частично завершено"
+    },
     completed: {
       hy: "Ավարտված",
       en: "Completed",
@@ -268,22 +287,21 @@
   var originalProjectOrder = {};
 
   site.content.projects.forEach(function (project, index) {
-    var isCurrent = activeProjectIds.indexOf(project.id) >= 0;
     originalProjectOrder[project.id] = index;
-    project.status = isCurrent ? "current" : "completed";
+    if (!projectStatusLabels[project.status]) {
+      project.status = activeProjectIds.indexOf(project.id) >= 0 ? "current" : "completed";
+    }
+    project.order = Number.isFinite(Number(project.order)) ? Number(project.order) : index;
+    project.progress = Number.isFinite(Number(project.progress))
+      ? Math.max(0, Math.min(100, Math.round(Number(project.progress))))
+      : (project.status === "completed" ? 100 : 0);
     project.statusLabels = projectStatusLabels[project.status];
   });
 
   site.content.projects.sort(function (a, b) {
-    var activeA = activeProjectIds.indexOf(a.id);
-    var activeB = activeProjectIds.indexOf(b.id);
-
-    if (activeA >= 0 || activeB >= 0) {
-      return (activeA >= 0 ? activeA : activeProjectIds.length + originalProjectOrder[a.id]) -
-        (activeB >= 0 ? activeB : activeProjectIds.length + originalProjectOrder[b.id]);
-    }
-
-    return originalProjectOrder[a.id] - originalProjectOrder[b.id];
+    var statusRank = { current: 0, partial: 1, completed: 2 };
+    var rankDifference = statusRank[a.status] - statusRank[b.status];
+    return rankDifference || a.order - b.order || originalProjectOrder[a.id] - originalProjectOrder[b.id];
   });
 
   site.content.completedGallery = [

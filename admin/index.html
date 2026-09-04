@@ -112,8 +112,8 @@
                   <label><span>Username (profile address)</span><input type="text" id="user-username" autocomplete="username" minlength="3" maxlength="80" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,79}" required></label>
                   <label><span>Email (login)</span><input type="email" id="user-email" autocomplete="email" required></label>
                   <label><span>Նոր գաղտնաբառ (առնվազն 8 նիշ)</span><input type="password" id="user-password" minlength="8" autocomplete="new-password"></label>
-                  <label><span>Իրավասություն</span><select id="user-role"><option value="member">Աշխատակից</option><option value="manager">Manager</option><option value="admin">Admin</option></select></label>
-                  <label class="admin-user-team-field"><span>Կապել թիմի անդամին</span><select id="user-employee-id" required><option value="">— Ընտրել թիմի անդամին —</option></select><small>Ընտրեք՝ ում համար եք ստեղծում login և password։</small></label>
+                  <label><span>Իրավասություն</span><select id="user-role"><option value="member">User / աշխատակից</option><option value="manager">Manager</option><option value="admin">Admin</option></select></label>
+                  <label class="admin-user-team-field"><span>Ընտրել մասնագետին կամ թիմի անդամին</span><select id="user-employee-id" required><option value="">— Ընտրել մասնագետին —</option></select><small>Բոլոր մասնագետները բեռնվում են Supabase-ի team_members աղյուսակից։ Ընտրեք՝ ում համար եք ստեղծում login և password։</small></label>
                   <div class="admin-actions"><button type="submit">Պահպանել օգտատիրոջը</button><button type="button" id="user-cancel-btn" class="admin-btn-secondary" hidden>Չեղարկել</button></div>
                 </form>
               </article></div>

@@ -22,7 +22,10 @@ create table if not exists public.team_members (
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create table if not exists public.projects (
-  id text primary key, title text not null, status text, display_order integer not null default 0,
+  id text primary key, title text not null,
+  status text not null default 'current' check (status in ('current','partial','completed')),
+  progress smallint not null default 0 check (progress between 0 and 100), phase text,
+  display_order integer not null default 0,
   featured boolean not null default false, works jsonb not null default '[]'::jsonb,
   images jsonb not null default '[]'::jsonb, system_images jsonb not null default '[]'::jsonb,
   sector jsonb, translations jsonb, source_data jsonb not null default '{}'::jsonb,

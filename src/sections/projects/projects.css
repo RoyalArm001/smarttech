@@ -336,6 +336,13 @@
   background: linear-gradient(135deg, #ffe19a, #52cdbf);
 }
 
+.project-status-badge.is-partial {
+  border-color: rgba(255, 196, 92, 0.58);
+  color: #fff7df;
+  background: linear-gradient(135deg, rgba(153, 93, 20, 0.92), rgba(17, 116, 109, 0.84));
+  backdrop-filter: blur(10px);
+}
+
 .project-status-badge.is-completed {
   border-color: rgba(255, 255, 255, 0.26);
   color: rgba(255, 255, 255, 0.9);

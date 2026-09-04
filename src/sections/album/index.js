@@ -173,7 +173,7 @@
     var text = copy();
     var projects = site.content.projects || [];
     var currentPhotos = collectAdminAlbumPhotos("current").concat(collectProjectPhotos(projects, "current"));
-    var completedPhotos = collectAdminAlbumPhotos("completed").concat(collectProjectPhotos(projects, "completed"), collectCompletedGalleryPhotos(text));
+    var completedPhotos = collectAdminAlbumPhotos("completed").concat(collectProjectPhotos(projects, "partial"), collectProjectPhotos(projects, "completed"), collectCompletedGalleryPhotos(text));
     var heroPhoto = (currentPhotos[0] || completedPhotos[0] || {}).image || (site.content.company.heroImages || [])[0];
 
     return '' +

@@ -14,11 +14,12 @@
     projects: {
       singular: "նախագիծ / պրոդուկտ",
       folder: "projects",
-      defaults: { id: "", title: "", status: "current", order: 0, featured: false, works: [], images: [], systemImages: [], translations: {} },
+      defaults: { id: "", title: "", status: "current", phase: "", order: 0, featured: false, works: [], images: [], systemImages: [], translations: {} },
       fields: [
         { key: "id", label: "ID / slug", type: "text", required: true, hint: "Միայն լատինատառ․ օրինակ՝ new-project" },
         { key: "title", label: "Անվանում", type: "text", required: true },
-        { key: "status", label: "Կարգավիճակ", type: "select", options: [["current", "Ընթացիկ"], ["completed", "Ավարտված"]] },
+        { key: "status", label: "Նախագծի փուլ", type: "select", options: [["current", "Ընթացիկ — ցուցադրել առաջինը"], ["partial", "Մասամբ ավարտված — տեղափոխել հետին պլան"], ["completed", "Ավարտված"]] },
+        { key: "phase", label: "Աշխատանքի ներկա կարգավիճակը / փուլը", type: "text", hint: "Օրինակ՝ մալուխավորում, վահանների մոնտաժ, փորձարկում կամ հանձնում" },
         { key: "order", label: "Հերթականություն", type: "number" },
         { key: "featured", label: "Ցուցադրել որպես գլխավոր նախագիծ", type: "checkbox", wide: true },
         { key: "works", label: "Կատարված աշխատանքներ (մեկը՝ յուրաքանչյուր տողում)", type: "lines", wide: true },
@@ -203,7 +204,12 @@
         '<label class="cms-image-upload">Փոխել նկարը<input type="file" accept="image/jpeg,image/png,image/webp" data-cms-upload="' + escapeHtml(field.key) + '"></label>' +
         (imageValue ? '<img class="cms-image-preview cms-span-2" src="' + escapeHtml(imageValue) + '" alt="">' : "") + '</div>';
     }
-    return '<label class="' + wide.trim() + '"><span>' + escapeHtml(field.label) + '</span><input type="' + escapeHtml(field.type || "text") + '" data-entity-field="' + escapeHtml(field.key) + '" value="' + escapeHtml(value == null ? "" : value) + '"' + required + '>' + hint + '</label>';
+    var numberAttrs = field.type === "number"
+      ? (field.min != null ? ' min="' + escapeHtml(field.min) + '"' : "") +
+        (field.max != null ? ' max="' + escapeHtml(field.max) + '"' : "") +
+        (field.step != null ? ' step="' + escapeHtml(field.step) + '"' : "")
+      : "";
+    return '<label class="' + wide.trim() + '"><span>' + escapeHtml(field.label) + '</span><input type="' + escapeHtml(field.type || "text") + '" data-entity-field="' + escapeHtml(field.key) + '" value="' + escapeHtml(value == null ? "" : value) + '"' + numberAttrs + required + '>' + hint + '</label>';
   }
 
   function formActions(allowReset) {
@@ -215,12 +221,18 @@
     return item && (item.title || item.name || item.cardTitle || item.label || item.id || item.href) || ("Նոր գրառում " + (index + 1));
   }
 
+  function entityMeta(item) {
+    if (state.activeId !== "projects") return item.id || item.href || item.email || "";
+    var labels = { current: "Ընթացիկ", partial: "Մասամբ ավարտված", completed: "Ավարտված" };
+    return (labels[item.status] || labels.current) + (item.phase ? " · " + item.phase : "");
+  }
+
   function arrayEditorTemplate(data, schema) {
     var items = Array.isArray(data) ? data : [];
     if (state.entityIndex >= items.length) state.entityIndex = Math.max(0, items.length - 1);
     var current = items[state.entityIndex];
     var list = items.map(function (item, index) {
-      return '<button type="button" class="cms-entity-item' + (index === state.entityIndex ? " is-active" : "") + '" data-entity-index="' + index + '"><strong>' + escapeHtml(entityName(item, index)) + '</strong><small>' + escapeHtml(item.id || item.href || item.email || "") + '</small></button>';
+      return '<button type="button" class="cms-entity-item' + (index === state.entityIndex ? " is-active" : "") + '" data-entity-index="' + index + '"><strong>' + escapeHtml(entityName(item, index)) + '</strong><small>' + escapeHtml(entityMeta(item)) + '</small></button>';
     }).join("");
     var editor = current ? '<form class="cms-form" id="cms-entity-form" data-entity-index="' + state.entityIndex + '"><div class="cms-form-grid">' +
       schema.fields.map(function (field) { return fieldHtml(field, current[field.key]); }).join("") +
@@ -258,7 +270,12 @@
       var control = form.querySelector('[data-entity-field="' + field.key + '"]');
       if (!control) return;
       if (field.type === "checkbox") output[field.key] = !!control.checked;
-      else if (field.type === "number") output[field.key] = Number(control.value || 0);
+      else if (field.type === "number") {
+        var numericValue = Number(control.value || 0);
+        if (field.min != null) numericValue = Math.max(Number(field.min), numericValue);
+        if (field.max != null) numericValue = Math.min(Number(field.max), numericValue);
+        output[field.key] = numericValue;
+      }
       else if (field.type === "lines" || field.type === "images") output[field.key] = splitLines(control.value);
       else if (field.type === "json") output[field.key] = JSON.parse(control.value || "{}");
       else output[field.key] = control.value.trim();

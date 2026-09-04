@@ -430,6 +430,12 @@ body.ui-theme-dark .detail-gallery-suggestion p {
   line-height: 1.5;
 }
 
+.project-phase-note {
+  margin-top: 7px !important;
+  color: var(--teal-dark) !important;
+  font-weight: 850;
+}
+
 .project-stages-track {
   display: grid;
   gap: 8px;
@@ -466,6 +472,11 @@ body.ui-theme-dark .detail-gallery-suggestion p {
   border-color: rgba(216, 166, 58, 0.5);
   background: linear-gradient(135deg, rgba(255, 225, 154, 0.3), rgba(82, 205, 191, 0.12));
   box-shadow: 0 6px 18px rgba(216, 166, 58, 0.18);
+}
+
+.project-stage-item.is-done {
+  border-color: rgba(10, 168, 150, 0.3);
+  background: rgba(10, 168, 150, 0.1);
 }
 
 .project-stage-item span {

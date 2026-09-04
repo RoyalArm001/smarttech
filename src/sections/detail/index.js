@@ -1288,18 +1288,21 @@
         problem: "Օբյեկտը պահանջում էր կայուն և վերահսկելի ինժեներական համակարգեր՝ առօրյա անվտանգ աշխատանքի համար։",
         solutionPrefix: "Իրականացված լուծումներ․ ",
         resultCurrent: "Նախագիծը ընթացքի մեջ է, համակարգերը փուլային կերպով տեղադրվում և կարգավորվում են ըստ օբյեկտի ռեժիմի։",
+        resultPartial: "Աշխատանքների հիմնական մասը կատարված է, իսկ մնացած փուլերը շարունակվում են ըստ հաստատված ժամանակացույցի։",
         resultCompleted: "Համակարգերը հանձնված են շահագործման և ապահովում են օբյեկտի կայուն անվտանգ աշխատանքը։"
       },
       en: {
         problem: "The facility required stable and controllable engineering systems for safe daily operations.",
         solutionPrefix: "Implemented scope: ",
         resultCurrent: "The project is in progress with phased installation and configuration according to facility operations.",
+        resultPartial: "The main scope is complete and the remaining stages continue according to the approved schedule.",
         resultCompleted: "The systems are delivered and support stable, secure daily operation of the facility."
       },
       ru: {
         problem: "Объекту требовались стабильные и управляемые инженерные системы для безопасной ежедневной работы.",
         solutionPrefix: "Реализованное решение: ",
         resultCurrent: "Проект в работе: системы поэтапно монтируются и настраиваются с учетом режима объекта.",
+        resultPartial: "Основной объем выполнен, оставшиеся этапы продолжаются по утвержденному графику.",
         resultCompleted: "Системы сданы и обеспечивают стабильную и безопасную ежедневную работу объекта."
       }
     };
@@ -1307,7 +1310,7 @@
     return {
       problem: copy.problem,
       solution: copy.solutionPrefix + (worksPreview || "-"),
-      result: project.status === "current" ? copy.resultCurrent : copy.resultCompleted
+      result: project.status === "current" ? copy.resultCurrent : (project.status === "partial" ? copy.resultPartial : copy.resultCompleted)
     };
   }
 
@@ -1395,13 +1398,15 @@
   }
 
   function currentProjectBanner(project) {
-    if (!project || project.status !== "current") return "";
+    if (!project || (project.status !== "current" && project.status !== "partial")) return "";
     var e = site.utils.escapeHtml;
     var language = site.i18n.language || "hy";
     var copyByLanguage = {
       hy: {
         badge: "Ընթացքի մեջ",
+        partialBadge: "Մասամբ ավարտված",
         title: "Այս օբյեկտում աշխատանքները ընթացքի մեջ են",
+        partialTitle: "Այս օբյեկտի աշխատանքների մի մասը դեռ ընթացքի մեջ է",
         text: "Ստորև ներկայացված են ֆոտոներ ու ծառայությունների ցանկ, որոնք կատարվում են կամ արդեն ավարտվել են այս նախագծի շրջանակում։",
         stagesTitle: "Փուլեր",
         stages: ["Չափագրում և նախագիծ", "Մատակարարում", "Տեղադրում", "Ծրագրավորում", "Հանձնում"],
@@ -1411,7 +1416,9 @@
       },
       en: {
         badge: "In progress",
+        partialBadge: "Partially completed",
         title: "Work is currently ongoing at this facility",
+        partialTitle: "Part of the work at this facility is still in progress",
         text: "The photos and work scope below reflect what is being installed or has already been completed within this project.",
         stagesTitle: "Stages",
         stages: ["Survey and design", "Supply", "Installation", "Programming", "Handover"],
@@ -1421,7 +1428,9 @@
       },
       ru: {
         badge: "В работе",
+        partialBadge: "Частично завершено",
         title: "На этом объекте работы продолжаются",
+        partialTitle: "Часть работ на объекте еще продолжается",
         text: "Ниже представлены фотографии и перечень работ, которые выполняются или уже завершены в рамках этого проекта.",
         stagesTitle: "Этапы",
         stages: ["Замер и проект", "Поставка", "Монтаж", "Программирование", "Сдача"],
@@ -1431,10 +1440,13 @@
       }
     };
     var copy = site.i18n.pickLanguageDictionary(copyByLanguage, language);
+    var activeStageIndex = project.status === "partial" ? 3 : 2;
+    var phase = project.phase || "";
     var stageItems = copy.stages.map(function (stage, index) {
-      var isActive = index === 2;
+      var isActive = index === activeStageIndex;
+      var isDone = index < activeStageIndex;
       return '' +
-        '<li class="project-stage-item' + (isActive ? " is-active" : "") + '">' +
+        '<li class="project-stage-item' + (isActive ? " is-active" : "") + (isDone ? " is-done" : "") + '">' +
           '<span>' + e(String(index + 1).padStart(2, "0")) + '</span>' +
           '<strong>' + e(stage) + '</strong>' +
           (isActive ? '<em>' + e(copy.activeLabel) + '</em>' : '') +
@@ -1444,10 +1456,11 @@
     return '' +
       '<div class="current-project-banner reveal">' +
         '<div class="current-project-banner-head">' +
-          '<span class="current-project-badge">' + e(copy.badge) + '</span>' +
+          '<span class="current-project-badge">' + e(project.status === "partial" ? copy.partialBadge : copy.badge) + '</span>' +
           '<div>' +
-            '<h2>' + e(copy.title) + '</h2>' +
+            '<h2>' + e(project.status === "partial" ? copy.partialTitle : copy.title) + '</h2>' +
             '<p>' + e(copy.text) + '</p>' +
+            (phase ? '<p class="project-phase-note">' + e(phase) + '</p>' : '') +
           '</div>' +
           '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(copy.ctaBtn) + '</a>' +
         '</div>' +
@@ -1586,7 +1599,7 @@
     if (!project) return site.sections.projects();
 
     var text = site.i18n.project(project);
-    var projectLeadKey = project.status === "current" ? "detail.projectLeadCurrent" : "detail.projectLead";
+    var projectLeadKey = project.status === "completed" ? "detail.projectLead" : "detail.projectLeadCurrent";
     return detailShell(
       "project",
       site.i18n.get("detail.projectType"),

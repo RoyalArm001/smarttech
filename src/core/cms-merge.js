@@ -62,31 +62,37 @@
   }
 
   function applyProjectStatusesAndOrder() {
-    if (!Array.isArray(site.content.projects) || typeof site.content.activeProjectIds === "undefined") return;
+    if (!Array.isArray(site.content.projects)) return;
 
     var activeProjectIds = site.content.activeProjectIds || [];
     var projectStatusLabels = {
       current: { hy: "\u0538\u0576\u0569\u0561\u0581\u056b\u056f", en: "In progress", ru: "\u0412 \u0440\u0430\u0431\u043e\u0442\u0435" },
+      partial: { hy: "\u0544\u0561\u057d\u0561\u0574\u0562 \u0561\u057e\u0561\u0580\u057f\u057e\u0561\u056e", en: "Partially completed", ru: "\u0427\u0430\u0441\u0442\u0438\u0447\u043d\u043e \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e" },
       completed: { hy: "\u0531\u057e\u0561\u0580\u057f\u057e\u0561\u056e", en: "Completed", ru: "\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e" }
     };
-    var originalOrder = {};
+    var statusRank = { current: 0, partial: 1, completed: 2 };
 
     site.content.projects.forEach(function (project, index) {
-      originalOrder[project.id] = index;
-      var isCurrent = activeProjectIds.indexOf(project.id) >= 0;
-      project.status = isCurrent ? "current" : "completed";
+      var explicitStatus = String(project.status || "").toLowerCase();
+      if (!projectStatusLabels[explicitStatus]) {
+        explicitStatus = activeProjectIds.indexOf(project.id) >= 0 ? "current" : "completed";
+      }
+      project.status = explicitStatus;
+      project.order = Number.isFinite(Number(project.order)) ? Number(project.order) : index;
+      project.progress = Number.isFinite(Number(project.progress))
+        ? Math.max(0, Math.min(100, Math.round(Number(project.progress))))
+        : (project.status === "completed" ? 100 : 0);
       project.statusLabels = projectStatusLabels[project.status];
     });
 
     site.content.projects.sort(function (a, b) {
-      var activeA = activeProjectIds.indexOf(a.id);
-      var activeB = activeProjectIds.indexOf(b.id);
-      if (activeA >= 0 || activeB >= 0) {
-        return (activeA >= 0 ? activeA : activeProjectIds.length + originalOrder[a.id]) -
-          (activeB >= 0 ? activeB : activeProjectIds.length + originalOrder[b.id]);
-      }
-      return originalOrder[a.id] - originalOrder[b.id];
+      var rankDifference = statusRank[a.status] - statusRank[b.status];
+      return rankDifference || a.order - b.order || String(a.title || "").localeCompare(String(b.title || ""));
     });
+
+    site.content.activeProjectIds = site.content.projects.filter(function (project) {
+      return project.status === "current";
+    }).map(function (project) { return project.id; });
   }
 
   function applyProjectsCms(projects) {

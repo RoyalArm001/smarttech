@@ -29,7 +29,7 @@ function localContent() {
   return window.SmartTech.content;
 }
 function normTeam(x, i) { return { id: String(x.id || x.slug || `member-${i+1}`), display_order: Number(x.order ?? i), department:x.department||null, role_level:x.roleLevel||null, manager_id:x.managerId||null, title:x.title||null, text:x.text||null, accent:x.accent||null, color:x.color||null, email:x.email||null, image_path:x.image||null, cover_image_path:x.coverImage||null, focus:x.focus||[], socials:x.socials||[], certificates:x.certificates||[], source_data:x }; }
-function normProject(x, i) { return { id:String(x.id || x.slug || `project-${i+1}`), title:x.title||String(x.id||''), status:x.status||null, display_order:Number(x.order??i), featured:Boolean(x.featured), works:x.works||[], images:x.images||[], system_images:x.systemImages||[], sector:x.sector||null, translations:x.translations||null, source_data:x }; }
+function normProject(x, i) { return { id:String(x.id || x.slug || `project-${i+1}`), title:x.title||String(x.id||''), status:x.status||"current", progress:Math.max(0,Math.min(100,Math.round(Number(x.progress) || (x.status === "completed" ? 100 : 0)))), phase:x.phase||null, display_order:Number(x.order??i), featured:Boolean(x.featured), works:x.works||[], images:x.images||[], system_images:x.systemImages||[], sector:x.sector||null, translations:x.translations||null, source_data:x }; }
 async function main() {
   const normalizedPgUrl = pgUrl.replace(/[?&]sslmode=[^&]*/i, '').replace(/[?&]$/, '');
   const pool = new pg.Pool({ connectionString: normalizedPgUrl, ssl: { rejectUnauthorized: false } });

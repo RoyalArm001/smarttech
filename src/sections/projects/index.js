@@ -15,18 +15,21 @@
         problem: "Օբյեկտը պահանջում էր կայուն և վերահսկելի ինժեներական համակարգերի համալիր՝ ամենօրյա անխափան աշխատանքի համար։",
         solutionPrefix: "Իրականացրեցինք՝ ",
         resultCurrent: "Նախագիծը ընթացքի մեջ է, համակարգերը փուլային ձևով տեղադրվում ու կարգավորվում են ըստ օբյեկտի աշխատանքային ռիթմի։",
+        resultPartial: "Աշխատանքների հիմնական մասը կատարված է, իսկ մնացած փուլերը շարունակվում են ըստ նախագծի ժամանակացույցի։",
         resultCompleted: "Համակարգերը հանձնված են շահագործման և ապահովում են օբյեկտի անվտանգ ու կայուն աշխատանքը։"
       },
       en: {
         problem: "The facility required a stable and controllable engineering system package for uninterrupted daily operations.",
         solutionPrefix: "Implemented scope: ",
         resultCurrent: "The project is in progress with phased installation and configuration aligned with facility operations.",
+        resultPartial: "The main scope is complete, while the remaining stages continue according to the project schedule.",
         resultCompleted: "Systems are delivered and provide secure, stable daily facility operations."
       },
       ru: {
         problem: "Объекту требовался стабильный и управляемый комплекс инженерных систем для бесперебойной ежедневной работы.",
         solutionPrefix: "Реализовали: ",
         resultCurrent: "Проект в работе: системы поэтапно монтируются и настраиваются с учетом рабочего режима объекта.",
+        resultPartial: "Основной объем выполнен, оставшиеся этапы продолжаются по графику проекта.",
         resultCompleted: "Системы сданы и обеспечивают безопасную и стабильную ежедневную работу объекта."
       }
     };
@@ -34,7 +37,7 @@
     return {
       problem: copy.problem,
       solution: copy.solutionPrefix + (works || "-"),
-      result: project.status === "current" ? copy.resultCurrent : copy.resultCompleted
+      result: project.status === "current" ? copy.resultCurrent : (project.status === "partial" ? copy.resultPartial : copy.resultCompleted)
     };
   }
 
@@ -195,7 +198,7 @@
     var currentProjects = currentProjectsOrdered(projects);
     var heroProject = currentProjects[0] || projects[0];
     var completedProjects = projects.filter(function (project) {
-      return project.status === "completed";
+      return project.status !== "current";
     });
 
     var currentCarousel = renderCurrentProjectsCarousel(currentProjects);
