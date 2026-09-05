@@ -729,7 +729,7 @@ function jwtExpiresAt(accessToken) {
 
 async function getAdminSession(request) {
   const cookies = parseCookies(request);
-  const accessToken = cookies[adminSessionCookie];
+  const accessToken = cookies[adminSessionCookie] || cookies[userSessionCookie];
   const authClient = getSupabaseClient();
   const adminClient = getSupabaseAdminClient();
   if (!accessToken || !authClient || !adminClient) return null;
@@ -742,18 +742,19 @@ async function getAdminSession(request) {
   if (profileResult.error) {
     profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", user.id).maybeSingle();
   }
-  if (profileResult.error || !profileResult.data) return null;
   const isOwner = String(user.email || "").toLowerCase() === ownerAdminEmail;
-  if (!isOwner && profileResult.data.role !== "admin") return null;
+  if (profileResult.error || (!profileResult.data && !isOwner)) return null;
+  const userRole = String((profileResult.data && profileResult.data.role) || (isOwner ? "admin" : "")).toLowerCase();
+  if (!isOwner && userRole !== "admin") return null;
 
   const expiresAt = jwtExpiresAt(accessToken);
 
   return {
     userId: user.id,
     email: user.email,
-    fullName: profileResult.data.full_name,
-    username: profileResult.data.username || (isOwner ? ownerAdminUsername : ""),
-    role: profileResult.data.role,
+    fullName: profileResult.data ? profileResult.data.full_name : null,
+    username: (profileResult.data && profileResult.data.username) || (isOwner ? ownerAdminUsername : ""),
+    role: isOwner ? "admin" : userRole,
     accessToken,
     csrfToken: adminCsrfToken(accessToken),
     expiresAt: expiresAt || Date.now() + 60 * 60 * 1000
@@ -775,16 +776,42 @@ function requireAdmin(request, response, next) {
 
 async function getUserSession(request) {
   const cookies = parseCookies(request);
-  const accessToken = cookies[userSessionCookie];
+  const accessToken = cookies[userSessionCookie] || cookies[adminSessionCookie];
   const client = getSupabaseClient();
   if (!accessToken || !client) return null;
   const result = await client.auth.getUser(accessToken);
   const user = result.data && result.data.user;
   if (result.error || !user) return null;
+
+  const isOwner = String(user.email || "").toLowerCase() === ownerAdminEmail;
+  let role = isOwner ? "admin" : "member";
+  let username = isOwner ? ownerAdminUsername : "";
+  let fullName = user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : null;
+
+  const adminClient = getSupabaseAdminClient();
+  if (adminClient) {
+    try {
+      let profileResult = await adminClient.from("profiles").select("role,username,full_name").eq("id", user.id).maybeSingle();
+      if (profileResult.data) {
+        if (profileResult.data.role) {
+          role = String(profileResult.data.role).toLowerCase() === "admin" || isOwner ? "admin" : profileResult.data.role;
+        }
+        if (profileResult.data.username) {
+          username = profileResult.data.username;
+        }
+        if (profileResult.data.full_name) {
+          fullName = profileResult.data.full_name;
+        }
+      }
+    } catch (e) {}
+  }
+
   return {
     userId: user.id,
     email: user.email,
-    full_name: user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : null,
+    full_name: fullName,
+    username: username,
+    role: role,
     accessToken,
     expiresAt: jwtExpiresAt(accessToken)
   };
@@ -1907,6 +1934,21 @@ if (appMode.isWebEnabled()) {
   });
 
   app.get("/api/auth/session", async (request, response) => {
+    const adminSession = await getAdminSession(request);
+    if (adminSession && adminSession.userId) {
+      jsonResponse(response, 200, {
+        authenticated: true,
+        user: {
+          id: adminSession.userId,
+          email: adminSession.email,
+          full_name: adminSession.fullName || null,
+          username: adminSession.username || null,
+          role: "admin"
+        }
+      });
+      return;
+    }
+
     const cookieSession = await getUserSession(request);
     if (cookieSession && cookieSession.userId) {
       jsonResponse(response, 200, {
@@ -1914,7 +1956,9 @@ if (appMode.isWebEnabled()) {
         user: {
           id: cookieSession.userId,
           email: cookieSession.email,
-          full_name: cookieSession.full_name || null
+          full_name: cookieSession.full_name || null,
+          username: cookieSession.username || null,
+          role: cookieSession.role || "member"
         }
       });
       return;
@@ -1935,18 +1979,37 @@ if (appMode.isWebEnabled()) {
       return;
     }
 
+    const isOwner = String(data.user.email || "").toLowerCase() === ownerAdminEmail;
+    let role = isOwner ? "admin" : "member";
+    let username = isOwner ? ownerAdminUsername : "";
+    const adminClient = getSupabaseAdminClient();
+    if (adminClient) {
+      try {
+        const profileResult = await adminClient.from("profiles").select("role,username").eq("id", data.user.id).maybeSingle();
+        if (profileResult.data) {
+          if (profileResult.data.role) role = String(profileResult.data.role).toLowerCase() === "admin" || isOwner ? "admin" : profileResult.data.role;
+          if (profileResult.data.username) username = profileResult.data.username;
+        }
+      } catch (e) {}
+    }
+
     jsonResponse(response, 200, {
       authenticated: true,
       user: {
         id: data.user.id,
         email: data.user.email,
-        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null
+        full_name: data.user.user_metadata && data.user.user_metadata.full_name ? data.user.user_metadata.full_name : null,
+        username: username,
+        role: role
       }
     });
   });
 
   app.post("/api/auth/logout", sameOriginGuard, (request, response) => {
-    response.setHeader("Set-Cookie", clearUserSessionCookie());
+    response.setHeader("Set-Cookie", [
+      clearSessionCookie(),
+      clearUserSessionCookie()
+    ]);
     jsonResponse(response, 200, { authenticated: false });
   });
 
@@ -2393,7 +2456,8 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
     jsonResponse(response, 403, { error: "This profile is inactive or not configured" });
     return;
   }
-  if (!isOwner && (!profileResult.data || profileResult.data.role !== "admin")) {
+  const userRole = String((profileResult.data && profileResult.data.role) || (isOwner ? "admin" : "")).toLowerCase();
+  if (!isOwner && userRole !== "admin") {
     await authClient.auth.signOut();
     jsonResponse(response, 403, { error: "Admin access is allowed only for admin users" });
     return;
@@ -2403,13 +2467,16 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
     userId: authUser.id,
     email: authUser.email,
     fullName: profileResult.data && profileResult.data.full_name,
-    role: isOwner ? "admin" : profileResult.data.role,
+    role: isOwner ? "admin" : (profileResult.data && profileResult.data.role) || "admin",
     username: profileResult.data && profileResult.data.username || (isOwner ? ownerAdminUsername : ""),
     accessToken: authSession.access_token,
     csrfToken: adminCsrfToken(authSession.access_token),
     expiresAt: Number(authSession.expires_at || 0) * 1000
   };
-  response.setHeader("Set-Cookie", sessionCookie(authSession.access_token, request, session.expiresAt));
+  response.setHeader("Set-Cookie", [
+    sessionCookie(authSession.access_token, request, session.expiresAt),
+    userSessionCookieString(authSession.access_token, request, session.expiresAt)
+  ]);
   jsonResponse(response, 200, {
     authenticated: true,
     csrfToken: session.csrfToken,
@@ -2428,7 +2495,10 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
 });
 
 app.post("/api/admin/logout", adminApiLimiter, sameOriginGuard, (request, response) => {
-  response.setHeader("Set-Cookie", clearSessionCookie());
+  response.setHeader("Set-Cookie", [
+    clearSessionCookie(),
+    clearUserSessionCookie()
+  ]);
   jsonResponse(response, 200, { authenticated: false });
 });
 
@@ -2973,11 +3043,23 @@ app.use((error, request, response, next) => {
   next(error);
 });
 
-app.get("/login", (request, response) => {
+app.get("/login", async (request, response) => {
+  const adminSession = await getAdminSession(request);
+  if (adminSession && adminSession.userId) {
+    response.writeHead(302, { Location: "/admin" });
+    response.end();
+    return;
+  }
   sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
 });
 
-app.get("/profile", (request, response) => {
+app.get("/profile", async (request, response) => {
+  const adminSession = await getAdminSession(request);
+  if (adminSession && adminSession.userId) {
+    response.writeHead(302, { Location: "/admin" });
+    response.end();
+    return;
+  }
   sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
 });
 

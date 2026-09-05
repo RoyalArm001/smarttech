@@ -167,13 +167,30 @@
           if (!response.ok) {
             throw new Error(userPayload && userPayload.error ? userPayload.error : 'Login failed.');
           }
+          if (userPayload && userPayload.user && (String(userPayload.user.role || '').toLowerCase() === 'admin' || String(userPayload.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
+            window.location.assign('/admin');
+            return;
+          }
           if (userPayload && userPayload.user && userPayload.user.username) {
             window.location.assign('/profile/' + encodeURIComponent(userPayload.user.username));
+          } else {
+            window.location.assign('/profile');
           }
         } catch (error) {
           setMessage(error && error.message ? error.message : 'Unable to sign in.', 'error');
         }
       });
+
+      (function () {
+        fetch('/api/auth/session')
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
+              window.location.replace('/admin');
+            }
+          })
+          .catch(function () {});
+      })();
     </script>
     <script src="/src/sections/profile/cyber-bg.js"></script>
   </body>

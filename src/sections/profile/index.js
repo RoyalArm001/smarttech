@@ -93,6 +93,10 @@
   function loadPrivateProfile() {
     return requestJson("/api/profile").then(function (payload) {
       if (!payload.profile || payload.profile.is_active === false) throw new Error("Profile is not active");
+      if (payload.profile && (String(payload.profile.role || "").toLowerCase() === "admin" || String(payload.profile.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+        window.location.replace("/admin");
+        return;
+      }
       fillProfile(payload.profile);
       showOnly("edit");
     });
@@ -102,6 +106,10 @@
     return requestJson("/api/auth/session").then(function (payload) {
       if (!payload.authenticated) {
         showOnly("login");
+        return;
+      }
+      if (payload.user && (String(payload.user.role || "").toLowerCase() === "admin" || String(payload.user.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+        window.location.replace("/admin");
         return;
       }
       return loadPrivateProfile();
@@ -175,7 +183,13 @@
         .then(function () { window.location.assign("/admin"); })
         .catch(function () {
           return requestJson("/api/auth/login", { method: "POST", body: { email: email, password: password } })
-            .then(function () { window.location.assign("/profile"); });
+            .then(function (payload) {
+              if (payload && payload.user && (String(payload.user.role || "").toLowerCase() === "admin" || String(payload.user.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+                window.location.assign("/admin");
+              } else {
+                window.location.assign("/profile");
+              }
+            });
         })
         .catch(function (error) { loginError.textContent = error.message || "Մուտք գործելը հնարավոր չէ"; });
     });
