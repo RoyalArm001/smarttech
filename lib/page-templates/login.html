@@ -17,21 +17,34 @@
       }
       * { box-sizing: border-box; }
       body {
+        position: relative;
         margin: 0;
         min-height: 100vh;
         display: grid;
         place-items: center;
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #020617, #0f172a 35%, #111827);
+        background: #040a10;
         color: var(--text);
+        overflow: hidden;
+      }
+      .cyber-hacker-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
       }
       .card {
+        position: relative;
+        z-index: 2;
         width: min(100%, 420px);
-        padding: 2rem;
-        background: var(--panel);
-        border: 1px solid var(--panel-border);
-        border-radius: 16px;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.45);
+        padding: 2.2rem;
+        background: rgba(8, 20, 30, 0.82);
+        border: 1px solid rgba(0, 240, 255, 0.22);
+        border-radius: 20px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65), 0 0 40px rgba(0, 240, 255, 0.08), inset 0 1px rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(24px) saturate(140%);
       }
       h1 {
         margin: 0 0 0.5rem;
@@ -50,25 +63,37 @@
       input {
         width: 100%;
         display: block;
-        border: 1px solid var(--panel-border);
-        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(0, 240, 255, 0.2);
+        background: rgba(15, 23, 42, 0.78);
         color: var(--text);
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 0.9rem 1rem;
         margin-top: 0.35rem;
         font: inherit;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      input:focus {
+        border-color: #00f0ff;
+        box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.18);
       }
       button {
         width: 100%;
         margin-top: 1.2rem;
         border: 0;
-        border-radius: 10px;
-        background: var(--accent);
-        color: #062a26;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #00f0ff, #00a896);
+        color: #041018;
         padding: 0.9rem 1rem;
         font: inherit;
-        font-weight: 700;
+        font-weight: 800;
         cursor: pointer;
+        box-shadow: 0 8px 24px rgba(0, 240, 255, 0.25);
+        transition: transform 0.18s, box-shadow 0.18s;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0, 240, 255, 0.35);
       }
       .message {
         min-height: 1.4rem;
@@ -80,6 +105,7 @@
     </style>
   </head>
   <body>
+    <canvas id="cyber-hacker-bg" class="cyber-hacker-bg" aria-hidden="true"></canvas>
     <main class="card">
       <h1>Smart Tech Login</h1>
       <p class="sub">Use your Supabase Auth account to sign in.</p>
@@ -149,5 +175,6 @@
         }
       });
     </script>
+    <script src="/src/sections/profile/cyber-bg.js"></script>
   </body>
 </html>
