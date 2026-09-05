@@ -5,16 +5,19 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
+Allow: /api/content$
+Allow: /api/album$
 
 User-agent: Yandex
 Allow: /
 Disallow: /admin
 Disallow: /api/
+Allow: /api/content$
+Allow: /api/album$
 
 # Preferred mirror for Yandex Webmaster
 Host: smarttechllc.am
 
-# Ignore duplicate URL parameters on detail pages
-Clean-param: id /service /project /member
+# Detail-page id parameters identify distinct content; do not strip them.
 
 Sitemap: https://smarttechllc.am/sitemap.xml
