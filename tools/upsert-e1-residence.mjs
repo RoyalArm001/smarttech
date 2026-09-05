@@ -28,7 +28,7 @@ const project = {
   status: "completed",
   progress: 100,
   phase: "Էլեկտրամոնտաժային աշխատանքներն ավարտված են",
-  order: 14,
+  order: 0,
   featured: false,
   works: ["Էլեկտրամոնտաժային աշխատանքներ"],
   images: [publicUrl],

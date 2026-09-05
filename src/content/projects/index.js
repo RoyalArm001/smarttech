@@ -90,6 +90,7 @@
       title: "E1 Residence",
       status: "completed",
       progress: 100,
+      order: 0,
       phase: "Էլեկտրամոնտաժային աշխատանքներն ավարտված են",
       works: ["Էլեկտրամոնտաժային աշխատանքներ"],
       images: ["https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/e1-residence.webp"],
