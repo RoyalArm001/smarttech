@@ -41,6 +41,7 @@
           <aside class="admin-sidebar" id="admin-sidebar">
             <div class="admin-sidebar-heading"><span class="admin-kicker">Կառավարում</span><strong>Կայքի բաժիններ</strong></div>
             <nav class="admin-primary-nav" aria-label="CMS բաժիններ">
+              <button type="button" class="admin-workspace-tab" id="admin-tab-messages" data-admin-workspace="messages"><span class="admin-nav-icon" aria-hidden="true">✉</span><span>Նամակներ</span></button>
               <button type="button" class="admin-workspace-tab is-active" id="admin-tab-cms" data-admin-workspace="cms"><span class="admin-nav-icon" aria-hidden="true">▦</span><span>Կայքի բովանդակություն</span></button>
               <button type="button" class="admin-workspace-tab" id="admin-tab-media" data-admin-workspace="media"><span class="admin-nav-icon" aria-hidden="true">▧</span><span>Նկարներ և ֆայլեր</span></button>
               <button type="button" class="admin-workspace-tab" id="admin-tab-album" data-admin-workspace="album"><span class="admin-nav-icon" aria-hidden="true">◫</span><span>Ալբոմ</span></button>
@@ -66,6 +67,12 @@
                 <div class="cms-editor-head"><div><span class="admin-kicker">Խմբագրիչ</span><h2 id="cms-editor-title">Բովանդակություն</h2><p id="cms-editor-subtitle">Ընտրեք բաժինը ձախ մենյուից։</p></div></div>
                 <div id="cms-editor-panel"></div>
               </article>
+            </section>
+
+            <section id="admin-workspace-messages" class="admin-workspace" hidden>
+              <div class="admin-page-heading"><div><h2>Ստացված նամակներ</h2><p>Կոնտակտային էջից ստացված հաղորդագրությունները։</p></div><button type="button" id="messages-refresh" class="admin-btn-secondary">Թարմացնել</button></div>
+              <div id="admin-messages-list" aria-live="polite"></div>
+              <div class="admin-actions"><button type="button" id="messages-prev" class="admin-btn-secondary">Նախորդը</button><span id="messages-page"></span><button type="button" id="messages-next" class="admin-btn-secondary">Հաջորդը</button></div>
             </section>
 
             <section id="admin-workspace-media" class="admin-workspace" hidden>
@@ -142,6 +149,8 @@
     </main>
     <script defer src="/admin/runtime.js"></script>
     <script defer src="/admin/panel.js"></script>
+    <script defer src="/admin/messages.js"></script>
+    <script defer src="/src/core/namespace.js"></script>
     <script defer src="/admin/cms-editor.js"></script>
   </body>
 </html>

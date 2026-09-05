@@ -390,6 +390,7 @@
           "</span>" +
           '<span class="home-bottom-project-copy">' +
             "<strong>" + e(text.title) + "</strong>" +
+            (site.projectStages.label(project, site.i18n.language) ? '<span class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</span>' : '') +
             '<ul>' + works + "</ul>" +
           "</span>" +
         "</a>";

@@ -1398,18 +1398,20 @@
   }
 
   function currentProjectBanner(project) {
-    if (!project || (project.status !== "current" && project.status !== "partial")) return "";
+    if (!project) return "";
     var e = site.utils.escapeHtml;
     var language = site.i18n.language || "hy";
     var copyByLanguage = {
       hy: {
         badge: "Ընթացքի մեջ",
         partialBadge: "Մասամբ ավարտված",
+        completedBadge: "Ավարտված",
+        completedTitle: "Այս նախագծի աշխատանքներն ավարտված են",
+        unknownStage: "Աշխատանքի փուլը դեռ նշված չէ",
         title: "Այս օբյեկտում աշխատանքները ընթացքի մեջ են",
         partialTitle: "Այս օբյեկտի աշխատանքների մի մասը դեռ ընթացքի մեջ է",
         text: "Ստորև ներկայացված են ֆոտոներ ու ծառայությունների ցանկ, որոնք կատարվում են կամ արդեն ավարտվել են այս նախագծի շրջանակում։",
         stagesTitle: "Փուլեր",
-        stages: ["Չափագրում և նախագիծ", "Մատակարարում", "Տեղադրում", "Ծրագրավորում", "Հանձնում"],
         activeLabel: "Ընթացիկ",
         cta: "Հետաքրքրվա՞ծ եք նման լուծումով",
         ctaBtn: "Ստանալ կոմերցիոն առաջարկ"
@@ -1417,11 +1419,13 @@
       en: {
         badge: "In progress",
         partialBadge: "Partially completed",
+        completedBadge: "Completed",
+        completedTitle: "Work on this project is complete",
+        unknownStage: "The work stage has not been specified yet",
         title: "Work is currently ongoing at this facility",
         partialTitle: "Part of the work at this facility is still in progress",
         text: "The photos and work scope below reflect what is being installed or has already been completed within this project.",
         stagesTitle: "Stages",
-        stages: ["Survey and design", "Supply", "Installation", "Programming", "Handover"],
         activeLabel: "Active",
         cta: "Interested in a similar solution?",
         ctaBtn: "Get a commercial proposal"
@@ -1429,26 +1433,30 @@
       ru: {
         badge: "В работе",
         partialBadge: "Частично завершено",
+        completedBadge: "Завершено",
+        completedTitle: "Работы по этому проекту завершены",
+        unknownStage: "Этап работ пока не указан",
         title: "На этом объекте работы продолжаются",
         partialTitle: "Часть работ на объекте еще продолжается",
         text: "Ниже представлены фотографии и перечень работ, которые выполняются или уже завершены в рамках этого проекта.",
         stagesTitle: "Этапы",
-        stages: ["Замер и проект", "Поставка", "Монтаж", "Программирование", "Сдача"],
         activeLabel: "Активно",
         cta: "Интересует похожее решение?",
         ctaBtn: "Получить коммерческое предложение"
       }
     };
     var copy = site.i18n.pickLanguageDictionary(copyByLanguage, language);
-    var activeStageIndex = project.status === "partial" ? 3 : 2;
-    var phase = project.phase || "";
-    var stageItems = copy.stages.map(function (stage, index) {
-      var isActive = index === activeStageIndex;
-      var isDone = index < activeStageIndex;
+    var stageId = site.projectStages.selected(project);
+    var activeStageIndex = site.projectStages.all.findIndex(function (stage) { return stage.id === stageId; });
+    var completed = project.status === "completed";
+    var phase = site.i18n.project(project).phase || "";
+    var stageItems = site.projectStages.all.map(function (stage, index) {
+      var isActive = !completed && index === activeStageIndex;
+      var isDone = completed || index < activeStageIndex;
       return '' +
-        '<li class="project-stage-item' + (isActive ? " is-active" : "") + (isDone ? " is-done" : "") + '">' +
+        '<li class="project-stage-item' + (isActive ? " is-active" : "") + (isDone ? " is-done" : "") + '"' + (isActive ? ' aria-current="step"' : '') + '>' +
           '<span>' + e(String(index + 1).padStart(2, "0")) + '</span>' +
-          '<strong>' + e(stage) + '</strong>' +
+          '<strong>' + e(stage.labels[language] || stage.labels.hy) + '</strong>' +
           (isActive ? '<em>' + e(copy.activeLabel) + '</em>' : '') +
         '</li>';
     }).join("");
@@ -1456,9 +1464,9 @@
     return '' +
       '<div class="current-project-banner reveal">' +
         '<div class="current-project-banner-head">' +
-          '<span class="current-project-badge">' + e(project.status === "partial" ? copy.partialBadge : copy.badge) + '</span>' +
+          '<span class="current-project-badge">' + e(completed ? copy.completedBadge : project.status === "partial" ? copy.partialBadge : copy.badge) + '</span>' +
           '<div>' +
-            '<h2>' + e(project.status === "partial" ? copy.partialTitle : copy.title) + '</h2>' +
+            '<h2>' + e(completed ? copy.completedTitle : project.status === "partial" ? copy.partialTitle : copy.title) + '</h2>' +
             '<p>' + e(copy.text) + '</p>' +
             (phase ? '<p class="project-phase-note">' + e(phase) + '</p>' : '') +
           '</div>' +
@@ -1466,6 +1474,7 @@
         '</div>' +
         '<div class="project-stages-track">' +
           '<span class="project-stages-label">' + e(copy.stagesTitle) + '</span>' +
+          (activeStageIndex < 0 ? '<p class="project-phase-note">' + e(copy.unknownStage) + '</p>' : '') +
           '<ol class="project-stages">' + stageItems + '</ol>' +
         '</div>' +
       '</div>';

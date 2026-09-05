@@ -70,10 +70,16 @@
     document.getElementById("edit-username").value = profile.username || "";
     document.getElementById("edit-email").value = profile.email || "";
     document.getElementById("edit-phone").value = profile.phone || "";
+    document.getElementById("edit-website").value = profile.website || "";
+    editForm.querySelectorAll('[data-profile-social]').forEach(function (input) { input.value = (profile.social_links || {})[input.dataset.profileSocial] || ""; });
     document.getElementById("edit-picture").value = profile.avatar_url || "";
     document.getElementById("edit-message").value = profile.bio || "";
     document.getElementById("edit-new-password").value = "";
     document.getElementById("profile-heading-name").textContent = fullName;
+    if (profile.position !== undefined || !document.getElementById("edit-position").value) {
+      document.getElementById("edit-position").value = profile.position || "Հաստիքը նշված չէ";
+      document.getElementById("profile-heading-position").textContent = [profile.position, profile.department].filter(Boolean).join(" · ");
+    }
     var publicLink = document.getElementById("profile-public-link");
     if (publicLink) {
       publicLink.href = profile.username ? "/profile/" + encodeURIComponent(profile.username) : "#";
@@ -116,6 +122,18 @@
       if (bio) bio.textContent = profile.bio || "";
       if (picture) { picture.hidden = !profile.avatar_url; if (profile.avatar_url) picture.src = profile.avatar_url; }
       if (email) { email.hidden = !profile.email; email.href = profile.email ? "mailto:" + profile.email : "#"; email.textContent = profile.email || ""; }
+      var links = document.getElementById('public-profile-links');
+      links.replaceChildren();
+      var labels = { website: 'Կայք', facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn', telegram: 'Telegram' };
+      var urls = Object.assign({}, profile.social_links, { website: profile.website });
+      Object.keys(labels).forEach(function (key) {
+        try {
+          var url = new URL(urls[key]);
+          if (!/^https?:$/.test(url.protocol)) return;
+          var anchor = document.createElement('a');
+          anchor.href = url.href; anchor.textContent = labels[key]; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; links.appendChild(anchor);
+        } catch (error) {}
+      });
     }).catch(function (error) {
       if (publicView) publicView.innerHTML = '<p class="error-msg">' + String(error.message || "Profile not found") + '</p>';
     });
@@ -168,13 +186,19 @@
     if (!file) return;
     if (file.size > 7 * 1024 * 1024) { editStatus.textContent = "Նկարը պետք է լինի մինչև 7MB"; return; }
     editStatus.textContent = "Նկարը բեռնվում է...";
+    pictureFile.disabled = true;
+    editForm.querySelector('[type="submit"]').disabled = true;
     fileToDataUrl(file).then(function (dataUrl) {
       return requestJson("/api/profile/avatar", { method: "POST", body: { file: { name: file.name, mime: file.type, data: dataUrl } } });
     }).then(function (payload) {
       document.getElementById("edit-picture").value = payload.url || "";
       updateAvatar(payload.url, document.getElementById("edit-full-name").value);
       editStatus.textContent = "Նկարը բեռնված է։ Սեղմեք «Պահպանել»։";
-    }).catch(function (error) { editStatus.textContent = error.message; });
+    }).catch(function (error) { editStatus.textContent = error.message; }).finally(function () {
+      pictureFile.disabled = false;
+      pictureFile.value = "";
+      editForm.querySelector('[type="submit"]').disabled = false;
+    });
   });
 
   if (editForm) editForm.addEventListener("submit", function (event) {
@@ -183,6 +207,8 @@
       full_name: document.getElementById("edit-full-name").value.trim(),
       username: document.getElementById("edit-username").value.trim(),
       phone: document.getElementById("edit-phone").value.trim(),
+      website: document.getElementById("edit-website").value.trim(),
+      social_links: Array.from(editForm.querySelectorAll('[data-profile-social]')).reduce(function (links, input) { links[input.dataset.profileSocial] = input.value.trim(); return links; }, {}),
       picture: document.getElementById("edit-picture").value.trim(),
       message: document.getElementById("edit-message").value.trim(),
       newPassword: document.getElementById("edit-new-password").value

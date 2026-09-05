@@ -124,19 +124,22 @@
     var album = byId("admin-workspace-album");
     var api = byId("admin-workspace-api");
     var users = byId("admin-workspace-users");
+    var messages = byId("admin-workspace-messages");
     var collections = byId("admin-sidebar-collections");
     if (cms) cms.hidden = name !== "cms";
     if (media) media.hidden = name !== "media";
     if (album) album.hidden = name !== "album";
     if (api) api.hidden = name !== "api";
     if (users) users.hidden = name !== "users";
+    if (messages) messages.hidden = name !== "messages";
     if (collections) collections.hidden = name !== "cms";
 
-    ["cms", "media", "album", "api", "users"].forEach(function (tabName) {
+    ["cms", "media", "album", "api", "users", "messages"].forEach(function (tabName) {
       var tab = byId("admin-tab-" + tabName);
       if (tab) tab.classList.toggle("is-active", tabName === name);
     });
 
+    if (name === "messages" && window.SmartTechMessages) window.SmartTechMessages.load();
     if (name === "users") {
       fetchUsers();
     }

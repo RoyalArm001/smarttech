@@ -52,10 +52,10 @@
           '</div>' +
           '<form class="contact-form reveal" id="contact-form" action="#" method="post" novalidate>' +
             '<input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>' +
-            '<label>' + e(labels.name) + '<input name="name" autocomplete="name" required></label>' +
-            '<label>' + e(labels.phone) + '<input name="phone" autocomplete="tel" required></label>' +
-            '<label>Email<input name="email" type="email" autocomplete="email"></label>' +
-            '<label>' + e(labels.message) + '<textarea name="message" rows="5" required></textarea></label>' +
+            '<label>' + e(labels.name) + '<input name="name" autocomplete="name" minlength="2" maxlength="120" required></label>' +
+            '<label>' + e(labels.phone) + '<input name="phone" type="tel" autocomplete="tel" maxlength="40" required></label>' +
+            '<label>Email<input name="email" type="email" autocomplete="email" maxlength="254"></label>' +
+            '<label>' + e(labels.message) + '<textarea name="message" rows="5" minlength="10" maxlength="4000" required></textarea></label>' +
             '<button class="button button-primary" type="submit">' + e(labels.send) + '</button>' +
             '<p class="form-status" id="form-status" aria-live="polite"></p>' +
           '</form>' +

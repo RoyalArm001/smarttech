@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#101417">
+    <meta name="robots" content="noindex, follow">
     <title>Login | Smart Tech</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/smarttech-favicon-32.png">
     <link rel="stylesheet" href="/src/styles/base.css">
@@ -14,6 +15,14 @@
     <link rel="stylesheet" href="/src/styles/responsive.css">
   </head>
   <body class="profile-page-shell">
+    <script>
+      (function () {
+        var theme; try { theme = localStorage.getItem('smarttech.theme'); } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') { var hour = new Date().getHours(); theme = hour >= 19 || hour < 7 ? 'dark' : 'light'; }
+        document.body.classList.add('ui-theme-' + theme);
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <header id="site-header" class="site-header"></header>
     <main id="site-main">
       <section class="profile-section">
@@ -24,30 +33,45 @@
             <p id="public-profile-username"></p>
             <p id="public-profile-bio"></p>
             <a id="public-profile-email" href="" hidden></a>
+            <div id="public-profile-links" class="profile-link-list"></div>
           </div>
           <div id="profile-edit-view" class="profile-view profile-edit-view" hidden>
+            <div class="profile-cover" aria-hidden="true"><span>SMART TECH</span></div>
             <div class="profile-edit-heading">
-              <div class="profile-avatar-wrap">
+              <label class="profile-avatar-wrap" aria-label="Փոխել անձնական նկարը">
                 <img id="profile-avatar-preview" alt="Անձնական նկար" hidden>
                 <span id="profile-avatar-fallback">ST</span>
-              </div>
+                <span class="profile-avatar-edit"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h4l2-3h4l2 3h4v13H4z"/><circle cx="12" cy="13" r="4"/></svg> Փոխել</span>
+                <input type="file" id="edit-picture-file" accept="image/jpeg,image/png,image/webp">
+              </label>
               <div>
                 <span class="profile-eyebrow">Իմ անձնական էջը</span>
                 <h1 id="profile-heading-name">Աշխատակից</h1>
+                <p id="profile-heading-position" class="profile-position"></p>
                 <a id="profile-public-link" href="#" target="_blank" rel="noopener">Դիտել հրապարակային էջը</a>
               </div>
             </div>
             <form id="profile-edit-form">
-              <div class="profile-form-grid">
+              <section class="profile-info-card"><h2>Անձնական տվյալներ</h2><p class="profile-card-hint">Ներկայացրեք ձեզ և ձեր մասնագիտական փորձը։</p><div class="profile-form-grid">
                 <label><span>Անուն / ցուցադրվող անուն</span><input type="text" id="edit-full-name" maxlength="140" required></label>
-                <label><span>Username</span><input type="text" id="edit-username" minlength="3" maxlength="80" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,79}" required></label>
+                <label><span>Պրոֆիլի հասցե / username</span><input type="text" id="edit-username" minlength="3" maxlength="80" pattern="[A-Za-z0-9][A-Za-z0-9._-]{2,79}" required></label>
+                <label class="profile-span-2"><span>Հաստիք</span><input type="text" id="edit-position" readonly><small>Հաստիքը նշանակվում է ադմինիստրատորի կողմից։</small></label>
+                <label class="profile-span-2"><span>Իմ մասին</span><textarea id="edit-message" rows="5" maxlength="1000" placeholder="Փորձը, մասնագիտացումը և հետաքրքրությունները…"></textarea></label>
+              </div></section>
+              <section class="profile-info-card"><h2>Կապ</h2><p class="profile-card-hint">Ձեր կոնտակտային տվյալները։</p><div class="profile-form-grid">
                 <label><span>Էլ․ հասցե</span><input type="email" id="edit-email" readonly></label>
                 <label><span>Հեռախոս</span><input type="tel" id="edit-phone" maxlength="60"></label>
-                <label class="profile-span-2"><span>Անձնական նկարի URL</span><input type="text" id="edit-picture"></label>
-                <label class="profile-avatar-upload profile-span-2"><span>Փոխել անձնական նկարը</span><input type="file" id="edit-picture-file" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG կամ WEBP, մինչև 7MB</small></label>
-                <label class="profile-span-2"><span>Իմ մասին</span><textarea id="edit-message" rows="6" maxlength="1000"></textarea></label>
+                <label><span>Կայք</span><input type="url" id="edit-website" maxlength="600" placeholder="https://example.com"></label>
+                <label><span>Facebook</span><input type="url" data-profile-social="facebook" maxlength="600" placeholder="https://facebook.com/…"></label>
+                <label><span>Instagram</span><input type="url" data-profile-social="instagram" maxlength="600" placeholder="https://instagram.com/…"></label>
+                <label><span>LinkedIn</span><input type="url" data-profile-social="linkedin" maxlength="600" placeholder="https://linkedin.com/in/…"></label>
+                <label><span>Telegram</span><input type="url" data-profile-social="telegram" maxlength="600" placeholder="https://t.me/…"></label>
+                <small>Այս հղումները կերևան ձեր հրապարակային պրոֆիլում։</small>
+              </div></section>
+              <input type="hidden" id="edit-picture">
+              <section class="profile-info-card profile-security-card"><h2>Անվտանգություն</h2><div class="profile-form-grid">
                 <label class="profile-span-2"><span>Նոր գաղտնաբառ</span><input type="password" id="edit-new-password" minlength="8" autocomplete="new-password" placeholder="Դատարկ թողնել՝ ընթացիկը պահելու համար"></label>
-              </div>
+              </div></section>
               <div class="profile-actions">
                 <button type="submit" class="btn btn-primary">Պահպանել</button>
                 <button type="button" id="profile-logout-btn" class="btn btn-secondary">Ելք</button>
@@ -57,6 +81,7 @@
             <div id="edit-status" class="status-msg" role="status" aria-live="polite"></div>
           </div>
           <div id="profile-login-view" class="profile-view">
+            <div class="profile-login-intro"><span class="profile-login-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><h1>Բարի վերադարձ</h1><p>Մուտք գործեք ձեր անձնական էջ։</p></div>
             <form id="profile-login-form">
               <label>
                 <span>Էլ. հասցե</span>

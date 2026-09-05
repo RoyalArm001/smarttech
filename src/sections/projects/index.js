@@ -91,10 +91,9 @@
     }).filter(function (project) {
       return project && project.status === "current";
     });
-    if (ordered.length) return ordered;
-    return projects.filter(function (project) {
-      return project.status === "current";
-    });
+    return ordered.concat(projects.filter(function (project) {
+      return project.status === "current" && !ordered.some(function (entry) { return entry.id === project.id; });
+    }));
   }
 
   function renderFeaturedSlide(project, index) {
@@ -115,6 +114,7 @@
           '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
           '<span class="eyebrow">' + e(site.i18n.get("projectsPage.ongoingHighlight")) + "</span>" +
           "<h3>" + e(text.title) + "</h3>" +
+          (site.projectStages.label(project, site.i18n.language) ? '<p class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</p>' : '') +
           storyMarkup(project, text) +
           "<ul>" + works + "</ul>" +
         "</div>" +
@@ -185,6 +185,7 @@
           '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="lazy">' +
           '<div>' +
             '<h3>' + e(text.title) + '</h3>' +
+            (site.projectStages.label(project, site.i18n.language) ? '<p class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</p>' : '') +
             storyMarkup(project, text) +
             '<ul>' + works + '</ul>' +
           '</div>' +
@@ -194,12 +195,17 @@
 
   site.sections.projects = function projects() {
     var e = site.utils.escapeHtml;
-    var projects = site.content.projects || [];
+    var projects = (site.content.projects || []).slice().sort(function (a, b) {
+      return (Number(a.order) || 0) - (Number(b.order) || 0) || String(a.id).localeCompare(String(b.id));
+    });
     var currentProjects = currentProjectsOrdered(projects);
     var heroProject = currentProjects[0] || projects[0];
     var completedProjects = projects.filter(function (project) {
-      return project.status !== "current";
+      return project.status === "completed";
     });
+    var partialProjects = projects.filter(function (project) { return project.status === "partial"; });
+    var partialLabels = { hy: "Մասնակի կատարված նախագծեր", en: "Partially completed projects", ru: "Частично выполненные проекты" };
+    var partialHeading = partialProjects.length ? '<div id="partial-projects"><h2 class="gallery-heading">' + e(partialLabels[site.i18n.language] || partialLabels.hy) + '</h2><div class="projects-grid">' + renderProjectCards(partialProjects) + '</div></div>' : '';
 
     var currentCarousel = renderCurrentProjectsCarousel(currentProjects);
     var completedCards = renderProjectCards(completedProjects);
@@ -239,13 +245,14 @@
         action: site.i18n.get("common.requestSurvey", site.i18n.get("common.proposal")),
         actionKey: "common.requestSurvey",
         href: site.utils.pageUrl("request"),
-        image: heroProject.images[0],
+        image: heroProject && heroProject.images && heroProject.images[0] || "",
         tone: "projects"
       }) +
       '<section id="projects-content" class="section projects-section">' +
         '<div class="container">' +
           currentHeading +
           currentCarousel +
+          partialHeading +
           completedHeading +
           '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completed")) + '</h2>' +
           '<div id="projects-gallery" class="project-gallery reveal">' + gallery + '</div>' +

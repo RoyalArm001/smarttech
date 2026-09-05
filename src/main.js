@@ -721,6 +721,52 @@
       });
   }
 
+  var projectsCarouselCleanup = null;
+  function setupProjectsCarousel() {
+    if (projectsCarouselCleanup) projectsCarouselCleanup();
+    projectsCarouselCleanup = null;
+    var root = document.querySelector('[data-current-projects-carousel]');
+    if (!root) return;
+    var slides = Array.from(root.querySelectorAll('[data-current-project-slide]'));
+    var dots = root.querySelectorAll('[data-carousel-dot]');
+    var meter = root.querySelector('[data-carousel-meter]');
+    var index = 0, timer = null;
+    var delay = Number(root.dataset.interval) || 6500;
+    function stop() { window.clearTimeout(timer); root.classList.add('is-paused'); }
+    function start() {
+      stop();
+      if (!root.isConnected || slides.length < 2 || document.hidden || root.matches(':hover') || root.contains(document.activeElement) || !uiSettings.motion || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.remove('is-paused');
+      if (meter) { meter.classList.remove('is-running'); void meter.offsetWidth; meter.classList.add('is-running'); }
+      timer = window.setTimeout(function () { show(index + 1); }, delay);
+    }
+    function show(next) {
+      index = (next + slides.length) % slides.length;
+      slides.forEach(function (slide, i) {
+        slide.classList.toggle('is-active', i === index);
+        slide.setAttribute('aria-hidden', String(i !== index));
+        slide.inert = i !== index;
+      });
+      dots.forEach(function (dot) {
+        var active = Number(dot.dataset.carouselDot) === index;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-current', String(active));
+      });
+      root.querySelector('[data-carousel-progress]').textContent = (index + 1) + ' / ' + slides.length;
+      start();
+    }
+    root.querySelector('[data-carousel-prev]').onclick = function () { show(index - 1); };
+    root.querySelector('[data-carousel-next]').onclick = function () { show(index + 1); };
+    dots.forEach(function (dot) { dot.onclick = function () { show(Number(dot.dataset.carouselDot)); }; });
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', function () { window.setTimeout(start, 0); });
+    document.addEventListener('visibilitychange', start);
+    projectsCarouselCleanup = function () { stop(); document.removeEventListener('visibilitychange', start); };
+    show(0);
+  }
+
   function render() {
     var page = currentRoute().page;
     var oldStickyDock = document.querySelector(".sticky-contact-dock");
@@ -733,7 +779,7 @@
       site.i18n.setLanguage(preferredLang);
     }
     applyUiSettings();
-    runRouteTransition();
+    if (firstRenderDone) runRouteTransition();
     document.body.classList.remove("is-menu-open");
     document.body.classList.toggle("is-chat-page", page === "chat");
     document.documentElement.lang = preferredLang;
@@ -757,6 +803,7 @@
     setupReveal();
     setupRevealSlides();
     setupHomeServiceStream();
+    setupProjectsCarousel();
     setupFooterYear();
     setupAutoChat();
     setupChatPage();
@@ -782,7 +829,7 @@
     main.className = "route-shell route-" + page;
     main.classList.remove("route-enter");
     void main.offsetWidth;
-    main.classList.add("route-enter");
+    if (firstRenderDone) main.classList.add("route-enter");
   }
 
   function ensureRouteTransition() {
@@ -2056,7 +2103,6 @@
     var status = document.getElementById("form-status");
     if (!form || !status) return;
     var submitButton = form.querySelector("button[type='submit']");
-    var contactInbox = "info@smarttechllc.am";
     var statusFadeTimer = null;
     var contactUnlockTimer = null;
 
@@ -2168,48 +2214,11 @@
       };
     }
 
-    function buildContactRequestPayload(payload) {
-      var contactLine = [payload.name, payload.phone, payload.email].filter(Boolean).join(" · ");
-      var summary = [
-        "Contact page request",
-        "Name: " + payload.name,
-        "Phone: " + payload.phone,
-        "Email: " + (payload.email || "—"),
-        "",
-        "Message:",
-        payload.message
-      ].join("\n");
-
-      return {
-        source: "contact-page",
-        language: activeUiLanguage(),
-        page: window.location.pathname + window.location.search,
-        contact: contactLine,
-        answers: {
-          contact: contactLine
-        },
-        summary: summary,
-        _trap: payload.website || ""
-      };
-    }
-
-    function openEmailFallback(payload) {
-      var body = [
-        "Name: " + payload.name,
-        "Phone: " + payload.phone,
-        "Email: " + payload.email,
-        "",
-        "Message:",
-        payload.message
-      ].join("\n");
-      window.location.href = site.utils.mailTo(contactInbox, "Smart Tech contact request", body);
-      showContactStatus(feedbackText("fallback"), false, true);
-    }
-
     scheduleContactUnlock();
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
+      if (form.classList.contains("is-submitting")) return;
       var payload = payloadFromForm();
       if (!payload.name || payload.name.length < 2 || !payload.phone || !payload.message || payload.website) {
         showContactStatus(feedbackText("error"), false, true);
@@ -2233,12 +2242,13 @@
         return;
       }
 
-      var requestPayload = buildContactRequestPayload(payload);
+      if (!form.reportValidity()) return;
+      var requestPayload = payload;
 
       setBusy(true);
       showContactStatus(feedbackText("sending"), false, false);
 
-      window.fetch("/api/request", {
+      window.fetch("/api/contact", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
@@ -2249,21 +2259,16 @@
             return {};
           }).then(function (data) {
             if (!response.ok) {
-              var apiError = new Error((data && data.error) || "Submit failed");
-              apiError.deliveryFailed = response.status === 503 || (data && data.error) === "Delivery failed";
-              throw apiError;
+              throw new Error((data && data.error) || "Submit failed");
             }
-            if (!data || data.emailSent !== true) {
-              var legacyError = new Error("Delivery failed");
-              legacyError.deliveryFailed = true;
-              throw legacyError;
+            if (!data || data.saved !== true) {
+              throw new Error("Message was not saved");
             }
             return data;
           });
         })
         .then(function (data) {
           site.utils.setContactSubmitLock();
-          site.utils.recordRequestSubmit(requestPayload);
           showContactStatus([
             feedbackText("success"),
             feedbackText("cooldown")
@@ -2274,15 +2279,7 @@
           form.reset();
         })
         .catch(function (error) {
-          var deliveryFailed = !!(error && error.deliveryFailed);
-          showContactStatus(
-            deliveryFailed ? feedbackText("deliveryFailed") : feedbackText("error"),
-            false,
-            true
-          );
-          if (!deliveryFailed) {
-            openEmailFallback(payload);
-          }
+          showContactStatus(feedbackText("error"), false, false);
         })
         .then(function () {
           setBusy(false);
@@ -5095,8 +5092,11 @@
       return Promise.resolve(false);
     }
 
+    var controller = new AbortController();
+    var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
     return window.fetch(cmsApiUrl("/api/content"), {
       cache: "no-store",
+      signal: controller.signal,
       credentials: cmsFetchCredentials()
     }).then(function (response) {
       return response.ok ? response.json() : null;
@@ -5107,7 +5107,7 @@
       return true;
     }).catch(function () {
       return false;
-    });
+    }).finally(function () { window.clearTimeout(timeout); });
   }
 
   function bootSite() {
@@ -5125,7 +5125,11 @@
   window.addEventListener("hashchange", render);
   window.addEventListener("popstate", render);
 
-  setupEntryLoader();
+  applyCurrentTheme();
+  document.getElementById("site-header").innerHTML = site.sections.header();
+  setupNavigation();
+  setupThemeToggle();
+  setupLanguageSwitcher();
 
   loadCmsContent().finally(bootSite);
 

@@ -98,6 +98,15 @@
   function applyProjectsCms(projects) {
     if (Array.isArray(projects) && projects.length) {
       site.content.projects = mergeArrayById(site.content.projects || [], projects, "id");
+      // A saved translation map is authoritative, including cleared fields.
+      // Deep-merging it would resurrect removed translations from the bundle.
+      var translationMaps = new Map();
+      projects.forEach(function (project) {
+        if (project && Object.prototype.hasOwnProperty.call(project, "translations")) translationMaps.set(project.id, project.translations || {});
+      });
+      site.content.projects.forEach(function (project) {
+        if (translationMaps.has(project.id)) project.translations = translationMaps.get(project.id);
+      });
     }
     applyProjectStatusesAndOrder();
   }

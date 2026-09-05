@@ -253,8 +253,16 @@
     <link rel="stylesheet" href="../src/styles/responsive.css">
   </head>
   <body>
+    <script>
+      (function () {
+        var theme; try { theme = localStorage.getItem('smarttech.theme'); } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') { var hour = new Date().getHours(); theme = hour >= 19 || hour < 7 ? 'dark' : 'light'; }
+        document.body.classList.add('ui-theme-' + theme);
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <header id="site-header" class="site-header"></header>
-    <main id="site-main"></main>
+    <main id="site-main"><div class="home-loading-shell" role="status" aria-live="polite"><span>Smart Tech</span><div class="home-loading-lines" aria-hidden="true"><i></i><i></i><i></i></div><p>Բեռնվում է…</p></div></main>
     <footer id="site-footer"></footer>
 
     <script defer src="../src/core/namespace.js"></script>

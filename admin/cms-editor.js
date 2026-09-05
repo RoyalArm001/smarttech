@@ -7,6 +7,8 @@
     data: [],
     meta: null,
     entityIndex: 0,
+    language: "hy",
+    locales: {},
     initialized: false
   };
 
@@ -14,17 +16,18 @@
     projects: {
       singular: "նախագիծ / պրոդուկտ",
       folder: "projects",
-      defaults: { id: "", title: "", status: "current", phase: "", order: 0, featured: false, works: [], images: [], systemImages: [], translations: {} },
+      defaults: { id: "", title: "", status: "current", stage: "", phase: "", order: 0, featured: false, works: [], images: [], systemImages: [], translations: {} },
       fields: [
         { key: "id", label: "ID / slug", type: "text", required: true, hint: "Միայն լատինատառ․ օրինակ՝ new-project" },
         { key: "title", label: "Անվանում", type: "text", required: true },
-        { key: "status", label: "Նախագծի փուլ", type: "select", options: [["current", "Ընթացիկ — ցուցադրել առաջինը"], ["partial", "Մասամբ ավարտված — տեղափոխել հետին պլան"], ["completed", "Ավարտված"]] },
-        { key: "phase", label: "Աշխատանքի ներկա կարգավիճակը / փուլը", type: "text", hint: "Օրինակ՝ մալուխավորում, վահանների մոնտաժ, փորձարկում կամ հանձնում" },
+        { key: "status", label: "Նախագծի ընդհանուր կարգավիճակ", type: "select", options: [["current", "Ընթացիկ — ցուցադրել առաջինը"], ["partial", "Մասամբ ավարտված — տեղափոխել հետին պլան"], ["completed", "Ավարտված"]] },
+        { key: "stage", label: "Աշխատանքի փուլ", type: "select", hint: "Փուլն ընտրեք առանձին։ Նախագիծն ավարտված է միայն «Ավարտված» կարգավիճակը նշելուց հետո։", options: [["", "Փուլը նշված չէ"]].concat(window.SmartTech.projectStages.all.map(function (stage, index) { return [stage.id, (index + 1) + ". " + stage.labels.hy]; })) },
+        { key: "phase", label: "Փուլի լրացուցիչ նկարագրություն", type: "text", hint: "Ոչ պարտադիր․ օրինակ՝ մալուխավորման կամ փորձարկման մանրամասներ" },
         { key: "order", label: "Հերթականություն", type: "number" },
         { key: "featured", label: "Ցուցադրել որպես գլխավոր նախագիծ", type: "checkbox", wide: true },
-        { key: "works", label: "Կատարված աշխատանքներ (մեկը՝ յուրաքանչյուր տողում)", type: "lines", wide: true },
+        { key: "works", label: "Աշխատանքներ (մեկը՝ յուրաքանչյուր տողում)", type: "lines", wide: true },
         { key: "images", label: "Նախագծի նկարներ", type: "images", wide: true },
-        { key: "translations", label: "Թարգմանություններ (JSON)", type: "json", wide: true }
+        { key: "translations", label: "Լեզուներ և թարգմանություններ", type: "translations", wide: true }
       ]
     },
     services: {
@@ -190,7 +193,13 @@
     if (field.type === "select") {
       return '<label class="' + wide.trim() + '"><span>' + escapeHtml(field.label) + '</span><select data-entity-field="' + escapeHtml(field.key) + '">' +
         (field.options || []).map(function (option) { return '<option value="' + escapeHtml(option[0]) + '"' + (String(value) === String(option[0]) ? " selected" : "") + '>' + escapeHtml(option[1]) + '</option>'; }).join("") +
-        '</select></label>';
+        '</select>' + hint + '</label>';
+    }
+    if (field.type === "images") {
+      return '<div class="cms-image-field cms-gallery-field' + wide + '"><span>' + escapeHtml(field.label) + '</span>' +
+        '<input type="hidden" data-entity-field="' + escapeHtml(field.key) + '" data-field-type="images" value="' + escapeHtml((Array.isArray(value) ? value : splitLines(String(value || ""))).join("\n")) + '">' +
+        '<div class="cms-gallery-grid"></div><label class="cms-image-upload">+ Ավելացնել նկար<input type="file" accept="image/jpeg,image/png,image/webp" data-cms-upload="' + escapeHtml(field.key) + '"></label>' +
+        '<small>Առաջին նկարը գլխավորն է։ Փոփոխություններից հետո սեղմեք պահպանել։</small></div>';
     }
     if (field.type === "textarea" || field.type === "lines" || field.type === "json" || field.type === "images") {
       var text = field.type === "json" ? prettyJson(value) : (Array.isArray(value) ? value.join("\n") : String(value || ""));
@@ -224,7 +233,52 @@
   function entityMeta(item) {
     if (state.activeId !== "projects") return item.id || item.href || item.email || "";
     var labels = { current: "Ընթացիկ", partial: "Մասամբ ավարտված", completed: "Ավարտված" };
-    return (labels[item.status] || labels.current) + (item.phase ? " · " + item.phase : "");
+    var stage = window.SmartTech.projectStages.label(item, "hy");
+    return (labels[item.status] || labels.current) + (stage ? " · " + stage : "");
+  }
+
+  var projectTextKeys = ["title", "phase", "works"];
+  var languages = [["hy", "Հայերեն"], ["en", "English"], ["ru", "Русский"]];
+
+  function projectTranslationsHtml(item) {
+    var tabs = languages.map(function (language) {
+      var active = state.language === language[0];
+      return '<button type="button" role="tab" id="cms-language-' + language[0] + '" aria-controls="cms-language-panel-' + language[0] + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '" data-cms-language="' + language[0] + '">' + language[1] + '</button>';
+    }).join("");
+    var panels = languages.map(function (language) {
+      var lang = language[0];
+      var translation = lang === "hy" ? item : (item.translations && item.translations[lang] || {});
+      var dictionary = state.locales[lang] && state.locales[lang].projects && state.locales[lang].projects[item.id] || {};
+      var fields = schemas.projects.fields.filter(function (field) { return projectTextKeys.indexOf(field.key) >= 0; }).map(function (field) {
+        if (lang === "hy") return fieldHtml(field, item[field.key]);
+        var fallback = dictionary[field.key] || item[field.key] || "";
+        var value = translation[field.key] || "";
+        var attrs = ' lang="' + lang + '" data-translation-language="' + lang + '" data-translation-key="' + field.key + '" placeholder="' + escapeHtml(Array.isArray(fallback) ? fallback.join("\n") : fallback) + '"';
+        var control = field.type === "lines"
+          ? '<textarea rows="4"' + attrs + '>' + escapeHtml(Array.isArray(value) ? value.join("\n") : value) + '</textarea>'
+          : '<input type="text"' + attrs + ' value="' + escapeHtml(value) + '">';
+        return '<label class="cms-span-2"><span>' + escapeHtml(field.label) + '</span>' + control + '</label>';
+      }).join("");
+      return '<section role="tabpanel" id="cms-language-panel-' + lang + '" aria-labelledby="cms-language-' + lang + '" data-cms-language-panel="' + lang + '"' + (state.language === lang ? '' : ' hidden') + '><div class="cms-form-grid">' + fields + '</div></section>';
+    }).join("");
+    return '<div class="cms-translations cms-span-2"><h3>Լեզուներ և թարգմանություններ</h3><p>Գրեք հայերեն և պահպանեք։ Փոփոխված տեքստերի անգլերեն ու ռուսերեն թարգմանությունները կստեղծվեն ավտոմատ։ Դրանք կարող եք նաև խմբագրել համապատասխան լեզվի պատուհանում։ Հայերենը նորից փոխելիս այդ դաշտերի թարգմանությունները կթարմացվեն։</p><div class="cms-language-tabs" role="tablist" aria-label="Խմբագրման լեզու">' + tabs + '</div>' + panels + '</div>';
+  }
+
+  function readProjectTranslations(form, base) {
+    // Preserve other languages and fields not exposed by this editor.
+    var output = Object.assign({}, base || {});
+    ["en", "ru"].forEach(function (lang) {
+      var translation = Object.assign({}, output[lang] || {});
+      form.querySelectorAll('[data-translation-language="' + lang + '"]').forEach(function (control) {
+        var key = control.getAttribute("data-translation-key");
+        var value = key === "works" ? splitLines(control.value) : control.value.trim();
+        if (value.length) translation[key] = value;
+        else delete translation[key];
+      });
+      if (Object.keys(translation).length) output[lang] = translation;
+      else delete output[lang];
+    });
+    return output;
   }
 
   function arrayEditorTemplate(data, schema) {
@@ -235,7 +289,11 @@
       return '<button type="button" class="cms-entity-item' + (index === state.entityIndex ? " is-active" : "") + '" data-entity-index="' + index + '"><strong>' + escapeHtml(entityName(item, index)) + '</strong><small>' + escapeHtml(entityMeta(item)) + '</small></button>';
     }).join("");
     var editor = current ? '<form class="cms-form" id="cms-entity-form" data-entity-index="' + state.entityIndex + '"><div class="cms-form-grid">' +
-      schema.fields.map(function (field) { return fieldHtml(field, current[field.key]); }).join("") +
+      schema.fields.map(function (field) {
+        if (field.type === "translations") return projectTranslationsHtml(current);
+        if (state.activeId === "projects" && projectTextKeys.indexOf(field.key) >= 0) return "";
+        return fieldHtml(field, field.key === "stage" ? window.SmartTech.projectStages.selected(current) : current[field.key]);
+      }).join("") +
       '</div><div class="cms-form-actions"><button type="submit" class="cms-button cms-button-primary">Պահպանել ամբողջ բաժինը</button><button type="button" class="cms-button cms-danger" data-delete-entity>Ջնջել այս ' + escapeHtml(schema.singular) + '</button></div></form>' :
       '<div class="cms-entity-empty"><p>Այս բաժնում գրառում չկա։<br>Սեղմեք «+ Ավելացնել»։</p><button type="button" class="cms-button cms-button-primary" data-save-empty>Պահպանել դատարկ բաժինը</button></div>';
     return '<div class="cms-entity-shell"><aside class="cms-entity-list-panel"><div class="cms-entity-toolbar"><strong>Գրառումներ (' + items.length + ')</strong><button type="button" class="cms-add-item" data-add-entity>+ Ավելացնել</button></div><div class="cms-entity-list">' + list + '</div></aside><div class="cms-entity-editor">' + editor + '</div></div>';
@@ -267,6 +325,10 @@
   function readFields(form, schema, base) {
     var output = Object.assign({}, base || {});
     schema.fields.forEach(function (field) {
+      if (field.type === "translations") {
+        output.translations = readProjectTranslations(form, output.translations);
+        return;
+      }
       var control = form.querySelector('[data-entity-field="' + field.key + '"]');
       if (!control) return;
       if (field.type === "checkbox") output[field.key] = !!control.checked;
@@ -289,6 +351,7 @@
     if (!form || !schema || !Array.isArray(state.data)) return;
     var index = Number(form.getAttribute("data-entity-index"));
     state.data[index] = readFields(form, schema, state.data[index]);
+    if (state.activeId === "projects") state.data[index].stage = window.SmartTech.projectStages.selected(state.data[index]);
   }
 
   function readObjectForm(form) {
@@ -314,6 +377,41 @@
       .catch(function (error) { setStatus(error.message, true); });
   }
 
+  function renderGallery(container) {
+    var target = container.querySelector('[data-field-type="images"]');
+    var grid = container.querySelector('.cms-gallery-grid');
+    if (!target || !grid) return;
+    var urls = splitLines(target.value);
+    grid.innerHTML = urls.length ? urls.map(function (url, index) {
+      return '<div class="cms-gallery-card"><img src="' + escapeHtml(url) + '" alt="Նկար ' + (index + 1) + '"><span>' + (index === 0 ? 'Գլխավոր նկար' : 'Նկար ' + (index + 1)) + '</span><div class="cms-gallery-actions">' +
+        '<label class="cms-image-upload">Փոխարինել<input type="file" accept="image/jpeg,image/png,image/webp" data-cms-upload="' + escapeHtml(target.getAttribute('data-entity-field')) + '" data-replace-index="' + index + '"></label>' +
+        (index ? '<button type="button" data-gallery-first="' + index + '">Դարձնել գլխավոր</button>' : '') +
+        '<button type="button" data-gallery-remove="' + index + '">Հեռացնել ցանկից</button></div></div>';
+    }).join('') : '<p class="cms-gallery-empty">Նկարներ դեռ չկան։ Ավելացրեք առաջին նկարը։</p>';
+    grid.querySelectorAll('img').forEach(function (img) {
+      img.addEventListener('error', function () {
+        img.hidden = true;
+        var message = document.createElement('p');
+        message.textContent = 'Նկարը հասանելի չէ։ Փոխարինեք այն։';
+        img.after(message);
+      });
+    });
+    grid.querySelectorAll('[data-cms-upload]').forEach(function (input) {
+      input.addEventListener('change', function () { uploadIntoField(input); });
+    });
+    grid.querySelectorAll('button').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var current = splitLines(target.value);
+        var remove = button.hasAttribute('data-gallery-remove');
+        var index = Number(button.getAttribute(remove ? 'data-gallery-remove' : 'data-gallery-first'));
+        var selected = current.splice(index, 1)[0];
+        if (!remove) current.unshift(selected);
+        target.value = current.join('\n');
+        renderGallery(container);
+      });
+    });
+  }
+
   function uploadIntoField(input) {
     var file = input.files && input.files[0];
     if (!file) return;
@@ -321,31 +419,59 @@
     var field = input.getAttribute("data-cms-upload");
     var schema = schemas[state.activeId] || { folder: "general" };
     setStatus("Նկարը բեռնվում է Supabase Storage...");
+    input.disabled = true;
     fileToDataUrl(file).then(function (dataUrl) {
       return requestJson("/api/admin/media/images", { method: "POST", body: { folder: schema.folder, title: file.name, file: { name: file.name, mime: file.type, data: dataUrl } } });
     }).then(function (payload) {
       var target = input.closest(".cms-image-field").querySelector('[data-entity-field="' + field + '"]');
       if (!target || !payload.asset) return;
       if (target.getAttribute("data-field-type") === "images") {
-        target.value = splitLines(target.value).concat([payload.asset.url]).join("\n");
+        var images = splitLines(target.value);
+        if (input.hasAttribute('data-replace-index')) images[Number(input.getAttribute('data-replace-index'))] = payload.asset.url;
+        else if (images.indexOf(payload.asset.url) < 0) images.push(payload.asset.url);
+        target.value = images.join("\n");
+        renderGallery(input.closest('.cms-image-field'));
       } else {
         target.value = payload.asset.url;
         var preview = input.closest(".cms-image-field").querySelector(".cms-image-preview");
         if (preview) preview.src = payload.asset.url;
       }
       setStatus("Նկարը բեռնված է։ Սեղմեք պահպանել՝ այն գրառմանը կապելու համար։");
-    }).catch(function (error) { setStatus(error.message, true); });
+    }).catch(function (error) { setStatus(error.message, true); }).finally(function () { input.disabled = false; input.value = ''; });
   }
 
   function bindEditorEvents() {
     var panel = byId("cms-editor-panel");
     if (!panel) return;
 
-    panel.querySelectorAll("[data-entity-index]").forEach(function (button) {
+    panel.querySelectorAll("button[data-entity-index]").forEach(function (button) {
       button.addEventListener("click", function () {
         try { commitEntityForm(); } catch (error) { return setStatus("JSON սխալ՝ " + error.message, true); }
         state.entityIndex = Number(button.getAttribute("data-entity-index"));
         renderEditor();
+      });
+    });
+
+    var languageTabs = panel.querySelectorAll("[data-cms-language]");
+    function selectLanguage(button) {
+      state.language = button.getAttribute("data-cms-language");
+      languageTabs.forEach(function (tab) {
+        var active = tab === button;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      panel.querySelectorAll("[data-cms-language-panel]").forEach(function (section) {
+        section.hidden = section.getAttribute("data-cms-language-panel") !== state.language;
+      });
+    }
+    languageTabs.forEach(function (button, index) {
+      button.addEventListener("click", function () { selectLanguage(button); });
+      button.addEventListener("keydown", function (event) {
+        var next = event.key === "ArrowRight" ? (index + 1) % 3 : event.key === "ArrowLeft" ? (index + 2) % 3 : event.key === "Home" ? 0 : event.key === "End" ? 2 : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        selectLanguage(languageTabs[next]);
+        languageTabs[next].focus();
       });
     });
 
@@ -376,8 +502,23 @@
     panel.querySelectorAll("[data-cms-upload]").forEach(function (input) {
       input.addEventListener("change", function () { uploadIntoField(input); });
     });
+    panel.querySelectorAll('.cms-gallery-field').forEach(renderGallery);
 
     var entityForm = byId("cms-entity-form");
+    if (entityForm && state.activeId === "projects") {
+      var statusControl = entityForm.querySelector('[data-entity-field="status"]');
+      var stageControl = entityForm.querySelector('[data-entity-field="stage"]');
+      function syncCompletedStage() {
+        stageControl.disabled = statusControl.value === "completed";
+        if (stageControl.disabled) stageControl.value = "handover";
+      }
+      statusControl.addEventListener("change", syncCompletedStage);
+      syncCompletedStage();
+    }
+    if (entityForm) entityForm.addEventListener("invalid", function (event) {
+      var section = event.target.closest("[data-cms-language-panel]");
+      if (section && section.hidden) selectLanguage(panel.querySelector('[data-cms-language="' + section.getAttribute("data-cms-language-panel") + '"]'));
+    }, true);
     if (entityForm) entityForm.addEventListener("submit", function (event) {
       event.preventDefault();
       try { commitEntityForm(); } catch (error) { return setStatus("JSON սխալ՝ " + error.message, true); }
@@ -420,7 +561,13 @@
     state.activeId = id;
     state.entityIndex = 0;
     renderCollectionNav();
-    return requestJson("/api/admin/cms/" + encodeURIComponent(id)).then(function (payload) {
+    return Promise.all([
+      requestJson("/api/admin/cms/" + encodeURIComponent(id)),
+      id === "projects" ? requestJson("/api/admin/cms/locales").catch(function () { return { data: {} }; }) : Promise.resolve(null)
+    ]).then(function (results) {
+      if (state.activeId !== id) return;
+      var payload = results[0];
+      if (results[1]) state.locales = results[1].data || {};
       state.meta = payload.meta || { label: id, description: "" };
       state.data = payload.data != null ? payload.data : (state.meta.kind === "array" ? [] : {});
       renderEditor();

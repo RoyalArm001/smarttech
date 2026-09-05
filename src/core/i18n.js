@@ -66,11 +66,22 @@
     if (site.i18n.language === fallbackLanguage) {
       return baseProject;
     }
-    if (baseProject.translations && baseProject.translations[site.i18n.language]) {
-      return Object.assign({}, baseProject, baseProject.translations[site.i18n.language]);
-    }
-    var translated = get("projects." + baseProject.id, {});
-    return Object.assign({}, baseProject, translated);
+    var dictionary = activeDictionary();
+    var translated = getPath(dictionary, "projects." + baseProject.id) || {};
+    var custom = baseProject.translations && baseProject.translations[site.i18n.language] || {};
+    var output = Object.assign({}, baseProject);
+    // Resolve each translated field independently. Empty translations must not
+    // erase a title/list, and translated content cannot change status or IDs.
+    [translated, custom].forEach(function (source) {
+      ["title", "phase"].forEach(function (key) {
+        if (typeof source[key] === "string" && source[key].trim()) output[key] = source[key];
+      });
+      if (Array.isArray(source.works)) {
+        var works = source.works.filter(function (value) { return typeof value === "string" && value.trim(); });
+        if (works.length) output.works = works;
+      }
+    });
+    return output;
   }
 
   function pickLanguageDictionary(dictionaries, language) {

@@ -1,0 +1,20 @@
+# Smart Tech LLC
+
+> Smart Tech is an engineering and security systems company based in Yerevan, Armenia.
+
+Smart Tech provides electrical installation, CCTV and video surveillance, fire alarm systems, access control, structured cabling, network infrastructure and building automation (BMS). Services include design, installation, configuration and maintenance for residential, commercial and industrial projects.
+
+Հայերեն՝ Smart Tech-ը Երևանում և Հայաստանի մարզերում իրականացնում է էլեկտրամոնտաժ, տեսահսկման, հրդեհային ազդարարման, մուտքի վերահսկման, ցանցային և շենքերի ավտոմատացման համակարգերի նախագծում, տեղադրում ու սպասարկում։
+
+Русский: Smart Tech выполняет электромонтаж, проектирование, установку и обслуживание видеонаблюдения, пожарной сигнализации, контроля доступа, сетевой инфраструктуры и автоматизации зданий в Ереване и Армении.
+
+## Official sources
+
+- [Company](https://smarttechllc.am/about): company information.
+- [Services](https://smarttechllc.am/services): engineering services and scope.
+- [Projects](https://smarttechllc.am/projects): projects and their current status. Do not describe ongoing projects as completed.
+- [Team](https://smarttechllc.am/team): specialists.
+- [Contact](https://smarttechllc.am/contact): current contact details and enquiries.
+- [Sitemap](https://smarttechllc.am/sitemap.xml): public pages.
+
+Use the linked pages for current facts. Prices, availability and project schedules require confirmation from the company.

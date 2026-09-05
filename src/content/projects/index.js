@@ -88,16 +88,16 @@
     {
       id: "e1-residence",
       title: "E1 Residence",
-      status: "completed",
-      progress: 100,
+      status: "current",
+      progress: 0,
       order: 0,
-      phase: "Էլեկտրամոնտաժային աշխատանքներն ավարտված են",
+      phase: "Էլեկտրամոնտաժային աշխատանքներն ընթացքի մեջ են",
       works: ["Էլեկտրամոնտաժային աշխատանքներ"],
       images: ["https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/e1-residence.webp"],
       systemImages: [system.electrical],
       translations: {
-        en: { title: "E1 Residence", works: ["Electrical installation works"], phase: "Electrical installation works completed" },
-        ru: { title: "E1 Residence", works: ["Электромонтажные работы"], phase: "Электромонтажные работы завершены" }
+        en: { title: "E1 Residence", works: ["Electrical installation works"], phase: "Electrical installation works in progress" },
+        ru: { title: "E1 Residence", works: ["Электромонтажные работы"], phase: "Электромонтажные работы в процессе" }
       }
     },
     {
@@ -265,7 +265,7 @@
     }
   ];
 
-  var activeProjectIds = ["atlantis-yerevan", "sunday-towers", "dalan", "abovyan", "wyndham", "only-one", "bidek", "pallada-tsaghkadzor"];
+  var activeProjectIds = ["atlantis-yerevan", "sunday-towers", "e1-residence", "dalan", "abovyan", "wyndham", "only-one", "bidek", "pallada-tsaghkadzor"];
   site.content.featuredProjectId = "atlantis-yerevan";
   site.content.activeProjectIds = activeProjectIds;
   var projectStatusLabels = {

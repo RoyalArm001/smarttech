@@ -517,8 +517,16 @@ body.is-license-lightbox-open {
   opacity: 1;
 }
 
+.home-loading-shell { min-height: 65vh; padding: clamp(90px, 15vh, 160px) max(24px, calc((100vw - 1180px) / 2)); background: var(--surface-warm); color: var(--ink); }
+.home-loading-shell > span { font-size: 1.1rem; font-weight: 800; color: var(--teal-dark); }
+.home-loading-shell p { color: var(--ink-soft); font-size: .9rem; }
+.home-loading-lines { display: grid; gap: 18px; max-width: 620px; margin: 30px 0; }
+.home-loading-lines i { height: 26px; background: var(--line); border-radius: 8px; }
+.home-loading-lines i:first-child { height: 48px; width: 90%; }
+.home-loading-lines i:last-child { width: 65%; }
+
 .route-shell.route-enter {
-  animation: routeEnter 860ms cubic-bezier(0.22, 0.74, 0.2, 1) both;
+  animation: routeEnter 220ms ease-out both;
 }
 
 .route-transition {

@@ -25,9 +25,9 @@ const publicUrl = client.storage.from("project-images").getPublicUrl(storagePath
 const project = {
   id: "e1-residence",
   title: "E1 Residence",
-  status: "completed",
-  progress: 100,
-  phase: "Էլեկտրամոնտաժային աշխատանքներն ավարտված են",
+  status: "current",
+  progress: 0,
+  phase: "Էլեկտրամոնտաժային աշխատանքներն ընթացքի մեջ են",
   order: 0,
   featured: false,
   works: ["Էլեկտրամոնտաժային աշխատանքներ"],
@@ -37,12 +37,12 @@ const project = {
     en: {
       title: "E1 Residence",
       works: ["Electrical installation works"],
-      phase: "Electrical installation works completed"
+      phase: "Electrical installation works in progress"
     },
     ru: {
       title: "E1 Residence",
       works: ["Электромонтажные работы"],
-      phase: "Электромонтажные работы завершены"
+      phase: "Электромонтажные работы в процессе"
     }
   }
 };
