@@ -182,14 +182,35 @@
       });
 
       (function () {
-        fetch('/api/auth/session')
+        // Նախ ստուգել admin session - եթե admin ա, անմիջապես redirect /admin
+        fetch('/api/admin/session')
           .then(function (res) { return res.json(); })
           .then(function (data) {
-            if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
+            if (data && data.authenticated) {
               window.location.replace('/admin');
+              return;
             }
+            // Admin session չկա, ստուգել user session
+            fetch('/api/auth/session')
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
+                  window.location.replace('/admin');
+                }
+              })
+              .catch(function () {});
           })
-          .catch(function () {});
+          .catch(function () {
+            // Fallback to user session check
+            fetch('/api/auth/session')
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
+                  window.location.replace('/admin');
+                }
+              })
+              .catch(function () {});
+          });
       })();
     </script>
     <script src="/src/sections/profile/cyber-bg.js"></script>

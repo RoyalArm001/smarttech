@@ -103,17 +103,38 @@
   }
 
   function checkSession() {
-    return requestJson("/api/auth/session").then(function (payload) {
-      if (!payload.authenticated) {
-        showOnly("login");
-        return;
-      }
-      if (payload.user && (String(payload.user.role || "").toLowerCase() === "admin" || String(payload.user.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+    // Նախ ստուգել admin session - եթե admin ա, անմիջապես redirect /admin
+    return requestJson("/api/admin/session").then(function (adminPayload) {
+      if (adminPayload && adminPayload.authenticated) {
         window.location.replace("/admin");
         return;
       }
-      return loadPrivateProfile();
-    }).catch(function () { showOnly("login"); });
+      // Admin session չկա, ստուգել user session
+      return requestJson("/api/auth/session").then(function (payload) {
+        if (!payload.authenticated) {
+          showOnly("login");
+          return;
+        }
+        if (payload.user && (String(payload.user.role || "").toLowerCase() === "admin" || String(payload.user.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+          window.location.replace("/admin");
+          return;
+        }
+        return loadPrivateProfile();
+      }).catch(function () { showOnly("login"); });
+    }).catch(function () {
+      // /api/admin/session fail, fallback to user session check
+      return requestJson("/api/auth/session").then(function (payload) {
+        if (!payload.authenticated) {
+          showOnly("login");
+          return;
+        }
+        if (payload.user && (String(payload.user.role || "").toLowerCase() === "admin" || String(payload.user.email || "").toLowerCase() === "admin@smarttechllc.am")) {
+          window.location.replace("/admin");
+          return;
+        }
+        return loadPrivateProfile();
+      }).catch(function () { showOnly("login"); });
+    });
   }
 
   function loadPublicProfile(username) {
