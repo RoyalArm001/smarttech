@@ -3050,7 +3050,7 @@ app.get("/login", async (request, response) => {
     response.end();
     return;
   }
-  sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
+  sendStatic(response, path.resolve(siteDir, "pages", "login.html"));
 });
 
 app.get("/profile", async (request, response) => {
