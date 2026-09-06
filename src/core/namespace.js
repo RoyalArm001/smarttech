@@ -15,7 +15,12 @@
     var stage = stages.find(function (entry) { return entry.id === selected(project); });
     return stage ? (stage.labels[language] || stage.labels.hy) : "";
   }
-  var api = { all: stages, valid: valid, selected: selected, label: label };
+  root.SmartTech = root.SmartTech || {};
+  root.SmartTech.content = root.SmartTech.content || {};
+  root.SmartTech.sections = root.SmartTech.sections || {};
+  root.SmartTech.utils = root.SmartTech.utils || {};
+  root.SmartTech.projectStages = api;
+
   if (typeof module === "object" && module.exports) { module.exports = api; return; }
   // Load optional web fonts without blocking the first page render.
   if (root.document && !root.document.getElementById("smarttech-web-fonts")) {
@@ -27,9 +32,4 @@
     fonts.onload = function () { fonts.media = "all"; };
     root.document.head.appendChild(fonts);
   }
-  root.SmartTech = root.SmartTech || {};
-  root.SmartTech.content = root.SmartTech.content || {};
-  root.SmartTech.sections = root.SmartTech.sections || {};
-  root.SmartTech.utils = root.SmartTech.utils || {};
-  root.SmartTech.projectStages = api;
 })(typeof window !== "undefined" ? window : globalThis);

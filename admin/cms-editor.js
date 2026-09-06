@@ -12,6 +12,16 @@
     initialized: false
   };
 
+  var projectStagesAll = (window.SmartTech && window.SmartTech.projectStages && Array.isArray(window.SmartTech.projectStages.all))
+    ? window.SmartTech.projectStages.all
+    : [
+        { id: "survey", labels: { hy: "Չափագրում և նախագիծ" } },
+        { id: "supply", labels: { hy: "Մատակարարում" } },
+        { id: "installation", labels: { hy: "Տեղադրում" } },
+        { id: "programming", labels: { hy: "Ծրագրավորում" } },
+        { id: "handover", labels: { hy: "Հանձնում" } }
+      ];
+
   var schemas = {
     projects: {
       singular: "նախագիծ / պրոդուկտ",
@@ -21,7 +31,7 @@
         { key: "id", label: "ID / slug", type: "text", required: true, hint: "Միայն լատինատառ․ օրինակ՝ new-project" },
         { key: "title", label: "Անվանում", type: "text", required: true },
         { key: "status", label: "Նախագծի ընդհանուր կարգավիճակ", type: "select", options: [["current", "Ընթացիկ — ցուցադրել առաջինը"], ["partial", "Մասամբ ավարտված — տեղափոխել հետին պլան"], ["completed", "Ավարտված"]] },
-        { key: "stage", label: "Աշխատանքի փուլ", type: "select", hint: "Փուլն ընտրեք առանձին։ Նախագիծն ավարտված է միայն «Ավարտված» կարգավիճակը նշելուց հետո։", options: [["", "Փուլը նշված չէ"]].concat(window.SmartTech.projectStages.all.map(function (stage, index) { return [stage.id, (index + 1) + ". " + stage.labels.hy]; })) },
+        { key: "stage", label: "Աշխատանքի փուլ", type: "select", hint: "Փուլն ընտրեք առանձին։ Նախագիծն ավարտված է միայն «Ավարտված» կարգավիճակը նշելուց հետո։", options: [["", "Փուլը նշված չէ"]].concat(projectStagesAll.map(function (stage, index) { return [stage.id, (index + 1) + ". " + ((stage.labels && stage.labels.hy) || stage.id)]; })) },
         { key: "phase", label: "Փուլի լրացուցիչ նկարագրություն", type: "text", hint: "Ոչ պարտադիր․ օրինակ՝ մալուխավորման կամ փորձարկման մանրամասներ" },
         { key: "order", label: "Հերթականություն", type: "number" },
         { key: "featured", label: "Ցուցադրել որպես գլխավոր նախագիծ", type: "checkbox", wide: true },
