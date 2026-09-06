@@ -1,6 +1,8 @@
 node_modules/
 npm-debug.log*
 .env
+.env.*
+!.env.example
 .smarttech-contact-requests.log
 .smarttech-metrics.dat
 dist/

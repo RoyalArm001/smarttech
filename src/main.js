@@ -769,7 +769,7 @@
     show(0);
   }
 
-  function render() {
+  function render(preserveScroll) {
     var page = currentRoute().page;
     var oldStickyDock = document.querySelector(".sticky-contact-dock");
     if (oldStickyDock && oldStickyDock.parentNode) {
@@ -816,7 +816,7 @@
     initializeGoogleAnalytics();
     trackGoogleAnalyticsPageView();
     loadAdminAlbumPhotosIfNeeded();
-    resetScroll();
+    if (preserveScroll !== true) resetScroll();
 
     if (!firstRenderDone) {
       firstRenderDone = true;
@@ -4543,6 +4543,8 @@
       root.classList.toggle("is-busy", busy);
       if (input) input.disabled = busy;
       if (send) send.disabled = busy;
+      var briefButton = root.querySelector('.chat-page-composer-addon');
+      if (briefButton) briefButton.disabled = busy;
       if (quick) {
         quick.querySelectorAll("button").forEach(function (button) {
           button.disabled = busy;
@@ -5108,14 +5110,14 @@
     }
   }
 
-  function loadCmsContent() {
+  function loadCmsContent(fresh) {
     if (window.location.protocol === "file:" || typeof window.fetch !== "function") {
       return Promise.resolve(false);
     }
 
     var controller = new AbortController();
     var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
-    return window.fetch(cmsApiUrl("/api/content"), {
+    return window.fetch(cmsApiUrl("/api/content" + (fresh === true ? '?refresh=1' : '')), {
       cache: "no-store",
       signal: controller.signal,
       credentials: cmsFetchCredentials()
@@ -5153,6 +5155,21 @@
   setupLanguageSwitcher();
 
   loadCmsContent().finally(bootSite);
+
+  var refreshingPublicContent = false;
+  function refreshPublicProjects() {
+    if (!firstRenderDone || document.hidden || refreshingPublicContent || ['home', 'projects', 'project'].indexOf(currentRoute().page) < 0) return;
+    refreshingPublicContent = true;
+    var previous = site.cms && site.cms.signature;
+    var route = window.location.href;
+    loadCmsContent(true).then(function () {
+      if (route === window.location.href && site.cms && site.cms.signature !== previous) render(true);
+    }).finally(function () { refreshingPublicContent = false; });
+  }
+  window.addEventListener('focus', refreshPublicProjects);
+  document.addEventListener('visibilitychange', refreshPublicProjects);
+  window.addEventListener('storage', function (event) { if (event.key === 'smarttech.cms.updated') refreshPublicProjects(); });
+  window.setInterval(refreshPublicProjects, 30000);
 
   // Make sure PWA button appears if prompt was captured before first render finished
   setupPwaInstallButton();

@@ -387,6 +387,7 @@
     return requestJson("/api/admin/cms/" + encodeURIComponent(state.activeId), { method: "PUT", body: payload })
       .then(function (response) {
         state.data = response.data != null ? response.data : payload;
+        try { localStorage.setItem('smarttech.cms.updated', String(Date.now())); } catch (error) {}
         setStatus((state.meta.label || state.activeId) + " բաժինը պահպանված է։ Փոփոխությունը հասանելի է կայքում։");
         renderEditor();
       })

@@ -13,16 +13,16 @@ try {
 }
 
 async function optimizeImageBuffer(sourceBuffer, options) {
-  if (!sharpModule) return sourceBuffer;
+  if (!sharpModule) throw httpError(503, "Image processing is unavailable");
   try {
     const opts = options || {};
-    return await sharpModule(sourceBuffer, { failOn: "warning" })
+    return await sharpModule(sourceBuffer, { failOn: "warning", limitInputPixels: 40000000 })
       .rotate()
       .resize({ width: opts.width || 1600, height: opts.height || 1200, fit: "inside", withoutEnlargement: true })
       .webp({ quality: opts.quality || 82 })
       .toBuffer();
   } catch (e) {
-    return sourceBuffer;
+    throw httpError(400, "Invalid image or image dimensions are too large");
   }
 }
 const { createClient } = require("@supabase/supabase-js");
@@ -470,9 +470,9 @@ app.use((request, response, next) => {
   next();
 });
 
-async function fetchSupabasePublicData() {
-  if (publicContentCache && Date.now() - publicContentCache.savedAt < 15000) return publicContentCache.data;
-  const recent = publicContentCache && Date.now() - publicContentCache.savedAt < 300000 ? publicContentCache.data : null;
+async function fetchSupabasePublicData(fresh = false) {
+  if (!fresh && publicContentCache && Date.now() - publicContentCache.savedAt < 15000) return publicContentCache.data;
+  const recent = !fresh && publicContentCache && Date.now() - publicContentCache.savedAt < 300000 ? publicContentCache.data : null;
   if (publicContentPending) return recent || publicContentPending;
   const generation = publicContentGeneration;
   const pending = readSupabasePublicData().then((data) => {
@@ -511,6 +511,7 @@ async function readSupabasePublicData() {
         order: row.display_order,
         featured: row.featured,
         systemImages: row.system_images,
+        stage: projectStages.selected(Object.assign({}, row.source_data || {}, { status: row.status })),
         progress: Number.isFinite(Number(row.progress)) ? Number(row.progress) : ((row.source_data && row.source_data.progress) || 0),
         phase: row.phase || (row.source_data && row.source_data.phase) || ""
       }));
@@ -760,12 +761,12 @@ async function getAdminSession(request) {
   const user = authResult.data && authResult.data.user;
   if (authResult.error || !user) return null;
 
-  let profileResult = await adminClient.from("profiles").select("id,email,full_name,username,role").eq("id", user.id).maybeSingle();
+  let profileResult = await adminClient.from("profiles").select("id,email,full_name,username,role,is_active").eq("id", user.id).maybeSingle();
   if (profileResult.error) {
-    profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", user.id).maybeSingle();
+    profileResult = await adminClient.from("profiles").select("id,email,full_name,role,is_active").eq("id", user.id).maybeSingle();
   }
   const isOwner = String(user.email || "").toLowerCase() === ownerAdminEmail;
-  if (profileResult.error || (!profileResult.data && !isOwner)) return null;
+  if (profileResult.error || !profileResult.data || profileResult.data.is_active === false) return null;
   const userRole = String((profileResult.data && profileResult.data.role) || (isOwner ? "admin" : "")).toLowerCase();
   if (!isOwner && userRole !== "admin") return null;
 
@@ -813,7 +814,8 @@ async function getUserSession(request) {
   const adminClient = getSupabaseAdminClient();
   if (adminClient) {
     try {
-      let profileResult = await adminClient.from("profiles").select("role,username,full_name").eq("id", user.id).maybeSingle();
+      let profileResult = await adminClient.from("profiles").select("role,username,full_name,is_active").eq("id", user.id).maybeSingle();
+      if (profileResult.error || !profileResult.data || profileResult.data.is_active === false) return null;
       if (profileResult.data) {
         if (profileResult.data.role) {
           role = String(profileResult.data.role).toLowerCase() === "admin" || isOwner ? "admin" : profileResult.data.role;
@@ -825,8 +827,9 @@ async function getUserSession(request) {
           fullName = profileResult.data.full_name;
         }
       }
-    } catch (e) {}
+    } catch (e) { return null; }
   }
+  else return null;
 
   return {
     userId: user.id,
@@ -892,12 +895,6 @@ function requestOriginHostsMatch(requestHost, originHost) {
   if (req === origin) return true;
   if (normalizeRequestHost(req) === normalizeRequestHost(origin)) {
     return hostAllowedForRequests(req) && hostAllowedForRequests(origin);
-  }
-  if (process.env.VERCEL && process.env.VERCEL_URL) {
-    const vercelHost = String(process.env.VERCEL_URL).split(":")[0].toLowerCase();
-    if (req === vercelHost || origin === vercelHost) {
-      return true;
-    }
   }
   return false;
 }
@@ -1744,6 +1741,7 @@ app.use((request, response, next) => {
 
 app.use((request, response, next) => {
   response.setHeader("X-Content-Type-Options", "nosniff");
+  if (request.path.startsWith('/api/')) response.setHeader('Cache-Control', 'no-store');
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   response.setHeader("X-Frame-Options", "DENY");
   response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
@@ -1805,7 +1803,9 @@ app.get("/api/album", publicApiLimiter, async (request, response) => {
 });
 
 app.get("/api/content", publicApiLimiter, async (request, response) => {
-  const supabaseData = await fetchSupabasePublicData();
+  const supabaseData = await fetchSupabasePublicData(request.query.refresh === '1');
+  response.setHeader('Cache-Control', 'no-store');
+  if (!supabaseData && request.query.refresh === '1') return jsonResponse(response, 503, { error: 'Content refresh unavailable' });
   jsonResponse(response, 200, supabaseData || publicCmsPayload());
 });
 
@@ -1872,7 +1872,7 @@ app.post("/api/request", requestSubmitLimiter, requestSubmitHourlyLimiter, expre
 }
 
 if (appMode.isWebEnabled()) {
-  app.post("/api/auth/login", express.json({ limit: "4kb" }), sameOriginGuard, async (request, response) => {
+  app.post("/api/auth/login", adminLoginLimiter, express.json({ limit: "4kb" }), sameOriginGuard, async (request, response) => {
     const email = String((request.body && request.body.email) || "").trim().toLowerCase();
     const password = String((request.body && request.body.password) || "");
     const client = getSupabaseClient();
@@ -1904,7 +1904,8 @@ if (appMode.isWebEnabled()) {
         avatar_url: data.user.user_metadata && data.user.user_metadata.avatar_url ? data.user.user_metadata.avatar_url : null,
         updated_at: new Date().toISOString()
       };
-      let existingProfile = await profileClient.from("profiles").select("id,username,role,full_name").eq("id", data.user.id).maybeSingle();
+      let existingProfile = await profileClient.from("profiles").select("id,username,role,full_name,is_active").eq("id", data.user.id).maybeSingle();
+      if (existingProfile.error || !existingProfile.data || existingProfile.data.is_active === false) return jsonResponse(response, 403, { error: "Account is not active" });
       if (existingProfile.error) {
         existingProfile = await profileClient.from("profiles").select("id,role,full_name").eq("id", data.user.id).maybeSingle();
       }
@@ -2044,7 +2045,7 @@ if (appMode.isWebEnabled()) {
     if (result.error) return jsonResponse(response, 500, { error: result.error.message });
     if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
     const authUser = await client.auth.admin.getUserById(request.userSession.userId);
-    const employeeId = authUser.data && authUser.data.user && authUser.data.user.user_metadata && authUser.data.user.user_metadata.employee_id;
+    const employeeId = authUser.data && authUser.data.user && authUser.data.user.app_metadata && authUser.data.user.app_metadata.employee_id;
     if (employeeId) {
       const member = await client.from("team_members").select("title,department").eq("id", employeeId).maybeSingle();
       if (member.error) return jsonResponse(response, 500, { error: "Հաստիքի տվյալները չհաջողվեց բեռնել։" });
@@ -2105,7 +2106,7 @@ if (appMode.isWebEnabled()) {
     if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
 
     const authUser = await client.auth.admin.getUserById(userId);
-    const employeeId = authUser.data && authUser.data.user && authUser.data.user.user_metadata && authUser.data.user.user_metadata.employee_id;
+    const employeeId = authUser.data && authUser.data.user && authUser.data.user.app_metadata && authUser.data.user.app_metadata.employee_id;
     if (employeeId) {
       const member = await client.from("team_members").select("id,source_data").eq("id", employeeId).maybeSingle();
       if (!member.error && member.data) {
@@ -2333,9 +2334,11 @@ app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "64
       for (const item of items) {
         const old = (previous.data || []).find((row) => row.id === item.id);
         const source = {};
+        const changedFields = new Set();
         for (const key of ["title", "phase", "works"]) {
           const value = key === "works" ? (Array.isArray(item[key]) ? item[key] : []) : String(item[key] || "");
           const changed = !old || JSON.stringify(value) !== JSON.stringify(old[key] || (key === "works" ? [] : ""));
+          if (changed) changedFields.add(key);
           const missing = ["en", "ru"].some((lang) => !item.translations || !item.translations[lang] || !item.translations[lang][key] || (Array.isArray(item.translations[lang][key]) && !item.translations[lang][key].length));
           if (changed || (value.length && missing)) source[key] = value;
         }
@@ -2346,7 +2349,7 @@ app.put("/api/admin/cms/:collection", adminApiLimiter, express.json({ limit: "64
           for (const lang of ["en", "ru"]) {
             item.translations[lang] = Object.assign({}, item.translations[lang]);
             for (const key of Object.keys(source)) {
-              if (translated[lang] && translated[lang][key] && (!item.translations[lang][key] || changed)) {
+              if (translated[lang] && translated[lang][key] && (!item.translations[lang][key] || changedFields.has(key))) {
                 item.translations[lang][key] = translated[lang][key];
               }
             }
@@ -2501,10 +2504,10 @@ app.post("/api/admin/login", adminLoginLimiter, express.json({ limit: "4kb" }), 
 
   let profileResult = await adminClient.from("profiles").select("id,email,full_name,username,role,is_active").eq("id", authUser.id).maybeSingle();
   if (profileResult.error) {
-    profileResult = await adminClient.from("profiles").select("id,email,full_name,role").eq("id", authUser.id).maybeSingle();
+    profileResult = await adminClient.from("profiles").select("id,email,full_name,role,is_active").eq("id", authUser.id).maybeSingle();
   }
   const isOwner = String(authUser.email || "").toLowerCase() === ownerAdminEmail;
-  if (profileResult.error || (!profileResult.data && !isOwner) || (profileResult.data && profileResult.data.is_active === false && !isOwner)) {
+  if (profileResult.error || !profileResult.data || profileResult.data.is_active === false) {
     await authClient.auth.signOut();
     jsonResponse(response, 403, { error: "This profile is inactive or not configured" });
     return;
@@ -2722,7 +2725,7 @@ async function listSupabaseUsers(client) {
   }
   if (profileResult.error) throw profileResult.error;
   const profilesById = new Map((profileResult.data || []).map((profile) => [profile.id, profile]));
-  const employeeIds = authUsers.map((user) => cleanAdminText(user.user_metadata && user.user_metadata.employee_id, 80)).filter(Boolean);
+  const employeeIds = authUsers.map((user) => cleanAdminText(user.app_metadata && user.app_metadata.employee_id, 80)).filter(Boolean);
   const teamResult = employeeIds.length
     ? await client.from("team_members").select("id,title,email,image_path,source_data").in("id", employeeIds)
     : { data: [], error: null };
@@ -2730,7 +2733,7 @@ async function listSupabaseUsers(client) {
   const teamById = new Map((teamResult.data || []).map((member) => [member.id, member]));
   return authUsers.map((user) => {
     const profile = profilesById.get(user.id) || {};
-    const employeeId = user.user_metadata && user.user_metadata.employee_id ? user.user_metadata.employee_id : "";
+    const employeeId = user.app_metadata && user.app_metadata.employee_id ? user.app_metadata.employee_id : "";
     const member = teamById.get(employeeId) || null;
     const memberSource = member && member.source_data || {};
     return {
@@ -2764,7 +2767,7 @@ app.get("/api/admin/team-options", adminApiLimiter, requireAdmin, async (request
   if (authResult.error) return jsonResponse(response, 500, { error: authResult.error.message });
   const accountsByMember = new Map();
   (authResult.data.users || []).forEach((user) => {
-    const linkedId = user.user_metadata && user.user_metadata.employee_id;
+    const linkedId = user.app_metadata && user.app_metadata.employee_id;
     if (linkedId) accountsByMember.set(linkedId, { userId: user.id, email: user.email || "" });
   });
   return jsonResponse(response, 200, {
@@ -2816,14 +2819,15 @@ app.post("/api/admin/users", adminApiLimiter, express.json({ limit: "10kb" }), s
     const memberAvatar = memberResult.data.image_path || memberSource.image || "";
     const existingAccounts = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
     if (existingAccounts.error) throw existingAccounts.error;
-    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.user_metadata && user.user_metadata.employee_id === employeeId);
+    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.app_metadata && user.app_metadata.employee_id === employeeId);
     if (duplicateAccount) return jsonResponse(response, 409, { error: "This team member already has a login account" });
 
     const created = await client.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { employee_id: employeeId, full_name: memberName, avatar_url: memberAvatar || null }
+      app_metadata: { employee_id: employeeId },
+      user_metadata: { full_name: memberName, avatar_url: memberAvatar || null }
     });
     if (created.error || !created.data.user) throw created.error || new Error("User creation failed");
 
@@ -2868,7 +2872,7 @@ app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" })
     const username = data.username !== undefined
       ? cleanAdminText(data.username, 80).toLowerCase().replace(/[^a-z0-9._-]/g, "")
       : undefined;
-    const previousEmployeeId = (current.data.user.user_metadata && current.data.user.user_metadata.employee_id) || "";
+    const previousEmployeeId = (current.data.user.app_metadata && current.data.user.app_metadata.employee_id) || "";
     const employeeId = data.employeeId !== undefined
       ? cleanAdminText(data.employeeId, 80)
       : previousEmployeeId;
@@ -2881,12 +2885,13 @@ app.put("/api/admin/users/:id", adminApiLimiter, express.json({ limit: "10kb" })
     const memberAvatar = memberResult.data.image_path || memberSource.image || "";
     const existingAccounts = await client.auth.admin.listUsers({ page: 1, perPage: 1000 });
     if (existingAccounts.error) throw existingAccounts.error;
-    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.id !== id && user.user_metadata && user.user_metadata.employee_id === employeeId);
+    const duplicateAccount = (existingAccounts.data.users || []).find((user) => user.id !== id && user.app_metadata && user.app_metadata.employee_id === employeeId);
     if (duplicateAccount) return jsonResponse(response, 409, { error: "This team member already has a login account" });
     const authChanges = {
       email,
       email_confirm: true,
-      user_metadata: Object.assign({}, current.data.user.user_metadata || {}, { employee_id: employeeId, full_name: memberName, avatar_url: memberAvatar || null })
+      app_metadata: Object.assign({}, current.data.user.app_metadata || {}, { employee_id: employeeId }),
+      user_metadata: Object.assign({}, current.data.user.user_metadata || {}, { full_name: memberName, avatar_url: memberAvatar || null })
     };
     if (data.password) authChanges.password = String(data.password);
     if (data.password && String(data.password).length < 8) return jsonResponse(response, 400, { error: "Password must contain at least 8 characters" });
@@ -3150,6 +3155,13 @@ function safeWebPath(urlPath) {
   }
 
   var cleanPath = decoded.replace(/^\/+/g, "").replace(/\/+$/, "");
+  var publicPath = cleanPath.replace(/\\/g, "/");
+  if (publicPath.split('/').some(part => part.startsWith('.'))) return null;
+  const publicAsset = /^(?:src|img)\/.*\.(?:js|css|png|jpe?g|webp|svg|ico|gif|avif|woff2?|ttf|pdf)$/i.test(publicPath);
+  const publicPage = /^(?:pages\/)?[a-z0-9_-]+(?:\.html)?$/i.test(publicPath);
+  const publicRoot = ['', 'manifest.json', 'robots.txt', 'sitemap.xml', 'llms.txt', 'sw.js', 'service-worker.js', 'favicon.ico'].includes(publicPath);
+  const publicDetail = /^(?:profile|blog)\/[a-z0-9._-]+$/i.test(publicPath);
+  if (!publicAsset && !publicPage && !publicRoot && !publicDetail) return null;
   var normalized = path.normalize(cleanPath);
   if (normalized === ".") {
     normalized = "";
@@ -3315,6 +3327,7 @@ function serveAdmin(request, response) {
 
   if (pathname.indexOf("/admin/") === 0) {
     const asset = pathname.slice("/admin/".length);
+    if (!/^[a-z0-9_-]+\.(?:js|css|html)$/i.test(asset)) return response.status(404).send("Not found");
     const target = path.resolve(siteDir, "admin", asset);
     if (target.startsWith(path.resolve(siteDir, "admin") + path.sep) && fs.existsSync(target) && fs.statSync(target).isFile()) {
       sendStatic(response, target);
@@ -3379,7 +3392,7 @@ function serveWeb(request, response) {
       "    firebaseDatabaseUrl: " + jsString(firebaseConfig.databaseUrl) + ",",
       "    firebaseStatsPath: " + jsString(firebaseConfig.statsPath) + ",",
       "    firebaseApiKey: " + jsString(firebaseConfig.apiKey) + ",",
-      "    firebaseAuthToken: " + jsString(firebaseConfig.authToken) + ",",
+      "    firebaseAuthToken: \"\",",
       "    cmsApiBaseUrl: " + jsString(cmsApiBaseUrl),
       "  });",
       "})(window);",

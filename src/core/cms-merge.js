@@ -6,6 +6,7 @@
 
     var output = Object.assign({}, target && typeof target === "object" && !Array.isArray(target) ? target : {});
     Object.keys(source).forEach(function (key) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
       var next = source[key];
       if (next && typeof next === "object" && !Array.isArray(next) &&
         output[key] && typeof output[key] === "object" && !Array.isArray(output[key])) {
@@ -96,8 +97,10 @@
   }
 
   function applyProjectsCms(projects) {
-    if (Array.isArray(projects) && projects.length) {
+    if (Array.isArray(projects)) {
       site.content.projects = mergeArrayById(site.content.projects || [], projects, "id");
+      var incomingIds = new Set(projects.map(function (project) { return project.id; }));
+      site.content.projects = site.content.projects.filter(function (project) { return incomingIds.has(project.id); });
       // A saved translation map is authoritative, including cleared fields.
       // Deep-merging it would resurrect removed translations from the bundle.
       var translationMaps = new Map();
