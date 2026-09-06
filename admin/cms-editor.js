@@ -257,12 +257,18 @@
     }).join("");
     var panels = languages.map(function (language) {
       var lang = language[0];
-      var translation = lang === "hy" ? item : (item.translations && item.translations[lang] || {});
+      var hasTranslations = item.translations && typeof item.translations === "object";
+      var translation = lang === "hy" ? item : (hasTranslations && item.translations[lang] || {});
       var dictionary = state.locales[lang] && state.locales[lang].projects && state.locales[lang].projects[item.id] || {};
       var fields = schemas.projects.fields.filter(function (field) { return projectTextKeys.indexOf(field.key) >= 0; }).map(function (field) {
         if (lang === "hy") return fieldHtml(field, item[field.key]);
         var fallback = dictionary[field.key] || item[field.key] || "";
-        var value = translation[field.key] || "";
+        var value = "";
+        if (hasTranslations && item.translations[lang]) {
+          value = translation[field.key] || "";
+        } else if (dictionary[field.key]) {
+          value = dictionary[field.key];
+        }
         var attrs = ' lang="' + lang + '" data-translation-language="' + lang + '" data-translation-key="' + field.key + '" placeholder="' + escapeHtml(Array.isArray(fallback) ? fallback.join("\n") : fallback) + '"';
         var control = field.type === "lines"
           ? '<textarea rows="4"' + attrs + '>' + escapeHtml(Array.isArray(value) ? value.join("\n") : value) + '</textarea>'
