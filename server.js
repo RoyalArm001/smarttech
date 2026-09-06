@@ -5,7 +5,26 @@ const { execFile } = require("child_process");
 const { URL } = require("url");
 const express = require("express");
 const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
-const sharp = require("sharp");
+let sharpModule = null;
+try {
+  sharpModule = require("sharp");
+} catch (e) {
+  console.warn("Optional sharp module unavailable:", e && e.message ? e.message : e);
+}
+
+async function optimizeImageBuffer(sourceBuffer, options) {
+  if (!sharpModule) return sourceBuffer;
+  try {
+    const opts = options || {};
+    return await sharpModule(sourceBuffer, { failOn: "warning" })
+      .rotate()
+      .resize({ width: opts.width || 1600, height: opts.height || 1200, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: opts.quality || 82 })
+      .toBuffer();
+  } catch (e) {
+    return sourceBuffer;
+  }
+}
 const { createClient } = require("@supabase/supabase-js");
 const { GoogleGenAI } = require("@google/genai");
 const OpenAI = require("openai");
@@ -1033,11 +1052,7 @@ async function saveAlbumUpload(upload) {
 
   fs.mkdirSync(adminAlbumUploadDir, { recursive: true });
   const fileName = Date.now() + "-" + randomToken(8) + ".webp";
-  const optimized = await sharp(sourceBuffer, { failOn: "warning" })
-    .rotate()
-    .resize({ width: 1600, height: 1200, fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 82 })
-    .toBuffer();
+  const optimized = await optimizeImageBuffer(sourceBuffer, { width: 1600, height: 1200, quality: 82 });
   const client = getSupabaseAdminClient();
   if (client) {
     const objectPath = "album/" + fileName;
@@ -1073,11 +1088,7 @@ async function saveCmsMediaUpload(upload, folder, title, ownerId) {
   const bucket = safeFolder === "team" ? "avatars" : "project-images";
   const fileName = Date.now() + "-" + randomToken(8) + ".webp";
   const objectPath = "cms/" + safeFolder + "/" + fileName;
-  const optimized = await sharp(sourceBuffer, { failOn: "warning" })
-    .rotate()
-    .resize({ width: 1800, height: 1400, fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 84 })
-    .toBuffer();
+  const optimized = await optimizeImageBuffer(sourceBuffer, { width: 1800, height: 1400, quality: 84 });
   const client = getSupabaseAdminClient();
   if (!client) throw httpError(503, "Supabase is not configured");
   const uploaded = await client.storage.from(bucket).upload(objectPath, optimized, { upsert: false, contentType: "image/webp" });
