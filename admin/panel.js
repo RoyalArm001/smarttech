@@ -96,7 +96,19 @@
           payload = { error: text || "Unexpected response" };
         }
         if (!response.ok) {
-          throw new Error(payload.error || "Request failed");
+          var errMessage = "Request failed";
+          if (typeof payload.error === "string") {
+            errMessage = payload.error;
+          } else if (payload.error && typeof payload.error.message === "string") {
+            errMessage = payload.error.message;
+          } else if (typeof payload.message === "string") {
+            errMessage = payload.message;
+          } else if (payload.error && typeof payload.error.code === "string") {
+            errMessage = "Error " + payload.error.code;
+          } else if (payload.error) {
+            try { errMessage = JSON.stringify(payload.error); } catch (e) { errMessage = "Request failed"; }
+          }
+          throw new Error(errMessage);
         }
         return payload;
       });

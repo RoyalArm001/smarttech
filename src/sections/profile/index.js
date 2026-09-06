@@ -45,7 +45,13 @@
         return response.text().then(function (text) {
           var payload = {};
           try { payload = text ? JSON.parse(text) : {}; } catch (error) { payload = {}; }
-          if (!response.ok) throw new Error(payload.error || "Հարցումը չհաջողվեց");
+          if (!response.ok) {
+            var err = "Հարցումը չհաջողվեց";
+            if (typeof payload.error === "string") err = payload.error;
+            else if (payload.error && typeof payload.error.message === "string") err = payload.error.message;
+            else if (typeof payload.message === "string") err = payload.message;
+            throw new Error(err);
+          }
           return payload;
         });
       });

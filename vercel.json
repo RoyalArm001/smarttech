@@ -9,10 +9,14 @@
   "cleanUrls": true,
   "regions": ["fra1"],
   "rewrites": [
-    { "source": "/profile/:username", "destination": "/profile" }
+    { "source": "/profile/:username", "destination": "/profile" },
+    { "source": "/api/:match*", "destination": "/api/[...path]" }
   ],
   "functions": {
     "api/[...path].js": {
+      "maxDuration": 30
+    },
+    "api/**/*.js": {
       "maxDuration": 30
     }
   },
