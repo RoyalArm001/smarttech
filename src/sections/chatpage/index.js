@@ -19,10 +19,10 @@
     return site.i18n.pickLanguageDictionary({
       hy: {
         title: "Smart Tech AI",
-        input: "Գրեք հարցը...",
+        input: "Նկարագրեք խնդիրը կամ գրեք ձեր հարցը…",
         send: "Ուղարկել",
         typing: "Գրում է...",
-        survey: "Նախագծի բրիֆ"
+        survey: "Լրացնել նախագծի հայտ"
       },
       en: {
         title: "Smart Tech AI",

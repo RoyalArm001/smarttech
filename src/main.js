@@ -26,6 +26,8 @@
   var chatPageBlockMs = 2 * 24 * 60 * 60 * 1000;
   var chatSurveyState = null;
   var chatLatestSurveyPayload = null;
+  var chatBriefPayloads = new WeakMap();
+  var chatRequestsInFlight = new Set();
   var backToTopUi = null;
   var licenseViewerUi = null;
   var licenseViewerReady = false;
@@ -3027,19 +3029,19 @@
         profilePanelSubmit: "Շարունակել չատը",
         profilePurposeLabel: "Ինչու եք գրում",
         profilePurposeCustom: "Իմ տարբերակը",
-        profileComplete: "Շնորհակալություն, {name}։ Հիմա կարող եք հարցնել ինչ ցանկանում եք։",
+        profileComplete: "Շնորհակալություն, {name}։ Նկարագրեք ձեր խնդիրը կամ հարցրեք մեր ծառայությունների մասին։",
         profileInvalidName: "Խնդրում ենք գրել առնվազն 2 նիշ։",
         profileInvalidEmail: "Խնդրում ենք գրել վավեր էլ. հասցե, օրինակ՝ name@example.com",
         profileInvalidPhone: "Խնդրում ենք գրել վավեր հեռախոսահամար (առնվազն 6 թվանշան)։",
         profileQuestions: [
-          { id: "firstName", label: "Անուն", question: "Ինչո՞վ ենք դիմել ձեզ։ Գրեք անունը։" },
+          { id: "firstName", label: "Անուն", question: "Ինչպե՞ս դիմենք ձեզ։ Գրեք ձեր անունը։" },
           { id: "lastName", label: "Ազգանուն", question: "Գրեք ազգանունը։" },
           { id: "email", label: "Էլ. փոստ", question: "Ինչ էլ. հասցեով կապվենք ձեզ հետ։" },
           { id: "phone", label: "Հեռախոս", question: "Գրեք հեռախոսահամարը։" },
           {
             id: "purpose",
             label: "Նպատակ",
-            question: "Ինչո՞վ ենք կարող օգնել։ Ընտրեք կամ գրեք ձեր տարբերակը։",
+            question: "Ինչո՞վ կարող ենք օգնել։ Ընտրեք կամ գրեք ձեր տարբերակը։",
             options: ["Տեսահսկում", "Գին և հաշվարկ", "Ժամկետներ", "Ծառայություններ", "Նախագծի բրիֆ", "Կապ մասնագետի հետ", "Այլ"]
           }
         ],
@@ -3051,7 +3053,7 @@
           { id: "timeline", label: "Ժամկետներ" },
           { id: "contact", label: "Կապ մեզ հետ" }
         ],
-        surveyIntro: "Լավ, 6 արագ հարցով հավաքենք նախագծի բրիֆը։ Ընտրեք պատասխանը կամ գրեք ձեր տարբերակը։",
+        surveyIntro: "Հավաքենք նախագծի տվյալները՝ ծառայությունը, օբյեկտը, հասցեն, աշխատանքի ծավալը և ցանկալի ժամկետը։ Վերջում կտեսնեք ամփոփումը և ինքներդ կուղարկեք այն։",
         surveyChoiceHint: "Ընտրեք պատասխանը",
         surveyQuestions: [
           {
@@ -3069,20 +3071,18 @@
           {
             id: "location",
             label: "Վայր",
-            question: "Ո՞ր քաղաքում է օբյեկտը։",
-            options: ["Երևան", "Մարզ", "Այլ քաղաք"]
+            question: "Ո՞ր քաղաքում կամ բնակավայրում է օբյեկտը։ Կարող եք նշել նաև թաղամասը կամ հասցեն։"
           },
           {
             id: "size",
             label: "Ծավալ",
-            question: "Մոտավոր ծավալը։",
-            options: ["Փոքր", "Միջին", "Մեծ", "Կգրեմ ես"]
+            question: "Ի՞նչ ծավալի աշխատանք է պետք՝ մոտավոր մակերեսը, հարկերի կամ սարքերի քանակը։ Օրինակ՝ 200 մ² գրասենյակ, 8 տեսախցիկ։ Եթե դեռ չգիտեք, գրեք «Պետք է չափագրում»։"
           },
           {
             id: "timeline",
             label: "Ժամկետ",
             question: "Ե՞րբ եք ուզում սկսել։",
-            options: ["Անհրաժեշտ", "1 շաբաթ", "2-4 շաբաթ", "1+ ամիս", "Դեռ չգիտեմ"]
+            options: ["Հնարավորինս շուտ", "1 շաբաթից", "2–4 շաբաթից", "Մեկ ամսից կամ ավելի ուշ", "Դեռ որոշված չէ"]
           },
           {
             id: "contact",
@@ -3090,19 +3090,19 @@
             question: "Ո՞ւմ հետ կապվենք։ Գրեք անուն և հեռախոս կամ էլ. հասցե։"
           }
         ],
-        surveySummary: "Ահա հավաքված նախագծի բրիֆը.",
+        surveySummary: "Ստուգեք նախագծի ամփոփումը՝ նախքան ուղարկելը։",
         surveyReminder: "Շնորհակալություն։ Սեղմեք «Ուղարկել Smart Tech-ին»՝ բրիֆը ուղարկելու համար։",
         submitRequestLabel: "Ուղարկել Smart Tech-ին",
         openRequestLabel: "Լրացնել հայտի էջում",
         surveyMailLabel: "Բացել email հավելվածը",
-        surveySubmittedLabel: "Հայտը հաջողությամբ ուղարկվեց։ Թիմը շուտով կկապվի ձեզ հետ։",
+        surveySubmittedLabel: "Հայտն ուղարկվել է Smart Tech-ի թիմին։ Պատասխանի համար կօգտագործվեն ձեր նշած կոնտակտները։",
         surveySubmitBlockedLabel: "Դուք արդեն ուղարկել եք հայտ։ Խնդրում ենք սպասել մի փոքր և կրկին փորձել։",
-        surveySubmitError: "Չհաջողվեց ուղարկել։ Փորձեք email-ով կամ հայտի էջից։",
+        surveySubmitError: "Ուղարկումը չի հաստատվել։ Տվյալները մնացել են ամփոփման մեջ․ փորձեք կրկին կամ բացեք էլ․ փոստի հավելվածը։",
         reminderStatus: "Բրիֆը պահպանված է",
         replies: {
           services: "Մենք առաջարկում ենք տեսահսկման, հրդեհային ու ազդանշանային համակարգեր, ցանցային լուծումներ, էլեկտրական և ավտոմատացման աշխատանքներ.",
           price: "Ճշգրիտ գինը կախված է օբյեկտից և աշխատանքի ծավալից. կիսվեք համառոտ բրիֆով, և թիմը կպատրաստի հաշվարկը.",
-          timeline: "Փոքր նախագծերը սովորաբար ավարտվում են 3-7 օրվա ընթացքում, միջինները՝ 1-3 շաբաթի մեջ. վերջնական ժամկետը հաստատվում է զննման փուլից հետո.",
+          timeline: "Ժամկետը կախված է աշխատանքի ծավալից, սարքավորումների առկայությունից և օբյեկտի պատրաստ լինելուց։ Ի՞նչ աշխատանք եք նախատեսում և ե՞րբ եք ցանկանում սկսել։",
           contact: "Կարող եք գրել {email}-ին կամ բացել մեր կապի էջը՝ {contactPage}:",
           fallback: "Շնորհակալություն. գրեք խնդիրը 1-2 նախադասությամբ, և մեր թիմը շուտով կկապվի ձեզ հետ."
         }
@@ -3172,14 +3172,12 @@
           {
             id: "location",
             label: "Location",
-            question: "Which city is the object in?",
-            options: ["Yerevan", "Region", "Other city"]
+            question: "Which city or town is the site in? Include the district or address if known."
           },
           {
             id: "size",
             label: "Scope",
-            question: "Approximate scope?",
-            options: ["Small", "Medium", "Large", "I will type it"]
+            question: "What is the approximate floor area, number of floors or devices? For example, a 200 m² office or 8 cameras. If unsure, write 'Site survey needed'."
           },
           {
             id: "timeline",
@@ -3275,14 +3273,12 @@
           {
             id: "location",
             label: "Локация",
-            question: "В каком городе объект?",
-            options: ["Ереван", "Область", "Другой город"]
+            question: "В каком городе или населенном пункте находится объект? Укажите район или адрес, если известен."
           },
           {
             id: "size",
             label: "Объем",
-            question: "Примерный объем?",
-            options: ["Малый", "Средний", "Большой", "Напишу сам"]
+            question: "Какова примерная площадь, количество этажей или устройств? Например, офис 200 м² или 8 камер. Если не знаете, напишите «Нужен осмотр»."
           },
           {
             id: "timeline",
@@ -3546,27 +3542,33 @@
 
   function submitChatSurveyPayload(payload, copy, statusNode, submitButton) {
     if (!payload) return Promise.reject(new Error("Missing payload"));
+    var fingerprint = JSON.stringify(payload);
+    if (chatRequestsInFlight.has(fingerprint)) return Promise.resolve();
 
     var guard = site.utils.requestSubmitCheck(payload);
     if (!guard.allowed) {
       var blockedMessage = copy.surveySubmitBlockedLabel || copy.surveySubmittedLabel || "Request already sent.";
       if (statusNode) {
         statusNode.textContent = blockedMessage;
-        statusNode.classList.add("is-success");
+        statusNode.classList.remove("is-success");
       }
       var actionsWrap = submitButton ? submitButton.closest(".auto-chat-brief-actions, .chat-page-brief-actions") : null;
-      if (actionsWrap) actionsWrap.classList.add("is-submitted-success");
-      if (submitButton) submitButton.disabled = true;
+      if (actionsWrap) actionsWrap.classList.remove("is-submitted-success");
+      if (submitButton) submitButton.disabled = guard.reason === "duplicate";
       return Promise.resolve(blockedMessage);
     }
 
+    chatRequestsInFlight.add(fingerprint);
     if (submitButton) submitButton.disabled = true;
+    var controller = new AbortController();
+    var sendTimeout = window.setTimeout(function () { controller.abort(); }, 25000);
     if (statusNode) {
       statusNode.textContent = (copy.submitRequestLabel || "Submit") + "...";
       statusNode.classList.remove("is-success");
     }
 
     return window.fetch("/api/request", {
+      signal: controller.signal,
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
@@ -3575,7 +3577,7 @@
       return response.json().catch(function () {
         return {};
       }).then(function (data) {
-        if (!response.ok) {
+        if (!response.ok || data.ok !== true || data.emailSent !== true) {
           throw new Error(data.error || "Submit failed");
         }
         return data;
@@ -3598,7 +3600,7 @@
         statusNode.classList.remove("is-success");
       }
       throw new Error("submit failed");
-    });
+    }).finally(function () { window.clearTimeout(sendTimeout); chatRequestsInFlight.delete(fingerprint); });
   }
 
   function appendChatBriefActions(container, summaryText, payload, copy, classPrefix) {
@@ -3621,6 +3623,7 @@
       '<small class="' + prefix + '-submit-status" data-chat-submit-status></small>';
 
     container.appendChild(actions);
+    chatBriefPayloads.set(actions.querySelector('[data-chat-submit-request]'), payload);
   }
 
   function startChatSurvey(copy) {
@@ -3678,11 +3681,19 @@
     }
   }
 
+  function surveyAnswerError(question, value) {
+    if (!question || question.id !== 'contact') return '';
+    if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(value) || /\+?\d[\d\s().-]{5,}\d/.test(value)) return '';
+    return { hy: 'Նշեք նաև հեռախոսահամար կամ վավեր էլ․ հասցե, որպեսզի կարողանանք կապվել ձեզ հետ։', en: 'Please include a phone number or valid email so we can contact you.', ru: 'Добавьте номер телефона или корректный email, чтобы мы могли связаться с вами.' }[activeChatLanguage()] || 'Please include a phone number or email.';
+  }
+
   function handleChatSurvey(messageText, copy) {
     if (!chatSurveyState || !copy || !copy.surveyQuestions) return false;
     var current = copy.surveyQuestions[chatSurveyState.step];
     if (!current) return false;
 
+    var validationError = surveyAnswerError(current, messageText);
+    if (validationError) { appendChatMessage('bot', validationError); return true; }
     chatSurveyState.answers[current.id] = messageText;
     chatSurveyState.step += 1;
     clearAutoChatSurveyOptions();
@@ -4071,12 +4082,12 @@
     if (ui.messages) {
       ui.messages.addEventListener("click", function (event) {
         var submitButton = event.target.closest("[data-chat-submit-request]");
-        if (!submitButton || !chatLatestSurveyPayload) return;
+        if (!submitButton || !chatBriefPayloads.has(submitButton)) return;
         var card = submitButton.closest(".auto-chat-message-brief");
         var statusNode = card ? card.querySelector("[data-chat-submit-status]") : null;
         var lang = activeChatLanguage();
         var copy = chatDictionary(lang);
-        submitChatSurveyPayload(chatLatestSurveyPayload, copy, statusNode, submitButton)
+        submitChatSurveyPayload(chatBriefPayloads.get(submitButton), copy, statusNode, submitButton)
           .catch(function () {});
       });
     }
@@ -4730,6 +4741,10 @@
 
     function showPageSurveyQuestion() {
       var question = getActiveSurveyQuestion(copy, pageSurveyState);
+      if (question && question.id === 'contact' && pageSurveyState.answers.contact) {
+        completePageSurvey();
+        return;
+      }
       if (!question) return;
       append("bot", question.question);
       history.push({ role: "bot", text: question.question });
@@ -4785,6 +4800,9 @@
 
     function startPageSurvey() {
       pageSurveyState = { step: 0, answers: {} };
+      if (userProfile && isChatPageProfileComplete(userProfile)) {
+        pageSurveyState.answers.contact = [userProfile.firstName, userProfile.lastName, userProfile.phone, userProfile.email].filter(Boolean).join(' · ');
+      }
       latestSurveyPayload = null;
       append("bot", copy.surveyIntro);
       history.push({ role: "bot", text: copy.surveyIntro });
@@ -4809,10 +4827,11 @@
     }
 
     function submitLatestSurvey(button) {
-      if (!latestSurveyPayload || busy) return;
+      var selectedPayload = chatBriefPayloads.get(button);
+      if (!selectedPayload || busy) return;
       var card = button.closest(".chat-page-message-brief");
       var submitStatus = card ? card.querySelector("[data-chat-submit-status]") : null;
-      submitChatSurveyPayload(latestSurveyPayload, copy, submitStatus, button)
+      submitChatSurveyPayload(selectedPayload, copy, submitStatus, button)
         .catch(function () {});
     }
 
@@ -4821,6 +4840,8 @@
       var current = copy.surveyQuestions[pageSurveyState.step];
       if (!current) return false;
 
+      var validationError = surveyAnswerError(current, message);
+      if (validationError) { append('bot', validationError); return true; }
       pageSurveyState.answers[current.id] = message;
       pageSurveyState.step += 1;
       clearPageSurveyOptions();

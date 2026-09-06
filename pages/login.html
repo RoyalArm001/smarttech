@@ -135,6 +135,16 @@
         message.className = 'message ' + (type || '');
       }
 
+      async function safeParseJson(res) {
+        if (!res) return {};
+        try {
+          const text = await res.text();
+          return text ? JSON.parse(text) : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
       form.addEventListener('submit', async function (event) {
         event.preventDefault();
         const email = emailInput.value.trim();
@@ -152,7 +162,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
           });
-          const payload = await response.json();
+          const payload = await safeParseJson(response);
 
           if (response.ok && payload && payload.user) {
             window.location.assign('/admin');
@@ -164,9 +174,9 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
           });
-          const userPayload = await response.json();
+          const userPayload = await safeParseJson(response);
           if (!response.ok) {
-            throw new Error(userPayload && userPayload.error ? userPayload.error : 'Login failed.');
+            throw new Error((userPayload && userPayload.error) || (payload && payload.error) || 'Login failed. Check server status or credentials.');
           }
           if (userPayload && userPayload.user && (String(userPayload.user.role || '').toLowerCase() === 'admin' || String(userPayload.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
             window.location.assign('/admin');
@@ -185,7 +195,7 @@
       (function () {
         // Նախ ստուգել admin session - եթե admin ա, անմիջապես redirect /admin
         fetch('/api/admin/session')
-          .then(function (res) { return res.json(); })
+          .then(safeParseJson)
           .then(function (data) {
             if (data && data.authenticated) {
               window.location.replace('/admin');
@@ -193,7 +203,7 @@
             }
             // Admin session չկա, ստուգել user session
             fetch('/api/auth/session')
-              .then(function (res) { return res.json(); })
+              .then(safeParseJson)
               .then(function (data) {
                 if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
                   window.location.replace('/admin');
@@ -203,7 +213,7 @@
           })
           .catch(function () {
             fetch('/api/auth/session')
-              .then(function (res) { return res.json(); })
+              .then(safeParseJson)
               .then(function (data) {
                 if (data && data.authenticated && data.user && (String(data.user.role || '').toLowerCase() === 'admin' || String(data.user.email || '').toLowerCase() === 'admin@smarttechllc.am')) {
                   window.location.replace('/admin');
