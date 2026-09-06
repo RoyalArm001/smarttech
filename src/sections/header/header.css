@@ -1,3 +1,13 @@
+/* The shared top bar is anchored to the viewport on every public route. */
+#site-header.site-header {
+  position: fixed !important;
+  inset: 0 0 auto !important;
+  transform: none !important;
+  translate: none !important;
+  margin: 0;
+  z-index: 130;
+}
+
 .site-header {
   position: fixed;
   top: 0;

@@ -66,23 +66,6 @@ body.profile-page-shell #site-footer {
   flex: 0 0 auto;
 }
 
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  z-index: 130;
-}
-
-body.profile-page-shell {
-  display: flex;
-  min-height: var(--app-vh, 100dvh);
-  flex-direction: column;
-}
-
-body.profile-page-shell #site-header,
-body.profile-page-shell #site-footer {
-  flex: 0 0 auto;
-}
-
 body.profile-page-shell #site-main {
   display: flex;
   min-height: 0;
