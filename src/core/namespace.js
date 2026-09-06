@@ -15,6 +15,7 @@
     var stage = stages.find(function (entry) { return entry.id === selected(project); });
     return stage ? (stage.labels[language] || stage.labels.hy) : "";
   }
+  var api = { all: stages, valid: valid, selected: selected, label: label };
   root.SmartTech = root.SmartTech || {};
   root.SmartTech.content = root.SmartTech.content || {};
   root.SmartTech.sections = root.SmartTech.sections || {};
