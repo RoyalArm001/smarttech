@@ -5158,7 +5158,7 @@
 
   var refreshingPublicContent = false;
   function refreshPublicProjects() {
-    if (!firstRenderDone || document.hidden || refreshingPublicContent || ['home', 'projects', 'project'].indexOf(currentRoute().page) < 0) return;
+    if (!firstRenderDone || document.hidden || refreshingPublicContent || ['home', 'projects', 'project', 'team', 'member'].indexOf(currentRoute().page) < 0) return;
     refreshingPublicContent = true;
     var previous = site.cms && site.cms.signature;
     var route = window.location.href;

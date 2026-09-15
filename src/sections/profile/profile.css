@@ -1,4 +1,28 @@
 /* Personal workspace */
+.profile-resume-editor { grid-column: 1 / -1; }
+.profile-resume-languages { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.profile-resume-languages button[aria-pressed="true"] { background: #087d73; color: #fff; border-color: #087d73; }
+.profile-resume-edit-section { padding: 16px 0; border-top: 1px solid var(--line); }
+.profile-resume-edit-section summary { cursor: pointer; color: var(--ink); font-weight: 750; padding: 8px 0; }
+.profile-resume-edit-section label { display: grid; gap: 7px; margin: 14px 0; color: var(--ink-soft); font-size: .85rem; }
+.profile-resume-edit-section input, .profile-resume-edit-section textarea { width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; color: var(--ink); background: var(--surface); }
+.profile-resume-edit-entry { padding: 16px; margin: 16px 0; border: 1px solid var(--line); border-radius: 14px; }
+body.profile-public-mode .profile-container { width: min(100%, 1080px); background: var(--surface-warm); color: var(--ink); border-top: 5px solid #0aa896; }
+body.profile-public-mode .profile-section { align-items: flex-start; }
+.profile-public-view > h1 { margin: 20px 0 6px; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+#public-profile-picture { width: 112px; height: 112px; object-fit: cover; border-radius: 50%; }
+#public-profile-bio { max-width: 760px; line-height: 1.8; white-space: pre-line; }
+#public-profile-links { justify-content: flex-start; margin-top: 20px; }
+.profile-resume-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.profile-resume-card { min-width: 0; padding: 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+.profile-resume-card h2 { margin: 0 0 24px; font-size: 1.1rem; color: var(--teal); }
+.profile-resume-entry { position: relative; border-left: 2px solid color-mix(in srgb, var(--teal) 30%, transparent); padding: 0 0 22px 16px; overflow-wrap: anywhere; }
+.profile-resume-entry:last-child { padding-bottom: 0; }
+.profile-resume-entry h3 { margin: 0; font-size: .98rem; line-height: 1.6; }
+.profile-resume-entry p { margin: 6px 0; font-size: .88rem; line-height: 1.7; white-space: pre-line; }
+.profile-resume-meta { color: var(--ink-soft); }
+.profile-resume-entry a { color: var(--teal); font-size: .88rem; }
+@media (max-width: 768px) { .profile-resume-grid { grid-template-columns: minmax(0, 1fr); } .profile-resume-card { padding: 18px; } }
 body.profile-page-shell.ui-theme-light { color-scheme: light; }
 body.profile-page-shell.ui-theme-dark { color-scheme: dark; }
 .profile-login-intro { text-align: center; margin-bottom: 28px; }
@@ -10,7 +34,10 @@ body.profile-page-shell.ui-theme-dark { color-scheme: dark; }
 @keyframes profileLoginEnter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { #profile-login-view:not([hidden]) { animation: none; } }
 .profile-link-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.profile-link-list a { padding: 9px 14px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.profile-link-list a { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; flex: 0 0 46px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; color: var(--teal); background: var(--surface); transition: background .15s, color .15s; }
+.profile-link-list a svg { display: block; width: 24px; height: 24px; flex: none; }
+.profile-link-list a:hover { color: #fff; background: #087d73; }
+.profile-link-list a:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
 body.profile-page-shell #profile-login-form input { color: var(--ink); background: var(--surface); border-color: var(--line); }
 body.profile-page-shell #profile-login-form input:autofill { box-shadow: 0 0 0 100px var(--surface) inset; -webkit-text-fill-color: var(--ink); caret-color: var(--ink); }
 body.profile-page-shell #profile-login-form input:-webkit-autofill { box-shadow: 0 0 0 100px var(--surface) inset; -webkit-text-fill-color: var(--ink); caret-color: var(--ink); }

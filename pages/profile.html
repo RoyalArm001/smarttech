@@ -35,6 +35,7 @@
             <p id="public-profile-bio"></p>
             <a id="public-profile-email" href="" hidden></a>
             <div id="public-profile-links" class="profile-link-list"></div>
+            <div id="public-profile-resume" class="profile-resume"></div>
           </div>
           <div id="profile-edit-view" class="profile-view profile-edit-view" hidden>
             <div class="profile-cover" aria-hidden="true"><span>SMART TECH</span></div>
@@ -67,12 +68,16 @@
                 <label><span>Instagram</span><input type="url" data-profile-social="instagram" maxlength="600" placeholder="https://instagram.com/…"></label>
                 <label><span>LinkedIn</span><input type="url" data-profile-social="linkedin" maxlength="600" placeholder="https://linkedin.com/in/…"></label>
                 <label><span>Telegram</span><input type="url" data-profile-social="telegram" maxlength="600" placeholder="https://t.me/…"></label>
+                <label><span>GitHub</span><input type="url" data-profile-social="github" maxlength="600" placeholder="https://github.com/…"></label>
+                <label><span>YouTube</span><input type="url" data-profile-social="youtube" maxlength="600" placeholder="https://youtube.com/@…"></label>
+                <label><span>WhatsApp</span><input type="url" data-profile-social="whatsapp" maxlength="600" placeholder="https://wa.me/…"></label>
                 <small>Այս հղումները կերևան ձեր հրապարակային պրոֆիլում։</small>
               </div></section>
               <input type="hidden" id="edit-picture">
               <section class="profile-info-card profile-security-card"><h2>Անվտանգություն</h2><div class="profile-form-grid">
                 <label class="profile-span-2"><span>Նոր գաղտնաբառ</span><input type="password" id="edit-new-password" minlength="8" autocomplete="new-password" placeholder="Դատարկ թողնել՝ ընթացիկը պահելու համար"></label>
               </div></section>
+              <section class="profile-info-card profile-resume-editor"><h2>Մասնագիտական պրոֆիլ</h2><p class="profile-card-hint">Փորձը, կրթությունը և հմտությունները ցուցադրվում են ձեր հրապարակային էջում։ Յուրաքանչյուր լեզուն խմբագրվում է առանձին։</p><div id="edit-profile-resume"></div></section>
               <div class="profile-actions">
                 <button type="submit" class="btn btn-primary">Պահպանել</button>
                 <button type="button" id="profile-logout-btn" class="btn btn-secondary">Ելք</button>

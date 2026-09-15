@@ -154,6 +154,8 @@
       }
       if (collections.team) {
         site.content.team = mergeArrayById(site.content.team || [], collections.team, "id");
+        var profileResumes = new Map(collections.team.filter(function (member) { return Object.prototype.hasOwnProperty.call(member, 'resume'); }).map(function (member) { return [member.id, member.resume]; }));
+        site.content.team.forEach(function (member) { if (profileResumes.has(member.id)) member.resume = profileResumes.get(member.id); });
       }
       if (collections.partners || collections.technologyPartners) {
         applyPartnersCms(collections.partners, collections.technologyPartners);

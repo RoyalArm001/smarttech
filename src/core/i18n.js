@@ -137,6 +137,7 @@
     var translated = site.i18n.language === fallbackLanguage
       ? {}
       : get("team." + baseMember.id, {});
+    translated = Object.assign({}, translated, (baseMember.translations || {})[site.i18n.language] || {});
     var merged = Object.assign({}, baseMember);
 
     if (translated.title) merged.title = translated.title;

@@ -3530,3 +3530,16 @@ body.ui-theme-dark .team-section .team-person-director {
     display: none;
   }
 }
+/* Profile-backed member details: no generated role claims or duplicate biography. */
+.member-resume { display: grid; gap: 22px; min-width: 0; }
+.member-resume-section h2 { margin-bottom: 24px; }
+.member-resume-entry { border-left: 2px solid var(--teal); padding: 0 0 22px 18px; overflow-wrap: anywhere; }
+.member-resume-entry:last-child { padding-bottom: 0; }
+.member-resume-entry h3 { margin: 0 0 6px; font-size: 1rem; }
+.member-resume-entry p { margin: 6px 0; line-height: 1.7; white-space: pre-line; }
+.member-resume-meta, .member-resume-notice { color: var(--ink-soft); }
+.member-resume-entry a { color: var(--teal); }
+.member-personal-socials .member-social-link { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; padding: 10px; flex: 0 0 46px; }
+.member-personal-socials .member-social-link span { display: none; }
+.member-personal-socials .member-social-link svg { width: 24px; height: 24px; }
+.member-personal-socials .member-social-link:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }

@@ -9,6 +9,8 @@
     var icons = {
       phone: '<path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.3 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.3 21 3 12.7 3 2.5c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1l-2.1 2.2Z" fill="currentColor"/>',
       facebook: '<path d="M13.5 21v-7h2.4l.4-2.9h-2.8V9.3c0-.8.3-1.4 1.5-1.4h1.4V5.3c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8.2V14h2.3v7h3Z" fill="currentColor"/>',
+      youtube: '<rect x="2" y="5" width="20" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m10 9 5 3-5 3Z" fill="currentColor"/>',
+      website: '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3a19 19 0 0 1 0 18 19 19 0 0 1 0-18Z" fill="none" stroke="currentColor" stroke-width="1.7"/>',
       instagram: '<path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm4 2.8a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4Zm0 2a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Zm4.4-3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z" fill="currentColor"/>',
       email: '<path d="M3 5h18v14H3V5Zm2 3.2 7 5 7-5V7l-7 5-7-5v1.2Z" fill="currentColor"/>',
       linkedin: '<path d="M6.8 9H3.7v11h3.1V9ZM5.3 4a1.8 1.8 0 1 0 0 3.6A1.8 1.8 0 0 0 5.3 4Zm6.5 5H8.9v11H12v-5.7c0-1.5.7-2.5 2-2.5 1.2 0 1.7.8 1.7 2.5V20h3.1v-6.2c0-3.2-1.6-5-4.2-5-1.4 0-2.3.6-2.8 1.4V9Z" fill="currentColor"/>',
@@ -31,6 +33,8 @@
     if (text.indexOf("mail") >= 0 || text.indexOf("@") >= 0) return "email";
     if (text.indexOf("linkedin") >= 0) return "linkedin";
     if (text.indexOf("github") >= 0) return "github";
+    if (text.indexOf("youtube") >= 0) return "youtube";
+    if (text.indexOf("website") >= 0) return "website";
     return "link";
   }
 
@@ -235,6 +239,10 @@
 
   function teamDisplayMember(member) {
     var localized = site.i18n.teamMember(member);
+    if (member.fullName) {
+      if (site.i18n.language === 'en') localized.title = (member.translations && member.translations.en && member.translations.en.title) || englishTeamCopy(member).title || localized.title;
+      return localized;
+    }
     var english = englishTeamCopy(member);
     var merged = Object.assign({}, localized);
 
@@ -776,13 +784,14 @@
   function renderTeamDirectoryCard(member, variant, labels) {
     var e = site.utils.escapeHtml;
     var person = localizedTeamMember(member);
+    if (member.fullName) person.title = teamDisplayMember(member).title;
     var roleLabel = member.roleLevel === "specialist"
       ? labels.specialistsLabel
       : member.id === "director"
         ? labels.directorLabel
         : labels.managersLabel;
     var departmentLabel = person.department || humanDepartmentLabel(member.department);
-    var cardTitle = person.cardTitle || person.title || member.title;
+    var cardTitle = member.fullName || person.cardTitle || person.title || member.title;
     var metaLabel = person.cardMeta || (departmentLabel === roleLabel
       ? departmentLabel
       : departmentLabel + " / " + roleLabel);
@@ -795,7 +804,7 @@
           '<em>' + e(member.accent) + "</em>" +
         "</span>" +
         '<span class="team-person-copy">' +
-          '<small>' + e(metaLabel) + "</small>" +
+          '<small>' + e(member.fullName ? person.title : metaLabel) + "</small>" +
           '<strong>' + e(cardTitle) + "</strong>" +
           '<span>' + e(person.text || "") + "</span>" +
           '<b>' + e(labels.profile) + "</b>" +
@@ -910,6 +919,30 @@
       "</section>";
   };
 
+  function renderProfessionalResume(member) {
+    var e = site.utils.escapeHtml;
+    var resume = member.resume || {};
+    var language = site.i18n.language || "hy";
+    var selected = Array.isArray(resume[language]) && resume[language].length ? language : (resume.en && resume.en.length ? "en" : "hy");
+    var sections = resume[selected];
+    if (!Array.isArray(sections) || !sections.length) return "";
+    var notice = language !== selected ? '<p class="member-resume-notice">' + e(language === 'ru' ? 'Подробная информация доступна на армянском и английском языках.' : 'Details are shown in the available profile language.') + '</p>' : '';
+    return notice + '<div class="member-resume" lang="' + e(selected) + '">' + sections.filter(function (section) {
+      return section && Array.isArray(section.items) && section.items.length;
+    }).map(function (section) {
+      return '<section class="member-info-card member-resume-section" data-resume-section="' + e(section.key) + '"><h2>' + e(section.title) + '</h2>' + section.items.map(function (item) {
+        var link = '';
+        try {
+          var url = new URL(item.url);
+          if (/^https?:$/.test(url.protocol) && !url.username && !url.password) link = '<a href="' + e(url.href) + '" target="_blank" rel="noopener noreferrer">' + e(url.hostname) + ' ↗</a>';
+        } catch (error) {}
+        return '<article class="member-resume-entry"><h3>' + e(item.title) + '</h3>' +
+          (item.subtitle ? '<p class="member-resume-meta">' + e(item.subtitle) + '</p>' : '') +
+          (item.description ? '<p>' + e(item.description) + '</p>' : '') + link + '</article>';
+      }).join('') + '</section>';
+    }).join('') + '</div>';
+  }
+
   site.sections.memberDetail = function memberDetail(id) {
     var e = site.utils.escapeHtml;
     var member = getMemberById(id);
@@ -921,6 +954,7 @@
     var description = localized.text || member.text;
     var detailLabels = memberDetailLabels();
     var workItems = localized.workInfo || member.workInfo || [];
+    var professionalResume = renderProfessionalResume(member);
     var levelLabel = site.i18n.get("teamDetail.level", "Level");
     var expLabel = site.i18n.get("teamDetail.experience", "Experience");
     var socialLabel = site.i18n.get("teamDetail.socials", "Social networks");
@@ -933,10 +967,10 @@
       site.sections.pageHero({
         eyebrow: site.i18n.get("teamPage.eyebrow"),
         eyebrowKey: "teamPage.eyebrow",
-        title: title,
+        title: member.fullName || title,
         text: description,
-        textKey: "team." + member.id + ".text",
-        image: member.image,
+        textKey: member.fullName ? undefined : "team." + member.id + ".text",
+        image: member.coverImage || member.image,
         tone: "team"
       }) +
       '<section class="section team-member-section">' +
@@ -948,18 +982,20 @@
               '<span class="member-accent">' + e(member.accent) + "</span>" +
             "</div>" +
             '<h1 class="member-name">' + e(title) + "</h1>" +
-            '<p class="member-role">' + e(description) + "</p>" +
+            (member.fullName ? '<p class="member-person-name">' + e(member.fullName) + '</p>' : '') +
+            (member.username ? '<a class="member-back" href="/profile/' + encodeURIComponent(member.username) + '">' + e(site.i18n.language === 'hy' ? 'Մասնագիտական պրոֆիլ ↗' : site.i18n.language === 'ru' ? 'Профессиональный профиль ↗' : 'Professional profile ↗') + '</a>' : '') +
+            (!professionalResume ? '<p class="member-role">' + e(description) + "</p>" : '') +
             '<div class="member-meta">' +
               '<span><strong>' + e(levelLabel) + ":</strong> " + e(display.level || localized.level || member.level || "Senior") + "</span>" +
               '<span><strong>' + e(expLabel) + ":</strong> " + e(localized.experience || member.experience || "8 years") + "</span>" +
             "</div>" +
             '<div class="member-social-block">' +
               '<h3>' + e(socialLabel) + "</h3>" +
-              '<div class="member-social-links">' + renderSocialLinks(teamContactItems(), "", "member-social-link", "") + "</div>" +
+              '<div class="member-social-links' + (member.username ? ' member-personal-socials' : '') + '">' + renderSocialLinks(member.username ? member.socials : teamContactItems(), member.username ? member.email : "", "member-social-link", member.username ? member.phone : "") + "</div>" +
             "</div>" +
           "</aside>" +
           '<div class="member-content">' +
-            renderMemberStoryCard(member, title) +
+            (professionalResume || (renderMemberStoryCard(member, title) +
             '<article class="member-info-card reveal">' +
               "<h2>" + e(detailLabels.responsibilitiesTitle) + "</h2>" +
               '<ul class="member-work-list">' + renderWorkInfo(workItems) + "</ul>" +
@@ -967,34 +1003,13 @@
             renderDirectorOrgChart(member) +
             renderItWorkflow(member) +
             renderWorkGallery(member.workImages || []) +
-            '<article class="member-info-card reveal">' +
+            ((localized.certificates || member.certificates || []).length ? '<article class="member-info-card reveal">' +
               "<h2>" + e(certLabel) + "</h2>" +
               '<p class="member-cert-intro">' + e(detailLabels.certificatesIntro) + "</p>" +
               '<div class="member-cert-grid">' + renderCertificates(localized.certificates || member.certificates || []) + "</div>" +
-            "</article>" +
+            "</article>" : ""))) +
           "</div>" +
         "</div>" +
-      "</section>" +
-      "<script>" +
-      "(function(){" +
-        "fetch('/api/users/employee/" + e(member.id) + "')" +
-        ".then(function(res){ if(!res.ok) throw new Error(); return res.json(); })" +
-        ".then(function(data){ " +
-          "var p = data.profile;" +
-          "if (p.picture) { var img = document.querySelector('.member-photo'); if (img) img.src = p.picture; }" +
-          "if (p.email) { " +
-            "var links = document.querySelector('.member-social-links');" +
-            "if (links && !links.innerHTML.includes('mailto:')) { " +
-              "links.innerHTML += '<a class=\"member-social-link member-social-link-email\" href=\"mailto:' + p.email + '\"><span>' + p.email + '</span></a>';" +
-            "}" +
-          "}" +
-          "if (p.message) { " +
-            "var meta = document.querySelector('.member-meta');" +
-            "if (meta) { meta.insertAdjacentHTML('afterend', '<div style=\"margin: 20px 0; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; font-style: italic;\">\"' + p.message + '\"</div>'); }" +
-          "}" +
-        "})" +
-        ".catch(function(){});" +
-      "})();" +
-      "</script>";
+      "</section>";
   };
 })(window.SmartTech);

@@ -12,6 +12,106 @@
   var logoutButton = document.getElementById("profile-logout-btn");
   var pictureFile = document.getElementById("edit-picture-file");
   var savedEmailKey = "smarttech.saved-email.v1";
+  var resumeDraft = {};
+  var resumeLanguage = "hy";
+  var resumeSections = { experience: "Աշխատանքային փորձ", education: "Կրթություն", skills: "Հմտություններ", certifications: "Վկայականներ", languages: "Լեզուներ", portfolio: "Իմ ստեղծած կայքերը", about: "Իմ մասին" };
+
+  function node(tag, className, text) {
+    var element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function languageButtons(container, value, onChange, languages) {
+    var bar = node("div", "profile-resume-languages");
+    var names = { hy: "Հայերեն", en: "English", ru: "Русский" };
+    languages.forEach(function (language) {
+      var button = node("button", "btn btn-secondary", names[language]);
+      button.type = "button";
+      button.setAttribute("aria-pressed", String(value === language));
+      button.addEventListener("click", function () { onChange(language); });
+      bar.appendChild(button);
+    });
+    container.appendChild(bar);
+  }
+
+  function renderResumeEditor() {
+    var container = document.getElementById("edit-profile-resume");
+    if (!container) return;
+    container.replaceChildren();
+    languageButtons(container, resumeLanguage, function (language) { resumeLanguage = language; renderResumeEditor(); }, ["hy", "en", "ru"]);
+    var sections = resumeDraft[resumeLanguage] || [];
+    Object.keys(resumeSections).forEach(function (key) {
+      var section = sections.find(function (item) { return item.key === key; });
+      var details = node("details", "profile-resume-edit-section");
+      details.appendChild(node("summary", "", (section && section.title || resumeSections[key]) + " · " + (section ? section.items.length : 0)));
+      function ensureSection() {
+        if (!section) {
+          if (!resumeDraft[resumeLanguage]) resumeDraft[resumeLanguage] = [];
+          section = { key: key, title: resumeSections[key], items: [] };
+          resumeDraft[resumeLanguage].push(section);
+        }
+      }
+      var titleLabel = node("label", "", "Բաժնի վերնագիր");
+      var titleInput = node("input"); titleInput.value = section ? section.title : resumeSections[key]; titleInput.maxLength = 100;
+      titleInput.addEventListener("input", function () { ensureSection(); section.title = titleInput.value; });
+      titleLabel.appendChild(titleInput); details.appendChild(titleLabel);
+      var entries = node("div");
+      function addEntry(item) {
+        var card = node("div", "profile-resume-edit-entry");
+        [["title", "Անվանում", 200], ["subtitle", "Կազմակերպություն / ժամանակահատված", 300], ["description", "Նկարագրություն", 1500], ["url", "Հղում (ոչ պարտադիր)", 600]].forEach(function (field) {
+          var label = node("label", "", field[1]);
+          var input = node(field[0] === "description" ? "textarea" : "input");
+          if (field[0] === "url") input.type = "url";
+          input.value = item[field[0]] || ""; input.maxLength = field[2];
+          input.addEventListener("input", function () { item[field[0]] = input.value; });
+          label.appendChild(input); card.appendChild(label);
+        });
+        var remove = node("button", "btn btn-secondary", "Հեռացնել գրառումը"); remove.type = "button";
+        remove.addEventListener("click", function () { section.items.splice(section.items.indexOf(item), 1); card.remove(); });
+        card.appendChild(remove); entries.appendChild(card);
+      }
+      if (section) section.items.forEach(addEntry);
+      details.appendChild(entries);
+      var add = node("button", "btn btn-secondary", "+ Ավելացնել գրառում"); add.type = "button";
+      add.addEventListener("click", function () { ensureSection(); if (section.items.length >= 30) return; var item = { title: "", subtitle: "", description: "", url: "" }; section.items.push(item); addEntry(item); });
+      details.appendChild(add); container.appendChild(details);
+    });
+  }
+
+  function renderPublicResume(resume, language) {
+    var container = document.getElementById("public-profile-resume");
+    if (!container) return;
+    container.replaceChildren();
+    var languages = ["hy", "en", "ru"].filter(function (key) { return Array.isArray(resume[key]) && resume[key].some(function (section) { return section.items.length; }); });
+    if (!languages.length) return;
+    language = languages.includes(language) ? language : languages[0];
+    languageButtons(container, language, function (next) { renderPublicResume(resume, next); }, languages);
+    var grid = node("div", "profile-resume-grid"); grid.lang = language;
+    resume[language].forEach(function (section) {
+      if (!section.items.length) return;
+      var card = node("section", "profile-resume-card");
+      card.appendChild(node("h2", "", section.title));
+      section.items.forEach(function (item) {
+        var entry = node("article", "profile-resume-entry");
+        entry.appendChild(node("h3", "", item.title));
+        if (item.subtitle) entry.appendChild(node("p", "profile-resume-meta", item.subtitle));
+        if (item.description) entry.appendChild(node("p", "", item.description));
+        if (item.url) {
+          try {
+            var url = new URL(item.url);
+            if (/^https?:$/.test(url.protocol) && !url.username && !url.password) {
+              var link = node("a", "", url.hostname + " ↗"); link.href = url.href; link.target = "_blank"; link.rel = "noopener noreferrer"; entry.appendChild(link);
+            }
+          } catch (error) {}
+        }
+        card.appendChild(entry);
+      });
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
 
   function savedEmail() {
     try { return String(localStorage.getItem(savedEmailKey) || ""); } catch (error) { return ""; }
@@ -71,6 +171,8 @@
   }
 
   function fillProfile(profile) {
+    resumeDraft = JSON.parse(JSON.stringify(profile.resume || {}));
+    renderResumeEditor();
     var fullName = profile.full_name || profile.username || "Աշխատակից";
     document.getElementById("edit-full-name").value = profile.full_name || "";
     document.getElementById("edit-username").value = profile.username || "";
@@ -153,24 +255,40 @@
       var picture = document.getElementById("public-profile-picture");
       var email = document.getElementById("public-profile-email");
       if (name) name.textContent = profile.full_name || profile.username || "Smart Tech";
+      document.title = (profile.full_name || profile.username || "Profile") + " | Smart Tech";
       if (usernameNode) usernameNode.textContent = profile.username ? "@" + profile.username : "";
       if (bio) bio.textContent = profile.bio || "";
       if (picture) { picture.hidden = !profile.avatar_url; if (profile.avatar_url) picture.src = profile.avatar_url; }
       if (email) { email.hidden = !profile.email; email.href = profile.email ? "mailto:" + profile.email : "#"; email.textContent = profile.email || ""; }
       var links = document.getElementById('public-profile-links');
       links.replaceChildren();
-      var labels = { website: 'Կայք', facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn', telegram: 'Telegram' };
+      var labels = { website: 'Կայք', facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn', telegram: 'Telegram', github: 'GitHub', youtube: 'YouTube', whatsapp: 'WhatsApp' };
+      // Trusted SVG markup only; profile URLs never become HTML.
+      var icons = {
+        website: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a19 19 0 0 1 0 18 19 19 0 0 1 0-18Z"/>',
+        facebook: '<path d="M14 21v-8h3l.5-4H14V7c0-1 .5-1.5 1.5-1.5H18V2h-3c-3 0-5 2-5 5v2H7v4h3v8Z" fill="currentColor" stroke="none"/>',
+        instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>',
+        linkedin: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7m4 0v-7m0 3a3 3 0 0 1 6 0v4"/><circle cx="7" cy="7" r="1" fill="currentColor" stroke="none"/>',
+        telegram: '<path d="m21 3-4 18-6-5-3 3 1-6 9-7-12 8-4-2Z"/>',
+        github: '<path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1-.3-1.7-1-2 3-.3 6-1.5 6-6a5 5 0 0 0-1.5-3.5A5 5 0 0 0 18 3s-1.5-.5-4 1a14 14 0 0 0-4 0C7.5 2.5 6 3 6 3a5 5 0 0 0-.5 3.5A5 5 0 0 0 4 10c0 4.5 3 5.7 6 6-.7.3-1 1-1 2v4"/>',
+        youtube: '<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="none"/>',
+        whatsapp: '<path d="m3 21 1.5-5A9 9 0 1 1 3 11.5c0 1.6.5 3.1 1.5 4.5M3 21l5-1.5"/><path d="M8 7c-2 3 2 7 5 9 2 1 4 0 4-2l-3-1-1 1c-2-1-3-2-4-4l1-1Z"/>'
+      };
       var urls = Object.assign({}, profile.social_links, { website: profile.website });
       Object.keys(labels).forEach(function (key) {
         try {
           var url = new URL(urls[key]);
           if (!/^https?:$/.test(url.protocol)) return;
           var anchor = document.createElement('a');
-          anchor.href = url.href; anchor.textContent = labels[key]; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; links.appendChild(anchor);
+          anchor.href = url.href; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer';
+          anchor.setAttribute('aria-label', labels[key]); anchor.title = labels[key];
+          anchor.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + icons[key] + '</svg>';
+          links.appendChild(anchor);
         } catch (error) {}
       });
+      renderPublicResume(profile.resume || {}, "hy");
     }).catch(function (error) {
-      if (publicView) publicView.innerHTML = '<p class="error-msg">' + String(error.message || "Profile not found") + '</p>';
+      if (publicView) publicView.replaceChildren(node("p", "error-msg", error.message || "Profile not found"));
     });
   }
 
@@ -245,6 +363,7 @@
   if (editForm) editForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var payload = {
+      resume: resumeDraft,
       full_name: document.getElementById("edit-full-name").value.trim(),
       username: document.getElementById("edit-username").value.trim(),
       phone: document.getElementById("edit-phone").value.trim(),
@@ -257,6 +376,7 @@
     editStatus.textContent = "Պահպանվում է...";
     requestJson("/api/profile", { method: "PUT", body: payload }).then(function (result) {
       fillProfile(result.profile || payload);
+      try { localStorage.setItem('smarttech.cms.updated', String(Date.now())); } catch (error) {}
       editStatus.textContent = "Փոփոխությունները պահպանված են։";
     }).catch(function (error) { editStatus.textContent = error.message; });
   });

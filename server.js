@@ -26,6 +26,7 @@ async function optimizeImageBuffer(sourceBuffer, options) {
   }
 }
 const { createClient } = require("@supabase/supabase-js");
+const { normalizeResume } = require("./lib/profile-resume");
 const { GoogleGenAI } = require("@google/genai");
 const OpenAI = require("openai");
 let cmsModule = null;
@@ -504,9 +505,31 @@ async function readSupabasePublicData() {
 
       const normalizedTeam = (teamResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
         order: row.display_order, roleLevel: row.role_level, managerId: row.manager_id,
+        resume: null,
         image: row.image_path || (row.source_data && row.source_data.image) || null,
         coverImage: row.cover_image_path || (row.source_data && row.source_data.coverImage) || null
       }));
+      // Only explicitly linked, active public profiles enrich the team directory.
+      const usernames = normalizedTeam.map(member => member.username).filter(Boolean);
+      if (usernames.length) {
+        const profiles = await client.from("profiles")
+          .select("username,full_name,avatar_url,bio,phone,email,website,social_links,resume")
+          .in("username", usernames).eq("is_active", true).abortSignal(AbortSignal.timeout(2500));
+        if (profiles.error) throw profiles.error;
+        const byUsername = new Map((profiles.data || []).map(profile => [profile.username, profile]));
+        for (const member of normalizedTeam) {
+          const profile = byUsername.get(member.username);
+          if (!profile) continue;
+          member.fullName = profile.full_name;
+          member.image = profile.avatar_url || member.image;
+          member.text = profile.bio || "";
+          member.phone = profile.phone || "";
+          member.email = profile.email || "";
+          member.resume = normalizeResume(profile.resume || {});
+          member.socials = Object.entries(Object.assign({}, profile.social_links, { website: profile.website }))
+            .filter(([, href]) => href).map(([label, href]) => ({ label, href, type: label }));
+        }
+      }
       const normalizedProjects = (projectResult.data || []).map(row => Object.assign({}, row.source_data || {}, row, {
         order: row.display_order,
         featured: row.featured,
@@ -2041,7 +2064,7 @@ if (appMode.isWebEnabled()) {
   app.get("/api/profile", requireUser, async (request, response) => {
     const client = getSupabaseAdminClient();
     if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
-    const result = await client.from("profiles").select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links").eq("id", request.userSession.userId).maybeSingle();
+    const result = await client.from("profiles").select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links,resume").eq("id", request.userSession.userId).maybeSingle();
     if (result.error) return jsonResponse(response, 500, { error: result.error.message });
     if (!result.data) return jsonResponse(response, 404, { error: "Profile not found" });
     const authUser = await client.auth.admin.getUserById(request.userSession.userId);
@@ -2062,6 +2085,7 @@ if (appMode.isWebEnabled()) {
     const newPassword = String(data.newPassword || "");
     const links = {};
     try {
+      if (data.resume !== undefined) links.resume = normalizeResume(data.resume);
       const normalizeLink = (value) => {
         const text = String(value || "").trim();
         if (!text) return "";
@@ -2073,7 +2097,7 @@ if (appMode.isWebEnabled()) {
       if (data.website !== undefined) links.website = normalizeLink(data.website);
       if (data.social_links !== undefined) {
         links.social_links = {};
-        for (const network of ["facebook", "instagram", "linkedin", "telegram"]) {
+        for (const network of ["facebook", "instagram", "linkedin", "telegram", "github", "youtube", "whatsapp"]) {
           links.social_links[network] = normalizeLink(data.social_links && data.social_links[network]);
         }
       }
@@ -2102,7 +2126,7 @@ if (appMode.isWebEnabled()) {
     if (updatePayload.username && !/^[a-z0-9][a-z0-9._-]{2,79}$/.test(updatePayload.username)) {
       return jsonResponse(response, 400, { error: "Username must contain 3-80 latin characters" });
     }
-    const saved = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links").single();
+    const saved = await client.from("profiles").upsert(updatePayload, { onConflict: "id" }).select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links,resume").single();
     if (saved.error) return jsonResponse(response, 400, { error: saved.error.message });
 
     const authUser = await client.auth.admin.getUserById(userId);
@@ -2152,7 +2176,7 @@ app.get("/api/profile/public/:username", async (request, response) => {
   const client = getSupabaseAdminClient();
   if (!client) return jsonResponse(response, 503, { error: "Supabase is not configured" });
   const result = await client.from("profiles")
-    .select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links")
+    .select("id,email,full_name,username,avatar_url,bio,phone,role,is_active,website,social_links,resume")
     .eq("username", username)
     .eq("is_active", true)
     .maybeSingle();
