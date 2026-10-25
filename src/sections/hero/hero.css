@@ -23,12 +23,13 @@
   min-height: 78vh;
   display: flex;
   align-items: center;
-  padding: 96px 0 72px;
+  padding: 80px 0 64px;
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(260px, 0.35fr);
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: space-between;
   gap: 42px;
   align-items: end;
 }
@@ -102,6 +103,10 @@
 
 .hero-panel {
   align-self: end;
+  justify-self: end;
+  margin-left: auto;
+  width: min(100%, 360px);
+  max-width: 360px;
   padding: 22px 22px 22px 16px;
   color: #102025;
   background: rgba(255, 255, 255, 0.6);
@@ -196,7 +201,11 @@
   }
 
   .hero-panel {
-    max-width: 340px;
+    max-width: 360px;
+    width: 100%;
+    margin-left: auto;
+    justify-self: end;
+    align-self: end;
   }
 }
 
@@ -258,6 +267,8 @@
 .hero::after {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: -1;
   content: "";
   pointer-events: none;
@@ -266,8 +277,7 @@
 @media (max-width: 768px) {
   .hero::before,
   .hero::after {
-    animation: none;
-    opacity: 0.22;
+    opacity: 0.75;
   }
 
   .hero-panel {
@@ -278,18 +288,18 @@
 
 .hero::before {
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 58px 58px;
-  opacity: 0.46;
+    linear-gradient(90deg, rgba(82, 205, 191, 0.22) 1px, transparent 1px),
+    linear-gradient(rgba(82, 205, 191, 0.18) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.95;
   animation: heroGrid 20s linear infinite;
 }
 
 .hero::after {
-  background: linear-gradient(110deg, transparent 18%, rgba(56, 170, 184, 0.14), transparent 54%);
+  background: linear-gradient(110deg, transparent 10%, rgba(56, 170, 184, 0.26) 40%, rgba(121, 213, 223, 0.42) 50%, rgba(56, 170, 184, 0.26) 60%, transparent 90%);
   background-repeat: no-repeat;
-  transform: translateX(-72%);
-  animation: heroSweep 7s ease-in-out infinite;
+  transform: translateX(-100%);
+  animation: heroSweep 7.5s ease-in-out infinite;
 }
 
 .hero-overlay {
@@ -326,11 +336,57 @@
 
 @keyframes heroGrid {
   from { background-position: 0 0, 0 0; }
-  to { background-position: 58px 58px, 58px 58px; }
+  to { background-position: 60px 60px, 60px 60px; }
 }
 
 @keyframes heroSweep {
-  0%, 55% { transform: translateX(-72%); opacity: 0; }
-  70% { opacity: 1; }
-  100% { transform: translateX(70%); opacity: 0; }
+  0% { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 0.92; }
+  80% { opacity: 0.92; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+
+/* Dark theme adaptation for hero background & panel */
+[data-theme="dark"] .hero::before,
+body.ui-theme-dark .hero::before {
+  background:
+    linear-gradient(90deg, rgba(82, 205, 191, 0.25) 1px, transparent 1px),
+    linear-gradient(rgba(82, 205, 191, 0.20) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 1;
+}
+
+[data-theme="dark"] .hero::after,
+body.ui-theme-dark .hero::after {
+  background: linear-gradient(110deg, transparent 10%, rgba(56, 170, 184, 0.32) 40%, rgba(121, 213, 223, 0.48) 50%, rgba(56, 170, 184, 0.32) 60%, transparent 90%);
+}
+
+/* Dark theme adaptation for authentic hero panel */
+[data-theme="dark"] .hero-panel,
+body.ui-theme-dark .hero-panel {
+  color: #e6f6f3;
+  background: rgba(14, 28, 33, 0.82);
+  border: 1px solid rgba(82, 205, 191, 0.28);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(82, 205, 191, 0.12);
+}
+
+[data-theme="dark"] .hero-panel span,
+body.ui-theme-dark .hero-panel span {
+  color: #52cdbf;
+}
+
+[data-theme="dark"] .hero-panel strong,
+body.ui-theme-dark .hero-panel strong {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .hero-panel-list li,
+body.ui-theme-dark .hero-panel-list li {
+  color: rgba(230, 246, 243, 0.94);
+}
+
+[data-theme="dark"] .hero-panel a,
+body.ui-theme-dark .hero-panel a {
+  color: #52cdbf;
 }

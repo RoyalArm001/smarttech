@@ -59,7 +59,7 @@ body.ui-theme-dark .site-header {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 82px;
+  min-height: 58px;
 }
 
 .brand {
@@ -68,7 +68,7 @@ body.ui-theme-dark .site-header {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 7px 12px 7px 7px;
+  padding: 4px 12px 4px 4px;
   border-radius: 999px;
   border: 1px solid rgba(20, 33, 38, 0.12);
   background: rgba(255, 255, 255, 0.8);
@@ -82,10 +82,10 @@ body.ui-theme-dark .brand {
 }
 
 .brand img {
-  width: 58px;
-  height: 58px;
-  padding: 4px;
-  border-radius: 18px;
+  width: 42px;
+  height: 42px;
+  padding: 3px;
+  border-radius: 14px;
   object-fit: contain;
   object-position: center;
   background: #ffffff;
@@ -122,7 +122,7 @@ body.ui-theme-dark .brand img {
 }
 
 .brand-no-logo {
-  padding: 13px 18px;
+  padding: 6px 14px;
 }
 
 .brand-no-logo .brand-title {
@@ -319,7 +319,7 @@ body.ui-theme-dark .search-trigger:focus-visible {
 /* Keep the profile control exactly aligned with the other header actions. */
 .header-actions .profile-page-link {
   box-sizing: border-box;
-  width: var(--header-action-size, 44px);
+  width: var(--header-action-size, 38px);
   height: var(--header-action-size, 44px);
   min-width: var(--header-action-size, 44px);
   min-height: var(--header-action-size, 44px);
@@ -370,7 +370,7 @@ body.ui-theme-dark .header-actions .profile-page-link:focus-visible {
 /* Site Search Panel - clean and harmonious */
 .site-search {
   position: fixed;
-  top: var(--smarttech-header-bottom, 82px);
+  top: var(--smarttech-header-bottom, 58px);
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
   z-index: 300;
@@ -1087,8 +1087,8 @@ body.ui-theme-dark .nav-toggle {
 
 @media (min-width: 1241px) {
   .header-inner {
-    gap: 18px;
-    min-height: 78px;
+    gap: 16px;
+    min-height: 58px;
   }
 
   .brand {
@@ -1121,7 +1121,7 @@ body.ui-theme-dark .nav-toggle {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    min-height: 74px;
+    min-height: 56px;
   }
 
   .brand {
@@ -1171,7 +1171,7 @@ body.ui-theme-dark .nav-toggle {
   }
 
   body.is-menu-open .nav-backdrop {
-    top: var(--smarttech-header-bottom, 74px);
+    top: var(--smarttech-header-bottom, 56px);
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -1179,7 +1179,7 @@ body.ui-theme-dark .nav-toggle {
 
   .nav-panel {
     position: fixed;
-    top: calc(var(--smarttech-header-bottom, 74px) + 10px);
+    top: calc(var(--smarttech-header-bottom, 56px) + 6px);
     left: 50%;
     right: auto;
     bottom: auto;
@@ -1490,7 +1490,7 @@ body.ui-theme-dark .nav-toggle {
   }
 
   .brand-no-logo {
-    padding: 12px 15px;
+    padding: 6px 12px;
   }
 
   .brand-title {
@@ -1515,7 +1515,7 @@ body.ui-theme-dark .nav-toggle {
 
 @media (max-width: 420px) {
   .header-inner {
-    min-height: 68px;
+    min-height: 52px;
   }
 
   .brand {
@@ -1597,9 +1597,9 @@ body.ui-theme-dark .nav-toggle {
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
-    min-height: 58px;
+    min-height: 54px;
     padding-top: 0;
-    padding-bottom: 5px;
+    padding-bottom: 2px;
     padding-left: max(0px, env(safe-area-inset-left, 0px));
     padding-right: max(0px, env(safe-area-inset-right, 0px));
   }
@@ -2257,7 +2257,7 @@ body.ui-theme-dark .header-actions .header-language-switcher .language-toggle:fo
 
 @media (max-width: 480px) {
   .header-inner {
-    min-height: 58px;
+    min-height: 52px;
     gap: 6px;
   }
 

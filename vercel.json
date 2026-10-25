@@ -9,18 +9,22 @@
   "cleanUrls": true,
   "regions": ["fra1"],
   "rewrites": [
+    { "source": "/project/:id", "destination": "/api/project-seo?id=:id" },
+    { "source": "/sitemap-projects.xml", "destination": "/api/project-sitemap" },
     { "source": "/profile/:username", "destination": "/profile" },
     { "source": "/api/:match*", "destination": "/api/[...path]" }
   ],
   "functions": {
     "api/[...path].js": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "{lib/page-templates/project.html,src/core/*.js,src/content/locales/index.js,src/content/services/index.js,src/sections/detail/index.js}"
     },
     "api/**/*.js": {
       "maxDuration": 30
     }
   },
   "redirects": [
+    { "source": "/project", "has": [{ "type": "query", "key": "id", "value": "(?<projectId>[a-z0-9][a-z0-9_-]{0,119})" }], "destination": "/project/:projectId", "permanent": true },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "www.smarttechllc.am" }],

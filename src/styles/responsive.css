@@ -353,7 +353,7 @@
   }
 }
 
-@media (min-width: 1241px) {
+@media (min-width: 769px) {
   .auto-chat-shell {
     display: flex !important;
   }

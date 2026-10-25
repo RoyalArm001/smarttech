@@ -410,7 +410,7 @@
           "24/7 ավտոմատ վերահսկում բոլոր կարևոր սարքերի",
           "SMS, email, Telegram և web dashboard ահազանգում",
           "Իրադարձությունների մատյան և օբյեկտի ընդհանուր վիճակ",
-          "Ինժեներական արձագանք, troubleshooting և պլանային սպասարձում",
+          "Ինժեներական արձագանք, troubleshooting և պլանային սպասարկում",
           "Հեռահար դիտարկում առանց օբյեկտ գնալու"
         ],
         systemsTitle: "Ինչ համակարգեր ենք վերահսկում",
@@ -432,7 +432,7 @@
         pricingEyebrow: "Գներ",
         pricingTitle: "Մոնիթորինգի փաթեթներ",
         pricingText: "Գները հիմնված են շուկայական միջինների վրա՝ Smart Tech 20% ծառայության մարժայով։ Վերջնական գինը հաստատվում է ստուգագծից հետո։",
-        packagesHint: "Մեկ անգամյա ներդրում + ամսական սպասարձում",
+        packagesHint: "Մեկ անգամյա ներդրում + ամսական սպասարկում",
         featuredBadge: "Ամենաշատ ընտրված",
         perMonth: "/ամիս",
         monthlyLabel: "Ամսական",
@@ -917,7 +917,7 @@
         },
         "engineering-monitoring": {
           includes: ["24/7 մոնիթորինգ՝ CCTV, NVR, սերվեր, ցանց, UPS, հրդեհային/ազդանշան", "SMS, email, Telegram/push ահազանգումներ", "Կենտրոնացված dashboard և իրադարձությունների մատյան", "Սերվերային կառավարում, backup, թեստավորում և troubleshooting"],
-          stages: ["Համակարգերի ինվենտար և մոնիթորինգի պլան", "Ահազանգման կանոնների և ալիքների կարգավորում", "Սերվեր/dashboard ծրագրավորում և ինտեգրացիա", "Թեստավորում, հանձնում և շարունակական ավարուժ սպասարձում"],
+          stages: ["Համակարգերի ինվենտար և մոնիթորինգի պլան", "Ահազանգման կանոնների և ալիքների կարգավորում", "Սերվեր/dashboard ծրագրավորում և ինտեգրացիա", "Թեստավորում, հանձնում և շարունակական վթարային սպասարկում"],
           result: "Պատվիրատուն 24/7 տեսնում է օբյեկտի վիճակը, ժամանակին ստանում է SMS/email ահազանգում, խնդիրները լուծվում են նախքան մեծ վնասի առաջացումը։"
         },
         "full-design": {
@@ -1464,7 +1464,7 @@
     return '' +
       '<div class="current-project-banner reveal">' +
         '<div class="current-project-banner-head">' +
-          '<span class="current-project-badge">' + e(completed ? copy.completedBadge : project.status === "partial" ? copy.partialBadge : copy.badge) + '</span>' +
+          '<span class="current-project-badge">' + e(completed ? copy.completedBadge : project.status === "partial" ? copy.partialBadge : (site.projectStages.label(project, language) || copy.badge)) + '</span>' +
           '<div>' +
             '<h2>' + e(completed ? copy.completedTitle : project.status === "partial" ? copy.partialTitle : copy.title) + '</h2>' +
             '<p>' + e(copy.text) + '</p>' +
@@ -1580,6 +1580,7 @@
   }
 
   site.sections.serviceDetail = function serviceDetail(id) {
+    if (id === "full-design") id = "systems-design";
     var service = site.content.services.find(function (item) {
       return item.id === id;
     });

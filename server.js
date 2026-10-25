@@ -534,7 +534,7 @@ async function readSupabasePublicData() {
         order: row.display_order,
         featured: row.featured,
         systemImages: row.system_images,
-        stage: projectStages.selected(Object.assign({}, row.source_data || {}, { status: row.status })),
+        stage: projectStages.selected(Object.assign({}, row.source_data || {}, { status: row.status })) || (row.status === "current" && projectStages.badgeStageId ? projectStages.badgeStageId(row) : ""),
         progress: Number.isFinite(Number(row.progress)) ? Number(row.progress) : ((row.source_data && row.source_data.progress) || 0),
         phase: row.phase || (row.source_data && row.source_data.phase) || ""
       }));
@@ -1800,6 +1800,11 @@ if (appMode.isAdmin()) {
     next();
   });
 }
+
+if (appMode.isWebEnabled()) require('./lib/project-seo-routes')(app, async () => {
+  const data = await fetchSupabasePublicData();
+  return data && Array.isArray(data.collections?.projects) ? data.collections.projects : require('./lib/project-seo').catalog;
+});
 
 app.get("/robots.txt", publicApiLimiter, (request, response) => {
   response.setHeader("Content-Type", "text/plain; charset=utf-8");

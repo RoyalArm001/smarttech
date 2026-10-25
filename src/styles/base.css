@@ -109,42 +109,45 @@ body::after {
 
 body::before {
   background:
-    linear-gradient(90deg, rgba(10, 168, 150, 0.11) 1px, transparent 1px),
-    linear-gradient(rgba(52, 95, 116, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 168, 150, 0.14) 1px, transparent 1px),
+    linear-gradient(rgba(52, 95, 116, 0.12) 1px, transparent 1px),
     repeating-linear-gradient(115deg, transparent 0 76px, rgba(56, 170, 184, 0.14) 76px 78px, transparent 78px 150px);
-  background-size: 64px 64px, 64px 64px, 260px 260px;
-  opacity: 0.8;
+  background-size: 60px 60px, 60px 60px, 260px 260px;
+  opacity: 0.88;
   animation: smartTechGridDrift 22s linear infinite;
 }
 
 body::after {
-  background: linear-gradient(105deg, transparent 0 38%, rgba(10, 168, 150, 0.16) 50%, transparent 62%);
-  opacity: 1;
-  transform: translateX(-70%);
+  background: linear-gradient(105deg, transparent 0 35%, rgba(10, 168, 150, 0.22) 50%, transparent 65%);
+  opacity: 0.95;
+  transform: translateX(-100%);
   animation: smartTechSignalSweep 9s ease-in-out infinite;
 }
 
 body.ui-theme-dark {
   background:
-    radial-gradient(circle at 16% 18%, rgba(82, 205, 191, 0.1), transparent 34%),
-    radial-gradient(circle at 84% 68%, rgba(120, 164, 182, 0.1), transparent 38%),
-    linear-gradient(90deg, rgba(82, 205, 191, 0.07) 1px, transparent 1px),
-    linear-gradient(rgba(120, 164, 182, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 16% 18%, rgba(82, 205, 191, 0.12), transparent 34%),
+    radial-gradient(circle at 84% 68%, rgba(120, 164, 182, 0.12), transparent 38%),
+    linear-gradient(90deg, rgba(82, 205, 191, 0.10) 1px, transparent 1px),
+    linear-gradient(rgba(120, 164, 182, 0.08) 1px, transparent 1px),
     var(--paper);
-  background-size: 100% 100%, 100% 100%, 46px 46px, 46px 46px, auto;
+  background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px, auto;
 }
 
 body.ui-theme-dark::before {
   background:
-    linear-gradient(90deg, rgba(82, 205, 191, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(120, 164, 182, 0.06) 1px, transparent 1px),
-    repeating-linear-gradient(115deg, transparent 0 76px, rgba(121, 213, 223, 0.08) 76px 78px, transparent 78px 150px);
+    linear-gradient(90deg, rgba(82, 205, 191, 0.18) 1px, transparent 1px),
+    linear-gradient(rgba(120, 164, 182, 0.15) 1px, transparent 1px),
+    repeating-linear-gradient(115deg, transparent 0 76px, rgba(121, 213, 223, 0.10) 76px 78px, transparent 78px 150px);
+  background-size: 60px 60px, 60px 60px, 260px 260px;
+  opacity: 0.95;
+  animation: smartTechGridDrift 22s linear infinite;
 }
 
 body.ui-theme-dark::after {
-  background: linear-gradient(105deg, transparent 0 38%, rgba(121, 213, 223, 0.22) 50%, transparent 62%);
-  opacity: 1;
-  transform: translateX(-70%);
+  background: linear-gradient(105deg, transparent 0 32%, rgba(121, 213, 223, 0.32) 50%, transparent 68%);
+  opacity: 0.95;
+  transform: translateX(-100%);
   animation: smartTechSignalSweep 9s ease-in-out infinite;
 }
 
@@ -352,23 +355,23 @@ body.is-entry-loading {
     background-position: 0 0, 0 0, 0 0;
   }
   to {
-    background-position: 64px 64px, 64px 64px, 520px 0;
+    background-position: 60px 60px, 60px 60px, 520px 0;
   }
 }
 
 @keyframes smartTechSignalSweep {
   0% {
     opacity: 0;
-    transform: translateX(-70%);
+    transform: translateX(-100%);
   }
-  35% {
-    opacity: 0.9;
+  20% {
+    opacity: 0.95;
   }
-  65% {
-    opacity: 0.9;
+  80% {
+    opacity: 0.95;
   }
   100% {
     opacity: 0;
-    transform: translateX(70%);
+    transform: translateX(100%);
   }
 }

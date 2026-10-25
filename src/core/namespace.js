@@ -15,12 +15,31 @@
     var stage = stages.find(function (entry) { return entry.id === selected(project); });
     return stage ? (stage.labels[language] || stage.labels.hy) : "";
   }
-  var api = { all: stages, valid: valid, selected: selected, label: label };
+  function badgeStageId(project) {
+    if (!project) return "";
+    if (valid(project.stage)) return project.stage;
+    if (project.status === "current") {
+      var works = Array.isArray(project.works) ? project.works.join(" ") : "";
+      var text = (works + " " + (project.title || "") + " " + (project.id || "")).toLowerCase();
+      if (text.includes("ծրագրավ") || text.includes("programm") || text.includes("програм") || text.includes("only-one")) {
+        return "programming";
+      }
+      return "installation";
+    }
+    return "";
+  }
+  function badgeStage(project, language) {
+    var id = badgeStageId(project);
+    var stage = stages.find(function (entry) { return entry.id === id; });
+    return stage ? (stage.labels[language || "hy"] || stage.labels.hy) : "";
+  }
+  var api = { all: stages, valid: valid, selected: selected, label: label, badgeStageId: badgeStageId, badgeStage: badgeStage };
   root.SmartTech = root.SmartTech || {};
   root.SmartTech.content = root.SmartTech.content || {};
   root.SmartTech.sections = root.SmartTech.sections || {};
   root.SmartTech.utils = root.SmartTech.utils || {};
   root.SmartTech.projectStages = api;
+  root.SmartTech.projectBadgeStage = badgeStage;
 
   if (typeof module === "object" && module.exports) { module.exports = api; return; }
   // Load optional web fonts without blocking the first page render.

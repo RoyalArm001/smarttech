@@ -1,238 +1,133 @@
 (function (site) {
-  function storyLabels() {
-    return {
-      problem: site.i18n.get("projectsPage.storyProblem", "Problem"),
-      solution: site.i18n.get("projectsPage.storySolution", "Solution"),
-      result: site.i18n.get("projectsPage.storyResult", "Result")
-    };
-  }
-
-  function projectNarrative(project, text) {
-    var language = site.i18n.language || "hy";
-    var works = (text.works || []).slice(0, 2).join(language === "ru" ? ", " : " / ");
-    var dictionaries = {
-      hy: {
-        problem: "Օբյեկտը պահանջում էր կայուն և վերահսկելի ինժեներական համակարգերի համալիր՝ ամենօրյա անխափան աշխատանքի համար։",
-        solutionPrefix: "Իրականացրեցինք՝ ",
-        resultCurrent: "Նախագիծը ընթացքի մեջ է, համակարգերը փուլային ձևով տեղադրվում ու կարգավորվում են ըստ օբյեկտի աշխատանքային ռիթմի։",
-        resultPartial: "Աշխատանքների հիմնական մասը կատարված է, իսկ մնացած փուլերը շարունակվում են ըստ նախագծի ժամանակացույցի։",
-        resultCompleted: "Համակարգերը հանձնված են շահագործման և ապահովում են օբյեկտի անվտանգ ու կայուն աշխատանքը։"
-      },
-      en: {
-        problem: "The facility required a stable and controllable engineering system package for uninterrupted daily operations.",
-        solutionPrefix: "Implemented scope: ",
-        resultCurrent: "The project is in progress with phased installation and configuration aligned with facility operations.",
-        resultPartial: "The main scope is complete, while the remaining stages continue according to the project schedule.",
-        resultCompleted: "Systems are delivered and provide secure, stable daily facility operations."
-      },
-      ru: {
-        problem: "Объекту требовался стабильный и управляемый комплекс инженерных систем для бесперебойной ежедневной работы.",
-        solutionPrefix: "Реализовали: ",
-        resultCurrent: "Проект в работе: системы поэтапно монтируются и настраиваются с учетом рабочего режима объекта.",
-        resultPartial: "Основной объем выполнен, оставшиеся этапы продолжаются по графику проекта.",
-        resultCompleted: "Системы сданы и обеспечивают безопасную и стабильную ежедневную работу объекта."
-      }
-    };
-    var copy = site.i18n.pickLanguageDictionary(dictionaries, language);
-    return {
-      problem: copy.problem,
-      solution: copy.solutionPrefix + (works || "-"),
-      result: project.status === "current" ? copy.resultCurrent : (project.status === "partial" ? copy.resultPartial : copy.resultCompleted)
-    };
-  }
-
-  function storyMarkup(project, text) {
-    var e = site.utils.escapeHtml;
-    var labels = storyLabels();
-    var story = projectNarrative(project, text);
-    return '' +
-      '<dl class="project-story">' +
-        '<div><dt>' + e(labels.problem) + '</dt><dd>' + e(story.problem) + '</dd></div>' +
-        '<div><dt>' + e(labels.solution) + '</dt><dd>' + e(story.solution) + '</dd></div>' +
-        '<div><dt>' + e(labels.result) + '</dt><dd>' + e(story.result) + '</dd></div>' +
-      '</dl>';
-  }
-
-  function workProgress(project, index) {
-    var progress = project && Array.isArray(project.workProgress) ? project.workProgress[index] : null;
-    if (progress && typeof progress === "object") {
-      progress = progress.progress;
+  var filterLabels = {
+    hy: {
+      all: "Բոլոր նախագծերը",
+      current: "Ընթացիկ",
+      completed: "Ավարտված",
+      partial: "Մասնակի",
+      viewProject: "Դիտել նախագիծը",
+      worksDone: "Իրականացված աշխատանքներ"
+    },
+    en: {
+      all: "All Projects",
+      current: "Ongoing",
+      completed: "Completed",
+      partial: "Partial",
+      viewProject: "View Project",
+      worksDone: "Implemented Scope"
+    },
+    ru: {
+      all: "Все проекты",
+      current: "Текущие",
+      completed: "Завершенные",
+      partial: "Частичные",
+      viewProject: "Смотреть проект",
+      worksDone: "Выполненные работы"
     }
-    if (progress === undefined || progress === null) {
-      return project && project.status === "completed" ? 100 : null;
-    }
-    progress = Number(progress);
-    return Number.isFinite(progress) ? Math.max(0, Math.min(100, Math.round(progress))) : null;
-  }
-
-  function workMarkup(project, works, tagName) {
-    var e = site.utils.escapeHtml;
-    var tag = tagName || "li";
-    return (works || []).map(function (work, index) {
-      var label = work && typeof work === "object" ? (work.title || work.name || "") : work;
-      var progress = work && typeof work === "object" && work.progress !== undefined
-        ? Number(work.progress)
-        : workProgress(project, index);
-      var progressMarkup = Number.isFinite(progress)
-        ? ' <span class="project-work-progress">' + e(String(Math.max(0, Math.min(100, Math.round(progress))))) + '%</span>'
-        : "";
-      return "<" + tag + ">" + e(label) + progressMarkup + "</" + tag + ">";
-    }).join("");
-  }
-
-  function currentProjectsOrdered(projects) {
-    var activeIds = site.content.activeProjectIds || [];
-    var byId = {};
-    projects.forEach(function (project) {
-      byId[project.id] = project;
-    });
-    var ordered = activeIds.map(function (id) {
-      return byId[id];
-    }).filter(function (project) {
-      return project && project.status === "current";
-    });
-    return ordered.concat(projects.filter(function (project) {
-      return project.status === "current" && !ordered.some(function (entry) { return entry.id === project.id; });
-    }));
-  }
-
-  function renderFeaturedSlide(project, index) {
-    var e = site.utils.escapeHtml;
-    var text = site.i18n.project(project);
-    var statusLabels = project.statusLabels || {};
-    var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
-    var works = workMarkup(project, text.works);
-    var isActive = index === 0;
-    var slideClass = "featured-project current-project-slide" + (isActive ? " is-active" : "");
-
-    return "" +
-      '<article class="' + slideClass + '" data-current-project-slide role="group" aria-roledescription="slide" aria-hidden="' + (isActive ? "false" : "true") + '">' +
-        '<div class="featured-project-image">' +
-          '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="lazy">' +
-        "</div>" +
-        '<div class="featured-project-copy">' +
-          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
-          '<span class="eyebrow">' + e(site.i18n.get("projectsPage.ongoingHighlight")) + "</span>" +
-          "<h3>" + e(text.title) + "</h3>" +
-          (site.projectStages.label(project, site.i18n.language) ? '<p class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</p>' : '') +
-          storyMarkup(project, text) +
-          "<ul>" + works + "</ul>" +
-        "</div>" +
-      "</article>";
-  }
-
-  function renderCurrentProjectsCarousel(currentList) {
-    if (!currentList.length) return "";
-
-    var e = site.utils.escapeHtml;
-    var slides = currentList.map(function (project, index) {
-      return renderFeaturedSlide(project, index);
-    }).join("");
-
-    var dots = currentList.map(function (project, index) {
-      var text = site.i18n.project(project);
-      return '<button type="button" class="current-projects-dot' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '" aria-current="' + (index === 0 ? "true" : "false") + '"></button>';
-    }).join("");
-    var rail = currentList.map(function (project, index) {
-      var text = site.i18n.project(project);
-      var works = workMarkup(project, (text.works || []).slice(0, 2), "span");
-      return "" +
-        '<button type="button" class="current-projects-rail-item' + (index === 0 ? " is-active" : "") + '" data-carousel-dot="' + index + '" aria-label="' + e(text.title) + '">' +
-          '<b>' + e(String(index + 1).padStart(2, "0")) + "</b>" +
-          '<strong>' + e(text.title) + "</strong>" +
-          '<em>' + works + "</em>" +
-        "</button>";
-    }).join("");
-
-    var prevLabel = e(site.i18n.get("projectsPage.carouselPrev", "Previous project"));
-    var nextLabel = e(site.i18n.get("projectsPage.carouselNext", "Next project"));
-
-    return "" +
-      '<div id="current-projects" class="current-projects-carousel reveal" data-current-projects-carousel data-interval="6500">' +
-        '<div class="current-projects-system">' +
-          '<span>' + e(site.i18n.get("projectsPage.ongoingHighlight")) + "</span>" +
-          '<strong>' + e(site.i18n.get("projectsPage.current")) + "</strong>" +
-        "</div>" +
-        '<div class="current-projects-viewport">' +
-          '<div class="current-projects-track">' + slides + "</div>" +
-        "</div>" +
-        '<div class="current-projects-meter" aria-hidden="true"><span data-carousel-meter></span></div>' +
-        '<div class="current-projects-rail" aria-label="' + e(site.i18n.get("projectsPage.current")) + '">' + rail + "</div>" +
-        '<div class="current-projects-controls">' +
-          '<button type="button" class="current-projects-arrow" data-carousel-prev aria-label="' + prevLabel + '">' +
-            '<span aria-hidden="true">&#8249;</span>' +
-          "</button>" +
-          '<div class="current-projects-dots" role="tablist" aria-label="' + e(site.i18n.get("projectsPage.current")) + '">' + dots + "</div>" +
-          '<button type="button" class="current-projects-arrow" data-carousel-next aria-label="' + nextLabel + '">' +
-            '<span aria-hidden="true">&#8250;</span>' +
-          "</button>" +
-        "</div>" +
-        '<p class="current-projects-progress" data-carousel-progress aria-live="polite"></p>' +
-      "</div>";
-  }
-
-  function renderProjectCards(projectList) {
-    var e = site.utils.escapeHtml;
-    return projectList.map(function (project) {
-      var text = site.i18n.project(project);
-      var statusLabels = project.statusLabels || {};
-      var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
-      var works = workMarkup(project, (text.works || []).slice(0, 2));
-
-      return '' +
-        '<a class="project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
-          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + '</span>' +
-          '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" loading="lazy">' +
-          '<div>' +
-            '<h3>' + e(text.title) + '</h3>' +
-            (site.projectStages.label(project, site.i18n.language) ? '<p class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</p>' : '') +
-            storyMarkup(project, text) +
-            '<ul>' + works + '</ul>' +
-          '</div>' +
-        '</a>';
-    }).join("");
-  }
+  };
 
   site.sections.projects = function projects() {
     var e = site.utils.escapeHtml;
-    var projects = (site.content.projects || []).slice().sort(function (a, b) {
+    var language = site.i18n.language || "hy";
+    var labels = filterLabels[language] || filterLabels.hy;
+
+    var allProjects = (site.content.projects || []).slice().sort(function (a, b) {
       return (Number(a.order) || 0) - (Number(b.order) || 0) || String(a.id).localeCompare(String(b.id));
     });
-    var currentProjects = currentProjectsOrdered(projects);
-    var heroProject = currentProjects[0] || projects[0];
-    var completedProjects = projects.filter(function (project) {
-      return project.status === "completed";
-    });
-    var partialProjects = projects.filter(function (project) { return project.status === "partial"; });
-    var partialLabels = { hy: "Մասնակի կատարված նախագծեր", en: "Partially completed projects", ru: "Частично выполненные проекты" };
-    var partialHeading = partialProjects.length ? '<div id="partial-projects"><h2 class="gallery-heading">' + e(partialLabels[site.i18n.language] || partialLabels.hy) + '</h2><div class="projects-grid">' + renderProjectCards(partialProjects) + '</div></div>' : '';
 
-    var currentCarousel = renderCurrentProjectsCarousel(currentProjects);
-    var completedCards = renderProjectCards(completedProjects);
+    var heroProject = allProjects.find(function (p) { return p.status === "current"; }) || allProjects[0];
 
-    var gallery = (site.content.completedGallery || []).map(function (image, index) {
-      return '<img src="' + e(image) + '" alt="Completed project ' + (index + 1) + '" loading="lazy">';
+    var currentCount = allProjects.filter(function (p) { return p.status === "current"; }).length;
+    var completedCount = allProjects.filter(function (p) { return p.status === "completed"; }).length;
+    var partialCount = allProjects.filter(function (p) { return p.status === "partial"; }).length;
+
+    var filterTabs = [
+      { key: "all", label: labels.all, count: allProjects.length },
+      { key: "current", label: labels.current, count: currentCount },
+      { key: "completed", label: labels.completed, count: completedCount }
+    ];
+    if (partialCount > 0) {
+      filterTabs.push({ key: "partial", label: labels.partial, count: partialCount });
+    }
+
+    var filterBarHtml = '<div class="projects-filter-bar" role="tablist" aria-label="Projects filter">' +
+      filterTabs.map(function (tab) {
+        return '<button type="button" class="projects-filter-btn' + (tab.key === "all" ? " is-active" : "") + '" data-filter="' + e(tab.key) + '">' +
+          '<span>' + e(tab.label) + '</span>' +
+          '<span class="projects-filter-count">' + e(String(tab.count)) + '</span>' +
+        '</button>';
+      }).join("") +
+    '</div>';
+
+    var cardsHtml = allProjects.map(function (project, index) {
+      var text = site.i18n.project(project);
+      var status = project.status || "completed";
+      var statusLabels = project.statusLabels || {};
+      var statusText = statusLabels[language] || statusLabels.en || statusLabels.hy || "";
+      var stageBadge = site.projectBadgeStage ? site.projectBadgeStage(project, language) : (site.projectStages ? site.projectStages.badgeStage(project, language) : "");
+      var badgeText = (status === "current" && stageBadge) ? stageBadge : (statusText || (status === "current" ? labels.current : labels.completed));
+      var stageNote = site.projectStages ? site.projectStages.label(project, language) : "";
+      var showPhaseNote = stageNote && stageNote !== badgeText;
+      var image = (project.images && project.images[0]) || "/img/projects/arm-construct-logo.jpg";
+      var orderNum = String(index + 1).padStart(2, "0");
+      var works = (text.works || project.works || []).slice(0, 3).map(function (w) {
+        var label = typeof w === "object" ? (w.title || w.name || "") : w;
+        return '<span class="project-card-modern-tag">' + e(label) + '</span>';
+      }).join("");
+
+      return '' +
+        '<article class="project-card-modern reveal" data-project-id="' + e(project.id) + '" data-status="' + e(status) + '">' +
+          '<a class="project-card-modern-inner" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
+            '<div class="project-card-modern-media">' +
+              '<img src="' + e(image) + '" alt="' + e(text.title) + '" loading="' + (index < 6 ? "eager" : "lazy") + '" decoding="async" onerror="this.style.opacity=0;">' +
+              '<div class="project-card-modern-overlay"></div>' +
+              '<span class="project-status-badge is-' + e(status) + '">' + e(badgeText) + '</span>' +
+              '<span class="project-card-modern-num">' + e(orderNum) + '</span>' +
+            '</div>' +
+            '<div class="project-card-modern-body">' +
+              '<h3 class="project-card-modern-title">' + e(text.title) + '</h3>' +
+              (showPhaseNote ? '<p class="project-card-modern-phase">' + e(stageNote) + '</p>' : '') +
+              (project.phase && !showPhaseNote ? '<p class="project-card-modern-phase">' + e(project.phase) + '</p>' : '') +
+              '<div class="project-card-modern-works">' + works + '</div>' +
+              '<div class="project-card-modern-footer">' +
+                '<span class="project-card-modern-link">' + e(labels.viewProject) + '</span>' +
+                '<span class="project-card-modern-arrow">→</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</article>';
     }).join("");
 
-    var currentHeading = currentProjects.length && !currentCarousel
-      ? '<div id="projects-current-list">' +
-          '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.current")) + '</h2>' +
-          '<p class="projects-section-lead">' + e(site.i18n.get("projectsPage.currentText")) + '</p>' +
-          '<div class="projects-grid">' + renderProjectCards(currentProjects) + '</div>' +
-        "</div>"
-      : currentProjects.length
-        ? '<div class="projects-current-intro">' +
-            '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.current")) + '</h2>' +
-            '<p class="projects-section-lead">' + e(site.i18n.get("projectsPage.currentText")) + '</p>' +
-          "</div>"
-        : "";
+    var gallery = (site.content.completedGallery || []).map(function (img, idx) {
+      return '<img src="' + e(img) + '" alt="Smart Tech Project ' + (idx + 1) + '" loading="lazy" decoding="async">';
+    }).join("");
 
-    var completedHeading = completedProjects.length
-      ? '<div id="completed-projects">' +
-          '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completedList")) + '</h2>' +
-          '<div class="projects-grid">' + completedCards + '</div>' +
-        "</div>"
-      : "";
+    if (!site._projectsFilterBound && typeof document !== "undefined") {
+      site._projectsFilterBound = true;
+      document.addEventListener("click", function (event) {
+        var btn = event.target.closest(".projects-filter-btn");
+        if (!btn) return;
+        var filter = btn.getAttribute("data-filter");
+        var bar = btn.closest(".projects-filter-bar");
+        if (bar) {
+          bar.querySelectorAll(".projects-filter-btn").forEach(function (b) {
+            b.classList.remove("is-active");
+          });
+          btn.classList.add("is-active");
+        }
+        var grid = document.querySelector(".projects-modern-grid");
+        if (grid) {
+          grid.querySelectorAll(".project-card-modern").forEach(function (card) {
+            var st = card.getAttribute("data-status");
+            if (filter === "all" || st === filter) {
+              card.classList.remove("is-hidden");
+            } else {
+              card.classList.add("is-hidden");
+            }
+          });
+        }
+      });
+    }
 
     return '' +
       site.sections.pageHero({
@@ -250,12 +145,9 @@
       }) +
       '<section id="projects-content" class="section projects-section">' +
         '<div class="container">' +
-          currentHeading +
-          currentCarousel +
-          partialHeading +
-          completedHeading +
-          '<h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completed")) + '</h2>' +
-          '<div id="projects-gallery" class="project-gallery reveal">' + gallery + '</div>' +
+          filterBarHtml +
+          '<div class="projects-modern-grid">' + cardsHtml + '</div>' +
+          (gallery ? '<div class="projects-gallery-wrap"><h2 class="gallery-heading">' + e(site.i18n.get("projectsPage.completed", "Ավարտված աշխատանքներից լուսանկարներ")) + '</h2><div id="projects-gallery" class="project-gallery reveal">' + gallery + '</div></div>' : '') +
         '</div>' +
       '</section>';
   };

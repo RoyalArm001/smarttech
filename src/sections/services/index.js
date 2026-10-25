@@ -15,7 +15,7 @@
           { title: "Նախագծում եւ խորհրդատվություն", items: ["օբյեկտի ուսումնասիրություն", "չափագրում եւ ռիսկերի գնահատում", "տեխնիկական առաջադրանք", "բյուջեի նախնական հաշվարկ", "սարքավորումների ճիշտ դասավորում"] },
           { title: "Անվտանգության համակարգեր", items: ["տեսահսկում եւ հեռահար դիտում", "alarm անվտանգություն", "հրդեհային ազդարարում", "տարհանման համակարգեր", "մուտքի վերահսկում", "դոմոֆոններ եւ դռների ավտոմատացում"] },
           { title: "IT ցանցեր եւ կապ", items: ["LAN եւ structured cabling", "Wi-Fi ծածկույթ", "rack եւ patch panel", "switch/router/firewall", "VPN եւ հեռահար մուտք", "մոնիթորինգ եւ troubleshooting"] },
-          { title: "Մոնիթորինգ եւ ավարուժ", items: ["24/7 համակարգերի վերահսկում", "SMS, email եւ հավելվածի ահազանգում", "սերվեր, NVR եւ UPS մոնիթորինգ", "կենտրոնացված dashboard", "թեստավորում եւ troubleshooting", "պլանային սպասարկում"] },
+          { title: "Մոնիթորինգ և վթարային աջակցություն", items: ["24/7 համակարգերի վերահսկում", "SMS, email եւ հավելվածի ահազանգում", "սերվեր, NVR եւ UPS մոնիթորինգ", "կենտրոնացված dashboard", "թեստավորում եւ troubleshooting", "պլանային սպասարկում"] },
           { title: "Էլեկտրամոնտաժ", items: ["մալուխային ուղիներ", "բաշխիչ վահաններ", "լուսավորություն", "սնուցման գծեր", "պաշտպանիչ ավտոմատներ", "UPS եւ պահուստային սնուցում"] },
           { title: "BMS եւ ավտոմատացում", items: ["շենքի կառավարման logic", "սցենարային կառավարում", "HVAC / lighting ինտեգրում", "սենսորներ եւ controller-ներ", "smart control", "մոնիթորինգ dashboard"] },
           { title: "Աուդիո եւ ծանուցում", items: ["public address", "ֆոնային երաժշտություն", "ձայնային ծանուցում", "կոնֆերանսային աուդիո", "միկրոֆոններ եւ zone control", "ձայնի կարգաբերում"] },
@@ -137,15 +137,6 @@
     return "" +
       '<section class="section services-business-section">' +
         '<div class="container">' +
-          '<div class="services-business-hero reveal">' +
-            '<span class="eyebrow">' + e(copy.eyebrow) + "</span>" +
-            "<h2>" + e(copy.title) + "</h2>" +
-            "<p>" + e(copy.text) + "</p>" +
-            '<div class="button-row">' +
-              '<a class="button button-primary" href="' + e(site.utils.pageUrl("request")) + '">' + e(copy.request) + "</a>" +
-              '<a class="button" href="' + e(site.utils.pageUrl("request")) + '">' + e(copy.audit) + "</a>" +
-            "</div>" +
-          "</div>" +
           '<div class="business-block reveal">' +
             "<h2>" + e(copy.groupsTitle) + "</h2>" +
             '<div class="capability-grid">' + groups + "</div>" +
@@ -181,7 +172,7 @@
           title: "Իրականացման փուլային ծառայություններ",
           badge: "Փուլային",
           text: "Այս ծառայությունները ապահովում են ամբողջ ցիկլը՝ նախագծումից մինչև գործարկում։",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
+          ids: ["systems-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ],
       en: [
@@ -195,7 +186,7 @@
           title: "Delivery-stage services",
           badge: "Delivery",
           text: "These services complete the full cycle from design and supply to commissioning.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
+          ids: ["systems-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ],
       ru: [
@@ -209,7 +200,7 @@
           title: "Услуги по этапам реализации",
           badge: "Этапы",
           text: "Эти услуги закрывают полный цикл: от проектирования и поставки до пусконаладки.",
-          ids: ["systems-design", "full-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
+          ids: ["systems-design", "equipment-supply", "installation", "automation-cabinets", "commissioning-programming", "interfaces", "powder-coating"]
         }
       ]
     };

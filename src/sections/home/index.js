@@ -38,7 +38,7 @@
       }
     });
 
-    var featuredServices = (site.content.services || []).slice();
+    var featuredServices = (site.content.services || []).filter(function (s) { return s.id !== "full-design"; });
 
 
     var mobileHomeFeaturedCount = 3;
@@ -264,133 +264,144 @@
       };
     }
 
-    function renderHomeServicePost(service, index, options) {
-      var opts = options || {};
-      var text = site.i18n.service(service);
-      var postCopy = serviceHomePostCopy(service, text, opts.layout);
-      var layoutClass = opts.layout === "vertical"
-        ? "is-card-vertical"
-        : (index % 2 === 0 ? "is-media-left" : "is-media-right");
-      var order = String(index + 1).padStart(2, "0");
-      var benefits = postCopy.benefits;
-      var benefitsHtml = benefits.map(function (benefit) {
-        return "<li>" + e(benefit) + "</li>";
-      }).join("");
-      var lead = postCopy.lead;
-      var imageLoading = index < 2 ? "eager" : "lazy";
-      var imagePriority = index < 2 ? "high" : "low";
-      var shellMarkup = "" +
-        '<a class="home-service-post-shell" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
-          '<span class="home-service-post-media">' +
-            '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ loading: imageLoading, fetchpriority: imagePriority, width: 640, height: 400 }) + ">" +
-            '<span class="home-service-post-chip">' + e(order) + "</span>" +
-          "</span>" +
-          '<span class="home-service-post-body">' +
-            '<span class="home-service-post-kicker">' + e(site.i18n.get("home.servicesBenefitsTitle", "Your benefits")) + "</span>" +
-            "<h3>" + e(text.title) + "</h3>" +
-            '<p class="home-service-post-lead">' + e(lead) + "</p>" +
-            (benefitsHtml ? '<ul class="home-service-post-benefits">' + benefitsHtml + "</ul>" : "") +
-            '<span class="home-service-post-cta">' + e(site.i18n.get("home.servicesExplore", site.i18n.get("common.learnMore"))) + "</span>" +
-          "</span>" +
-        "</a>";
+    var categoryOrder = ["security", "engineering", "networks", "electrical"];
+    var serviceCategories = {
+      "video-surveillance": "security",
+      "fire-security": "security",
+      "engineering-monitoring": "security",
+      "systems-design": "engineering",
+      automation: "engineering",
+      "automation-cabinets": "engineering",
+      "commissioning-programming": "engineering",
+      interfaces: "engineering",
+      networks: "networks",
+      "equipment-supply": "networks",
+      electrical: "electrical",
+      installation: "electrical",
+      "audio-systems": "electrical",
+      "powder-coating": "electrical"
+    };
 
-      if (opts.layout === "zigzag") {
-        var spineNode = '<span class="home-service-spine-node" aria-hidden="true"><span class="home-service-spine-pulse"></span></span>';
-        var spacer = '<span class="home-service-post-spacer" aria-hidden="true"></span>';
-        var rowMarkup = layoutClass === "is-media-right"
-          ? spacer + spineNode + shellMarkup
-          : shellMarkup + spineNode + spacer;
-        return "" +
-          '<article class="home-service-post home-service-reveal ' + layoutClass + '" data-service-id="' + e(service.id) + '" data-reveal-delay="' + e(String(Math.min(index * 80, 320))) + '" data-spine-index="' + e(String(index)) + '">' +
-            '<div class="home-service-post-row">' + rowMarkup + "</div>" +
-          "</article>";
-      }
+    var filterCategories = {
+      hy: [
+        { key: "all", label: "Բոլորը" },
+        { key: "security", label: "Անվտանգություն" },
+        { key: "engineering", label: "Նախագծում և BMS" },
+        { key: "networks", label: "Ցանցեր և IT" },
+        { key: "electrical", label: "Էլեկտրամոնտաժ" }
+      ],
+      en: [
+        { key: "all", label: "All" },
+        { key: "security", label: "Security" },
+        { key: "engineering", label: "Design and BMS" },
+        { key: "networks", label: "Networks and IT" },
+        { key: "electrical", label: "Electrical" }
+      ],
+      ru: [
+        { key: "all", label: "Все" },
+        { key: "security", label: "Безопасность" },
+        { key: "engineering", label: "Проект и BMS" },
+        { key: "networks", label: "Сети и IT" },
+        { key: "electrical", label: "Электромонтаж" }
+      ]
+    };
+
+    var currentCategories = filterCategories[site.i18n.language] || filterCategories.hy;
+    var filterBarHtml = '<div class="home-services-filter-bar" role="tablist" aria-label="Services filter">' +
+      currentCategories.map(function (cat) {
+        return '<button type="button" class="home-services-filter-btn' + (cat.key === "all" ? " is-active" : "") + '" data-filter="' + e(cat.key) + '">' + e(cat.label) + '</button>';
+      }).join("") +
+    '</div>';
+
+    var sortedServices = featuredServices.slice().sort(function (a, b) {
+      var catA = serviceCategories[a.id] || "engineering";
+      var catB = serviceCategories[b.id] || "engineering";
+      var diff = categoryOrder.indexOf(catA) - categoryOrder.indexOf(catB);
+      if (diff !== 0) return diff;
+      var keys = Object.keys(serviceCategories);
+      return keys.indexOf(a.id) - keys.indexOf(b.id);
+    });
+
+    var modernCardsHtml = sortedServices.map(function (service, index) {
+      var text = site.i18n.service(service);
+      var postCopy = serviceHomePostCopy(service, text, "grid");
+      var catKey = serviceCategories[service.id] || "engineering";
+      var catObj = currentCategories.find(function (c) { return c.key === catKey; });
+      var catLabel = catObj && catObj.key !== "all" ? catObj.label : "";
 
       return "" +
-        '<article class="home-service-post home-service-reveal ' + layoutClass + '" data-service-id="' + e(service.id) + '" data-reveal-delay="' + e(String(Math.min(index * 70, 280))) + '">' +
-          shellMarkup +
-        "</article>";
+        '<article class="home-service-card reveal" data-service-id="' + e(service.id) + '" data-category="' + e(catKey) + '">' +
+          '<a class="home-service-card-inner" href="' + e(site.utils.pageUrl("service", service.id)) + '">' +
+            '<div class="home-service-media-wrap">' +
+              '<img src="' + e(service.image) + '" alt="' + e(text.title) + '" loading="' + (index < 3 ? "eager" : "lazy") + '" width="600" height="380" decoding="async">' +
+              '<div class="home-service-media-overlay"></div>' +
+              (catLabel ? '<span class="home-service-cat-badge">' + e(catLabel) + '</span>' : '') +
+            '</div>' +
+            '<div class="home-service-card-body">' +
+              '<h3 class="home-service-card-title">' + e(text.title) + '</h3>' +
+              '<p class="home-service-card-lead">' + e(postCopy.lead) + '</p>' +
+              '<div class="home-service-card-bottom">' +
+                '<span class="home-service-card-cta" aria-hidden="true">' +
+                  '<span>' + e(site.i18n.get("common.learnMore", "Տեսնել ավելին")) + '</span>' +
+                  '<span class="home-service-card-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+                '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</article>';
+    }).join("");
+
+    var allServicesOnHome = "" +
+      filterBarHtml +
+      '<div class="home-services-modern-grid">' + modernCardsHtml + '</div>';
+
+    if (!site._homeFilterBound && typeof document !== "undefined") {
+      site._homeFilterBound = true;
+      document.addEventListener("click", function (event) {
+        var btn = event.target.closest(".home-services-filter-btn");
+        if (!btn) return;
+        var filter = btn.getAttribute("data-filter");
+        var bar = btn.closest(".home-services-filter-bar");
+        if (bar) {
+          bar.querySelectorAll(".home-services-filter-btn").forEach(function (b) {
+            b.classList.remove("is-active");
+          });
+          btn.classList.add("is-active");
+        }
+        var grid = document.querySelector(".home-services-modern-grid");
+        if (grid) {
+          grid.querySelectorAll(".home-service-card").forEach(function (card) {
+            var cat = card.getAttribute("data-category");
+            if (filter === "all" || cat === filter) {
+              card.classList.remove("is-hidden");
+            } else {
+              card.classList.add("is-hidden");
+            }
+          });
+        }
+      });
     }
-
-    function renderHomeServiceCatalogCard(service, index) {
-      var text = site.i18n.service(service);
-      var tag = (text.tags || service.tags || [])[0] || "";
-      var order = String(index + 1).padStart(2, "0");
-      var extraClass = service.id === "powder-coating" ? " is-powder" : "";
-
-      return "" +
-        '<a class="home-service-catalog-card home-service-reveal' + extraClass + '" href="' + e(site.utils.pageUrl("service", service.id)) + '" data-reveal-delay="' + e(String(Math.min(index * 50, 200))) + '">' +
-          '<span class="home-service-catalog-media">' +
-            '<img data-src="' + e(service.image) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ fetchpriority: "low", width: 320, height: 256, className: "is-deferred-src" }) + ">" +
-            '<span class="home-service-catalog-index">' + e(order) + "</span>" +
-          "</span>" +
-          '<span class="home-service-catalog-body">' +
-            (tag ? '<span class="home-service-catalog-tag">' + e(tag) + "</span>" : "") +
-            "<strong>" + e(text.title) + "</strong>" +
-            '<span class="home-service-catalog-arrow" aria-hidden="true">→</span>' +
-          "</span>" +
-        "</a>";
-    }
-
-    var allServicesOnHomeDesktop = featuredServices.map(function (service, index) {
-      return renderHomeServicePost(service, index, { layout: "zigzag" });
-    }).join("");
-    var mobileFeaturedServices = featuredServices.slice(0, mobileHomeFeaturedCount);
-    var mobileCatalogServices = featuredServices.slice(mobileHomeFeaturedCount);
-    var mobileFeaturedHtml = mobileFeaturedServices.map(function (service, index) {
-      return renderHomeServicePost(service, index, { layout: "vertical" });
-    }).join("");
-    var mobileCatalogHtml = mobileCatalogServices.map(function (service, index) {
-      return renderHomeServiceCatalogCard(service, mobileHomeFeaturedCount + index);
-    }).join("");
-    var mobileCatalogSection = mobileCatalogServices.length
-      ? '<section class="home-service-catalog">' +
-          '<div class="home-service-catalog-head">' +
-            '<span class="eyebrow">' + e(site.i18n.get("home.servicesCatalogEyebrow", "Catalog")) + "</span>" +
-            "<h3>" + e(site.i18n.get("home.servicesCatalogTitle", "More services")) + "</h3>" +
-            "<p>" + e(site.i18n.get("home.servicesCatalogText", "Tap a card to open the full service page.")) + "</p>" +
-          "</div>" +
-          '<div class="home-service-catalog-grid">' + mobileCatalogHtml + "</div>" +
-        "</section>"
-      : "";
-    var allServicesOnHome =
-      '<div class="home-service-timeline home-service-timeline--desktop">' +
-        '<div class="home-service-spine-rail" aria-hidden="true">' +
-          '<svg class="home-service-spine-svg" viewBox="0 0 100 1000" preserveAspectRatio="none">' +
-            '<defs>' +
-              '<linearGradient id="homeServiceSpineGrad" x1="0%" y1="0%" x2="0%" y2="100%">' +
-                '<stop offset="0%" stop-color="#38d6a8" stop-opacity="0.15" />' +
-                '<stop offset="45%" stop-color="#0aa896" stop-opacity="0.85" />' +
-                '<stop offset="100%" stop-color="#4a84ff" stop-opacity="0.35" />' +
-              "</linearGradient>" +
-            "</defs>" +
-            '<path class="home-service-spine-track" d="M50 0 V1000" />' +
-            '<path class="home-service-spine-flow" d="M50 0 V1000" />' +
-          "</svg>" +
-        "</div>" +
-        '<div class="home-service-stream home-service-stream--desktop">' + allServicesOnHomeDesktop + "</div>" +
-      "</div>" +
-      '<div class="home-service-stream home-service-stream--mobile">' +
-        '<div class="home-service-stream-featured">' + mobileFeaturedHtml + "</div>" +
-        mobileCatalogSection +
-      "</div>";
 
     var homeProjects = site.content.projects.map(function (project) {
       var text = site.i18n.project(project);
       var statusLabels = project.statusLabels || {};
       var statusText = statusLabels[site.i18n.language] || statusLabels.en || statusLabels.hy || "";
+      var stageBadge = site.projectBadgeStage ? site.projectBadgeStage(project, site.i18n.language) : (site.projectStages ? site.projectStages.badgeStage(project, site.i18n.language) : "");
+      var badgeText = (project.status === "current" && stageBadge) ? stageBadge : statusText;
+      var stageNote = site.projectStages ? site.projectStages.label(project, site.i18n.language) : "";
+      var showPhaseNote = stageNote && stageNote !== badgeText;
       var works = (text.works || project.works || []).slice(0, 3).map(function (work) {
         return "<li>" + e(work) + "</li>";
       }).join("");
       return "" +
         '<a class="home-bottom-project-card reveal" href="' + e(site.utils.pageUrl("project", project.id)) + '">' +
-          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(statusText) + "</span>" +
+          '<span class="project-status-badge is-' + e(project.status || "completed") + '">' + e(badgeText) + "</span>" +
           '<span class="home-bottom-project-image">' +
             '<img src="' + e(project.images[0]) + '" alt="' + e(text.title) + '" ' + serviceImageAttrs({ loading: "lazy", fetchpriority: "low", width: 480, height: 300 }) + ' onerror="this.style.opacity=0;this.parentElement.classList.add(\'is-broken\');">' +
           "</span>" +
           '<span class="home-bottom-project-copy">' +
             "<strong>" + e(text.title) + "</strong>" +
-            (site.projectStages.label(project, site.i18n.language) ? '<span class="project-phase-note">' + e(site.projectStages.label(project, site.i18n.language)) + '</span>' : '') +
+            (showPhaseNote ? '<span class="project-phase-note">' + e(stageNote) + '</span>' : '') +
             '<ul>' + works + "</ul>" +
           "</span>" +
         "</a>";

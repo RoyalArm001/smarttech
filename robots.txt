@@ -21,3 +21,4 @@ Host: smarttechllc.am
 # Detail-page id parameters identify distinct content; do not strip them.
 
 Sitemap: https://smarttechllc.am/sitemap.xml
+Sitemap: https://smarttechllc.am/sitemap-projects.xml

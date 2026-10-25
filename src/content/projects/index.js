@@ -125,6 +125,7 @@
     {
       id: "abovyan",
       title: "Abovyan 5/5 Hotel (Multi Group)",
+      stage: "installation",
       works: ["Հրդեհային ազդարարում", "Տարհանման համակարգ", "Մուտքի վերահսկում", "Էլեկտրական տաքացվող հատակներ"],
       images: [jobBase + "abovyan-1.png", jobBase + "abovyan-2.png"],
       systemImages: [system.alarmPanel, system.access, system.electrical]
@@ -153,6 +154,7 @@
     {
       id: "wyndham",
       title: "Wyndham Grand Tsaghkadzor",
+      stage: "installation",
       works: ["Էլեկտրական համակարգեր", "Կապի համակարգեր", "Տեսահսկում", "Հրդեհային անվտանգություն", "Մուտքի վերահսկում"],
       images: [
         jobBase + "wyndham-1.png",
@@ -163,6 +165,7 @@
     {
       id: "only-one",
       title: "Only One Residential Complex",
+      stage: "programming",
       works: [
         "Տեսահսկման սարքերի տեղադրում և ծրագրավորում",
         "Դռների մուտքի վերահսկման կարգավորում",

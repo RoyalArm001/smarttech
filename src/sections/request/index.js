@@ -110,7 +110,7 @@
         network: ["switch", "router", "firewall", "Wi-Fi access point", "rack cabinet", "patch panel", "UTP/Fiber cabling", "UPS"],
         electrical: ["մալուխային ուղի", "բաշխիչ վահան", "ավտոմատ անջատիչ", "լուսավորության գիծ", "վարդակների գիծ", "հողանցում", "UPS սնուցում", "չափումներ"],
         automation: ["BMS controller", "KNX module", "sensor", "relay module", "lighting automation", "HVAC integration", "dashboard", "scenario programming"],
-        "engineering-monitoring": ["SMS ահազանգում", "email/Telegram ծանուցում", "NVR մոնիթորինգ", "սերվերային վերահսկում", "UPS/ցանցի կարգավիճակ", "dashboard", "իրադարձությունների մատյան", "պլանային սպասարձում"],
+        "engineering-monitoring": ["SMS ահազանգում", "email/Telegram ծանուցում", "NVR մոնիթորինգ", "սերվերային վերահսկում", "UPS/ցանցի կարգավիճակ", "dashboard", "իրադարձությունների մատյան", "պլանային սպասարկում"],
         "powder-coating": ["մաքրում", "փայլում", "փոշի կիրառում", "ջեռոցում", "Որակի ստուգում", "փաթեթավորում", "RAL գունային ընտրություն", "պաշտպանիչ ծածկ"]
       },
       en: {
@@ -270,7 +270,7 @@
           { id: "network", title: "Ցանցեր եւ Wi-Fi", unit: "կետ", text: "LAN, rack, Wi-Fi ծածկույթ" },
           { id: "electrical", title: "Էլեկտրամոնտաժ", unit: "կետ", text: "Վահաններ, մալուխներ, լուսավորություն" },
           { id: "automation", title: "BMS / ավտոմատացում", unit: "հանգույց", text: "Շենքի կառավարման եւ smart logic լուծումներ" },
-          { id: "engineering-monitoring", title: "24/7 մոնիթորինգ", unit: "հանգույց", text: "SMS/email ահազանգում, սերվեր/NVR, dashboard եւ ավարուժ սպասարձում" },
+          { id: "engineering-monitoring", title: "24/7 մոնիթորինգ", unit: "հանգույց", text: "SMS/email ահազանգում, սերվեր/NVR, dashboard և վթարային սպասարկում" },
           { id: "powder-coating", title: "Փոշեներկում", unit: "մ²", text: "Մետաղական դետալների պաշտպանիչ և էսթետիկ փոշեներկում" }
         ],
         maintenanceList: [

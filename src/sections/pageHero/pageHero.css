@@ -23,19 +23,19 @@
 .page-hero::before {
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 54px 54px;
-  opacity: 0.55;
-  animation: pageGridMove 18s linear infinite;
+    linear-gradient(90deg, rgba(82, 205, 191, 0.20) 1px, transparent 1px),
+    linear-gradient(rgba(82, 205, 191, 0.16) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.92;
+  animation: pageGridMove 20s linear infinite;
 }
 
 .page-hero::after {
   z-index: -1;
-  background: linear-gradient(105deg, transparent 24%, rgba(255, 255, 255, 0.12) 48%, transparent 70%);
+  background: linear-gradient(105deg, transparent 15%, rgba(56, 170, 184, 0.24) 42%, rgba(121, 213, 223, 0.38) 50%, rgba(56, 170, 184, 0.24) 58%, transparent 85%);
   background-repeat: no-repeat;
-  transform: translateX(-70%);
-  animation: pageSweep 6.4s ease-in-out infinite;
+  transform: translateX(-100%);
+  animation: pageSweep 7.5s ease-in-out infinite;
 }
 
 .page-hero-contact {
@@ -232,13 +232,14 @@
 
 @keyframes pageGridMove {
   from { background-position: 0 0, 0 0; }
-  to { background-position: 54px 54px, 54px 54px; }
+  to { background-position: 60px 60px, 60px 60px; }
 }
 
 @keyframes pageSweep {
-  0%, 52% { transform: translateX(-80%); opacity: 0; }
-  68% { opacity: 1; }
-  100% { transform: translateX(72%); opacity: 0; }
+  0% { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 0.88; }
+  80% { opacity: 0.88; }
+  100% { transform: translateX(100%); opacity: 0; }
 }
 
 @keyframes pageSignalScan {

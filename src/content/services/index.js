@@ -21,7 +21,7 @@
       id: "installation",
       title: "Տեղադրում",
       lead: "Իրականացնում ենք համակարգերի պրոֆեսիոնալ տեղադրում՝ մալուխային ուղիներից մինչև վերջնական սարքավորում և փորձարկում։",
-      image: img + "installation_works.jpg",
+      image: img + "cabling_installation.jpg",
       gallery: [img + "installation_works.jpg", img + "cabling_installation.jpg", img + "electrical_installation_works.jpg", img + "installation_surveillance_systems.jpg"],
       tags: ["Տեղադրում", "Մոնտաժ", "Մալուխավորում", "Փորձարկում"]
     },
@@ -29,7 +29,7 @@
       id: "automation-cabinets",
       title: "Ավտոմատիկայի պահարանների հավաքում",
       lead: "Հավաքում ենք ավտոմատիկայի պահարաններ՝ նախագծային փաստաթղթերին համապատասխան, կատարում ենք controller-ների նախնական կարգաբերում և անվտանգության ստուգումներ։",
-      image: img + "wacker_installation.jpg",
+      image: img + "automation_cabinets.jpg",
       gallery: [img + "wacker_installation.jpg", img + "automation_cabinets.jpg", img + "commissioning_programming.jpg", img + "electrical_installation_works.jpg"],
       tags: ["Ավտոմատիկա", "Պահարան", "Հավաքում"]
     },
@@ -91,19 +91,11 @@
     },
     {
       id: "engineering-monitoring",
-      title: "24/7 Մոնիթորինգ և ավարուժ սպասարձում",
+      title: "24/7 Մոնիթորինգ և վթարային սպասարկում",
       lead: "Մոնիթորինգ սերվերը 24/7 ստուգում է CCTV, NVR, ցանցը, UPS-ը, սերվերները և անվտանգությունը։ Խնդրի դեպքում ահազանգում եք ստանում SMS, email կամ Telegram-ով։",
-      image: img + "surveillance_indoor.jpg",
-      gallery: [img + "surveillance_indoor.jpg", img + "interfaces_ui.jpg", img + "server_rack.jpg", img + "commissioning_programming.jpg"],
+      image: img + "engineering_monitoring.jpg",
+      gallery: [img + "engineering_monitoring.jpg", img + "interfaces_ui.jpg", img + "server_rack.jpg", img + "commissioning_programming.jpg"],
       tags: ["SMS ահազանգում", "Dashboard", "Սերվեր/NVR", "24/7"]
-    },
-    {
-      id: "full-design",
-      title: "Համակարգերի համալիր նախագծում",
-      lead: "Օբյեկտի համար կազմում ենք ամբողջական նախագծային լուծում՝ սարքերի դասավորությամբ, հաշվարկներով, ռեզերվներով և շահագործման տրամաբանությամբ։",
-      image: img + "full_design_integrated.jpg",
-      gallery: [img + "full_design_integrated.jpg", img + "technical_drawing.jpg", img + "systems_design.jpg", img + "bms_office.jpg"],
-      tags: ["Նախագիծ", "Հաշվարկ", "Ամբողջական համակարգ"]
     },
     {
       id: "audio-systems",

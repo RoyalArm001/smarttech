@@ -1,4 +1,8 @@
 (function (site) {
+  var projectSeoData = document.getElementById('project-seo-data');
+  if (projectSeoData && site.cms) {
+    try { site.cms.apply({ collections: { projects: [JSON.parse(projectSeoData.textContent)] } }); } catch (error) { /* The public API can still load the project. */ }
+  }
   var pages = ["home", "services", "projects", "album", "chat", "request", "partners", "team", "about", "contact", "member", "profile", "login", "licenses", "help", "faq", "terms", "privacy", "disclaimer", "landing", "blog", "article"];
   var landingSlugs = [
     "cctv-installation-yerevan",
@@ -784,6 +788,7 @@
     if (firstRenderDone) runRouteTransition();
     document.body.classList.remove("is-menu-open");
     document.body.classList.toggle("is-chat-page", page === "chat");
+    document.body.classList.toggle("is-home-page", page === "home");
     document.documentElement.lang = preferredLang;
     document.getElementById("site-header").innerHTML = site.sections.header();
     if (page !== "profile" && page !== "login") {
@@ -962,7 +967,7 @@
       if (!header || !document.documentElement || !header.getBoundingClientRect) return;
 
       var rect = header.getBoundingClientRect();
-      var height = Math.max(60, Math.ceil(rect.height));
+      var height = Math.max(48, Math.ceil(rect.height));
       var bottom = Math.max(height, Math.ceil(rect.bottom));
       document.documentElement.style.setProperty("--smarttech-header-height", height + "px");
       document.documentElement.style.setProperty("--smarttech-header-bottom", bottom + "px");
@@ -3739,35 +3744,26 @@
   }
 
   function isChatDismissed() {
-    try {
-      return window.sessionStorage.getItem(chatDismissedSessionKey) === "1";
-    } catch (error) {
-      return false;
-    }
+    return false;
   }
 
-  function setChatDismissed(isDismissed) {
-    if (!chatUi) return;
-
+  function setChatDismissed() {
     try {
-      if (isDismissed) {
-        window.sessionStorage.setItem(chatDismissedSessionKey, "1");
-      } else {
-        window.sessionStorage.removeItem(chatDismissedSessionKey);
-      }
+      window.sessionStorage.removeItem(chatDismissedSessionKey);
+      window.localStorage.removeItem(chatDismissedSessionKey);
     } catch (error) {
-      // Session storage is best-effort.
+      // Storage cleanup is best-effort.
     }
-
-    if (isDismissed) {
-      setChatOpen(false);
+    if (chatUi && chatUi.root) {
+      chatUi.root.classList.remove("is-dismissed");
+      chatUi.root.style.removeProperty("display");
+      chatUi.root.style.removeProperty("pointer-events");
+      chatUi.root.removeAttribute("hidden");
     }
-    chatUi.root.classList.toggle("is-dismissed", !!isDismissed);
   }
 
   function setChatOpen(isOpen) {
     if (!chatUi) return;
-    if (isOpen && chatUi.root.classList.contains("is-dismissed")) return;
     chatUi.trigger.setAttribute("aria-expanded", String(isOpen));
     document.body.classList.toggle("is-chat-open", !!isOpen);
     if (mobileBottomNav) {
@@ -3783,12 +3779,17 @@
         }
       });
       window.setTimeout(function () {
-        chatUi.input.focus();
+        if (chatUi && chatUi.root.classList.contains("is-open")) chatUi.input.focus({ preventScroll: true });
       }, 60);
       return;
     }
 
+    var restoreChatFocus = chatUi.panel.contains(document.activeElement);
     chatUi.root.classList.remove("is-open");
+    if (restoreChatFocus) {
+      var chatOpener = chatUi.trigger.getClientRects().length ? chatUi.trigger : document.querySelector('[data-bottom-action="chat"]');
+      if (chatOpener) chatOpener.focus({ preventScroll: true });
+    }
     document.body.classList.remove("is-chat-open");
     if (mobileBottomNav) {
       updateMobileBottomNavActive();
@@ -3867,6 +3868,7 @@
   function requestAiChat(messageText, copy, historySnapshot) {
     return window.fetch("/api/chat", {
       method: "POST",
+      signal: AbortSignal.timeout(30000),
       headers: {
         "Content-Type": "application/json"
       },
@@ -3925,11 +3927,15 @@
       chatTypingTimer = null;
     }
     var typingEl = showTyping(copy);
+    setChatBusy(true, copy);
     chatTypingTimer = window.setTimeout(function () {
+      chatTypingTimer = null;
       if (typingEl && typingEl.parentNode) {
         typingEl.parentNode.removeChild(typingEl);
       }
       appendChatMessage("bot", chatReplyForIntent(intent, copy, activeChatLanguage()));
+      setChatBusy(false, copy);
+      finishChatTurnIfLimited(copy);
     }, 680);
   }
 
@@ -3958,7 +3964,6 @@
 
     if (isLocalChatIntent(intent)) {
       respondByIntent(intent, copy);
-      finishChatTurnIfLimited(copy);
       return;
     }
 
@@ -3998,19 +4003,18 @@
           '<span class="auto-chat-trigger-icon" aria-hidden="true">ST</span>' +
           '<span class="auto-chat-trigger-text"></span>' +
         "</button>" +
-        '<button class="auto-chat-dismiss" type="button" aria-label="Hide chat">&times;</button>' +
-      "</div>" +
-      '<section class="auto-chat-panel" hidden>' +
+        "</div>" +
+      '<section class="auto-chat-panel" role="dialog" aria-labelledby="auto-chat-title" hidden>' +
         '<header class="auto-chat-head">' +
           '<div class="auto-chat-head-copy">' +
             '<p class="auto-chat-status"><span class="auto-chat-status-dot"></span><span class="auto-chat-status-text"></span></p>' +
-            '<h3 class="auto-chat-title"></h3>' +
+            '<h3 class="auto-chat-title" id="auto-chat-title"></h3>' +
             '<p class="auto-chat-subtitle"></p>' +
           "</div>" +
           '<a class="auto-chat-fullpage" href="' + site.utils.escapeHtml(site.utils.pageUrl("chat")) + '"></a>' +
           '<button class="auto-chat-close" type="button" aria-label="Close chat">&times;</button>' +
         "</header>" +
-        '<div class="auto-chat-messages" aria-live="polite"></div>' +
+        '<div class="auto-chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>' +
         '<div class="auto-chat-survey-options" data-chat-survey-options hidden></div>' +
         '<div class="auto-chat-quick-wrap">' +
           '<p class="auto-chat-quick-label"></p>' +
@@ -4026,7 +4030,6 @@
     var ui = {
       root: host,
       trigger: host.querySelector(".auto-chat-trigger"),
-      dismiss: host.querySelector(".auto-chat-dismiss"),
       triggerText: host.querySelector(".auto-chat-trigger-text"),
       panel: host.querySelector(".auto-chat-panel"),
       title: host.querySelector(".auto-chat-title"),
@@ -4051,22 +4054,42 @@
       setChatOpen(!ui.root.classList.contains("is-open"));
     });
 
-    ui.close.addEventListener("click", function () {
+    function handleChatClose(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      setChatOpen(false);
+    }
+
+    ui.close.addEventListener("click", handleChatClose);
+    ui.close.addEventListener("pointerdown", handleChatClose);
+    ui.close.addEventListener("touchend", handleChatClose);
+
+    document.addEventListener("click", function (event) {
+      if (!chatUi || !chatUi.root || !chatUi.root.classList.contains("is-open")) return;
+      if (chatUi.panel && chatUi.panel.contains(event.target)) return;
+      if (chatUi.trigger && chatUi.trigger.contains(event.target)) return;
+      if (event.target.closest && event.target.closest('[data-bottom-action="chat"]')) return;
       setChatOpen(false);
     });
 
-    if (ui.fullPage) {
-      ui.fullPage.addEventListener("click", function (event) {
-        if (chatLimitReached || chatUserQuestionCount >= chatQuestionLimit) {
-          event.preventDefault();
-          redirectToFullChatPage();
-        }
-      });
-    }
-
-    ui.dismiss.addEventListener("click", function () {
-      setChatDismissed(true);
+    ui.panel.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); setChatOpen(false); }
     });
+    function fitChatViewport() {
+      var viewport = window.visualViewport;
+      var height = viewport ? viewport.height : window.innerHeight;
+      var inset = viewport ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0;
+      ui.root.style.setProperty("--chat-viewport-height", height + "px");
+      ui.root.style.setProperty("--chat-keyboard-inset", inset + "px");
+    }
+    window.addEventListener("resize", fitChatViewport);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", fitChatViewport);
+      window.visualViewport.addEventListener("scroll", fitChatViewport);
+    }
+    fitChatViewport();
 
     if (ui.quickActions) {
       ui.quickActions.addEventListener("click", function (event) {
@@ -4094,6 +4117,7 @@
 
     ui.form.addEventListener("submit", function (event) {
       event.preventDefault();
+      if (ui.root.classList.contains("is-busy") || chatLimitReached) return;
       var value = String(ui.input.value || "").trim();
       if (!value) return;
       ui.input.value = "";
@@ -4106,6 +4130,10 @@
   }
 
   function setupAutoChat() {
+    try {
+      window.sessionStorage.removeItem(chatDismissedSessionKey);
+      window.localStorage.removeItem(chatDismissedSessionKey);
+    } catch (error) {}
     if (currentRoute().page === "chat") {
       if (chatUi && chatUi.root) {
         chatUi.root.hidden = true;
@@ -4120,6 +4148,10 @@
     }
     if (chatUi.root) {
       chatUi.root.hidden = false;
+      chatUi.root.classList.remove("is-dismissed");
+      chatUi.root.style.removeProperty("display");
+      chatUi.root.style.removeProperty("pointer-events");
+      chatUi.root.removeAttribute("hidden");
     }
 
     var lang = activeChatLanguage();
@@ -4143,10 +4175,7 @@
       chatUi.fullPage.setAttribute("aria-label", copy.fullChatLabel || copy.openLabel);
       chatUi.fullPage.setAttribute("title", copy.fullChatLabel || copy.openLabel);
     }
-    if (chatUi.dismiss) {
-      chatUi.dismiss.setAttribute("aria-label", copy.hideLabel || copy.closeLabel);
-    }
-    chatUi.input.setAttribute("placeholder", copy.inputPlaceholder);
+        chatUi.input.setAttribute("placeholder", copy.inputPlaceholder);
     chatUi.input.setAttribute("aria-label", copy.inputPlaceholder);
     chatUi.send.textContent = copy.sendLabel;
     refreshQuickButtons(copy);
@@ -4164,6 +4193,7 @@
       if (chatTypingTimer) {
         window.clearTimeout(chatTypingTimer);
         chatTypingTimer = null;
+        setChatBusy(false, copy);
       }
     }
 
@@ -4174,7 +4204,7 @@
         chatUi.root.classList.add("is-limit-reached");
       }
     }
-    setChatDismissed(isChatDismissed());
+    setChatDismissed();
   }
 
   function chatPageClientId() {
@@ -5244,7 +5274,7 @@
       { id: "home", label: nav.home || "Գլխավոր" },
       { id: "services", label: nav.services || "Ծառայություններ" },
       { id: "projects", label: nav.projects || "Նախագծեր" },
-      { id: "album", label: nav.projectsAlbum || "???????????? ?????" },
+      { id: "album", label: nav.projectsAlbum || "Աշխատանքների ալբոմ" },
       { id: "chat", label: nav.chat || "\u0041\u0049 \u0585\u0563\u0576\u0561\u056F\u0561\u0576" },
       { id: "request", label: nav.request || "Հայտ" },
       { id: "team", label: nav.team || "Մեր թիմը" },

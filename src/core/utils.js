@@ -65,6 +65,7 @@
       return id ? "#" + page + "/" + encodeURIComponent(id) : "#" + page;
     } else {
       if (page === "home") return "/home";
+      if (page === "project" && id) return "/project/" + encodeURIComponent(id);
       if (page === "service" || page === "project" || page === "member") {
         return id ? "/" + page + "?id=" + encodeURIComponent(id) : "/" + page;
       }
