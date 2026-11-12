@@ -113,7 +113,7 @@ loadEnvFile(path.resolve(rootDir, ".env.local"));
 
 const app = express();
 app.use(require('./lib/disabled-admin'));
-app.use(require('./lib/hosting-routes')(() => runtimeSupabaseConfig().url || 'https://aoeqjlvtncxblkhvqmeu.supabase.co'));
+app.use(require('./lib/hosting-routes')(() => require('./lib/storage-url').storageBase(runtimeSupabaseConfig().url)));
 const requestedPort = Number(
   appMode.isAdmin()
     ? (process.env.ADMIN_PORT || process.env.PORT || 3001)
@@ -446,9 +446,7 @@ function normalizeSupabasePublicData(payload) {
 }
 
 function supabaseAssetUrl(bucket, storagePath) {
-  const client = getSupabaseAdminClient();
-  if (!client || !storagePath) return storagePath;
-  return client.storage.from(bucket).getPublicUrl(String(storagePath).replace(/^\/+/, '')).data.publicUrl;
+  return require('./lib/storage-url').publicStorageUrl(runtimeSupabaseConfig().url, bucket, storagePath);
 }
 
 function replaceAssetPaths(value) {

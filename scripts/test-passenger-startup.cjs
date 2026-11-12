@@ -19,7 +19,8 @@ test('server.js starts once when loaded by a simulated Passenger loader', async 
     const app = require('../server'); server=app.httpServer;
     assert.ok(server); if(!server.listening) await new Promise(resolve=>server.once('listening',resolve));
     assert.deepEqual(configuration,{autoInstall:false});
-    assert.equal(app.start(),server); assert.equal(require('../app'),server); assert.equal(calls,1);
+    assert.equal(app.start(),server); assert.equal(require('../app'),server);
+    assert.equal(require('../new-start'),server); assert.equal(calls,1);
     const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/status');
     assert.equal((await response.json()).runtime,'passenger');
   } finally {

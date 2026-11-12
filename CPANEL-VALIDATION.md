@@ -1,42 +1,45 @@
-# cPanel package validation — 2026-11-12
+# cPanel + Express + Supabase verification — 2026-11-12
 
-## Actual results
+## Confirmed locally
 
-- Runtime: **Node.js v22.23.4**, executed using the isolated node.exe explicitly.
-- `npm ci`: PASS in source checkout and independently in `deploy/cpanel/`.
-- `npm run build`: PASS in both directories, 51 JavaScript files syntax-checked.
-- `npm run test:cpanel`: PASS in the generated package (2 test suites).
-- Express app loaded through `require('../app')`: HTTP listener started successfully.
-- 48 admin path/method combinations return 404, including encoded/case variants.
-- `/`, `/login`, `/profile`, `/api/status`, `/api/content`, `/api/auth/session`: 200
-  with fixture/no-credential environment. Unauthenticated `/api/profile`: 401.
-- Login/profile clients contain no `/api/admin` requests or admin redirects.
-- `dist/admin` absent after build; legacy admin SOURCE remains available for audit.
-- Native sharp: in-memory 2x2 image converted to WebP successfully on Windows/Node 22.
-- Encryption fixtures: valid data authenticates; wrong keys, corrupted/truncated
-  archives and overwrites are rejected. No production backup was generated.
-- `git diff --check`: PASS (line-ending notices only).
+- Runtime: Node.js 22.23.4.
+- npm install: PASS. npm run build: PASS (53 source files syntax checked).
+- Generated deploy/cpanel package independently passed npm ci, npm run build and
+  all three test:cpanel suites on Node 22.23.4 before packaging for transfer.
+- test:cpanel: PASS (public routing/cache/SEO, Admin denial, simulated Passenger and encryption fixtures).
+- new-start.js, server.js and compatibility app.js reuse ONE listener under the simulated Passenger loader.
+- 48 Admin path/method combinations return 404. Admin source is preserved.
+- Public pages/content/status and unauthenticated session responses work; private profile returns 401 without login.
+- www canonical, legacy .html/pages/our-jobs and project-id redirects checked.
+- CSS/JS content types/cache headers checked; runtime configuration remains no-store.
+- Public image redirects use full Supabase URLs without requiring the server secret.
+- Local Chromium/Edge home-page check: 176 image elements loaded, including 14 service
+  images; zero failed image HTTP responses and zero JavaScript errors after eager loading.
+  External telemetry writes were blocked during this check; only public images were read.
 
-## Deployment structure issue
+## Observed hosting issue
 
-Root package.json, package-lock.json and server.js are tracked in the existing Git
-repository. app.js is added by this migration branch. No ignore rule
-excludes these startup files. The generated archive places them directly at ZIP root.
-The hosting account has not been accessed: its actual extraction path/application
-root cannot be verified from this computer. Do not select dist as the Node app root.
+The existing live site returned a relative Location header for a missing local brand
+asset (brand/smart-tech.png). That URL is resolved on the website rather than in
+Supabase Storage, leading to wrong-path requests. The public URL helper used to depend
+on an available server-only Supabase client. The replacement constructs public URLs
+independently while leaving private Auth/database/upload clients unchanged.
 
-## Not verified / NOT ready for production
+The hosting provider reports Startup File new-start.js under repositories/smarttech.
+The local wrapper and package now match this configuration and delegate to server.js.
 
-- Actual cPanel Linux/Passenger process, proxy configuration, TLS, filesystem permissions.
-- Database-backed authenticated reads/writes, live email and AI service calls.
-- Source Supabase export, MySQL schema/import, file migration or production restore.
-- Source/target record counts, file checksums and database relationships.
+## Not yet verified
 
-`E:\Progect\smarttech-migration.env` was still absent at inspection time.
-The new package still has Supabase runtime dependencies. MySQL-compatible schema and
-import/restore scripts cannot be truthfully presented as completed. PostgreSQL source
-SQL is included under sql/; it must not be imported directly into MySQL.
+- Actual CloudLinux/Passenger, server filesystem permissions, TLS/proxy settings.
+- Credentialed Supabase table/Auth-admin checks: diagnostic reports NOT RUN because
+  SUPABASE_URL/server key are not configured locally.
+- Real end-user login, password changes, private files and uploads: no production writes
+  or sessions were created. Local public routes and public Storage reads are not a substitute.
+- SMTP and AI upstream services were not called.
 
-During package validation, no Git push, cPanel deployment, production database write
-or DNS change was performed. Later source publication requires separate authorization.
-The pre-change ZIP is a SOURCE CODE snapshot, not an encrypted database backup.
+The architecture is now cPanel -> Express -> EXISTING Supabase. MySQL migration is
+cancelled, not an outstanding requirement for this hosting change. No database data,
+Auth records, policies or Storage files were modified. No push/deployment was performed
+by this work; local tests and package generation do not update the hosted website.
+
+Consult CPANEL.md for repositories/smarttech, Node 22.23.4, Production and new-start.js.

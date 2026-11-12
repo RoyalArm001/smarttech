@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'deploy', 'cpanel');
 const marker = '.smarttech-package';
 const roots = ['src','pages','lib','admin','vendor','sql','scripts','img'];
-const files = ['package.json','package-lock.json','app.js','server.js','manifest.json','robots.txt','sitemap.xml','llms.txt','CPANEL.md','CPANEL-VALIDATION.md','tools/start-local.js'];
+const files = ['package.json','package-lock.json','app.js','new-start.js','server.js','manifest.json','robots.txt','sitemap.xml','llms.txt','CPANEL.md','CPANEL-VALIDATION.md','tools/start-local.js','tools/cpanel-diagnose.js'];
 const forbiddenDirectories = new Set(['node_modules','.git','dist','deploy','data','published','admin-album','migration-private']);
 const copied = [];
 function copy(relative) {
@@ -54,7 +54,7 @@ const env = ['# Fill only in cPanel environment settings or a private .env.','NO
 fs.writeFileSync(path.join(output,'.env.example'),env.join('\n')+'\n');
 fs.copyFileSync(path.join(root,'CPANEL.md'),path.join(output,'README.md'));
 fs.writeFileSync(path.join(output,'deployment-manifest.json'),JSON.stringify({
-  generatedAt:new Date().toISOString(), node:'22.23.4', startup:'server.js', adminEnabled:false,
+  generatedAt:new Date().toISOString(), node:'22.23.4', startup:'new-start.js', adminEnabled:false,
   backend:'Express', database:'Supabase', databaseExportIncluded:false,
   warning:'Local validation only; configure Supabase credentials and verify cPanel before cutover.', files:copied
 },null,2)+'\n');

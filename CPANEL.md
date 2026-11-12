@@ -12,17 +12,24 @@ data migration is required. Earlier database/MIGRATION-STATUS.md is historical p
 | Application mode | Production |
 | Application root | repositories/smarttech |
 | Application URL | Connected domain at /; verify on staging before cutover |
-| Application startup file | server.js |
+| Application startup file | new-start.js (matching the provider's current configuration) |
 | Passenger log file | /home/<CPANEL_USER>/logs/smarttech-passenger.log |
 
 Create a writable private logs directory and replace the account placeholder.
 Root is /home/<CPANEL_USER>/repositories/smarttech and must contain package.json,
-package-lock.json, server.js, pages/, src/, lib/, admin/ and vendor/.
+package-lock.json, new-start.js, server.js, pages/, src/, lib/, admin/ and vendor/.
 Do not choose dist/, admin/, or the Windows E: path as application root.
 
 server.js detects PhusionPassenger, configures explicit listener selection and listens
 on its socket. npm start runs the same Express app on PORT outside Passenger.
-Repeated starts reuse a single listener. app.js remains only a compatibility alias.
+new-start.js loads this same server.js application and reuses its listener. It does not
+replace the backend or start a second listener. app.js is a compatibility alias.
+Upload the complete tested package, not new-start.js alone: it expects app.start()
+from the corresponding server.js version.
+
+Public image URL generation uses the existing Supabase public origin, independently
+of a service-role key. This fixes missing local assets redirecting to relative URLs
+such as brand/smart-tech.png. Private Auth/database operations still require credentials.
 
 ## Installation and restart
 

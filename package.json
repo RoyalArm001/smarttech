@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
+    "start": "node new-start.js",
     "dev": "node tools/start-local.js",
     "local": "node tools/start-local.js",
     "preview": "node tools/start-local.js",

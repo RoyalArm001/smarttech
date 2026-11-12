@@ -45,6 +45,9 @@ test('public-only Express app, redirects, caching and protected routes', { timeo
     });
     assert.equal(canonical.headers.location,'https://smarttechllc.am/contact?lang=en');
     const css = await fetch(base+'/src/styles/base.css');
+    const {publicStorageUrl} = require('../lib/storage-url');
+    assert.equal(publicStorageUrl('', 'project-images', 'brand/logo with space.png'), 'https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/brand/logo%20with%20space.png');
+    assert.equal(publicStorageUrl('https://other.supabase.co/', 'avatars', 'team/a.png'), 'https://other.supabase.co/storage/v1/object/public/avatars/team/a.png');
     assert.match(css.headers.get('content-type'),/text\/css/);
     assert.equal(css.headers.get('cache-control'),'public, max-age=86400');
     const js = await fetch(base+'/src/main.js');
