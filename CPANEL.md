@@ -1,112 +1,101 @@
-# cPanel staging package — NOT a completed MySQL migration
+# Smart Tech: cPanel + Express + Supabase
 
-This branch disables legacy Admin UI/API and prepares Node 22 startup. Authentication,
-profiles, contact storage and live content still require Supabase. No production export,
-MySQL schema/import or production encrypted backup exists. Do not switch production DNS.
+Architecture: Browser -> cPanel / CloudLinux Passenger -> Node.js Express -> Supabase.
+The existing Supabase database, Auth and Storage are retained. No MySQL system or
+data migration is required. Earlier database/MIGRATION-STATUS.md is historical planning.
 
-## Fix "package.json file is required"
+## Exact cPanel settings
 
-The application root must contain these files together:
+| Field | Value |
+|---|---|
+| Node.js version | 22.23.4 |
+| Application mode | Production |
+| Application root | repositories/smarttech |
+| Application URL | Connected domain at /; verify on staging before cutover |
+| Application startup file | server.js |
+| Passenger log file | /home/<CPANEL_USER>/logs/smarttech-passenger.log |
 
-```
-package.json
-package-lock.json
-app.js
-server.js
-src/
-pages/
-lib/
-vendor/
-```
+Create a writable private logs directory and replace the account placeholder.
+Root is /home/<CPANEL_USER>/repositories/smarttech and must contain package.json,
+package-lock.json, server.js, pages/, src/, lib/, admin/ and vendor/.
+Do not choose dist/, admin/, or the Windows E: path as application root.
 
-`deploy/cpanel/` is the complete generated package. Extract its CONTENTS into the
-server application root, without an extra `deploy/cpanel` nesting level. Do not choose
-`dist`, `admin`, `src`, or `public_html` unless that exact directory actually contains
-the complete Node application. The builder keeps legacy admin sources needed by the
-existing code/checks, but the HTTP application blocks them and the static build omits them.
+server.js detects PhusionPassenger, configures explicit listener selection and listens
+on its socket. npm start runs the same Express app on PORT outside Passenger.
+Repeated starts reuse a single listener. app.js remains only a compatibility alias.
 
-## Panel fields
+## Installation and restart
 
-- Node.js version: **22.23.4**.
-- Application mode: **Production** (`NODE_ENV=production`).
-- Application root: **smarttech-mysql** IF files are extracted into
-  `/home/<CPANEL_USER>/smarttech-mysql`. Otherwise use the actual extraction folder,
-  relative to your account home. The account name is not known from this repository.
-- Application URL: select an existing **staging subdomain**, base path `/`.
-  The actual staging domain has not been supplied. `/src` and `/api` links assume root mounting.
-- Application startup file: **app.js**, not `api/[...path].js`, `admin/server.js` or `dist/index.html`.
-- Passenger log file: `/home/<CPANEL_USER>/logs/smarttech-passenger.log`, if the hosting
-  form offers this field. Create the private writable `logs` directory first. This is
-  a proposed path; replace the account placeholder with the actual cPanel account.
+Activate the Node environment using the exact command displayed by Setup Node.js App.
+From the application root run:
 
-`app.js` explicitly calls `.listen()` on the existing Express application when loaded
-as a module. This is tested without relying on `require.main === module` in `server.js`.
-An actual cPanel/Passenger deployment still needs testing on the hosting provider.
+    node --version
+    npm install
+    npm run build
 
-## Environment
+Node must report v22.23.4. npm ci is the lockfile-based clean-install alternative.
+Install dependencies on Linux; never upload Windows node_modules.
+Keep vendor/node-domexception because package.json references this local override.
+Click Restart after installation/environment changes. Standard Passenger also supports
+creating/touching tmp/restart.txt inside application root. Do not start a second
+long-running npm start process beside Passenger.
 
-Set `NODE_ENV=production`, `OPEN_BROWSER=0`, and `PORT` if required by the host.
-Set `SMARTTECH_WEB_ORIGIN` to the actual HTTPS staging origin and
-`REQUEST_TRUSTED_HOSTS` to its hostname. Configure `SMARTTECH_TRUST_PROXY` only for
-the host's verified proxy topology. Do not set `VERCEL` or `VERCEL_ENV`.
+## Environment Variables
 
-The CURRENT unconverted backend needs `SUPABASE_URL`, `SUPABASE_ANON_KEY` and a server-only
-`SUPABASE_SECRET_KEY` or `SUPABASE_SERVICE_ROLE_KEY` for live data/auth. **Do not supply
-production write-capable credentials for staging tests.** Use a separate test project
-if exercising these routes before migration. Without credentials, static pages still
-load but authenticated/database-dependent requests cannot be validated.
+Copy names from .env.example into cPanel Environment Variables; never put secret values
+in Git or frontend code. Keep your existing Supabase project and credentials:
 
-Email: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`,
-`REQUEST_EMAIL_FROM`, `REQUEST_EMAIL_TO` (or `RESEND_API_KEY`).
-AI: `OPENAI_API_KEY`, `OPENAI_MODEL`; Google AI settings are optional.
-Firebase statistics are a separate external integration, also not migrated to MySQL.
-Never set a private Firebase auth token in a public static build configuration.
+- SUPABASE_URL
+- SUPABASE_ANON_KEY (existing publishable-key aliases in server.js remain supported)
+- SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY (server only)
+- NODE_ENV=production; OPEN_BROWSER=0
+- SMARTTECH_WEB_ORIGIN: actual HTTPS website origin
+- REQUEST_TRUSTED_HOSTS: allowed hostname(s), including staging when needed
+- SMARTTECH_TRUST_PROXY: host-verified trusted proxy topology, required for correct
+  secure cookies/client IP behind proxies. Do not blindly trust arbitrary forwarded headers.
 
-`MYSQL_*` values in `scripts/migration.env.example` are planning fields only; the current
-server does not use them. Adding those values will NOT enable MySQL.
+Enable HTTPS in the hosting panel. Mail uses SMTP_* and REQUEST_EMAIL_FROM/TO or
+RESEND_API_KEY. Chat uses OPENAI_API_KEY/OPENAI_MODEL; Google AI remains optional.
+Firebase metrics remain a separate existing integration. Private Firebase auth tokens
+are not emitted to browser runtime configuration. Blank SMARTTECH_CMS_API_BASE_URL
+uses same-origin Express APIs. No MYSQL_* settings are used.
 
-## Install, build, restart (instructions only)
+## Routing and retained functionality
 
-Use the exact virtual-environment activation command shown by cPanel for this app.
-Then, from the application root:
+lib/hosting-routes.js handles www-to-canonical redirects, legacy /pages and .html URLs,
+our-jobs aliases, cache headers and public Supabase Storage asset redirects.
+Images/brand/team retain the existing buckets. Runtime config is no-store.
+Project SSR, sitemaps and profile URLs are handled by Express.
+All API handlers already exist in server.js; serverless forwarding wrappers are removed.
+Hosting-specific analytics/configuration and obsolete static deployment rules are removed.
+SEO titles, canonical URLs, structured data and sitemap remain.
 
-```
-node --version
-npm ci
-npm run build
-```
+Legacy admin source is retained for audit/helper imports. /admin and /api/admin/* return
+404, including encoded/case variants. Admin assets are excluded from static build.
+User authentication, profile, contact, request, chat and content-read APIs remain.
+Admin-role users can use their own profile without redirection to the disabled panel.
+No Supabase tables, users, RLS policies, passwords or files are migrated or deleted.
 
-`node --version` must report v22.23.4. Panel "Run NPM Install" also requires the correct
-Application root; `npm ci` in Terminal is preferred for lockfile-based installation.
-Keep `vendor/node-domexception` with the package because package.json references it.
-Install Linux dependencies on the server; never upload Windows node_modules.
+## Package and verification
 
-Keep the Node application root after building; do not change it to dist. Click Restart
-in Setup Node.js App after installation/configuration changes. For a standard Passenger
-installation the documented restart mechanism is `mkdir -p tmp && touch tmp/restart.txt`
-inside the app root. Confirm the mechanism offered by your hosting provider.
+    npm run package:cpanel
+    npm run test:cpanel
+    npm run check:supabase
 
-Run automated fixture tests only in a disposable copy WITHOUT .env/.env.local:
+deploy/cpanel/ is a reproducible complete source package, Git-ignored, with startup
+files at its root. It excludes .env, keys, node_modules, local runtime data and database
+exports. The test suite must run only in a disposable checkout without .env/.env.local.
+It exercises public HTTP routing, admin closure, encryption fixtures and a simulated
+Passenger loader. Actual CloudLinux/Passenger, TLS and permissions require staging tests.
 
-```
-npm run test:cpanel
-```
+check:supabase performs read-only table/Auth-admin/bucket-list checks with configured
+environment credentials. It never signs in, creates sessions, writes rows or uploads.
+It cannot prove full login/password/upload workflows. Missing credentials report NOT RUN.
+Use a dedicated test account/project for state-changing integration tests.
 
-These verify startup, denied admin routes, public routes and encryption fixtures.
-They do not verify production credentials, MySQL, authenticated profile writes, SMTP,
-AI calls or cPanel itself. Database-dependent completion requires live export/import
-validation described in `database/MIGRATION-STATUS.md`.
-
-## Generate package locally
-
-```
-npm run package:cpanel
-```
-
-Generated `deploy/` is Git-ignored. Keep source, package manifests, app.js, scripts and
-documentation in Git after review; a remote checkout cannot see uncommitted files.
-The package contains source SQL under `sql/` (PostgreSQL), not an invented MySQL schema.
+See CPANEL-VALIDATION.md for actual results. No push, hosting deployment, DNS change or
+production database modification is performed automatically.
 
 References:
-- https://docs.cpanel.net/knowledge-base/web-services/how-to-install-a-node.js-application/
+- https://www.phusionpassenger.com/library/indepth/nodejs/reverse_port_binding.html
 - https://docs.cpanel.net/cpanel/software/application-manager/

@@ -1,4 +1,8 @@
-# Smart Tech: PostgreSQL/Supabase → MySQL/cPanel
+# Historical plan — superseded on 2026-11-12
+
+The requested architecture is now cPanel + Express + existing Supabase. No MySQL
+migration is requested or implemented. Follow ../CPANEL.md; the material below is
+historical only and is excluded from the new deployment package.
 
 Status on 2026-11-12: **deployment preparation in progress; production export/import NOT performed.**
 

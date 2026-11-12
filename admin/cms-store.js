@@ -1,14 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 
-const isVercel = Boolean(process.env.VERCEL);
 const configuredDataRoot = process.env.SMARTTECH_CMS_DATA_DIR || process.env.CMS_DATA_DIR || "";
 const localDataRoot = configuredDataRoot
   ? path.resolve(configuredDataRoot)
   : path.resolve(__dirname, "data");
-const runtimeDataRoot = isVercel
-  ? path.join("/tmp", "smarttech-admin-data")
-  : localDataRoot;
+const runtimeDataRoot = localDataRoot;
 
 const cmsDir = path.join(runtimeDataRoot, "cms");
 const bundledCmsDir = path.join(localDataRoot, "cms");

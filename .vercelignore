@@ -1,9 +1,0 @@
-dist/
-node_modules/
-.env
-.env.local
-.smarttech-contact-requests.log
-.smarttech-metrics.dat
-tools/
-img/admin-album/
-admin/data/
