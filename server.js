@@ -106,6 +106,7 @@ loadEnvFile(path.resolve(rootDir, ".env"));
 loadEnvFile(path.resolve(rootDir, ".env.local"));
 
 const app = express();
+app.use(require('./lib/disabled-admin'));
 const requestedPort = Number(
   appMode.isAdmin()
     ? (process.env.ADMIN_PORT || process.env.PORT || 3001)
@@ -3131,22 +3132,10 @@ app.use((error, request, response, next) => {
 });
 
 app.get("/login", async (request, response) => {
-  const adminSession = await getAdminSession(request);
-  if (adminSession && adminSession.userId) {
-    response.writeHead(302, { Location: "/admin" });
-    response.end();
-    return;
-  }
   sendStatic(response, path.resolve(siteDir, "pages", "login.html"));
 });
 
 app.get("/profile", async (request, response) => {
-  const adminSession = await getAdminSession(request);
-  if (adminSession && adminSession.userId) {
-    response.writeHead(302, { Location: "/admin" });
-    response.end();
-    return;
-  }
   sendStatic(response, path.resolve(siteDir, "pages", "profile.html"));
 });
 

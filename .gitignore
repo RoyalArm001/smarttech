@@ -16,3 +16,20 @@ img/admin-album/
 
 # Ignore legacy images directory to keep them off git
 images/
+
+# Migration material: only authenticated encrypted archives may enter Git.
+database/backups/*
+!database/backups/README.md
+!database/backups/*.enc
+database/seed/*
+!database/seed/README.md
+storage/*
+!storage/README.md
+*.key
+*.dump
+*.sql.gz
+*.partial
+migration-private/
+
+# Reproducible cPanel package (source and builder remain in Git).
+/deploy/

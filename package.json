@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "start": "node tools/start-local.js",
+    "start": "node app.js",
     "dev": "node tools/start-local.js",
     "local": "node tools/start-local.js",
     "preview": "node tools/start-local.js",
@@ -12,6 +12,8 @@
     "web": "npm run build",
     "seo": "node lib/apply-seo.js",
     "build": "npm run check && node lib/build-static.js",
+    "package:cpanel": "node scripts/build-cpanel.cjs",
+    "test:cpanel": "node --test scripts/test-public-runtime.cjs scripts/backup-crypto.test.cjs",
     "vercel-build": "npm run check && node lib/build-static.js",
     "sync:pages": "node -e \"require('fs').cpSync('pages','lib/page-templates',{recursive:true,force:true}); console.log('Synced pages/ -> lib/page-templates/')\"",
     "check": "node lib/check-syntax.js",
@@ -19,7 +21,7 @@
     "lint": "echo \"No linting configured. Add ESLint or a linter if needed.\""
   },
   "engines": {
-    "node": "24.x"
+    "node": "22.23.4"
   },
   "overrides": {
     "node-domexception": "file:vendor/node-domexception"
