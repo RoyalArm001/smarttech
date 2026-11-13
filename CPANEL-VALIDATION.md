@@ -1,4 +1,18 @@
-# cPanel + Express + Supabase verification — 2026-11-12
+# cPanel + Express + Supabase verification — updated 2026-11-13
+
+## Public Git content update
+
+- 19 public projects, 14 services and existing public collections load from Git by
+  default. /api/content and /api/album have real public fallback content without credentials.
+- 218 public assets imported (26.7 MB); disk and local HTTP SHA-256 verified for all.
+- Node 22 build passed (54 syntax checks); all four test:cpanel suites passed.
+- Browser with every external request blocked: 178 image elements loaded, zero broken
+  images, 14 service images, zero JavaScript errors.
+- No new Auth/private database records imported. Live content refresh returned 503;
+  source is existing public code plus the prior public project catalog.
+- One unavailable decorative cover uses the existing brand image (recorded in manifest).
+
+The following records describe earlier deployment preparation.
 
 ## Confirmed locally
 

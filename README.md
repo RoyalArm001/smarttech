@@ -47,6 +47,24 @@ Click Restart after installation/environment changes. Standard Passenger also su
 creating/touching tmp/restart.txt inside application root. Do not start a second
 long-running npm start process beside Passenger.
 
+## Public content in Git (2026-11-13)
+
+PUBLIC_CONTENT_SOURCE=repository is the default. Public pages, /api/content and
+/api/album use content/public-site.json and local public assets. Supabase Auth,
+personal profiles and new user uploads remain on the existing backend.
+Set PUBLIC_CONTENT_SOURCE=supabase only when intentionally using live CMS data.
+Known images are served locally with a one-day cache; unknown uploads retain Storage fallback.
+
+The snapshot contains public source content plus the previously saved project catalog,
+NOT a fresh complete database export. Live content refresh returned 503 and no private
+credentials were available. User accounts, passwords and contact messages are excluded.
+
+content/public-assets.json records source URL, size and SHA-256 for 218 imported files.
+One removed external decorative cover (404) uses the existing site brand image.
+Rebuild from maintained src/content and lib/project-catalog.json inputs with
+npm run import:public. This imports referenced public assets, not private buckets or
+unseen live database edits. Review the resulting Git diff before publication.
+
 ## Environment Variables
 
 Copy names from .env.example into cPanel Environment Variables; never put secret values

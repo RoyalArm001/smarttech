@@ -446,7 +446,8 @@ function normalizeSupabasePublicData(payload) {
 }
 
 function supabaseAssetUrl(bucket, storagePath) {
-  return require('./lib/storage-url').publicStorageUrl(runtimeSupabaseConfig().url, bucket, storagePath);
+  const url = require('./lib/storage-url').publicStorageUrl(runtimeSupabaseConfig().url, bucket, storagePath);
+  return require('./lib/repository-content').localAsset(url);
 }
 
 function replaceAssetPaths(value) {
@@ -479,6 +480,7 @@ app.use((request, response, next) => {
 });
 
 async function fetchSupabasePublicData(fresh = false) {
+  if (envValue(['PUBLIC_CONTENT_SOURCE'], 'repository') === 'repository') return require('./lib/repository-content').payload();
   if (!fresh && publicContentCache && Date.now() - publicContentCache.savedAt < 15000) return publicContentCache.data;
   const recent = !fresh && publicContentCache && Date.now() - publicContentCache.savedAt < 300000 ? publicContentCache.data : null;
   if (publicContentPending) return recent || publicContentPending;
@@ -1009,6 +1011,8 @@ function liveAlbumPayload() {
 }
 
 function webAlbumPayload() {
+  const stored = cmsPublish.readAlbumPayload();
+  if (!stored.photos || !stored.photos.length) return require('./lib/repository-content').album();
   if (appMode.isWeb()) {
     return cmsPublish.readAlbumPayload();
   }
@@ -1033,7 +1037,8 @@ function publicCmsPayload() {
   if (appMode.isCombined()) {
     return cms().publicPayload();
   }
-  return cmsPublish.readCmsPayload();
+  const stored = cmsPublish.readCmsPayload();
+  return stored.collections && Object.keys(stored.collections).length ? stored : require('./lib/repository-content').payload();
 }
 
 function uploadedImageFilePath(publicPath) {
@@ -1827,6 +1832,7 @@ app.get("/sitemap.xml", publicApiLimiter, (request, response) => {
 
 if (appMode.isWebEnabled()) {
 app.get("/api/album", publicApiLimiter, async (request, response) => {
+  if (envValue(['PUBLIC_CONTENT_SOURCE'], 'repository') === 'repository') return jsonResponse(response, 200, require('./lib/repository-content').album());
   const client = getSupabaseAdminClient();
   if (client) {
     const result = await client.from('media_assets').select('id,bucket_id,storage_path,original_name,metadata,created_at').eq('bucket_id','project-images').order('created_at',{ascending:false});

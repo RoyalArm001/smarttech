@@ -54,10 +54,12 @@ test('public-only Express app, redirects, caching and protected routes', { timeo
     assert.equal(js.status,200); assert.match(js.headers.get('content-type'),/javascript/);
     const config = await fetch(base+'/src/core/runtime-config.js');
     assert.equal(config.headers.get('cache-control'),'no-store');
-    for (const [route, suffix] of [['/img/services/fire-security.jpg','project-images/services/fire-security.jpg'],['/src/assets/team/avatar.png','avatars/team/avatar.png'],['/src/assets/brand/logo.png','project-images/brand/logo.png']]) {
+    const localImage=await fetch(base+'/img/services/fire-security.jpg',{redirect:'manual'});
+    assert.equal(localImage.status,200);assert.equal(localImage.headers.get('location'),null);
+    for (const [route, suffix] of [['/src/assets/team/avatar.png','avatars/team/avatar.png'],['/src/assets/brand/logo.png','project-images/brand/logo.png']]) {
       const response = await fetch(base+route,{redirect:'manual'});
       assert.equal(response.status,302); assert.ok(response.headers.get('location').endsWith('/storage/v1/object/public/'+suffix));
-      assert.match(response.headers.get('cache-control'),/immutable/);
+      assert.equal(response.headers.get('cache-control'),'public, max-age=86400');
     }
     const project = await fetch(base+'/project/reset-wellness-club?lang=en');
     assert.equal(project.status,200); const html=await project.text();

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">Audio Installation Specialist avatar</title>
+  <desc id="desc">Role-specific Smart Tech team portrait for Audio</desc>
+  <defs>
+    <linearGradient id="teamAccent" x1="80" y1="64" x2="560" y2="590" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f9eae" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#142126" stop-opacity=".95"/>
+    </linearGradient>
+    <linearGradient id="jacket" x1="220" y1="400" x2="430" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16262c"/>
+      <stop offset="1" stop-color="#0f171a"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" fill="#e8f5f7"/>
+  <path d="M0 86h640v468c-84-74-188-112-312-114C198 438 88 472 0 542V86Z" fill="#ffffff" opacity=".36"/>
+  <path d="M70 102h500M70 178h500M70 254h500M70 330h500M70 406h500M70 482h500" stroke="#4f9eae" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M94 0c118 36 203 94 255 174 61 94 140 140 237 137l54-2v331H0V422c72-58 152-91 241-98 88-7 160-35 216-83C512 193 566 145 640 96V0H94Z" fill="#4f9eae" opacity=".16"/>
+  <path d="M0 500c92-69 199-103 321-101 126 3 232 45 319 126v115H0V500Z" fill="url(#teamAccent)"/>
+  <circle cx="320" cy="252" r="114" fill="#eeb48d"/>
+  <path d="M205 226c15-82 62-126 132-124 68 2 112 46 120 122-72-27-152-25-252 2Z" fill="#1f2b31"/>
+  <path d="M216 445c36-48 70-72 104-72s69 24 104 72v195H216V445Z" fill="url(#jacket)"/>
+  <path d="M266 392h108v64c-26 25-82 25-108 0v-64Z" fill="#e4a37f" opacity=".82"/>
+  <path d="M244 470h152l-34 170h-84l-34-170Z" fill="#fff" opacity=".98"/>
+  <path d="M292 468h56l18 172h-92l18-172Z" fill="#4f9eae"/>
+  <path d="M238 520h54M348 520h54M254 570h132" stroke="#ffffff" stroke-opacity=".42" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="214" cy="264" r="10" fill="#152126" opacity=".75"/>
+  <circle cx="390" cy="264" r="10" fill="#152126" opacity=".75"/>
+  <path d="M280 328c28 22 55 22 82 0" stroke="#9b5f45" stroke-width="10" stroke-linecap="round" fill="none" opacity=".62"/>
+  <circle cx="494" cy="184" r="104" fill="#ffffff" opacity=".82"/>
+  <path d="M430 190h40l54-48v132l-54-48h-40v-36Z" fill="#4f9eae"/><path d="M544 170c16 18 16 58 0 76M574 142c34 44 34 104 0 148" stroke="#4f9eae" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <rect x="76" y="72" width="132" height="64" rx="32" fill="#ffffff" opacity=".9"/>
+  <text x="142" y="114" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" fill="#4f9eae">PA</text>
+</svg>

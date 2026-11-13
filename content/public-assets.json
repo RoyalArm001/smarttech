@@ -1,0 +1,1321 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "local": "/img/certificates/license-12.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/certificates/license-12.jpg",
+      "bytes": 304092,
+      "sha256": "3ae7e18dfbe613fe9ee79aa422888ab0b7aa9b6095406f8c82ef05f750df2447"
+    },
+    {
+      "local": "/img/certificates/license-13.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/certificates/license-13.jpg",
+      "bytes": 132262,
+      "sha256": "ff30f9b4f5d413da0787d8cb54bc1a81dd7f2e67143e94b33a068bbc072e39a3"
+    },
+    {
+      "local": "/img/certificates/license-communication.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/certificates/license-communication.jpg",
+      "bytes": 119721,
+      "sha256": "54d7bb733749da305bea8b068aa27d5da356da3fa5288a6cda3b410f09aa7145"
+    },
+    {
+      "local": "/img/external/13261561576d797394f9.jpg",
+      "url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 160829,
+      "sha256": "63a3e82af5358f0045db9f8a252e072b2763a8a2ed0d308c3ac13d344ce19ee4"
+    },
+    {
+      "local": "/img/external/3cf455119e36f4eb56b8.jpg",
+      "url": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 131517,
+      "sha256": "2cee1998c40e2acbd29b1a33ead2a297f5df6e96960e2592a2f3a2575c4bd437"
+    },
+    {
+      "local": "/img/external/417d3c709d76cb2bb230.jpg",
+      "url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 178660,
+      "sha256": "afaa42c455a42cba1bdeb1b2462d1b08c96cff1cd59dada3aefa7a0563f91442"
+    },
+    {
+      "local": "/img/external/4a2c6673255c590ed2c3.jpg",
+      "url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 257890,
+      "sha256": "84253c07157962d878e9e6feecc50738fbd903885e38038a0d2f373ecd6cd6ba"
+    },
+    {
+      "local": "/img/external/4a4d06e2967e201be547.jpg",
+      "url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 127655,
+      "sha256": "eb91740116499eb57b68115c2b28295a4f082d5b8647adfd41bf57d91f39ec8b"
+    },
+    {
+      "local": "/img/external/5370ad948ba43e6d560e.jpg",
+      "url": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 362396,
+      "sha256": "8e4758c8bef0494f3d269ea11caa8477e7f2c68fc83569736ba58efa74f6abb6"
+    },
+    {
+      "local": "/img/external/697e076cbaa2005c2a68.jpg",
+      "url": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 188975,
+      "sha256": "5b504808bf5a5bafeeea276739443c637a6b9fe636ecd28de2633cc313b9249b"
+    },
+    {
+      "local": "/img/external/894a383e3ef1f0c44211.jpg",
+      "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 159337,
+      "sha256": "bd1f6f6ee5c213386f20268be0b5e12ac5c77a628015bb6513eeb5357a2417c8"
+    },
+    {
+      "local": "/img/external/ab754951a32c6e214191.jpg",
+      "url": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 169560,
+      "sha256": "f03140894b997fa8c6f41db7cbd8a21ba65e59195b937ea0f2b1cb7b893686b6"
+    },
+    {
+      "local": "/img/external/cb68ccf2f501bd511c48.jpg",
+      "url": "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 281855,
+      "sha256": "1e943ec13af8cec2a7448ceca36dec56d3c416a719e0e29f9d16a9447bb15e54"
+    },
+    {
+      "local": "/img/external/d5419b471d16844e17ae.jpg",
+      "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80",
+      "bytes": 233475,
+      "sha256": "7d88360d6b91577288e01a87a1cc0a96a1798d495434b1235052052f214d6144"
+    },
+    {
+      "local": "/img/icons/smarttech-apple-touch-icon.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/icons/smarttech-apple-touch-icon.png",
+      "bytes": 11281,
+      "sha256": "e01650332c26384eae0f6cfed159ad5ab0ab267a304b6c521e340a2e62a48729"
+    },
+    {
+      "local": "/img/icons/smarttech-favicon-32.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/icons/smarttech-favicon-32.png",
+      "bytes": 1312,
+      "sha256": "862ae1ccbd59d5b6ed3df8a7f21ff66a4b43db3854690c326e02b6e2a51d2218"
+    },
+    {
+      "local": "/img/icons/smarttech-icon-192.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/icons/smarttech-icon-192.png",
+      "bytes": 12164,
+      "sha256": "e276d711e84bb0e9927b87725f2a8b40c2a305d1761ff5dd324410479629394d"
+    },
+    {
+      "local": "/img/icons/smarttech-icon-512.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/icons/smarttech-icon-512.png",
+      "bytes": 33208,
+      "sha256": "ea39af6b43186cdbab71fb99e253ef79910bc410ef7ed9487e5e7bd32d96a102"
+    },
+    {
+      "local": "/img/icons/smarttech-icon-maskable-512.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/icons/smarttech-icon-maskable-512.png",
+      "bytes": 28357,
+      "sha256": "d7453e0fee13a50a7ce98673e836d7061b71ea7d9aecdb5ca97e78c44802159b"
+    },
+    {
+      "local": "/img/our-jobs/abovyan-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/abovyan-1.png",
+      "bytes": 1059349,
+      "sha256": "1784806054718abcb43482045570505577dc68263879efc128dd6ab8fddb3ab5"
+    },
+    {
+      "local": "/img/our-jobs/abovyan-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/abovyan-2.png",
+      "bytes": 161711,
+      "sha256": "a1c35c587326cc46c1954d80bc1c47a0aaf41021e848e70a536e0c7b7afe7533"
+    },
+    {
+      "local": "/img/our-jobs/acba-sebastia.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/acba-sebastia.png",
+      "bytes": 479732,
+      "sha256": "db0d3288d30c46273bcb778ee802c697c64f06b5c24f68a066d81afdaa13af3f"
+    },
+    {
+      "local": "/img/our-jobs/amiryan-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/amiryan-1.png",
+      "bytes": 124691,
+      "sha256": "42ac1483a2010c09c16396459182f496a35b9edc384f0fb15e7dc44480bb9ea6"
+    },
+    {
+      "local": "/img/our-jobs/amiryan-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/amiryan-2.png",
+      "bytes": 185535,
+      "sha256": "6a5a36e765eadf2941c222a20380d16de0390979843f94a506269c2d6924ba63"
+    },
+    {
+      "local": "/img/our-jobs/atlantis-yerevan.webp",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/atlantis-yerevan.webp",
+      "bytes": 154836,
+      "sha256": "2022332d1793e2a2507e8e1b24c58874755a8be342875b43c5cc9abc6f1cc4b5"
+    },
+    {
+      "local": "/img/our-jobs/bidek-1.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/bidek-1.jpg",
+      "bytes": 331823,
+      "sha256": "5bdcdb0925f27d9e3742bff02378051407b07eb0f6ff76ab45468d4be58608ad"
+    },
+    {
+      "local": "/img/our-jobs/bidek-2.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/bidek-2.jpg",
+      "bytes": 281929,
+      "sha256": "3d3fb69d8293c5ae07b060d2590b47db6e4513b415d250959b78a1378e597226"
+    },
+    {
+      "local": "/img/our-jobs/bidek-3.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/bidek-3.jpg",
+      "bytes": 316801,
+      "sha256": "2210a9af8f4d5c587e7562f925dec6a4126fb44ba37314481755c173f6d2ee95"
+    },
+    {
+      "local": "/img/our-jobs/completed-projects-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/completed-projects-1.png",
+      "bytes": 103440,
+      "sha256": "3bb3fce486ff10fa1c721b52d1daf40691bf04d33b45077965aaadad5751ad5f"
+    },
+    {
+      "local": "/img/our-jobs/completed-projects-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/completed-projects-2.png",
+      "bytes": 173671,
+      "sha256": "25161d26c092182151ea447420634b6d56ed46e98f77d06f5c6ad97a6f66d836"
+    },
+    {
+      "local": "/img/our-jobs/completed-projects-3.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/completed-projects-3.png",
+      "bytes": 166575,
+      "sha256": "0208f734b8c301bcf24b99b0492ac5d735a267bdbc76589d4897fef120821645"
+    },
+    {
+      "local": "/img/our-jobs/completed-projects-4.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/completed-projects-4.png",
+      "bytes": 94457,
+      "sha256": "81b0c74fda1c2354dc12de1639616c9b4360dbd5694e0521e6996a49e3dd0bba"
+    },
+    {
+      "local": "/img/our-jobs/dalan-1.webp",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/dalan-1.webp",
+      "bytes": 151470,
+      "sha256": "9f909ceef5d83209e4bed8d97fdb9d3482f9b48e0e8a1bdf49e0af51b69a6f20"
+    },
+    {
+      "local": "/img/our-jobs/dalan-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/dalan-2.png",
+      "bytes": 425652,
+      "sha256": "6c3d334bc29cbfe1fca38bec2cac6bb248e30a5bedd71ab7b5c5a39fa7482c01"
+    },
+    {
+      "local": "/img/our-jobs/eria-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/eria-1.png",
+      "bytes": 235107,
+      "sha256": "f98496e955c7ab851cd2850cbd60c7aacfcca97cc2fdd7e2fae15adf4cd34cdb"
+    },
+    {
+      "local": "/img/our-jobs/evocabank.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/evocabank.png",
+      "bytes": 660444,
+      "sha256": "6f1588de10998dd2bcff8f1b10355e51236f08fb70bc5eb32f5fb18707c7bb67"
+    },
+    {
+      "local": "/img/our-jobs/moselle-armenia-hotel.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/moselle-armenia-hotel.jpg",
+      "bytes": 138439,
+      "sha256": "79c402c38f56d2cc7600dbee0e5ac68c9ef0cad70d61571ea035b32c44051891"
+    },
+    {
+      "local": "/img/our-jobs/moselle-medical-electrotherapy.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/moselle-medical-electrotherapy.png",
+      "bytes": 390326,
+      "sha256": "c2cda041a2619a14cc75d84e673d7720f1ed6e0a8c01a31ce28a0d1e5771cdef"
+    },
+    {
+      "local": "/img/our-jobs/moselle-medical-hydromassage.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/moselle-medical-hydromassage.png",
+      "bytes": 398379,
+      "sha256": "6f366667c4dc585bb9b1d5c62be45bf3b6d7c8b8aa06361a120b7142b82462ec"
+    },
+    {
+      "local": "/img/our-jobs/moselle-medical-laboratory.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/moselle-medical-laboratory.png",
+      "bytes": 388752,
+      "sha256": "20ee77baa3bbdae5ccf70026d34607e97b05a399e650bd38c788f36917c556df"
+    },
+    {
+      "local": "/img/our-jobs/moselle-medical-massage.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/moselle-medical-massage.png",
+      "bytes": 399466,
+      "sha256": "b9f41bf9ec62677a4b2007a30c8a2237e8124d5294c821a16a770100efc33a10"
+    },
+    {
+      "local": "/img/our-jobs/movenpick-hotel.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/movenpick-hotel.png",
+      "bytes": 672078,
+      "sha256": "c925e9c109428d5def7dc8879c1173951b5a4e703447e005d5ddf76e71a73fe1"
+    },
+    {
+      "local": "/img/our-jobs/only-one-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/only-one-1.png",
+      "bytes": 441761,
+      "sha256": "08d23be6ff470bedf8a0480e23db8c5a899337dc3b949ca6de36a0548b46f6d4"
+    },
+    {
+      "local": "/img/our-jobs/only-one-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/only-one-2.png",
+      "bytes": 589250,
+      "sha256": "46721682ca975956dd6324cca43b53c89cadc25b202af1548edafae627458dda"
+    },
+    {
+      "local": "/img/our-jobs/only-one-3.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/only-one-3.png",
+      "bytes": 416230,
+      "sha256": "20d09deef4690da3f77b6d369b3c7fa8160b559c2e41a5972293fe58ef3c0af6"
+    },
+    {
+      "local": "/img/our-jobs/pallada-tsaghkadzor.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/pallada-tsaghkadzor.png",
+      "bytes": 526692,
+      "sha256": "1d1cd451cad340b0a8918ed3c806ce39de8673f7374f5e5c5b2365ff05152cfd"
+    },
+    {
+      "local": "/img/our-jobs/sunday-towers.webp",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/sunday-towers.webp",
+      "bytes": 235666,
+      "sha256": "6a049d6416f1a3e4a5135e13dc72e2e01e2df5ab186155a8d2c9e9fa2be7144f"
+    },
+    {
+      "local": "/img/our-jobs/uls-data-center.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/uls-data-center.png",
+      "bytes": 505319,
+      "sha256": "baffbdd394451bbe49ea07bbd8e86bb301b3bfe3f0c7c0ce0f0026ed37967d74"
+    },
+    {
+      "local": "/img/our-jobs/wildberries-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/wildberries-1.png",
+      "bytes": 193517,
+      "sha256": "73a7021b58c231bc7fc24e239e43d22578b3fc747a46060f6e2851555bb9c3e7"
+    },
+    {
+      "local": "/img/our-jobs/wildberries-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/wildberries-2.png",
+      "bytes": 95707,
+      "sha256": "df14a1a729088d51fba4ee6d730ae31629ba34b44cfb13f51b9caa219e3b69a8"
+    },
+    {
+      "local": "/img/our-jobs/wyndham-1.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/wyndham-1.png",
+      "bytes": 678195,
+      "sha256": "a410129c7b7432d322afce88972aad068094e5d23220bbdd713b83289e515370"
+    },
+    {
+      "local": "/img/our-jobs/wyndham-2.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/our-jobs/wyndham-2.png",
+      "bytes": 905323,
+      "sha256": "4411e94283bf56251f2fb5e8ae5996055caa80be87f64d0eed2a69f23a686ef5"
+    },
+    {
+      "local": "/img/partners/technology/2n.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/2n.png",
+      "bytes": 4182,
+      "sha256": "4a518cac698470b60f843be2e4a654bf54c5d7ae8e3b5fd22c1f686cbfb18b56"
+    },
+    {
+      "local": "/img/partners/technology/abb.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/abb.png",
+      "bytes": 12868,
+      "sha256": "3d70082fb4cdf4397bbadcb47b64cdbee3129d991a3c28ca0d8d003299255ec1"
+    },
+    {
+      "local": "/img/partners/technology/acer.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/acer.png",
+      "bytes": 22009,
+      "sha256": "8399d4983f1df0d4cf46d6441edbb235927305ae84a79064c4f7f49b5ae237f7"
+    },
+    {
+      "local": "/img/partners/technology/ajax.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/ajax.png",
+      "bytes": 11502,
+      "sha256": "3833d8e3a7eb02d9b3114fea59296ffcf4dcfa617b66a786d9845eef7577ceee"
+    },
+    {
+      "local": "/img/partners/technology/akuvox.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/akuvox.png",
+      "bytes": 58205,
+      "sha256": "20c36c372f0a0a382d74ac174d7af2f7fbaa1c3f3da890331185a3aeb532d308"
+    },
+    {
+      "local": "/img/partners/technology/amd.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/amd.png",
+      "bytes": 8381,
+      "sha256": "8a82b5d790d28c32cc9a0fbadc1cab0e12ed7a9e1c5c91bc6b0c1d0dba12bcf0"
+    },
+    {
+      "local": "/img/partners/technology/apc.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/apc.png",
+      "bytes": 40304,
+      "sha256": "28d0db52f7b3d2980f7a8f5c5fdb603de64b9330c4d0a4e92ecb2fbaf07ded5a"
+    },
+    {
+      "local": "/img/partners/technology/asus.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/asus.png",
+      "bytes": 8907,
+      "sha256": "73ae1ff1f1185702b9d363430642b00c241a1ea3bd2b28ca8858608d14617a84"
+    },
+    {
+      "local": "/img/partners/technology/axis.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/axis.png",
+      "bytes": 8432,
+      "sha256": "db51a16ff85ba7f310fe7a3631f9d7779031900c5b8ad6119b87e931d59abb1e"
+    },
+    {
+      "local": "/img/partners/technology/beckhoff.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/beckhoff.png",
+      "bytes": 5205,
+      "sha256": "c52c928f851ac81515a9e24b00034838e2fd04d48fff6db18b0d51953189582e"
+    },
+    {
+      "local": "/img/partners/technology/beg.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/beg.png",
+      "bytes": 18838,
+      "sha256": "3b9e88dd1cf2ac68f4aac7e499320c7dd547467920ff59c9a732b1224f907dcd"
+    },
+    {
+      "local": "/img/partners/technology/bosch.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/bosch.png",
+      "bytes": 8990,
+      "sha256": "ab5e3bd742b2dc3e55ccdd3d90c1bb11600d661906c449626ddd8430679486bb"
+    },
+    {
+      "local": "/img/partners/technology/carrier.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/carrier.png",
+      "bytes": 32094,
+      "sha256": "d85391636440f0e7dfb3ac33c2645ffd2dfccabe252296d787f605a1ebfd9a91"
+    },
+    {
+      "local": "/img/partners/technology/cisco.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/cisco.png",
+      "bytes": 7381,
+      "sha256": "f7a6d3ba4e05dd14ef6228a428c264d1c2c4bc685bcb4e153e8effb635e1213f"
+    },
+    {
+      "local": "/img/partners/technology/control4.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/control4.png",
+      "bytes": 17137,
+      "sha256": "c171093544a0eeb6ff066c9747557536f9ca796a0d8d782d04f9eb43a6f08fd2"
+    },
+    {
+      "local": "/img/partners/technology/crestron.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/crestron.png",
+      "bytes": 22757,
+      "sha256": "9732cdab29ac070a8469a6e54f0829976c166af117d47456d0b09a88d2c42b05"
+    },
+    {
+      "local": "/img/partners/technology/dahua.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/dahua.png",
+      "bytes": 29185,
+      "sha256": "ac401e607b87de28e55d1c094b94afbdf171837d6d151e342a17b0f5910d7e15"
+    },
+    {
+      "local": "/img/partners/technology/dell.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/dell.png",
+      "bytes": 14011,
+      "sha256": "2b6036324f42ffb45f419f48d163a060103b7c19aa55ff1dc8c5714a7a5bd72b"
+    },
+    {
+      "local": "/img/partners/technology/dsc.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/dsc.png",
+      "bytes": 9158,
+      "sha256": "bca9ebe7f2b3fddaa50c45e2b5ea12752dcc246e5f7cdc1ff57a28e8e1e7ba04"
+    },
+    {
+      "local": "/img/partners/technology/eaton.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/eaton.png",
+      "bytes": 4201,
+      "sha256": "7f047cd68885ba6a3f5c97966ddc70c79bc532abb322a2fe3c9bf8ae4b469dac"
+    },
+    {
+      "local": "/img/partners/technology/ekinex.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/ekinex.png",
+      "bytes": 4833,
+      "sha256": "a9304e861e2b17ef7a09bdc7a61a99b5e19028706a0a25a70a5d30c8851acbaf"
+    },
+    {
+      "local": "/img/partners/technology/extron-certified.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/extron-certified.png",
+      "bytes": 8462,
+      "sha256": "2a1442d8438820172f4452df49971de99176522c988ff5d1febce4ed09acb116"
+    },
+    {
+      "local": "/img/partners/technology/gira.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/gira.png",
+      "bytes": 2422,
+      "sha256": "73a46e28143d182d9e9e7f787989398ba5d18f5b7c79a8e687271f828203f154"
+    },
+    {
+      "local": "/img/partners/technology/grandstream.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/grandstream.png",
+      "bytes": 24337,
+      "sha256": "57e27b56005150741675e50356e642d1560e6adde55ae7e0527ec677535d237b"
+    },
+    {
+      "local": "/img/partners/technology/hanwha-vision.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/hanwha-vision.png",
+      "bytes": 9436,
+      "sha256": "0e65cc5904dcb4d2767a728c753e679432e269047f87ce779373378e7c399efd"
+    },
+    {
+      "local": "/img/partners/technology/hdl.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/hdl.png",
+      "bytes": 3498,
+      "sha256": "049bf54b2ba9267edd30ce40d07d8c1e5ca5d29d1556d55a783dc0dcaf417c82"
+    },
+    {
+      "local": "/img/partners/technology/helvar.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/helvar.jpg",
+      "bytes": 8286,
+      "sha256": "7d0fcffeab242c0b1e1944a001983aa7061a28bfcf01e39d7232f2dfbffb428c"
+    },
+    {
+      "local": "/img/partners/technology/hikvision.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/hikvision.png",
+      "bytes": 8249,
+      "sha256": "ccb92b088e7883db0c68ef9a9f4353fd7bbde470537d0e1cf1c59c023c5442fa"
+    },
+    {
+      "local": "/img/partners/technology/honeywell.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/honeywell.png",
+      "bytes": 6804,
+      "sha256": "b95e9e02f29c65daaf69f78191fec0d45f06b244eefe0a2d4cb6c5ce8ee17ad0"
+    },
+    {
+      "local": "/img/partners/technology/hp.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/hp.png",
+      "bytes": 12439,
+      "sha256": "210388f83bf00d6ff9f5cdd56ce2b85edd77357480533bb9a86a2376f1f44419"
+    },
+    {
+      "local": "/img/partners/technology/huawei.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/huawei.png",
+      "bytes": 36238,
+      "sha256": "109246b4b284abd9c0c90d6919db5077935422151385d1be75517b6da73703fa"
+    },
+    {
+      "local": "/img/partners/technology/intel.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/intel.png",
+      "bytes": 18392,
+      "sha256": "f849df0d21223e6a1da6af622ac9ad3de89ed9534e52bbb08a3d1defa3ecc424"
+    },
+    {
+      "local": "/img/partners/technology/interra.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/interra.png",
+      "bytes": 5128,
+      "sha256": "1fe04d85b20eade4990407d784a4daf04d50da1206753a790da5b374da0efac8"
+    },
+    {
+      "local": "/img/partners/technology/iridium-mobile.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/iridium-mobile.png",
+      "bytes": 25890,
+      "sha256": "435fb9e55c499e96c63ab8a337b5de80f795acbd6813504cb8d96a02a8994e19"
+    },
+    {
+      "local": "/img/partners/technology/jbl.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/jbl.png",
+      "bytes": 8532,
+      "sha256": "63449b2e19c890fab9490f9b94ab5f95e01bda648f68716512df2b22cf22b511"
+    },
+    {
+      "local": "/img/partners/technology/johnson-controls.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/johnson-controls.png",
+      "bytes": 15750,
+      "sha256": "e0f2d5b23a5e9228ca7035552ff051b7b0375e9cb5df094ad0a70402a06097f4"
+    },
+    {
+      "local": "/img/partners/technology/jung.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/jung.png",
+      "bytes": 9648,
+      "sha256": "f3c87cc750d367690d00aaebc1694e7df157ef0b38716a0eeb2a07d28cd97d17"
+    },
+    {
+      "local": "/img/partners/technology/legrand.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/legrand.png",
+      "bytes": 7581,
+      "sha256": "042fa31cc0b603744ce2d2e704b1486955b1042d4897132b881e75a12a7e9e1f"
+    },
+    {
+      "local": "/img/partners/technology/lenovo.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/lenovo.png",
+      "bytes": 15911,
+      "sha256": "3f950c226de13939479bd835028d59f13c80eaead84f6eb9d16948880f07f7d3"
+    },
+    {
+      "local": "/img/partners/technology/lg.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/lg.png",
+      "bytes": 17182,
+      "sha256": "e4826c59d3ece2823ce0edaf301f6165a598f78a4d9c39649462d220e6e67c28"
+    },
+    {
+      "local": "/img/partners/technology/mikrotik.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/mikrotik.png",
+      "bytes": 15874,
+      "sha256": "41442386f0017a81fc65fbbfca1b9dc103ebb58ba1c9c476bbeb2577b5b0a41e"
+    },
+    {
+      "local": "/img/partners/technology/milesight.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/milesight.png",
+      "bytes": 24576,
+      "sha256": "ce7cbdb4e7434cf86abe7043167b01196cad63fabfea1d50480d4e07c5d80050"
+    },
+    {
+      "local": "/img/partners/technology/msi.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/msi.png",
+      "bytes": 30514,
+      "sha256": "be4349db185b2b68a86cc2591dd3a39db4f9d47960854a229938d85248b98db8"
+    },
+    {
+      "local": "/img/partners/technology/obo-bettermann.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/obo-bettermann.png",
+      "bytes": 8450,
+      "sha256": "5fb1cea41d5b16c40d4b10a6fa16669b9f3440876e525ee7bc30ed6ee1b9c259"
+    },
+    {
+      "local": "/img/partners/technology/paradox.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/paradox.png",
+      "bytes": 8606,
+      "sha256": "e9d783a98e7abbad3624f99f001f287833a3dd60270b50adb7a6440f5f340414"
+    },
+    {
+      "local": "/img/partners/technology/phoenix-contact.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/phoenix-contact.png",
+      "bytes": 6370,
+      "sha256": "a4a79f5034e13d7bcb00d594ad981b37172bb12c3fa0ff2e432d482cdd5bc44e"
+    },
+    {
+      "local": "/img/partners/technology/polycom.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/polycom.png",
+      "bytes": 12082,
+      "sha256": "27a27938da3c72035fa6423ee4a38888e59b9423f8a130f3b48f18e9ae98815d"
+    },
+    {
+      "local": "/img/partners/technology/qnap.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/qnap.png",
+      "bytes": 10436,
+      "sha256": "c3f571cd0d896f5884936e4309077ebbccc286dfa325118c513f148eb953f4df"
+    },
+    {
+      "local": "/img/partners/technology/samsung.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/samsung.png",
+      "bytes": 13912,
+      "sha256": "0ae555e0a6c775dbd4278ff2eb72ac337b441ed1f5c131db057f30dc791ccae4"
+    },
+    {
+      "local": "/img/partners/technology/satel.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/satel.png",
+      "bytes": 9263,
+      "sha256": "e6219bbc193371e45f042e752172b2dbce26b281e5cf170657c31817bee1f92a"
+    },
+    {
+      "local": "/img/partners/technology/schneider-electric.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/schneider-electric.png",
+      "bytes": 9840,
+      "sha256": "af8e5dccbc2902c1ed0b6e9ad9848018a179497005829b254bcbe6e145925462"
+    },
+    {
+      "local": "/img/partners/technology/schrack-seconet.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/schrack-seconet.png",
+      "bytes": 9902,
+      "sha256": "823c29999524ae41ba165bd74b9e32d1daf50ee2427c827565d77e3b7cacfe35"
+    },
+    {
+      "local": "/img/partners/technology/sharp.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/sharp.png",
+      "bytes": 11860,
+      "sha256": "2e67c0eb64fdf79ddd5ad3cd03b3820c68eb05679035aed857fedba3239b2ee2"
+    },
+    {
+      "local": "/img/partners/technology/siemens.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/siemens.png",
+      "bytes": 5012,
+      "sha256": "6c4d7a4c14a32def0af9f8b8970e0abde7d5159f81f73814f85efef164866202"
+    },
+    {
+      "local": "/img/partners/technology/supermicro.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/supermicro.png",
+      "bytes": 30927,
+      "sha256": "b08adbcb642512c9480ba1f8b39dd2416e8e9d4311765e0f234f6039ce835d73"
+    },
+    {
+      "local": "/img/partners/technology/synology.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/synology.png",
+      "bytes": 25443,
+      "sha256": "810a44b97915c0cb574a7812e30eaa80f3e8c44041002b054a657f006a11cf4f"
+    },
+    {
+      "local": "/img/partners/technology/tiandy.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/tiandy.png",
+      "bytes": 15926,
+      "sha256": "6cf00ab49647f2c3aeb1b31fe58c85d81f8937bc41f8248511e8c135184066cf"
+    },
+    {
+      "local": "/img/partners/technology/toa.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/toa.png",
+      "bytes": 10873,
+      "sha256": "337453e30adcd2e23f2d89ee9dc3cb0ffe5ec1a2c3b532645c2c6d962725d96d"
+    },
+    {
+      "local": "/img/partners/technology/tp-link.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/tp-link.png",
+      "bytes": 12206,
+      "sha256": "110ce86c12e335ca195b77607400ec5eec2a8c0cb314164ef3762f53496aa9f6"
+    },
+    {
+      "local": "/img/partners/technology/ubiquiti.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/ubiquiti.png",
+      "bytes": 10978,
+      "sha256": "d1a7ba9a8531279efb6e942d920c6b9328c44ef61d9eccf899661e3efe3aa00f"
+    },
+    {
+      "local": "/img/partners/technology/uniview.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/uniview.png",
+      "bytes": 17588,
+      "sha256": "8c88423a414aa2c90d4292a075af1f23396aa4f14d06c1bd7dbd14b0e5991186"
+    },
+    {
+      "local": "/img/partners/technology/voka.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/voka.png",
+      "bytes": 5661,
+      "sha256": "706ee28e7f9080ce6a4e039189377e2a6a49eeb229b32150c2e321159e79f32a"
+    },
+    {
+      "local": "/img/partners/technology/wago.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/wago.png",
+      "bytes": 6456,
+      "sha256": "4e4b415709872c1b95f75fd4ae64641516c93d49efab986c33cfb0471d3a06ec"
+    },
+    {
+      "local": "/img/partners/technology/yamaha.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/yamaha.png",
+      "bytes": 27499,
+      "sha256": "6eb347b1447fe828735f0b4a1d987584456e0708dbfb9f8a9fba689ed3cab732"
+    },
+    {
+      "local": "/img/partners/technology/yealink.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/yealink.png",
+      "bytes": 26735,
+      "sha256": "d3f3dcc3cf18d4fdfc92356cbe61c93c6d8b4631b6d37fdbcaccecacf43f1de0"
+    },
+    {
+      "local": "/img/partners/technology/zennio.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/zennio.png",
+      "bytes": 5370,
+      "sha256": "37802a270fafbf4c2283cb1157edf9f07bb15abdc8bb5f09a2293c2281d51cd0"
+    },
+    {
+      "local": "/img/partners/technology/zkteco.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/zkteco.png",
+      "bytes": 13113,
+      "sha256": "62ea0108b84f7417c37e69d7b94d77259e182fd974401479846f2839fd5627a4"
+    },
+    {
+      "local": "/img/partners/technology/zyxel.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/partners/technology/zyxel.png",
+      "bytes": 22755,
+      "sha256": "9c16e006d65584d63bf343752103678e288103815530dd88f828d012322e3c32"
+    },
+    {
+      "local": "/img/projects/arm-construct/arm-construct-logo.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/arm-construct/arm-construct-logo.jpg",
+      "bytes": 44365,
+      "sha256": "5e696ccecef7eea15a97242eaacd911a9ee7002fbe341e73c4b949e6c52dca68"
+    },
+    {
+      "local": "/img/projects/e1-residence.webp",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/e1-residence.webp",
+      "bytes": 246068,
+      "sha256": "f9a54a6b14066c175536040fe1e72622ac733670720e27011adb6ed3d538cfe2"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/aerial-studio-b9c5e87da387.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/aerial-studio-b9c5e87da387.jpg",
+      "bytes": 787675,
+      "sha256": "b9c5e87da3877a59613cd1d9ca02245a581817647c7617f52390a91d59cc66ef"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/cardio-ba0dbc122c35.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/cardio-ba0dbc122c35.jpg",
+      "bytes": 727662,
+      "sha256": "ba0dbc122c357ff1b4467d21d0d0009fac8cb45090572315f1deb59e99bf163e"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/gym-b7959ce645ca.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/gym-b7959ce645ca.jpg",
+      "bytes": 515364,
+      "sha256": "b7959ce645cad609a94b08e3cd851736866116f987ecb502cd533b7304fb8f28"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/pool-30f080edede2.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/pool-30f080edede2.jpg",
+      "bytes": 682636,
+      "sha256": "30f080edede2e2acfc7180c4155574aa5a937898f143af82586a6e463017e7bb"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/reception-806fb7b1b212.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/reception-806fb7b1b212.jpg",
+      "bytes": 65910,
+      "sha256": "806fb7b1b21221623f7c825d8885e1d47ff397a5fda05c967ddd08e4c86c62bb"
+    },
+    {
+      "local": "/img/projects/reset-wellness-club/weights-90b6394fe056.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/projects/reset-wellness-club/weights-90b6394fe056.jpg",
+      "bytes": 623093,
+      "sha256": "90b6394fe056155567c829d3fb32c9ed71832bc29cfe134ceeb80d1484d21d3d"
+    },
+    {
+      "local": "/img/services/access_control_door.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/access_control_door.jpg",
+      "bytes": 121445,
+      "sha256": "bc3dddaeaf297955c311ebcb479203b6224f2f4817c5f96204d7caf851271bf3"
+    },
+    {
+      "local": "/img/services/audio_systems.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/audio_systems.jpg",
+      "bytes": 176924,
+      "sha256": "d5a763a888bc6080450dc6a3831e053c127f58fdce14815e937ca4197c11aa83"
+    },
+    {
+      "local": "/img/services/automation_cabinets.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/automation_cabinets.jpg",
+      "bytes": 200963,
+      "sha256": "80cd03b1afd807dfa8bcab6ae887804a5403c555be16fae052b11adc449801a8"
+    },
+    {
+      "local": "/img/services/bms_office.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/bms_office.jpg",
+      "bytes": 154115,
+      "sha256": "8fe9a16396497522dacd1a024b333767fc428ecae5bf23d4b5bc3a4c018bb1b4"
+    },
+    {
+      "local": "/img/services/building_management_automation.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/building_management_automation.jpg",
+      "bytes": 189754,
+      "sha256": "15e6b4eed4feb247473e02933945a0a48745b82dc7272e97881840eca45cb87d"
+    },
+    {
+      "local": "/img/services/cabling_installation.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/cabling_installation.jpg",
+      "bytes": 172550,
+      "sha256": "280df2f979a85e8e055afa629edbda49b3459b01e0ac9a507f1512e531522faa"
+    },
+    {
+      "local": "/img/services/commissioning_programming.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/commissioning_programming.jpg",
+      "bytes": 153979,
+      "sha256": "4d48b91f8342adbaf5d609ea6a3ee0427982c257a882cdcbedeca360eb3209ef"
+    },
+    {
+      "local": "/img/services/electrical_installation_works.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/electrical_installation_works.jpg",
+      "bytes": 206104,
+      "sha256": "6ed68e4131062a7e4c5abb736807e6b59e1b4d70af8ce112ec87fbbf89438477"
+    },
+    {
+      "local": "/img/services/engineering_monitoring.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/engineering_monitoring.jpg",
+      "bytes": 852641,
+      "sha256": "ed70a46e60b3e1946a1b4bd9f9918009fa96b81be206b50eaf813b71ef141aa0"
+    },
+    {
+      "local": "/img/services/equipment_supply.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/equipment_supply.jpg",
+      "bytes": 217423,
+      "sha256": "6c91e5450b292bb600383e14ce6da2ef5debb320281eac745108091b15cc9055"
+    },
+    {
+      "local": "/img/services/fire_alarm_device.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/fire_alarm_device.jpg",
+      "bytes": 69863,
+      "sha256": "3fc81eb9e486763c9a55df4c03c08673e452aac7803c00855c30f4bb825b099c"
+    },
+    {
+      "local": "/img/services/fire-security.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/fire-security.jpg",
+      "bytes": 664561,
+      "sha256": "59e5a217b1ec57f14fb3643106ca6ed0b50c04ff69ad2bf999a2b8c0aec6f31d"
+    },
+    {
+      "local": "/img/services/full_design_integrated.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/full_design_integrated.jpg",
+      "bytes": 183214,
+      "sha256": "52704660c1e5e102f80ac4addf9b4cb1762b1e90eb2312d21b464d7fe93274ae"
+    },
+    {
+      "local": "/img/services/installation_networks.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/installation_networks.jpg",
+      "bytes": 67223,
+      "sha256": "d8ebebdf9e70069f2c629085648661a8081d08e4993806f936822c279d6b0c77"
+    },
+    {
+      "local": "/img/services/installation_surveillance_systems.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/installation_surveillance_systems.jpg",
+      "bytes": 711971,
+      "sha256": "0be413ad4a643c1b3c347d748ce8ea2cfe8b9979c20423c59d9e374f6186c86b"
+    },
+    {
+      "local": "/img/services/installation_works.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/installation_works.jpg",
+      "bytes": 231379,
+      "sha256": "642d96deb348a25dd713ffd7a3f1ef7e887546cb8c592794a7e01372c880fad4"
+    },
+    {
+      "local": "/img/services/interfaces_ui.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/interfaces_ui.jpg",
+      "bytes": 193278,
+      "sha256": "f129f32ff752648afc5f706560877927d2cd50b2ff58eadcbfb8a310c7ebb576"
+    },
+    {
+      "local": "/img/services/network_patch_panel.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/network_patch_panel.jpg",
+      "bytes": 216505,
+      "sha256": "a870753d0ff4b0c34af4e85e0e9c695faafb25d26245469ac11aac203040c090"
+    },
+    {
+      "local": "/img/services/powder_coating_oven.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/powder_coating_oven.jpg",
+      "bytes": 198286,
+      "sha256": "7263ff7a00dc617a1d5da2d8a23aa676525aa5dab4d4deb59cc844ee41a25877"
+    },
+    {
+      "local": "/img/services/powder_coating_prep.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/powder_coating_prep.jpg",
+      "bytes": 130454,
+      "sha256": "be3f5f729e79e9fcdcf6a057eb508e5fd7165446a5e0acb9ca65da39da0ac3e6"
+    },
+    {
+      "local": "/img/services/powder_coating_quality.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/powder_coating_quality.jpg",
+      "bytes": 137326,
+      "sha256": "7bdd52f9c5f102299e1f364380647083c57466f1c7a0208a2bd3a2010448e5b6"
+    },
+    {
+      "local": "/img/services/powder_coating.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/powder_coating.jpg",
+      "bytes": 172647,
+      "sha256": "d3b4c2913b1029d9c66b009329f0cbed0345b6e03565f19b2750e8b94e50df3d"
+    },
+    {
+      "local": "/img/services/server_rack.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/server_rack.jpg",
+      "bytes": 315976,
+      "sha256": "759358d7c90b773fafd4aa2f9d2470dc60a1547b099806ab511e28779f584352"
+    },
+    {
+      "local": "/img/services/smart_systems.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/smart_systems.jpg",
+      "bytes": 180824,
+      "sha256": "66be96908ee857b18b9cdb9493b7a80460866194906a7ec54177bb66e6f7cb46"
+    },
+    {
+      "local": "/img/services/surveillance_indoor.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/surveillance_indoor.jpg",
+      "bytes": 168827,
+      "sha256": "34cb24b1d68da9259fc8986e5eafd27e98440e88d198367de2c3406dc013b60e"
+    },
+    {
+      "local": "/img/services/surveillance_outdoor.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/surveillance_outdoor.jpg",
+      "bytes": 158772,
+      "sha256": "82e6917f09b71d2f3a43c778487feaef356403597cde8c9658ca40f6782b411f"
+    },
+    {
+      "local": "/img/services/systems_design.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/systems_design.jpg",
+      "bytes": 319913,
+      "sha256": "6b792a0e89effcf89301c373065beaf46ecd8d6bcc558bd110023506b4fe84d1"
+    },
+    {
+      "local": "/img/services/technical_drawing.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/technical_drawing.jpg",
+      "bytes": 142440,
+      "sha256": "2deacb9f877579792b7b81b0efcfc8ea9f11ce52f4abfdbb2010d1d0d01e1556"
+    },
+    {
+      "local": "/img/services/wacker_installation.jpg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/services/wacker_installation.jpg",
+      "bytes": 167281,
+      "sha256": "c345009cef71fbd2fa886bd25ba703654ff31c21b59a7235bd7668083917e0ad"
+    },
+    {
+      "local": "/img/smart-tech-alt.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/smart-tech-alt.png",
+      "bytes": 12751,
+      "sha256": "7570625d3849993ff8da5af1b3fb5dbf31f46daf8e83d267dd52410a6cac5dc8"
+    },
+    {
+      "local": "/img/smart-tech.png",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/smart-tech.png",
+      "bytes": 13391,
+      "sha256": "a32ded104441f1e10c855f3dbeac14959aedbca365e8a15526cda84c52b91f09"
+    },
+    {
+      "local": "/src/assets/brand/logo-smarttech-building.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/brand/logo-smarttech-building.svg",
+      "bytes": 1712,
+      "sha256": "7a25b6731f7806769865cb0d45ecf3382b1898515942c5508154b68279e4623a"
+    },
+    {
+      "local": "/src/assets/brand/logo-smarttech.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/project-images/brand/logo-smarttech.svg",
+      "bytes": 725,
+      "sha256": "f2ff89cc71149390ca8ef58aa715a0a53770f690cee35721646d77c5f3b4f206"
+    },
+    {
+      "local": "/src/assets/team/avatars/alarm-system-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/alarm-system-engineer.svg",
+      "bytes": 2672,
+      "sha256": "caf001298280579e9bb170b3f83efbbf1492f6680baeb5debef368ab628dcbae"
+    },
+    {
+      "local": "/src/assets/team/avatars/audio-installation-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/audio-installation-specialist.svg",
+      "bytes": 2664,
+      "sha256": "cf017b267728960a9d0b745b2123305a388ac1b823e3984406194021ad764d63"
+    },
+    {
+      "local": "/src/assets/team/avatars/audio-systems-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/audio-systems-specialist.svg",
+      "bytes": 2659,
+      "sha256": "6ab5f4bcdbd8dbdc1cd11702ef1a9cb28a32e77c436651bc06595dc7b1e3d9ef"
+    },
+    {
+      "local": "/src/assets/team/avatars/automation-installation-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/automation-installation-specialist.svg",
+      "bytes": 2789,
+      "sha256": "148791621fb39410566666019314baa0aa88f0a4b2d00d96d008e73614a9025c"
+    },
+    {
+      "local": "/src/assets/team/avatars/automation-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/automation-specialist.svg",
+      "bytes": 2783,
+      "sha256": "7610dc67f0b9548310f254bc6a249f56eb26ca8280da187dcdc4cc9cc4326583"
+    },
+    {
+      "local": "/src/assets/team/avatars/bms-design-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/bms-design-specialist.svg",
+      "bytes": 2615,
+      "sha256": "94fcffff4f31653c192810153ec7c9ae36ffbff36cbd464a38149887b3ccf08a"
+    },
+    {
+      "local": "/src/assets/team/avatars/bms-integration-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/bms-integration-engineer.svg",
+      "bytes": 2618,
+      "sha256": "8ef0c43fe5eb4141821208184e458fa773e67dd2c6416bcda9b338911a8fa8f5"
+    },
+    {
+      "local": "/src/assets/team/avatars/director.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/director.svg",
+      "bytes": 2712,
+      "sha256": "ab286f6ffe5a855a91984f798344b8209d468c4dfb205eb10b23b12bbca43f3d"
+    },
+    {
+      "local": "/src/assets/team/avatars/electrical-automation-panel-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/electrical-automation-panel-specialist.svg",
+      "bytes": 2830,
+      "sha256": "d77ef00eeee6144352325f41860583070bacff1efa9c07907207d3dd3ad5fd30"
+    },
+    {
+      "local": "/src/assets/team/avatars/electrical-cabling-lighting-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/electrical-cabling-lighting-specialist.svg",
+      "bytes": 2674,
+      "sha256": "e39ab6ea913e230def521938ea762b4d13a171fbefd622aa456b703e6299e5f1"
+    },
+    {
+      "local": "/src/assets/team/avatars/electrical-installation-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/electrical-installation-engineer.svg",
+      "bytes": 2521,
+      "sha256": "f13e47f4b77eb87088ba1a79eb412a53e9f39637b4f25f3c11586d93b382a4f1"
+    },
+    {
+      "local": "/src/assets/team/avatars/electrical-works-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/electrical-works-specialist.svg",
+      "bytes": 2560,
+      "sha256": "62f93e457e449c313ecd3fd183608bcb30a8cf9b6e5a6d354e31c8b2953e57a7"
+    },
+    {
+      "local": "/src/assets/team/avatars/fire-alarm-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/fire-alarm-specialist.svg",
+      "bytes": 2666,
+      "sha256": "53d83516371e58c3c2f0ab36d5b51d1ebc5fb4ec6e7d586b0a0a49331192b21f"
+    },
+    {
+      "local": "/src/assets/team/avatars/it-installation-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/it-installation-engineer.svg",
+      "bytes": 2964,
+      "sha256": "974e41d85fc995fd61d62a8494df2eb015cf3be547f4142e40f258f49572af0b"
+    },
+    {
+      "local": "/src/assets/team/avatars/it-network-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/it-network-engineer.svg",
+      "bytes": 2960,
+      "sha256": "d020e826cad9d86a520a2b0b77a27bc4bbf2a151cd18bb8262aeb278057dc020"
+    },
+    {
+      "local": "/src/assets/team/avatars/it-project-manager.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/it-project-manager.svg",
+      "bytes": 2958,
+      "sha256": "1bca9c958c12ecf1b0be56d68b6eaa24e61b3a1454739ece76e493cdd2161724"
+    },
+    {
+      "local": "/src/assets/team/avatars/it-support-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/it-support-engineer.svg",
+      "bytes": 2960,
+      "sha256": "b87d7ddb02a7efc913890493ffe763db1432fb689aaaac07236c0c63bf20a6fe"
+    },
+    {
+      "local": "/src/assets/team/avatars/pm-bms.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/pm-bms.svg",
+      "bytes": 2732,
+      "sha256": "47493972fd13979d164735865f8901fded757b41dab5af1ff39ed5acd482aed4"
+    },
+    {
+      "local": "/src/assets/team/avatars/pm-cctv.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/pm-cctv.svg",
+      "bytes": 2733,
+      "sha256": "0c0bd958735feecd0fbc4a7482abe4df8b54502527b9f9d56859c57667a16b31"
+    },
+    {
+      "local": "/src/assets/team/avatars/pm-electrical.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/pm-electrical.svg",
+      "bytes": 2738,
+      "sha256": "62fbaac31fa9db53c59c6f7ff3b913c953236ad4d6f878411c3bb8425a606f18"
+    },
+    {
+      "local": "/src/assets/team/avatars/pm-fire-alarm.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/pm-fire-alarm.svg",
+      "bytes": 2738,
+      "sha256": "44be0f9cde55898354feecb64f3725f29772638f0ddff8f34b3a76c50ad40a33"
+    },
+    {
+      "local": "/src/assets/team/avatars/technical-commissioning-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/technical-commissioning-specialist.svg",
+      "bytes": 2778,
+      "sha256": "1c016d5a2ab4ed48b2106e1e11c0a10bbf0794075b32c0953a0328507dca7d10"
+    },
+    {
+      "local": "/src/assets/team/avatars/technical-electrical-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/technical-electrical-specialist.svg",
+      "bytes": 2515,
+      "sha256": "b7a0ae915c6b1c2ed8f294ca8956542ac4bc12152d9d34e2d1b641bf59d6652b"
+    },
+    {
+      "local": "/src/assets/team/avatars/technical-low-voltage-specialist.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/technical-low-voltage-specialist.svg",
+      "bytes": 2976,
+      "sha256": "19cf2bfe33e4684c4aab86b33ccc60b1ace10860db62ca4317798943ba0ae3ba"
+    },
+    {
+      "local": "/src/assets/team/avatars/video-access-control-engineer.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/avatars/video-access-control-engineer.svg",
+      "bytes": 2858,
+      "sha256": "9c0f46772e24e16f50a5a278a8b931463c93927f3dfe4eea31b0df42425fd51c"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/alarm-system-engineer-fire-safety-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/alarm-system-engineer-fire-safety-systems.svg",
+      "bytes": 3077,
+      "sha256": "5847435710b4c3e0bbf06298fd122aadd4acab6b04a3788223c81688a2c9e4a0"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/alarm-system-engineer-security-systems-compliance.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/alarm-system-engineer-security-systems-compliance.svg",
+      "bytes": 3093,
+      "sha256": "6d95801f1f507ec5df16b39fe8a8b539880f9673f3773751de3f1224c5c3595e"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/audio-installation-specialist-public-address-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/audio-installation-specialist-public-address-systems.svg",
+      "bytes": 3125,
+      "sha256": "9cb05aba09d211c97c3a435a3b0fd89f528f13e2419f0dc572326c441a3714d0"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/audio-installation-specialist-sound-engineering.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/audio-installation-specialist-sound-engineering.svg",
+      "bytes": 3115,
+      "sha256": "be93b29a6ea032c18870e7a0512bd25a51e56629ea6106cad8503502eab70688"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/audio-systems-specialist-audio-system-installation.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/audio-systems-specialist-audio-system-installation.svg",
+      "bytes": 3101,
+      "sha256": "1028e7d07da08d81fbecc3ff86cfb04fc5d91806a7b94e6aadac280ae78c873f"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/audio-systems-specialist-public-address-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/audio-systems-specialist-public-address-systems.svg",
+      "bytes": 3095,
+      "sha256": "dc3bb46e315965ba8a02fd89ac04c85f3a592bba558585c686262ba5ec111afd"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/automation-installation-specialist-automation-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/automation-installation-specialist-automation-systems.svg",
+      "bytes": 3157,
+      "sha256": "16bbb0b8325c126039de57525265ac137e064d4ac168d3a1b5779b7540bf704d"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/automation-installation-specialist-plc-installation.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/automation-installation-specialist-plc-installation.svg",
+      "bytes": 3153,
+      "sha256": "f44955b8189ec7d6111b995bc6071f70d2fc44f4eb1671ac9446034f057f20e6"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/automation-specialist-automation-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/automation-specialist-automation-systems.svg",
+      "bytes": 3085,
+      "sha256": "e65882f5c04e2df824167e5606f1c9bc83db509afc9e2ca1242aed035468decd"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/automation-specialist-control-panel-engineering.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/automation-specialist-control-panel-engineering.svg",
+      "bytes": 3099,
+      "sha256": "548492c73b34f91e8d2f30b91388a5a58241e2f3228c29477d63466b57f2ff7c"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/bms-design-specialist-building-management-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/bms-design-specialist-building-management-systems.svg",
+      "bytes": 3083,
+      "sha256": "c1b4da28356197e8e91470eb56872341668f778921e858e8b8e113cebd4ed60b"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/bms-design-specialist-systems-design.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/bms-design-specialist-systems-design.svg",
+      "bytes": 3057,
+      "sha256": "2e2fef81af37f9ab3acc5f49317ac912cc86f5822ac915b10485c0e1232110c4"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/bms-integration-engineer-building-management-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/bms-integration-engineer-building-management-systems.svg",
+      "bytes": 3101,
+      "sha256": "2565c11bd8a70686db90244d2a15d9377800becdb1b9154bfbf636dc09da4250"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/bms-integration-engineer-hvac-integration.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/bms-integration-engineer-hvac-integration.svg",
+      "bytes": 3079,
+      "sha256": "da81a39f7aeba53f9d23b5f9350fc2b209874e0426efc54cda35b2dbc482328a"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/director-business-management.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/director-business-management.svg",
+      "bytes": 3015,
+      "sha256": "53493f7045689d7e9018de13a9cafbf9b4cbc29011e781682a1dcdcc10990096"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/director-quality-control-leadership.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/director-quality-control-leadership.svg",
+      "bytes": 3029,
+      "sha256": "424d107ded85890dab1069ee0f5891f55869f7f2f0af65eb36b1e3759ff5b898"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/electrical-installation-engineer-electrical-installation.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/electrical-installation-engineer-electrical-installation.svg",
+      "bytes": 3155,
+      "sha256": "e47e0ee904ebe240e34f9c1f9e98f89b4bf5b1da938753f2323f84519037f066"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/electrical-installation-engineer-low-voltage-systems.svg",
+      "bytes": 3147,
+      "sha256": "c84a2983254c2d4ecf75c13322febd88136d016c79cd3e75c84ba208147d6f6f"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/electrical-works-specialist-electrical-installation.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/electrical-works-specialist-electrical-installation.svg",
+      "bytes": 3125,
+      "sha256": "53f5e82ef4d720206bbe2294bcff0cbb66992496022567250341970d6e51ccd8"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/electrical-works-specialist-panel-assembly.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/electrical-works-specialist-panel-assembly.svg",
+      "bytes": 3107,
+      "sha256": "e0bd6b6f2e82dc9d761832109ba2097ea7177c8d13096c3a423fe2c5b22bf3b9"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/fire-alarm-specialist-evacuation-safety.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/fire-alarm-specialist-evacuation-safety.svg",
+      "bytes": 3073,
+      "sha256": "806d6ffa7214984589302210feda6c06c806d870ca838ca6ab4ed45167181626"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/fire-alarm-specialist-fire-alarm-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/fire-alarm-specialist-fire-alarm-systems.svg",
+      "bytes": 3075,
+      "sha256": "d9bc2a477dfc48f554e5d8c1196697114c38ede665d84ebd2292f1ad32994020"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-installation-engineer-field-installation-standards.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-installation-engineer-field-installation-standards.svg",
+      "bytes": 3101,
+      "sha256": "3bfe2ad33a5d8a50e606bd36d986b59bcbc9b83cfbe15625b1c91f6849a7645f"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-installation-engineer-structured-cabling.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-installation-engineer-structured-cabling.svg",
+      "bytes": 3081,
+      "sha256": "701eb9ece96d9b71bf1d8588dd69c1d9fdbdb876799897c07345f320939a5910"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-network-engineer-cisco-network-engineering.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-network-engineer-cisco-network-engineering.svg",
+      "bytes": 3065,
+      "sha256": "fb0ce5d52ed9842a12255b83fd8caa270639aade8a98f8a99beda87889ea89a2"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-network-engineer-network-security-basics.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-network-engineer-network-security-basics.svg",
+      "bytes": 3061,
+      "sha256": "83b796f5b858ba014c867c0411be8710d6d8319acd7bfe04db20bd2a1687b076"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-project-manager-agile-delivery.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-project-manager-agile-delivery.svg",
+      "bytes": 3037,
+      "sha256": "9de74fe6d47c9a9d0f27c96c5ef31969cfb1f30d3a9b19b9a93fd4baf49f6793"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-project-manager-project-management.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-project-manager-project-management.svg",
+      "bytes": 3045,
+      "sha256": "4fc2f698da770d78b18019ab40906281c9f53958792effe47d12f67097bc2567"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-support-engineer-it-service-management.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-support-engineer-it-service-management.svg",
+      "bytes": 3057,
+      "sha256": "1992ce58f9006b5f9f96fc4f0f8c70505e51588a1666c5d22ae58abe91437393"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/it-support-engineer-network-operations.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/it-support-engineer-network-operations.svg",
+      "bytes": 3051,
+      "sha256": "485650a0dbc96e72a0f88d6a2991400a9b09c5599cd9036aac438afdf3d9e618"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/video-access-control-engineer-access-control-integration.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/video-access-control-engineer-access-control-integration.svg",
+      "bytes": 3133,
+      "sha256": "79fed818a713fabfe010142ec4c27a274ffeb0c342cf0c7adfec5d2b2c52af07"
+    },
+    {
+      "local": "/src/assets/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg",
+      "url": "https://aoeqjlvtncxblkhvqmeu.supabase.co/storage/v1/object/public/avatars/team/certificates/members/video-access-control-engineer-video-surveillance-systems.svg",
+      "bytes": 3133,
+      "sha256": "5966b539e0272c57a2b3495ad976b080984842b853802e57e4fcddb13def899d"
+    }
+  ],
+  "missing": [
+    {
+      "local": "/img/external/c594e517e5ad8f0e9b07.jpg",
+      "url": "https://images.unsplash.com/photo-1581092921461-7d65ca45b2c8?auto=format&fit=crop&w=1400&q=80",
+      "error": "HTTP 404",
+      "fallback": "/img/smart-tech.png"
+    }
+  ]
+}
