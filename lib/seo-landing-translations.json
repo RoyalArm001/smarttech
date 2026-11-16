@@ -1,0 +1,192 @@
+{
+  "cctv-installation-yerevan": {
+    "en": {
+      "title": "CCTV Installation Yerevan | Smart Tech Armenia",
+      "description": "Professional CCTV installation in Yerevan, Armenia — IP cameras, NVR, remote viewing, site survey and maintenance by Smart Tech LLC since 2012.",
+      "pageName": "CCTV in Yerevan",
+      "eyebrow": "Video surveillance · Yerevan · Armenia",
+      "headline": "CCTV installation in Yerevan",
+      "lead": "Smart Tech LLC designs and installs IP cameras, NVR/DVR recorders, PoE networks and remote viewing solutions for apartments, offices, shops, hotels and warehouses.",
+      "whatIs": "Video surveillance (CCTV) provides live monitoring, recording and alerts. Modern IP systems include cameras, an NVR/DVR recorder, monitoring, a mobile app and a secure network connection.",
+      "whyImportant": "Video surveillance reduces the risk of theft, damage and rule violations, speeds up response and provides recorded evidence. It is a core security tool for hotels, banks, warehouses and residential complexes.",
+      "process": ["Initial consultation and site survey", "Planning camera locations and recording capacity", "Equipment supply and cabling", "Installation, configuration and remote viewing setup", "Testing, user training and maintenance"],
+      "costFactors": ["Number and type of cameras (indoor/outdoor, PTZ, ColorVu)", "Recording retention period and HDD capacity", "Cable routes, PoE switches and UPS", "Remote viewing, analytics and integration with other systems", "Site access and installation schedule"],
+      "benefits": ["24/7 monitoring and recording", "Mobile viewing from anywhere", "Equipment from Hikvision and other leading manufacturers", "One team from design through maintenance", "Licensed engineering delivery"],
+      "faq": [
+        { "question": "How much does CCTV installation cost in Yerevan?", "answer": "The price depends on the number of cameras, recording retention period, indoor/outdoor locations and cabling. A site survey is needed for an accurate quotation." },
+        { "question": "Which districts do you serve?", "answer": "Smart Tech serves all of Yerevan, including Kentron, Arabkir, Ajapnyak, Davtashen, Shengavit and Malatia-Sebastia, as well as Armenia's regions." },
+        { "question": "How long does installation take?", "answer": "Installation takes 2–5 days for small sites and 1–3 weeks for medium-sized projects. The final schedule is confirmed after the site survey." }
+      ]
+    },
+    "ru": {
+      "title": "Установка видеонаблюдения в Ереване | Smart Tech",
+      "description": "Профессиональная установка видеонаблюдения в Ереване и Армении — IP-камеры, NVR, удалённый просмотр, обследование объекта и обслуживание. Smart Tech LLC с 2012 года.",
+      "pageName": "Видеонаблюдение в Ереване",
+      "eyebrow": "Видеонаблюдение · Ереван · Армения",
+      "headline": "Установка систем видеонаблюдения в Ереване",
+      "lead": "Smart Tech LLC проектирует и устанавливает IP-камеры, регистраторы NVR/DVR, сети PoE и решения для удалённого просмотра в квартирах, офисах, магазинах, гостиницах и на складах.",
+      "whatIs": "Видеонаблюдение (CCTV) обеспечивает наблюдение в реальном времени, запись и оповещения. Современные IP-системы включают камеры, регистратор NVR/DVR, мониторинг, мобильное приложение и защищённое сетевое соединение.",
+      "whyImportant": "Видеонаблюдение снижает риск краж, повреждений и нарушений правил, ускоряет реагирование и предоставляет архив записей. Для гостиниц, банков, складов и жилых комплексов это один из основных инструментов безопасности.",
+      "process": ["Первичная консультация и обследование объекта", "Планирование точек установки камер и объёма архива", "Поставка оборудования и прокладка кабелей", "Монтаж, настройка и подключение удалённого просмотра", "Тестирование, обучение пользователей и обслуживание"],
+      "costFactors": ["Количество и тип камер (внутренние/уличные, PTZ, ColorVu)", "Срок хранения записей и ёмкость HDD", "Кабельные трассы, коммутаторы PoE и ИБП", "Удалённый просмотр, аналитика и интеграция с другими системами", "Доступность объекта и сроки работ"],
+      "benefits": ["Мониторинг и запись 24/7", "Просмотр с телефона из любой точки", "Оборудование Hikvision и других ведущих производителей", "Одна команда от проектирования до обслуживания", "Лицензированные инженерные работы"],
+      "faq": [
+        { "question": "Сколько стоит установка видеонаблюдения в Ереване?", "answer": "Цена зависит от количества камер, срока хранения записей, внутренних и уличных точек и кабельных работ. Для точного предложения необходимо обследование объекта." },
+        { "question": "В каких районах вы работаете?", "answer": "Smart Tech обслуживает весь Ереван, включая Кентрон, Арабкир, Ачапняк, Давташен, Шенгавит и Малатию-Себастию, а также регионы Армении." },
+        { "question": "Сколько времени занимает монтаж?", "answer": "На небольших объектах — 2–5 дней, на средних проектах — 1–3 недели. Окончательные сроки согласовываются после обследования объекта." }
+      ]
+    }
+  },
+  "fire-alarm-systems-yerevan": {
+    "en": {
+      "title": "Fire Alarm Systems Yerevan | Smart Tech Armenia",
+      "description": "Fire alarm system design and installation in Yerevan — detectors, panels, sirens, evacuation notification and maintenance by Smart Tech LLC.",
+      "pageName": "Fire alarms in Yerevan",
+      "eyebrow": "Fire safety · Yerevan",
+      "headline": "Fire alarm systems in Yerevan",
+      "lead": "We design and install fire alarms, evacuation notification systems and safety response sequences for offices, hotels, retail and industrial sites.",
+      "whatIs": "A fire alarm system automatically detects smoke, heat or a manual alarm signal and activates sirens, notifications and emergency response sequences.",
+      "whyImportant": "Early detection saves lives and reduces property damage. For business premises, fire safety is a mandatory requirement and a demonstration of reliability.",
+      "process": ["Site survey and zone planning", "Selection of the fire alarm panel and detectors", "Cabling and device installation", "Commissioning, testing and emergency response configuration", "Handover and maintenance"],
+      "costFactors": ["Site area and number of zones", "Detector types (smoke, heat, manual call points)", "Need for voice evacuation notification", "Cable routes and integration with other systems", "Required documentation and testing"],
+      "benefits": ["Rapid alerts and emergency response", "Coordinated evacuation notification", "Professional design and installation", "Ongoing maintenance and configuration", "Experience in hotel and office projects"],
+      "faq": [
+        { "question": "Which premises require a fire alarm?", "answer": "Requirements depend on the site's use, area and applicable legislation. Smart Tech provides consultation and proposes an appropriate solution." },
+        { "question": "Can you integrate it with CCTV and access control?", "answer": "Yes, we often combine fire alarms, CCTV, access control and BMS systems in one project." },
+        { "question": "How long does installation take?", "answer": "A few days for small offices and 1–4 weeks for larger sites, depending on the scope." }
+      ]
+    },
+    "ru": {
+      "title": "Пожарная сигнализация в Ереване | Smart Tech",
+      "description": "Проектирование и установка пожарной сигнализации в Ереване — извещатели, панели, сирены, оповещение об эвакуации и обслуживание.",
+      "pageName": "Пожарная сигнализация в Ереване",
+      "eyebrow": "Пожарная безопасность · Ереван",
+      "headline": "Системы пожарной сигнализации в Ереване",
+      "lead": "Проектируем и устанавливаем пожарную сигнализацию, системы оповещения об эвакуации и сценарии безопасности для офисов, гостиниц, торговых и промышленных объектов.",
+      "whatIs": "Система пожарной сигнализации автоматически обнаруживает дым, повышение температуры или сигнал ручного извещателя и запускает сирены, оповещения и аварийные сценарии.",
+      "whyImportant": "Раннее обнаружение спасает жизни и снижает ущерб имуществу. Для коммерческих объектов пожарная безопасность является обязательным требованием и подтверждением надёжности.",
+      "process": ["Обследование объекта и планирование зон", "Выбор пожарной панели и извещателей", "Прокладка кабелей и установка устройств", "Пусконаладка, испытания и настройка аварийных сценариев", "Сдача и обслуживание"],
+      "costFactors": ["Площадь объекта и количество зон", "Типы извещателей (дымовые, тепловые, ручные)", "Необходимость голосового оповещения об эвакуации", "Кабельные трассы и интеграция с другими системами", "Необходимая документация и испытания"],
+      "benefits": ["Быстрое оповещение и реагирование", "Согласованное оповещение об эвакуации", "Профессиональное проектирование и монтаж", "Дальнейшее обслуживание и настройка", "Опыт гостиничных и офисных проектов"],
+      "faq": [
+        { "question": "На каких объектах обязательна пожарная сигнализация?", "answer": "Требования зависят от назначения объекта, площади и законодательства. Smart Tech консультирует и предлагает соответствующее решение." },
+        { "question": "Можно ли интегрировать систему с видеонаблюдением и контролем доступа?", "answer": "Да, мы часто объединяем пожарную сигнализацию, видеонаблюдение, контроль доступа и BMS в одном проекте." },
+        { "question": "Сколько времени занимает установка?", "answer": "В небольших офисах — несколько дней, на крупных объектах — 1–4 недели в зависимости от объёма работ." }
+      ]
+    }
+  },
+  "electrical-installation-yerevan": {
+    "en": {
+      "title": "Electrical Installation Yerevan | Smart Tech Armenia",
+      "description": "Electrical installation in Yerevan — power lines, panels, lighting, grounding and industrial supply by Smart Tech LLC Armenia.",
+      "pageName": "Electrical installation in Yerevan",
+      "eyebrow": "Electrical installation · Yerevan",
+      "headline": "Electrical installation services in Yerevan",
+      "lead": "We install electrical lines, assemble distribution boards and provide lighting and power solutions in accordance with safety standards.",
+      "whatIs": "Electrical installation includes network design, cabling, distribution board assembly, lighting, emergency power and grounding.",
+      "whyImportant": "Correct electrical installation provides safety, reliable operation and a foundation for automation, CCTV and BMS systems.",
+      "process": ["Technical brief and site survey", "Electrical design and load calculations", "Cabling and distribution board installation", "Installation of lighting and electrical outlets", "Testing and handover"],
+      "costFactors": ["Load capacity and number of connection points", "Length of cable routes", "Specification of distribution boards and protective devices", "Integration of emergency and engineering systems", "Construction stage and site access"],
+      "benefits": ["Safe and reliable power supply", "Design and implementation by one team", "Readiness for automation", "Experience in commercial and industrial sites", "Ongoing maintenance"],
+      "faq": [
+        { "question": "Do you perform electrical installation in new buildings?", "answer": "Yes, we work on new construction, renovations and existing premises according to the design and requirements." },
+        { "question": "How is the price calculated?", "answer": "The price depends on the load, cabling, distribution board scope and schedule. A site survey is needed for an accurate calculation." },
+        { "question": "Which districts do you serve?", "answer": "All of Yerevan and Armenia's regions, including Kentron, Arabkir, Ajapnyak, Davtashen, Shengavit and Malatia-Sebastia." }
+      ]
+    },
+    "ru": {
+      "title": "Электромонтаж в Ереване | Smart Tech",
+      "description": "Электромонтажные работы в Ереване — линии питания, щиты, освещение, заземление и промышленное электроснабжение от Smart Tech LLC.",
+      "pageName": "Электромонтаж в Ереване",
+      "eyebrow": "Электромонтаж · Ереван",
+      "headline": "Электромонтажные работы в Ереване",
+      "lead": "Выполняем прокладку электрических линий, сборку щитов, монтаж освещения и электроснабжения в соответствии с нормами безопасности.",
+      "whatIs": "Электромонтаж включает проектирование электрической сети, прокладку кабелей, сборку щитов, освещение, аварийное питание и заземление.",
+      "whyImportant": "Правильный электромонтаж обеспечивает безопасность, стабильную работу и основу для автоматизации, видеонаблюдения и BMS.",
+      "process": ["Техническое задание и обследование объекта", "Электротехнический проект и расчёт нагрузок", "Прокладка кабелей и монтаж щитов", "Монтаж освещения и розеток", "Испытания и сдача"],
+      "costFactors": ["Мощность нагрузки и количество точек подключения", "Протяжённость кабельных трасс", "Характеристики щитов и защитных устройств", "Интеграция аварийных и инженерных систем", "Стадия строительства и доступность объекта"],
+      "benefits": ["Безопасное и стабильное электроснабжение", "Проектирование и реализация одной командой", "Готовность к автоматизации", "Опыт коммерческих и промышленных объектов", "Дальнейшее обслуживание"],
+      "faq": [
+        { "question": "Выполняете ли вы электромонтаж в новостройках?", "answer": "Да, работаем с новыми зданиями, реконструкцией и действующими объектами в соответствии с проектом и требованиями." },
+        { "question": "Как рассчитывается стоимость?", "answer": "Цена зависит от нагрузки, кабельных работ, объёма щитового оборудования и сроков. Для точного расчёта требуется обследование объекта." },
+        { "question": "В каких районах вы работаете?", "answer": "По всему Еревану и регионам Армении, включая Кентрон, Арабкир, Ачапняк, Давташен, Шенгавит и Малатию-Себастию." }
+      ]
+    }
+  },
+  "access-control-yerevan": {
+    "en": {
+      "title": "Access Control Yerevan | Smart Tech Armenia",
+      "description": "Access control systems in Yerevan — card readers, biometrics, electric locks, intercom and mobile door release by Smart Tech LLC.",
+      "pageName": "Access control in Yerevan",
+      "eyebrow": "Access control · Yerevan",
+      "headline": "Access control systems in Yerevan",
+      "lead": "We install access controllers, card and biometric readers, electric locks, intercoms and mobile access management.",
+      "whatIs": "Access control manages who can enter a site and when, using a card, code, biometrics or a phone.",
+      "whyImportant": "It limits misuse, manages employee and visitor access, keeps an event log and improves security.",
+      "process": ["Analysis of entrances and usage scenarios", "Selection of equipment and locks", "Installation and network connection", "Card and user configuration", "Integration with CCTV and intercom systems"],
+      "costFactors": ["Number of entrances and lock types", "Card, biometric or mobile access", "Intercom and apartment monitors", "Integration with CCTV and fire alarm systems", "Site type (office, apartment, hotel)"],
+      "benefits": ["Simple management and event logging", "Door release from a phone", "Hikvision, ZKTeco and other manufacturers", "Integration with CCTV", "Maintenance and expansion"],
+      "faq": [
+        { "question": "Can you install an apartment intercom?", "answer": "Yes, we install IP intercoms, apartment monitors and mobile app door release." },
+        { "question": "How does mobile door release work?", "answer": "The user can see the visitor and open the door through a mobile app from any location." },
+        { "question": "How long does installation take?", "answer": "For one or two entrances, 1–2 days. For larger sites, the schedule depends on the number of entrances and integration requirements." }
+      ]
+    },
+    "ru": {
+      "title": "Контроль доступа в Ереване | Smart Tech",
+      "description": "Системы контроля доступа в Ереване — карты, биометрия, электрозамки, домофония и открытие двери с телефона от Smart Tech LLC.",
+      "pageName": "Контроль доступа в Ереване",
+      "eyebrow": "Контроль доступа · Ереван",
+      "headline": "Системы контроля доступа в Ереване",
+      "lead": "Устанавливаем контроллеры доступа, карточные и биометрические считыватели, электрозамки, домофоны и управление с телефона.",
+      "whatIs": "Контроль доступа определяет, кто и когда может войти на объект, используя карту, код, биометрию или телефон.",
+      "whyImportant": "Система ограничивает злоупотребления, управляет доступом сотрудников и посетителей, ведёт журнал событий и повышает безопасность.",
+      "process": ["Анализ входов и сценариев использования", "Выбор оборудования и замков", "Монтаж и подключение к сети", "Настройка карт и пользователей", "Интеграция с видеонаблюдением и домофонией"],
+      "costFactors": ["Количество входов и типы замков", "Карточный, биометрический или мобильный доступ", "Домофоны и квартирные мониторы", "Интеграция с CCTV и пожарной сигнализацией", "Тип объекта (офис, квартира, гостиница)"],
+      "benefits": ["Простое управление и журнал событий", "Возможность открыть дверь с телефона", "Hikvision, ZKTeco и другие производители", "Интеграция с видеонаблюдением", "Обслуживание и расширение"],
+      "faq": [
+        { "question": "Можно ли установить квартирный домофон?", "answer": "Да, устанавливаем IP-домофоны, квартирные мониторы и открытие двери через мобильное приложение." },
+        { "question": "Как работает открытие двери с телефона?", "answer": "Пользователь может увидеть посетителя и открыть дверь через мобильное приложение, находясь в любом месте." },
+        { "question": "Сколько времени занимает монтаж?", "answer": "Для одного-двух входов — 1–2 дня. На крупных объектах сроки зависят от количества входов и требований к интеграции." }
+      ]
+    }
+  },
+  "security-systems-yerevan": {
+    "en": {
+      "title": "Security Systems Yerevan | Smart Tech Armenia",
+      "description": "Integrated security systems in Yerevan — CCTV, alarm, access control, networking and maintenance by Smart Tech LLC Armenia.",
+      "pageName": "Security systems",
+      "eyebrow": "Security · Yerevan · Armenia",
+      "headline": "Security systems in Yerevan",
+      "lead": "Smart Tech LLC combines CCTV, intruder alarms, fire alarms, access control and network solutions in one reliable project.",
+      "whatIs": "Security systems include CCTV, intruder alarms, fire alarms, access control and network infrastructure to protect a site.",
+      "whyImportant": "An integrated approach provides a rapid response, centralized control and a lower total cost of ownership (TCO).",
+      "process": ["Risk assessment and technical proposal", "System design and equipment selection", "Installation and network integration", "Commissioning and user training", "24/7 maintenance and monitoring under contract"],
+      "costFactors": ["Types and scope of systems", "Site area and number of entrances", "Need for remote monitoring", "Level of integration", "Maintenance agreement"],
+      "benefits": ["One connected security network", "Experience with hotels, banks and warehouses", "Hikvision, Ajax, Bosch and other brands", "100+ projects since 2012", "Licensed engineering team"],
+      "faq": [
+        { "question": "What types of sites do you serve?", "answer": "Hotels, offices, banks, warehouses, residential complexes, shops and production facilities." },
+        { "question": "Can you combine devices from different manufacturers?", "answer": "Yes, we design compatible solutions for centralized management and reliable operation." },
+        { "question": "Do you provide maintenance?", "answer": "Yes, we offer maintenance, configuration and rapid response for installed systems." }
+      ]
+    },
+    "ru": {
+      "title": "Системы безопасности в Ереване | Smart Tech",
+      "description": "Комплексные системы безопасности в Ереване — видеонаблюдение, сигнализация, контроль доступа, сети и обслуживание от Smart Tech LLC.",
+      "pageName": "Системы безопасности",
+      "eyebrow": "Безопасность · Ереван · Армения",
+      "headline": "Системы безопасности в Ереване",
+      "lead": "Smart Tech LLC объединяет видеонаблюдение, охранную и пожарную сигнализацию, контроль доступа и сетевые решения в одном надёжном проекте.",
+      "whatIs": "Системы безопасности включают видеонаблюдение, охранную и пожарную сигнализацию, контроль доступа и сетевую инфраструктуру для защиты объекта.",
+      "whyImportant": "Комплексный подход обеспечивает быстрое реагирование, централизованный контроль и снижение совокупной стоимости владения (TCO).",
+      "process": ["Оценка рисков и техническое предложение", "Проектирование систем и выбор оборудования", "Монтаж и сетевая интеграция", "Пусконаладка и обучение пользователей", "Обслуживание и мониторинг 24/7 по договору"],
+      "costFactors": ["Типы и объём систем", "Площадь объекта и количество входов", "Необходимость удалённого мониторинга", "Уровень интеграции", "Договор обслуживания"],
+      "benefits": ["Единая связанная сеть безопасности", "Опыт работы с гостиницами, банками и складами", "Hikvision, Ajax, Bosch и другие бренды", "Более 100 проектов с 2012 года", "Лицензированная инженерная команда"],
+      "faq": [
+        { "question": "Для каких объектов вы предлагаете решения?", "answer": "Для гостиниц, офисов, банков, складов, жилых комплексов, магазинов и производственных помещений." },
+        { "question": "Можно ли объединить устройства разных производителей?", "answer": "Да, мы проектируем совместимые решения для централизованного управления и надёжной работы." },
+        { "question": "Предоставляете ли вы обслуживание?", "answer": "Да, предлагаем обслуживание установленных систем, настройку и оперативное реагирование." }
+      ]
+    }
+  }
+}

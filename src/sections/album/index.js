@@ -4,8 +4,10 @@
     return site.i18n.pickLanguageDictionary({
       hy: {
         eyebrow: "Աշխատանքների ալբոմ",
-        title: "Կատարված աշխատանքների նկարների ալբոմ",
-        text: "Նկարները բաժանված են 2 մասի՝ ընթացիկ և ավարտված աշխատանքներ, որպեսզի այցելուն արագ տեսնի իրական օբյեկտների արդյունքը։",
+        title: "Նախագծերի լուսանկարներ",
+        text: "Մեր նախագծերի լուսանկարները՝ ըստ աշխատանքների ընթացքի։",
+        projectsTitle: "Այլ լուսանկարներ",
+        projectsText: "Նախագծերի լուսանկարներ, որոնց աշխատանքների կարգավիճակը դեռ նշված չէ։",
         currentTitle: "Ընթացիկ աշխատանքներ",
         currentText: "Այստեղ հավաքված են այն օբյեկտների նկարները, որոնց աշխատանքները ներկայումս ընթացքի մեջ են։",
         completedTitle: "Կատարված աշխատանքներ",
@@ -22,8 +24,10 @@
       },
       en: {
         eyebrow: "Work Album",
-        title: "Photo album of completed works",
-        text: "The gallery is split into two clear parts: active projects and completed works, so visitors can quickly review real site results.",
+        title: "Project photo album",
+        text: "Photos from our projects, grouped by work status.",
+        projectsTitle: "Other photos",
+        projectsText: "Project photos whose work status has not yet been specified.",
         currentTitle: "Active works",
         currentText: "Photos from objects where Smart Tech work is currently in progress.",
         completedTitle: "Completed works",
@@ -40,8 +44,10 @@
       },
       ru: {
         eyebrow: "Альбом работ",
-        title: "Фотоальбом выполненных работ",
-        text: "Галерея разделена на две части: текущие проекты и завершённые работы, чтобы посетитель быстро видел реальные объекты.",
+        title: "Фотоальбом проектов",
+        text: "Фотографии наших проектов по статусу работ.",
+        projectsTitle: "Другие фотографии",
+        projectsText: "Фотографии проектов, для которых статус работ пока не указан.",
         currentTitle: "Текущие работы",
         currentText: "Фотографии объектов, где работы Smart Tech сейчас находятся в процессе.",
         completedTitle: "Выполненные работы",
@@ -64,8 +70,17 @@
   }
 
   function projectStatus(project) {
+    if (project.status === "current") {
+      var stage = site.projectStages.label(project, site.i18n.language);
+      if (stage) return stage;
+    }
     var labels = project.statusLabels || {};
-    return labels[site.i18n.language] || labels.en || labels.hy || "";
+    var defaults = {
+      hy: { current: "Ընթացիկ", partial: "Մասամբ ավարտված", completed: "Ավարտված" },
+      en: { current: "In progress", partial: "Partially completed", completed: "Completed" },
+      ru: { current: "В работе", partial: "Частично завершено", completed: "Завершено" }
+    };
+    return labels[site.i18n.language] || site.i18n.pickLanguageDictionary(defaults)[project.status] || "";
   }
 
   function collectProjectPhotos(projects, status) {
@@ -100,19 +115,24 @@
   }
 
   function collectAdminAlbumPhotos(section) {
+    var projects = site.content.projects || [];
     return (site.content.adminAlbumPhotos || [])
-      .filter(function (item) {
-        return item && item.section === section && item.image;
-      })
+      .filter(function (item) { return item && item.image; })
       .map(function (item, index) {
+        var project = projects.find(function (project) {
+          return project.id === item.projectId || (project.images || []).indexOf(item.image) >= 0;
+        });
+        var status = project ? project.status : item.section;
         return {
           image: item.image,
-          title: item.title || "Smart Tech",
-          caption: item.caption || item.title || "Smart Tech",
-          status: item.status || (section === "current" ? "Active work" : "Completed work"),
+          section: status === "partial" ? "current" : status,
+          title: project ? projectTitle(project) : item.title || "Smart Tech",
+          caption: project ? (site.i18n.project(project).works || []).join(" · ") : item.caption || item.title || "Smart Tech",
+          status: projectStatus(project || { status: status }),
           index: index
         };
-      });
+      })
+      .filter(function (item) { return item.section === section; });
   }
 
   function photoCard(item, index) {
@@ -132,7 +152,6 @@
           (locationLabel && locationLabel !== workLabel
             ? '<span class="album-photo-location">' + e(locationLabel) + '</span>'
             : "") +
-          '<em>' + e(copy().photo) + ' ' + e(String((item.index || 0) + 1).padStart(2, "0")) + '</em>' +
         '</span>' +
       '</a>';
   }
@@ -149,7 +168,6 @@
       '<section id="' + e(id) + '" class="album-part">' +
         '<div class="album-part-head reveal">' +
           '<div>' +
-            '<span class="eyebrow">' + e(title) + '</span>' +
             '<h2>' + e(title) + '</h2>' +
             '<p>' + e(text) + '</p>' +
           '</div>' +
@@ -172,9 +190,16 @@
     var e = site.utils.escapeHtml;
     var text = copy();
     var projects = site.content.projects || [];
-    var currentPhotos = collectAdminAlbumPhotos("current").concat(collectProjectPhotos(projects, "current"));
-    var completedPhotos = collectAdminAlbumPhotos("completed").concat(collectProjectPhotos(projects, "partial"), collectProjectPhotos(projects, "completed"), collectCompletedGalleryPhotos(text));
-    var heroPhoto = (currentPhotos[0] || completedPhotos[0] || {}).image || (site.content.company.heroImages || [])[0];
+    var seen = new Set();
+    function uniquePhoto(item) {
+      if (seen.has(item.image)) return false;
+      seen.add(item.image);
+      return true;
+    }
+    var currentPhotos = collectProjectPhotos(projects, "current").concat(collectProjectPhotos(projects, "partial"), collectAdminAlbumPhotos("current")).filter(uniquePhoto);
+    var completedPhotos = collectProjectPhotos(projects, "completed").concat(collectAdminAlbumPhotos("completed"), collectCompletedGalleryPhotos(text)).filter(uniquePhoto);
+    var otherPhotos = collectAdminAlbumPhotos("projects").filter(uniquePhoto);
+    var heroPhoto = (currentPhotos[0] || completedPhotos[0] || otherPhotos[0] || {}).image || (site.content.company.heroImages || [])[0];
 
     return '' +
       site.sections.pageHero({
@@ -192,15 +217,17 @@
             '<div class="album-switches" aria-label="' + e(text.eyebrow) + '">' +
               '<a href="#album-current">' + e(text.currentButton) + '</a>' +
               '<a href="#album-completed">' + e(text.completedButton) + '</a>' +
+              (otherPhotos.length ? '<a href="#album-projects">' + e(text.projectsTitle) + '</a>' : '') +
             '</div>' +
             '<div class="album-stats">' +
               stat(text.currentStat, currentPhotos.length) +
               stat(text.completedStat, completedPhotos.length) +
-              stat(text.totalStat, currentPhotos.length + completedPhotos.length) +
+              stat(text.totalStat, currentPhotos.length + completedPhotos.length + otherPhotos.length) +
             '</div>' +
           '</div>' +
           albumPart("album-current", text.currentTitle, text.currentText, currentPhotos) +
           albumPart("album-completed", text.completedTitle, text.completedText, completedPhotos) +
+          (otherPhotos.length ? albumPart("album-projects", text.projectsTitle, text.projectsText, otherPhotos) : '') +
         '</div>' +
       '</section>';
   };

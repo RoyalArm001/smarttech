@@ -660,7 +660,7 @@
     }
   });
 
-  site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
+  site.content.locales.en.team = mergeLocale(site.content.locales.en.team, {
     director: { title: "Director", text: "Leads Smart Tech's project direction, team coordination and overall quality control." },
     "it-network-engineer": { title: "IT Network Engineer", text: "Designs and configures network infrastructure, server connectivity and secure remote access." },
     "it-project-manager": { title: "IT Project Manager", text: "Coordinates project phases, deadlines, team work and communication with the client." },
@@ -674,7 +674,7 @@
     "electrical-cabling-lighting-specialist": { title: "Cabling and Lighting Specialist", text: "Installs electrical lines, cable routes, lighting fixtures and socket groups on site." }
   });
 
-  site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
+  site.content.locales.ru.team = mergeLocale(site.content.locales.ru.team, {
     director: { title: "Директор", text: "Руководит проектным направлением Smart Tech, координацией команд и общим контролем качества." },
     "it-network-engineer": { title: "IT Network Engineer", text: "Проектирует и настраивает сетевую инфраструктуру, серверные подключения и безопасный удаленный доступ." },
     "it-project-manager": { title: "IT Project Manager", text: "Координирует этапы проекта, сроки, работу команд и коммуникацию с заказчиком." },
@@ -1289,7 +1289,7 @@
     ]
   });
 
-  site.content.locales.en.team = Object.assign({}, site.content.locales.en.team, {
+  site.content.locales.en.team = mergeLocale(site.content.locales.en.team, {
     director: { level: "Executive", experience: "15+ years", workInfo: ["Strategic development and management of core business directions", "Quality, deadlines and client communication oversight across projects", "Coordination of technical teams, procurement and field operations", "Long-term relationships with major clients and serviced organizations"] },
     "it-network-engineer": { level: "Network Engineering", experience: "8+ years", workInfo: ["LAN/Wi-Fi network design and equipment selection", "Router, switch, firewall and VPN configuration", "Network integration for IP video surveillance and access control", "Monitoring, troubleshooting and documentation"] },
     "it-project-manager": { level: "Project Delivery", experience: "7+ years", workInfo: ["Project scope, timeline and resource planning", "Coordination of engineering teams, procurement and client communication", "Control of technical documents and change requests", "Quality gates before handover"] },
@@ -1303,7 +1303,7 @@
     "electrical-cabling-lighting-specialist": { level: "Cabling & Lighting", experience: "5+ years", workInfo: ["Installation of cable routes, wiring and trunking", "Mounting of lighting, socket groups and switches", "Connection and labeling of distribution nodes", "Measurements, continuity checks and safety verification"] }
   });
 
-  site.content.locales.ru.team = Object.assign({}, site.content.locales.ru.team, {
+  site.content.locales.ru.team = mergeLocale(site.content.locales.ru.team, {
     director: { level: "Руководство", experience: "15+ лет", workInfo: ["Стратегическое развитие и управление основными направлениями компании", "Контроль качества, сроков и работы с клиентами по проектам", "Координация технических команд, закупок и полевых работ", "Долгосрочные отношения с крупными заказчиками и обслуживаемыми организациями"] },
     "it-network-engineer": { level: "Сетевое проектирование", experience: "8+ лет", workInfo: ["Проектирование LAN/Wi-Fi сетей и подбор оборудования", "Настройка router, switch, firewall и VPN", "Сетевая интеграция IP-видеонаблюдения и контроля доступа", "Мониторинг, troubleshooting и документация"] },
     "it-project-manager": { level: "Управление проектами", experience: "7+ лет", workInfo: ["Планирование scope, сроков и ресурсов проекта", "Координация инженерных команд, закупок и связи с заказчиком", "Контроль технической документации и изменений", "Контрольные точки качества перед сдачей"] },
@@ -1455,6 +1455,147 @@
       projectStoryResult: "Результат",
       ctaTitle: "Нужна такая же понятная схема для вашего объекта?",
       ctaText: "Закажите замер, и мы подготовим поэтапное техническое предложение с точным составом систем."
+    }
+  });
+
+  site.content.locales.en.team = mergeLocale(site.content.locales.en.team, {
+    director: { cardTitle: "Director", cardMeta: "Management" },
+    "alarm-system-engineer": { title: "Security Department Manager" },
+    "automation-specialist": { title: "Automation Department Manager" },
+    "bms-design-specialist": { title: "BMS Department Manager" },
+    "audio-systems-specialist": { title: "Audio Department Manager" },
+    "electrical-installation-engineer": { title: "Electrical Installation Department Manager" },
+    "electrical-automation-panel-specialist": { cardTitle: "Automation panel assembly", cardMeta: "Electrical installation" },
+    "electrical-cabling-lighting-specialist": { cardTitle: "Lighting and cable routes", cardMeta: "Electrical installation" },
+    "pm-electrical": {
+      title: "Electrical Project Manager", cardTitle: "Electrical systems", cardMeta: "Project management", level: "Project Management", experience: "7+ years",
+      text: "Coordinates the design, installation and handover of electrical systems.",
+      workInfo: ["Project scope, schedule and resource planning", "Coordination of installation teams", "Review of technical documents, estimates and changes", "Quality checks and inspections before handover"]
+    },
+    "pm-cctv": {
+      title: "CCTV Project Manager", cardTitle: "Video surveillance systems", cardMeta: "Project management", level: "Project Management", experience: "6+ years",
+      text: "Coordinates video surveillance and access control projects.",
+      workInfo: ["Planning of video surveillance and access control projects", "Coordination of coverage, recording and equipment selection", "Supervision of installation and configuration teams", "Testing, acceptance and handover"]
+    },
+    "pm-fire-alarm": {
+      title: "Fire Alarm Project Manager", cardTitle: "Fire alarm systems", cardMeta: "Project management", level: "Project Management", experience: "6+ years",
+      text: "Coordinates fire alarm and evacuation system projects.",
+      workInfo: ["Planning of fire alarm and evacuation projects", "Review of regulatory compliance and safety requirements", "Coordination of installation and configuration teams", "Testing, inspection records and handover"]
+    },
+    "pm-bms": {
+      title: "BMS Project Manager", cardTitle: "BMS systems", cardMeta: "Project management", level: "Project Management", experience: "6+ years",
+      text: "Coordinates building automation and BMS integration projects.",
+      workInfo: ["BMS project scope, schedule and resource planning", "Coordination of HVAC, lighting and security integration", "Supervision of engineering and integration teams", "Quality checks and inspections before handover"]
+    },
+    "it-installation-engineer": {
+      title: "IT Installation Engineer", text: "Installs network, video surveillance and server systems on site according to the project documentation.", experience: "5+ years",
+      workInfo: ["Structured cabling and network installation", "Connection of network equipment and IP cameras", "Rack installation and cable labeling", "Testing and handover support"]
+    },
+    "it-support-engineer": {
+      title: "IT Support Engineer", text: "Monitors networks, troubleshoots faults and maintains reliable site operation.", experience: "4+ years",
+      workInfo: ["Network and equipment monitoring", "Fault diagnosis and resolution", "Remote technical support", "Documentation of service work"]
+    },
+    "fire-alarm-specialist": {
+      title: "Fire Alarm Specialist", text: "Installs and configures fire alarm sensors, panels and signaling circuits.", experience: "5+ years",
+      workInfo: ["Installation of sensors and alarm circuits", "Configuration of fire alarm panels", "Testing of zones and notifications", "Handover and maintenance support"]
+    },
+    "electrical-works-specialist": {
+      title: "Technical Systems Project Manager", text: "Coordinates technical system project stages, deadlines, risks and specialist teams.", level: "Project Management", experience: "7+ years",
+      workInfo: ["Project scope, schedule and resource planning", "Coordination of technical teams", "Review of technical documents and changes", "Quality checks before handover"]
+    },
+    "technical-electrical-specialist": {
+      title: "Electrical Installation Specialist", text: "Installs electrical lines, panels, lighting and cable routes on site.", experience: "5+ years",
+      workInfo: ["Cable installation work", "Assembly and labeling of distribution panels", "Installation of lighting and socket circuits", "Measurements and safety checks"]
+    },
+    "technical-low-voltage-specialist": {
+      title: "Low-Voltage Systems Specialist", text: "Installs and configures surveillance, networking, access control and integrated low-voltage solutions.", experience: "5+ years",
+      workInfo: ["Structured cabling and network installation", "Connection of IP cameras, NVR and access control", "Installation of PoE equipment, patch panels and racks", "Testing, labeling and handover support"]
+    },
+    "technical-commissioning-specialist": {
+      title: "Commissioning and Handover Specialist", text: "Programs, tests and commissions systems and handles technical handover.", experience: "5+ years",
+      workInfo: ["System checks and test scenarios", "Controller configuration and integration testing", "User, notification and remote access configuration", "Handover documents and operating instructions"]
+    },
+    "automation-installation-specialist": {
+      title: "Automation Installation Specialist", text: "Installs controllers, sensors and control panels according to project schematics.", experience: "4+ years",
+      workInfo: ["Assembly of automation cabinets", "Installation of sensors and actuators", "Initial scenario configuration", "Testing and schematic documentation"]
+    },
+    "bms-integration-engineer": {
+      title: "BMS Integration Engineer", text: "Integrates HVAC, lighting, security and control systems into a unified BMS.", experience: "5+ years",
+      workInfo: ["Configuration of BMS controllers and interfaces", "HVAC and lighting integration", "Monitoring dashboard design", "Preparation of handover documents"]
+    },
+    "audio-installation-specialist": {
+      title: "Audio Installation Specialist", text: "Installs speakers, amplifiers and zone controllers for public address systems.", experience: "4+ years",
+      workInfo: ["Speaker and cable route installation", "Amplifier and mixer installation", "Zone and voice notification configuration", "Sound balancing and testing"]
+    }
+  });
+  site.content.locales.ru.team = mergeLocale(site.content.locales.ru.team, {
+    director: { cardTitle: "Директор", cardMeta: "Руководство" },
+    "alarm-system-engineer": { title: "Руководитель отдела безопасности" },
+    "automation-specialist": { title: "Руководитель отдела автоматизации" },
+    "bms-design-specialist": { title: "Руководитель отдела BMS" },
+    "audio-systems-specialist": { title: "Руководитель отдела аудиосистем" },
+    "electrical-installation-engineer": { title: "Руководитель отдела электромонтажа" },
+    "electrical-automation-panel-specialist": { cardTitle: "Сборка систем автоматики", cardMeta: "Электромонтаж" },
+    "electrical-cabling-lighting-specialist": { cardTitle: "Освещение и кабельные трассы", cardMeta: "Электромонтаж" },
+    "pm-electrical": {
+      title: "Руководитель электротехнических проектов", cardTitle: "Электрические системы", cardMeta: "Управление проектами", level: "Управление проектами", experience: "7+ лет",
+      text: "Координирует проектирование, монтаж и сдачу электрических систем.",
+      workInfo: ["Планирование объема работ, сроков и ресурсов", "Координация монтажных бригад", "Контроль технических документов, смет и изменений", "Проверки качества перед сдачей"]
+    },
+    "pm-cctv": {
+      title: "Руководитель проектов видеонаблюдения", cardTitle: "Системы видеонаблюдения", cardMeta: "Управление проектами", level: "Управление проектами", experience: "6+ лет",
+      text: "Координирует проекты видеонаблюдения и контроля доступа.",
+      workInfo: ["Планирование проектов видеонаблюдения и контроля доступа", "Координация зон обзора, архива и подбора оборудования", "Контроль монтажных и наладочных бригад", "Испытания, приемка и сдача объекта"]
+    },
+    "pm-fire-alarm": {
+      title: "Руководитель проектов пожарной сигнализации", cardTitle: "Пожарная сигнализация", cardMeta: "Управление проектами", level: "Управление проектами", experience: "6+ лет",
+      text: "Координирует проекты пожарной сигнализации и систем эвакуации.",
+      workInfo: ["Планирование проектов сигнализации и эвакуации", "Контроль нормативного соответствия и требований безопасности", "Координация монтажных и наладочных бригад", "Испытания, протоколы проверок и сдача"]
+    },
+    "pm-bms": {
+      title: "Руководитель проектов BMS", cardTitle: "Системы BMS", cardMeta: "Управление проектами", level: "Управление проектами", experience: "6+ лет",
+      text: "Координирует проекты автоматизации зданий и интеграции BMS.",
+      workInfo: ["Планирование объема работ, сроков и ресурсов BMS", "Координация интеграции HVAC, освещения и безопасности", "Контроль инженерных команд и интеграторов", "Проверки качества перед сдачей"]
+    },
+    "it-installation-engineer": {
+      title: "Инженер по монтажу IT-систем", text: "Монтирует сети, видеонаблюдение и серверные системы по проектной документации.", level: "Монтаж IT-систем", experience: "5+ лет",
+      workInfo: ["Структурированная кабельная система и монтаж сети", "Подключение сетевого оборудования и IP-камер", "Монтаж стоек и маркировка кабелей", "Испытания и поддержка при сдаче"]
+    },
+    "it-support-engineer": {
+      title: "Инженер IT-поддержки", text: "Обеспечивает мониторинг сетей, устранение неисправностей и стабильную работу объектов.", level: "IT-поддержка", experience: "4+ лет",
+      workInfo: ["Мониторинг сетей и оборудования", "Диагностика и устранение неисправностей", "Удаленная техническая поддержка", "Документирование сервисных работ"]
+    },
+    "fire-alarm-specialist": {
+      title: "Специалист по пожарной сигнализации", text: "Устанавливает и настраивает пожарные датчики, панели и сигнальные линии.", level: "Пожарная безопасность", experience: "5+ лет",
+      workInfo: ["Монтаж датчиков и сигнальных линий", "Настройка пожарных панелей", "Проверка зон и оповещения", "Поддержка при сдаче и обслуживании"]
+    },
+    "electrical-works-specialist": {
+      title: "Руководитель проектов технических систем", text: "Координирует этапы, сроки, риски и работу специалистов по проектам технических систем.", level: "Управление проектами", experience: "7+ лет",
+      workInfo: ["Планирование объема работ, сроков и ресурсов", "Координация технических команд", "Контроль технических документов и изменений", "Проверки качества перед сдачей"]
+    },
+    "technical-electrical-specialist": {
+      title: "Специалист по электромонтажу", text: "Монтирует электрические линии, щиты, освещение и кабельные трассы на объекте.", level: "Электромонтаж", experience: "5+ лет",
+      workInfo: ["Монтаж кабельных линий", "Сборка и маркировка распределительных щитов", "Монтаж освещения и розеточных групп", "Замеры и проверки безопасности"]
+    },
+    "technical-low-voltage-specialist": {
+      title: "Специалист по слаботочным системам", text: "Монтирует и настраивает видеонаблюдение, сети, контроль доступа и интегрированные слаботочные системы.", level: "Слаботочные системы", experience: "5+ лет",
+      workInfo: ["Структурированная кабельная система и монтаж сети", "Подключение IP-камер, NVR и контроля доступа", "Монтаж PoE, патч-панелей и стоек", "Испытания, маркировка и поддержка при сдаче"]
+    },
+    "technical-commissioning-specialist": {
+      title: "Специалист по пусконаладке и сдаче", text: "Программирует, испытывает и запускает системы, выполняет техническую сдачу объекта.", level: "Пусконаладка", experience: "5+ лет",
+      workInfo: ["Проверка систем и сценариев испытаний", "Настройка контроллеров и комплексные испытания", "Настройка пользователей, уведомлений и удаленного доступа", "Документы сдачи и инструкции по эксплуатации"]
+    },
+    "automation-installation-specialist": {
+      title: "Специалист по монтажу автоматики", text: "Монтирует контроллеры, датчики и щиты управления по проектным схемам.", level: "Монтаж автоматики", experience: "4+ лет",
+      workInfo: ["Сборка шкафов автоматики", "Монтаж датчиков и исполнительных устройств", "Начальная настройка сценариев", "Испытания и документирование схем"]
+    },
+    "bms-integration-engineer": {
+      title: "Инженер по интеграции BMS", text: "Объединяет HVAC, освещение, безопасность и управление в единую систему BMS.", level: "Интеграция BMS", experience: "5+ лет",
+      workInfo: ["Настройка контроллеров и интерфейсов BMS", "Интеграция HVAC и освещения", "Создание панелей мониторинга", "Подготовка документов сдачи"]
+    },
+    "audio-installation-specialist": {
+      title: "Специалист по монтажу аудиосистем", text: "Монтирует громкоговорители, усилители и зональные контроллеры систем оповещения.", level: "Монтаж аудиосистем", experience: "4+ лет",
+      workInfo: ["Монтаж громкоговорителей и кабельных трасс", "Установка усилителей и микшеров", "Настройка зон и голосового оповещения", "Балансировка звука и испытания"]
     }
   });
 

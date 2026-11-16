@@ -156,7 +156,11 @@
       return '<li>' + e(item) + '</li>';
     }).join("");
 
-    var licenseDocuments = company.licenseDocuments || [];
+    var translatedLicenses = site.i18n.get("home.featuredLicenses", []);
+    var licenseDocuments = (company.licenseDocuments || []).map(function (item) {
+      var translated = translatedLicenses.find(function (license) { return license.image === item.image; });
+      return translated ? Object.assign({}, item, { title: translated.title, alt: translated.alt }) : item;
+    });
     var licenseCards = licenseDocuments.map(function (item) {
       return '' +
         '<a class="about-license-card" href="' + e(item.image) + '" data-license-viewer data-license-title="' + e(item.title) + '">' +

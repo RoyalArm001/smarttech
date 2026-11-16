@@ -86,10 +86,10 @@
     return cmsApiBaseUrl() ? "omit" : "same-origin";
   }
 
-  function isAdminAlbumImagePath(value) {
+  function isAlbumImagePath(value) {
     try {
       var url = new URL(String(value || ""), window.location.origin);
-      return /^\/img\/admin-album\/[A-Za-z0-9._-]+\.webp$/i.test(url.pathname);
+      return /^https?:$/.test(url.protocol) && /\.(?:png|jpe?g|webp|gif|avif|svg)$/i.test(url.pathname);
     } catch (error) {
       return false;
     }
@@ -683,12 +683,13 @@
   function normalizeAdminAlbumPhoto(item) {
     item = item || {};
     var image = String(item.image || "");
-    if (!isAdminAlbumImagePath(image)) {
+    if (!isAlbumImagePath(image)) {
       return null;
     }
     return {
       id: String(item.id || ""),
-      section: item.section === "current" ? "current" : "completed",
+      projectId: String(item.projectId || ""),
+      section: ["current", "partial", "completed"].indexOf(item.section) >= 0 ? item.section : "projects",
       image: cmsAssetUrl(image),
       title: String(item.title || "Smart Tech").slice(0, 90),
       caption: String(item.caption || item.title || "Smart Tech").slice(0, 150),

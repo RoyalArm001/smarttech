@@ -1,6 +1,91 @@
 (function () {
   "use strict";
 
+  var uiLanguage = window.SmartTech.i18n.language;
+  var translations = {
+    "Մուտք գործեք ձեր անձնական էջ։": ["Sign in to your profile.", "Войдите в свой профиль."],
+    "Էլ. հասցե": ["Email", "Эл. почта"],
+    "Էլ․ հասցե": ["Email", "Эл. почта"],
+    "Գաղտնաբառ": ["Password", "Пароль"],
+    "Մուտք": ["Sign in", "Войти"],
+    "Հիշել էլ. հասցեն": ["Remember email", "Запомнить почту"],
+    "Հիշել էլ․ հասցեն": ["Remember email", "Запомнить почту"],
+    "Էլ․ հասցեն հիշվում է": ["Email remembered", "Почта сохранена"],
+    "Փոխել անձնական նկարը": ["Change profile photo", "Изменить фото профиля"],
+    "Անձնական նկար": ["Profile photo", "Фото профиля"],
+    "Փոխել": ["Change", "Изменить"],
+    "Իմ անձնական էջը": ["My profile", "Мой профиль"],
+    "Աշխատակից": ["Team member", "Сотрудник"],
+    "Դիտել հրապարակային էջը": ["View public profile", "Открыть публичный профиль"],
+    "Անձնական տվյալներ": ["Personal details", "Личные данные"],
+    "Ներկայացրեք ձեզ և ձեր մասնագիտական փորձը։": ["Introduce yourself and your professional experience.", "Расскажите о себе и своем профессиональном опыте."],
+    "Անուն / ցուցադրվող անուն": ["Name / display name", "Имя / отображаемое имя"],
+    "Պրոֆիլի հասցե / username": ["Profile address / username", "Адрес профиля / имя пользователя"],
+    "Հաստիք": ["Position", "Должность"],
+    "Հաստիքը նշանակվում է ադմինիստրատորի կողմից։": ["Your position is assigned by the organization.", "Должность назначается организацией."],
+    "Հաստիքը նշված չէ": ["Position not specified", "Должность не указана"],
+    "Իմ մասին": ["About me", "Обо мне"],
+    "Փորձը, մասնագիտացումը և հետաքրքրությունները…": ["Experience, specialization and interests…", "Опыт, специализация и интересы…"],
+    "Կապ": ["Contact", "Контакты"],
+    "Ձեր կոնտակտային տվյալները։": ["Your contact details.", "Ваши контактные данные."],
+    "Հեռախոս": ["Phone", "Телефон"],
+    "Կայք": ["Website", "Сайт"],
+    "Այս հղումները կերևան ձեր հրապարակային պրոֆիլում։": ["These links appear on your public profile.", "Эти ссылки отображаются в вашем публичном профиле."],
+    "Անվտանգություն": ["Security", "Безопасность"],
+    "Նոր գաղտնաբառ": ["New password", "Новый пароль"],
+    "Դատարկ թողնել՝ ընթացիկը պահելու համար": ["Leave blank to keep your current password", "Оставьте пустым, чтобы сохранить текущий пароль"],
+    "Մասնագիտական պրոֆիլ": ["Professional profile", "Профессиональный профиль"],
+    "Փորձը, կրթությունը և հմտությունները ցուցադրվում են ձեր հրապարակային էջում։ Յուրաքանչյուր լեզուն խմբագրվում է առանձին։": ["Experience, education and skills appear on your public profile. Edit each language separately.", "Опыт, образование и навыки отображаются в публичном профиле. Каждый язык редактируется отдельно."],
+    "Պահպանել": ["Save", "Сохранить"],
+    "Ելք": ["Sign out", "Выйти"],
+    "Աշխատանքային փորձ": ["Work experience", "Опыт работы"],
+    "Կրթություն": ["Education", "Образование"],
+    "Հմտություններ": ["Skills", "Навыки"],
+    "Վկայականներ": ["Certifications", "Сертификаты"],
+    "Լեզուներ": ["Languages", "Языки"],
+    "Իմ ստեղծած կայքերը": ["My websites", "Мои сайты"],
+    "Բաժնի վերնագիր": ["Section heading", "Заголовок раздела"],
+    "Անվանում": ["Title", "Название"],
+    "Կազմակերպություն / ժամանակահատված": ["Organization / period", "Организация / период"],
+    "Նկարագրություն": ["Description", "Описание"],
+    "Հղում (ոչ պարտադիր)": ["Link (optional)", "Ссылка (необязательно)"],
+    "Հեռացնել գրառումը": ["Remove entry", "Удалить запись"],
+    "+ Ավելացնել գրառում": ["+ Add entry", "+ Добавить запись"],
+    "Հարցումը չհաջողվեց": ["Request failed", "Не удалось выполнить запрос"],
+    "Նկարը չհաջողվեց կարդալ": ["Could not read the image", "Не удалось прочитать изображение"],
+    "Նախ լրացրեք էլ․ հասցեն": ["Enter your email first", "Сначала введите почту"],
+    "Էլ․ հասցեն և գաղտնաբառը պարտադիր են": ["Email and password are required", "Введите почту и пароль"],
+    "Մուտք գործելը հնարավոր չէ": ["Could not sign in", "Не удалось войти"],
+    "Նկարը պետք է լինի մինչև 7MB": ["Image must be smaller than 7MB", "Размер изображения должен быть меньше 7 МБ"],
+    "Նկարը բեռնվում է...": ["Uploading image…", "Загрузка изображения…"],
+    "Նկարը բեռնված է։ Սեղմեք «Պահպանել»։": ["Image uploaded. Select Save.", "Изображение загружено. Нажмите «Сохранить»."],
+    "Պահպանվում է...": ["Saving…", "Сохранение…"],
+    "Փոփոխությունները պահպանված են։": ["Changes saved.", "Изменения сохранены."]
+  };
+
+  function t(text, language) {
+    var selectedLanguage = language || uiLanguage;
+    var translated = translations[text];
+    if (!translated || selectedLanguage === "hy") return text;
+    return translated[selectedLanguage === "ru" ? 1 : 0];
+  }
+
+  // Translate the static form before profile data is loaded.
+  var profileContainer = document.querySelector(".profile-container");
+  if (profileContainer) {
+    var walker = document.createTreeWalker(profileContainer, NodeFilter.SHOW_TEXT);
+    var current;
+    while ((current = walker.nextNode())) {
+      var source = current.nodeValue.trim();
+      if (translations[source]) current.nodeValue = current.nodeValue.replace(source, t(source));
+    }
+    profileContainer.querySelectorAll("[placeholder], [aria-label], img[alt]").forEach(function (element) {
+      ["placeholder", "aria-label", "alt"].forEach(function (attribute) {
+        if (element.hasAttribute(attribute)) element.setAttribute(attribute, t(element.getAttribute(attribute)));
+      });
+    });
+  }
+
   var loginView = document.getElementById("profile-login-view");
   var loginForm = document.getElementById("profile-login-form");
   var loginError = document.getElementById("login-error");
@@ -13,7 +98,7 @@
   var pictureFile = document.getElementById("edit-picture-file");
   var savedEmailKey = "smarttech.saved-email.v1";
   var resumeDraft = {};
-  var resumeLanguage = "hy";
+  var resumeLanguage = uiLanguage;
   var resumeSections = { experience: "Աշխատանքային փորձ", education: "Կրթություն", skills: "Հմտություններ", certifications: "Վկայականներ", languages: "Լեզուներ", portfolio: "Իմ ստեղծած կայքերը", about: "Իմ մասին" };
 
   function node(tag, className, text) {
@@ -45,22 +130,22 @@
     Object.keys(resumeSections).forEach(function (key) {
       var section = sections.find(function (item) { return item.key === key; });
       var details = node("details", "profile-resume-edit-section");
-      details.appendChild(node("summary", "", (section && section.title || resumeSections[key]) + " · " + (section ? section.items.length : 0)));
+      details.appendChild(node("summary", "", (section && section.title || t(resumeSections[key], resumeLanguage)) + " · " + (section ? section.items.length : 0)));
       function ensureSection() {
         if (!section) {
           if (!resumeDraft[resumeLanguage]) resumeDraft[resumeLanguage] = [];
-          section = { key: key, title: resumeSections[key], items: [] };
+          section = { key: key, title: t(resumeSections[key], resumeLanguage), items: [] };
           resumeDraft[resumeLanguage].push(section);
         }
       }
-      var titleLabel = node("label", "", "Բաժնի վերնագիր");
-      var titleInput = node("input"); titleInput.value = section ? section.title : resumeSections[key]; titleInput.maxLength = 100;
+      var titleLabel = node("label", "", t("Բաժնի վերնագիր"));
+      var titleInput = node("input"); titleInput.value = section ? section.title : t(resumeSections[key], resumeLanguage); titleInput.maxLength = 100;
       titleInput.addEventListener("input", function () { ensureSection(); section.title = titleInput.value; });
       titleLabel.appendChild(titleInput); details.appendChild(titleLabel);
       var entries = node("div");
       function addEntry(item) {
         var card = node("div", "profile-resume-edit-entry");
-        [["title", "Անվանում", 200], ["subtitle", "Կազմակերպություն / ժամանակահատված", 300], ["description", "Նկարագրություն", 1500], ["url", "Հղում (ոչ պարտադիր)", 600]].forEach(function (field) {
+        [["title", t("Անվանում"), 200], ["subtitle", t("Կազմակերպություն / ժամանակահատված"), 300], ["description", t("Նկարագրություն"), 1500], ["url", t("Հղում (ոչ պարտադիր)"), 600]].forEach(function (field) {
           var label = node("label", "", field[1]);
           var input = node(field[0] === "description" ? "textarea" : "input");
           if (field[0] === "url") input.type = "url";
@@ -68,13 +153,13 @@
           input.addEventListener("input", function () { item[field[0]] = input.value; });
           label.appendChild(input); card.appendChild(label);
         });
-        var remove = node("button", "btn btn-secondary", "Հեռացնել գրառումը"); remove.type = "button";
+        var remove = node("button", "btn btn-secondary", t("Հեռացնել գրառումը")); remove.type = "button";
         remove.addEventListener("click", function () { section.items.splice(section.items.indexOf(item), 1); card.remove(); });
         card.appendChild(remove); entries.appendChild(card);
       }
       if (section) section.items.forEach(addEntry);
       details.appendChild(entries);
-      var add = node("button", "btn btn-secondary", "+ Ավելացնել գրառում"); add.type = "button";
+      var add = node("button", "btn btn-secondary", t("+ Ավելացնել գրառում")); add.type = "button";
       add.addEventListener("click", function () { ensureSection(); if (section.items.length >= 30) return; var item = { title: "", subtitle: "", description: "", url: "" }; section.items.push(item); addEntry(item); });
       details.appendChild(add); container.appendChild(details);
     });
@@ -122,7 +207,7 @@
     saveEmailBtn.setAttribute("aria-pressed", enabled ? "true" : "false");
     saveEmailBtn.classList.toggle("is-enabled", enabled);
     var label = saveEmailBtn.querySelector(".save-password-label");
-    if (label) label.textContent = enabled ? "Էլ․ հասցեն հիշվում է" : "Հիշել էլ․ հասցեն";
+    if (label) label.textContent = enabled ? t("Էլ․ հասցեն հիշվում է") : t("Հիշել էլ․ հասցեն");
   }
 
   function showOnly(view) {
@@ -146,7 +231,7 @@
           var payload = {};
           try { payload = text ? JSON.parse(text) : {}; } catch (error) { payload = {}; }
           if (!response.ok) {
-            var err = "Հարցումը չհաջողվեց";
+            var err = t("Հարցումը չհաջողվեց");
             if (typeof payload.error === "string") err = payload.error;
             else if (payload.error && typeof payload.error.message === "string") err = payload.error.message;
             else if (typeof payload.message === "string") err = payload.message;
@@ -173,7 +258,7 @@
   function fillProfile(profile) {
     resumeDraft = JSON.parse(JSON.stringify(profile.resume || {}));
     renderResumeEditor();
-    var fullName = profile.full_name || profile.username || "Աշխատակից";
+    var fullName = profile.full_name || profile.username || t("Աշխատակից");
     document.getElementById("edit-full-name").value = profile.full_name || "";
     document.getElementById("edit-username").value = profile.username || "";
     document.getElementById("edit-email").value = profile.email || "";
@@ -185,7 +270,7 @@
     document.getElementById("edit-new-password").value = "";
     document.getElementById("profile-heading-name").textContent = fullName;
     if (profile.position !== undefined || !document.getElementById("edit-position").value) {
-      document.getElementById("edit-position").value = profile.position || "Հաստիքը նշված չէ";
+      document.getElementById("edit-position").value = profile.position || t("Հաստիքը նշված չէ");
       document.getElementById("profile-heading-position").textContent = [profile.position, profile.department].filter(Boolean).join(" · ");
     }
     var publicLink = document.getElementById("profile-public-link");
@@ -230,7 +315,7 @@
       if (email) { email.hidden = !profile.email; email.href = profile.email ? "mailto:" + profile.email : "#"; email.textContent = profile.email || ""; }
       var links = document.getElementById('public-profile-links');
       links.replaceChildren();
-      var labels = { website: 'Կայք', facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn', telegram: 'Telegram', github: 'GitHub', youtube: 'YouTube', whatsapp: 'WhatsApp' };
+      var labels = { website: t("Կայք"), facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn', telegram: 'Telegram', github: 'GitHub', youtube: 'YouTube', whatsapp: 'WhatsApp' };
       // Trusted SVG markup only; profile URLs never become HTML.
       var icons = {
         website: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a19 19 0 0 1 0 18 19 19 0 0 1 0-18Z"/>',
@@ -264,7 +349,7 @@
     return new Promise(function (resolve, reject) {
       var reader = new FileReader();
       reader.onload = function () { resolve(String(reader.result || "")); };
-      reader.onerror = function () { reject(new Error("Նկարը չհաջողվեց կարդալ")); };
+      reader.onerror = function () { reject(new Error(t("Նկարը չհաջողվեց կարդալ"))); };
       reader.readAsDataURL(file);
     });
   }
@@ -279,7 +364,7 @@
       var enabled = saveEmailBtn.getAttribute("aria-pressed") === "true";
       if (enabled) { localStorage.removeItem(savedEmailKey); setSavedEmail(false); return; }
       var email = String(emailField.value || "").trim();
-      if (!email) { loginError.textContent = "Նախ լրացրեք էլ․ հասցեն"; return; }
+      if (!email) { loginError.textContent = t("Նախ լրացրեք էլ․ հասցեն"); return; }
       localStorage.setItem(savedEmailKey, email);
       setSavedEmail(true);
     });
@@ -289,20 +374,20 @@
       var email = String(emailField.value || "").trim();
       var password = String(passwordField.value || "");
       loginError.textContent = "";
-      if (!email || !password) { loginError.textContent = "Էլ․ հասցեն և գաղտնաբառը պարտադիր են"; return; }
+      if (!email || !password) { loginError.textContent = t("Էլ․ հասցեն և գաղտնաբառը պարտադիր են"); return; }
       if (saveEmailBtn && saveEmailBtn.getAttribute("aria-pressed") === "true") localStorage.setItem(savedEmailKey, email);
 
       requestJson("/api/auth/login", { method: "POST", body: { email: email, password: password } })
         .then(function () { window.location.assign("/profile"); })
-        .catch(function (error) { loginError.textContent = error.message || "Մուտք գործելը հնարավոր չէ"; });
+        .catch(function (error) { loginError.textContent = error.message || t("Մուտք գործելը հնարավոր չէ"); });
     });
   }
 
   if (pictureFile) pictureFile.addEventListener("change", function () {
     var file = pictureFile.files && pictureFile.files[0];
     if (!file) return;
-    if (file.size > 7 * 1024 * 1024) { editStatus.textContent = "Նկարը պետք է լինի մինչև 7MB"; return; }
-    editStatus.textContent = "Նկարը բեռնվում է...";
+    if (file.size > 7 * 1024 * 1024) { editStatus.textContent = t("Նկարը պետք է լինի մինչև 7MB"); return; }
+    editStatus.textContent = t("Նկարը բեռնվում է...");
     pictureFile.disabled = true;
     editForm.querySelector('[type="submit"]').disabled = true;
     fileToDataUrl(file).then(function (dataUrl) {
@@ -310,7 +395,7 @@
     }).then(function (payload) {
       document.getElementById("edit-picture").value = payload.url || "";
       updateAvatar(payload.url, document.getElementById("edit-full-name").value);
-      editStatus.textContent = "Նկարը բեռնված է։ Սեղմեք «Պահպանել»։";
+      editStatus.textContent = t("Նկարը բեռնված է։ Սեղմեք «Պահպանել»։");
     }).catch(function (error) { editStatus.textContent = error.message; }).finally(function () {
       pictureFile.disabled = false;
       pictureFile.value = "";
@@ -331,11 +416,11 @@
       message: document.getElementById("edit-message").value.trim(),
       newPassword: document.getElementById("edit-new-password").value
     };
-    editStatus.textContent = "Պահպանվում է...";
+    editStatus.textContent = t("Պահպանվում է...");
     requestJson("/api/profile", { method: "PUT", body: payload }).then(function (result) {
       fillProfile(result.profile || payload);
       try { localStorage.setItem('smarttech.cms.updated', String(Date.now())); } catch (error) {}
-      editStatus.textContent = "Փոփոխությունները պահպանված են։";
+      editStatus.textContent = t("Փոփոխությունները պահպանված են։");
     }).catch(function (error) { editStatus.textContent = error.message; });
   });
 

@@ -5,6 +5,7 @@
       current: "Ընթացիկ",
       completed: "Ավարտված",
       partial: "Մասնակի",
+      filter: "Նախագծերի զտում",
       viewProject: "Դիտել նախագիծը",
       worksDone: "Իրականացված աշխատանքներ"
     },
@@ -13,6 +14,7 @@
       current: "Ongoing",
       completed: "Completed",
       partial: "Partial",
+      filter: "Filter projects",
       viewProject: "View Project",
       worksDone: "Implemented Scope"
     },
@@ -21,6 +23,7 @@
       current: "Текущие",
       completed: "Завершенные",
       partial: "Частичные",
+      filter: "Фильтр проектов",
       viewProject: "Смотреть проект",
       worksDone: "Выполненные работы"
     }
@@ -50,9 +53,9 @@
       filterTabs.push({ key: "partial", label: labels.partial, count: partialCount });
     }
 
-    var filterBarHtml = '<div class="projects-filter-bar" role="tablist" aria-label="Projects filter">' +
+    var filterBarHtml = '<div class="projects-filter-bar" role="group" aria-label="' + e(labels.filter) + '">' +
       filterTabs.map(function (tab) {
-        return '<button type="button" class="projects-filter-btn' + (tab.key === "all" ? " is-active" : "") + '" data-filter="' + e(tab.key) + '">' +
+        return '<button type="button" class="projects-filter-btn' + (tab.key === "all" ? " is-active" : "") + '" data-filter="' + e(tab.key) + '" aria-pressed="' + (tab.key === "all") + '">' +
           '<span>' + e(tab.label) + '</span>' +
           '<span class="projects-filter-count">' + e(String(tab.count)) + '</span>' +
         '</button>';
@@ -65,11 +68,10 @@
       var statusLabels = project.statusLabels || {};
       var statusText = statusLabels[language] || statusLabels.en || statusLabels.hy || "";
       var stageBadge = site.projectBadgeStage ? site.projectBadgeStage(project, language) : (site.projectStages ? site.projectStages.badgeStage(project, language) : "");
-      var badgeText = (status === "current" && stageBadge) ? stageBadge : (statusText || (status === "current" ? labels.current : labels.completed));
+      var badgeText = (status === "current" && stageBadge) ? stageBadge : (statusText || labels[status] || labels.completed);
       var stageNote = site.projectStages ? site.projectStages.label(project, language) : "";
       var showPhaseNote = stageNote && stageNote !== badgeText;
       var image = (project.images && project.images[0]) || "/img/projects/arm-construct-logo.jpg";
-      var orderNum = String(index + 1).padStart(2, "0");
       var works = (text.works || project.works || []).slice(0, 3).map(function (w) {
         var label = typeof w === "object" ? (w.title || w.name || "") : w;
         return '<span class="project-card-modern-tag">' + e(label) + '</span>';
@@ -82,12 +84,11 @@
               '<img src="' + e(image) + '" alt="' + e(text.title) + '" loading="' + (index < 6 ? "eager" : "lazy") + '" decoding="async" onerror="this.style.opacity=0;">' +
               '<div class="project-card-modern-overlay"></div>' +
               '<span class="project-status-badge is-' + e(status) + '">' + e(badgeText) + '</span>' +
-              '<span class="project-card-modern-num">' + e(orderNum) + '</span>' +
             '</div>' +
             '<div class="project-card-modern-body">' +
               '<h3 class="project-card-modern-title">' + e(text.title) + '</h3>' +
               (showPhaseNote ? '<p class="project-card-modern-phase">' + e(stageNote) + '</p>' : '') +
-              (project.phase && !showPhaseNote ? '<p class="project-card-modern-phase">' + e(project.phase) + '</p>' : '') +
+              (text.phase && !showPhaseNote ? '<p class="project-card-modern-phase">' + e(text.phase) + '</p>' : '') +
               '<div class="project-card-modern-works">' + works + '</div>' +
               '<div class="project-card-modern-footer">' +
                 '<span class="project-card-modern-link">' + e(labels.viewProject) + '</span>' +
@@ -112,8 +113,10 @@
         if (bar) {
           bar.querySelectorAll(".projects-filter-btn").forEach(function (b) {
             b.classList.remove("is-active");
+            b.setAttribute("aria-pressed", "false");
           });
           btn.classList.add("is-active");
+          btn.setAttribute("aria-pressed", "true");
         }
         var grid = document.querySelector(".projects-modern-grid");
         if (grid) {

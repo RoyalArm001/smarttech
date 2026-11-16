@@ -429,7 +429,6 @@
     }
 
     var homeTechLogos = marqueePartners.map(homePartnerLogoMarkup).join("");
-    var homeTechLogosLoop = homeTechLogos;
 
     var homeClientsSection = homeTechLogos ? "" +
       '<section class="section home-partners-strip" id="partners">' +
@@ -443,10 +442,9 @@
             '<a class="button" href="' + e(site.utils.pageUrl("partners")) + '">' + e(site.i18n.get("home.servedClientsButton", "Տեսնել բոլորը")) + "</a>" +
           "</div>" +
         "</div>" +
-        '<div class="home-partner-marquee" data-home-partner-marquee>' +
+        '<div class="home-partner-marquee" data-home-partner-marquee tabindex="0">' +
           '<div class="home-partner-marquee-track">' +
             '<div class="home-partner-marquee-group">' + homeTechLogos + "</div>" +
-            '<div class="home-partner-marquee-group" aria-hidden="true">' + homeTechLogosLoop + "</div>" +
           "</div>" +
         "</div>" +
       "</section>" : "";

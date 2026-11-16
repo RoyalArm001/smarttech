@@ -831,7 +831,7 @@ function requireAdmin(request, response, next) {
 
 async function getUserSession(request) {
   const cookies = parseCookies(request);
-  const accessToken = cookies[userSessionCookie] || cookies[adminSessionCookie];
+  const accessToken = cookies[userSessionCookie];
   const client = getSupabaseClient();
   if (!accessToken || !client) return null;
   const result = await client.auth.getUser(accessToken);
@@ -1671,7 +1671,7 @@ function chatLimiterHandler(request, response) {
 }
 
 function chatUserLimiterKey(request) {
-  return ipKeyGenerator(request);
+  return ipKeyGenerator(request.ip);
 }
 
 const chatUserLimiter = rateLimit({
@@ -1705,7 +1705,7 @@ const chatPageGlobalLimiter = rateLimit({
 function chatPageClientKey(request) {
   const clientId = cleanChatText(request.body && request.body.clientId, 80);
   if (clientId) return "chat-page:" + clientId;
-  return "chat-page-ip:" + ipKeyGenerator(request);
+  return "chat-page-ip:" + ipKeyGenerator(request.ip);
 }
 
 const chatPageAbuseLimiter = rateLimit({
@@ -1817,6 +1817,8 @@ if (appMode.isWebEnabled()) require('./lib/project-seo-routes')(app, async () =>
   const data = await fetchSupabasePublicData();
   return data && Array.isArray(data.collections?.projects) ? data.collections.projects : require('./lib/project-seo').catalog;
 });
+
+if (appMode.isWebEnabled()) require('./lib/publication-routes')(app);
 
 app.get("/robots.txt", publicApiLimiter, (request, response) => {
   response.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -1958,12 +1960,6 @@ if (appMode.isWebEnabled()) {
       if (String(data.user.email || "").toLowerCase() === ownerAdminEmail) {
         profileRole = "admin";
       }
-      if (profileRole === "admin") {
-        response.setHeader("Set-Cookie", [
-          userSessionCookieString(data.session.access_token, request, expiresAt),
-          sessionCookie(data.session.access_token, request, expiresAt)
-        ]);
-      }
       if (existingProfile.data) {
         await profileClient.from("profiles").update(profileData).eq("id", data.user.id);
       } else if (!existingProfile.error) {
@@ -1990,21 +1986,6 @@ if (appMode.isWebEnabled()) {
   });
 
   app.get("/api/auth/session", async (request, response) => {
-    const adminSession = await getAdminSession(request);
-    if (adminSession && adminSession.userId) {
-      jsonResponse(response, 200, {
-        authenticated: true,
-        user: {
-          id: adminSession.userId,
-          email: adminSession.email,
-          full_name: adminSession.fullName || null,
-          username: adminSession.username || null,
-          role: "admin"
-        }
-      });
-      return;
-    }
-
     const cookieSession = await getUserSession(request);
     if (cookieSession && cookieSession.userId) {
       jsonResponse(response, 200, {

@@ -83,7 +83,7 @@
     "systemImages": [],
     "translations": {
       "en": {
-        "phase": "In progress · installation, 60 Komitas Avenue",
+        "phase": "Handover, 60 Komitas Avenue",
         "title": "Reset Wellness Club",
         "works": [
           "Cabling for security systems",
@@ -92,7 +92,7 @@
         ]
       },
       "ru": {
-        "phase": "В процессе · монтаж, проспект Комитаса, 60",
+        "phase": "Сдача, проспект Комитаса, 60",
         "title": "Reset Wellness Club",
         "works": [
           "????????? ??????? ?????? ????????????",
@@ -103,7 +103,7 @@
     },
     "status": "current",
     "stage": "handover",
-    "phase": "Ընթացքում · տեղադրում, Կոմիտասի պողոտա 60",
+    "phase": "Հանձնում, Կոմիտասի պողոտա 60",
     "progress": 0,
     "updated_at": "2026-10-24T15:16:56.821+00:00",
     "order": 0
@@ -315,7 +315,7 @@
     ],
     "translations": {
       "en": {
-        "phase": "In progress ? installation, Komitas Avenue 60",
+        "phase": "Installation in progress, 60 Komitas Avenue",
         "title": "Arm Construct",
         "works": [
           "Video surveillance system installation",

@@ -1,0 +1,212 @@
+{
+  "cctv-installation-cost-armenia": {
+    "en": {
+      "sections": [
+        { "heading": "What a CCTV project includes", "body": "Professional video surveillance includes cameras, an NVR/DVR, HDD storage, a PoE switch, a UPS, cabling, configuration and remote monitoring. Smart Tech LLC has delivered projects in Yerevan and across Armenia since 2012." },
+        { "heading": "Main cost factors", "body": "The cost depends on the number and type of cameras (fixed, varifocal or PTZ), retention days, cable routes, night-time image quality and integration with access control." },
+        { "heading": "Getting an accurate quote", "body": "An accurate quote requires a site survey. Submit a request at smarttechllc.am/request or call +37477424643." }
+      ],
+      "faq": [
+        { "question": "How much does a four-camera system cost?", "answer": "It depends on the camera class, storage and cabling. The team provides an accurate estimate after a site survey." },
+        { "question": "Does the price include maintenance?", "answer": "Maintenance can be covered by a separate agreement depending on the project." }
+      ]
+    },
+    "ru": {
+      "title": "Стоимость установки видеонаблюдения в Армении",
+      "description": "От чего зависит стоимость видеонаблюдения в Армении — камеры, архив, кабельные трассы, удалённый просмотр и обследование объекта.",
+      "sections": [
+        { "heading": "Что входит в проект видеонаблюдения", "body": "Профессиональная система включает камеры, NVR/DVR, жёсткие диски для архива, PoE-коммутатор, ИБП, кабельные линии, настройку и удалённый мониторинг. Smart Tech LLC реализует проекты в Ереване и регионах Армении с 2012 года." },
+        { "heading": "Основные факторы стоимости", "body": "Стоимость зависит от количества и типа камер (фиксированные, вариофокальные или PTZ), срока хранения архива, кабельных трасс, качества ночного изображения и интеграции с контролем доступа." },
+        { "heading": "Как получить точное предложение", "body": "Для точного расчёта необходимо обследование объекта. Оставьте заявку на smarttechllc.am/request или позвоните по номеру +37477424643." }
+      ],
+      "faq": [
+        { "question": "Сколько стоит система из четырёх камер?", "answer": "Стоимость зависит от класса камер, архива и кабельных работ. После обследования команда подготовит точный расчёт." },
+        { "question": "Входит ли обслуживание в стоимость?", "answer": "В зависимости от проекта обслуживание может предоставляться по отдельному договору." }
+      ]
+    }
+  },
+  "fire-alarm-regulations-armenia": {
+    "en": {
+      "sections": [
+        { "heading": "Why fire alarms matter", "body": "Early detection saves lives and reduces damage. Fire protection is a core requirement for hotels, retail premises and offices." },
+        { "heading": "Engineering approach", "body": "Smart Tech designs detection zones, detector placement, control panels, sirens and evacuation notification according to the building's purpose." },
+        { "heading": "Handover and maintenance", "body": "Commissioning is followed by testing, user training and periodic maintenance." }
+      ]
+    },
+    "ru": {
+      "title": "Требования к пожарной сигнализации в Армении",
+      "description": "Основные требования пожарной безопасности и инженерный подход для коммерческих объектов в Армении.",
+      "sections": [
+        { "heading": "Зачем нужна пожарная сигнализация", "body": "Раннее обнаружение спасает жизни и снижает ущерб. Пожарная защита — одно из основных требований для гостиниц, торговых и офисных объектов." },
+        { "heading": "Инженерный подход", "body": "Smart Tech проектирует зоны обнаружения, размещение извещателей, панели управления, сирены и оповещение об эвакуации с учётом назначения объекта." },
+        { "heading": "Сдача и обслуживание", "body": "После запуска выполняются испытания, обучение пользователей и периодическое обслуживание." }
+      ]
+    }
+  },
+  "smart-building-systems-yerevan": {
+    "en": {
+      "sections": [
+        { "heading": "What is a smart building?", "body": "A smart building brings lighting, climate, security, access control and energy monitoring together on one management platform." },
+        { "heading": "Benefits", "body": "It reduces energy costs, improves comfort and provides centralized monitoring." },
+        { "heading": "Smart Tech's experience", "body": "We have delivered BMS and automation projects in hotels, offices and residential complexes." }
+      ]
+    },
+    "ru": {
+      "title": "Системы умного здания в Ереване",
+      "description": "BMS, автоматизация, управление освещением, интеграция климатических систем и мониторинг для офисов и гостиниц Еревана.",
+      "sections": [
+        { "heading": "Что такое умное здание", "body": "Умное здание объединяет освещение, климат, безопасность, контроль доступа и энергомониторинг на одной платформе управления." },
+        { "heading": "Преимущества", "body": "Система снижает расходы на энергию, повышает комфорт и обеспечивает централизованный мониторинг." },
+        { "heading": "Опыт Smart Tech", "body": "Мы реализовали проекты BMS и автоматизации в гостиницах, офисах и жилых комплексах." }
+      ]
+    }
+  },
+  "access-control-systems-guide": {
+    "en": {
+      "sections": [
+        { "heading": "Main options", "body": "Card access, PIN codes, biometrics (fingerprint or face), mobile applications and unlocking doors by phone." },
+        { "heading": "Questions to consider", "body": "Consider the number of entrances and users, round-the-clock access, CCTV integration and whether an intercom is needed." },
+        { "heading": "Installation", "body": "Smart Tech provides design, installation, configuration and maintenance in Yerevan and across Armenia." }
+      ]
+    },
+    "ru": {
+      "title": "Руководство по системам контроля доступа",
+      "description": "Выбор контроля доступа — карты, биометрия, домофон, открытие с телефона и интеграция систем.",
+      "sections": [
+        { "heading": "Основные варианты", "body": "Карточный доступ, PIN-коды, биометрия (отпечаток пальца или лицо), мобильные приложения и открытие двери с телефона." },
+        { "heading": "Важные вопросы", "body": "Учитывайте количество входов и пользователей, круглосуточный доступ, интеграцию с видеонаблюдением и необходимость домофона." },
+        { "heading": "Установка", "body": "Smart Tech выполняет проектирование, монтаж, настройку и обслуживание в Ереване и по всей Армении." }
+      ]
+    }
+  },
+  "security-systems-hotels": {
+    "en": {
+      "sections": [
+        { "heading": "Hotel requirements", "body": "Hotels need to account for leisure areas, reception, parking, corridors and emergency scenarios." },
+        { "heading": "Integrated solution", "body": "Smart Tech has worked on Wyndham Grand Tsaghkadzor, Eria Hotel, Abovyan 5/5 Hotel and other projects." },
+        { "heading": "Recommended systems", "body": "IP video surveillance, access control, fire alarms, networking, public address and BMS." }
+      ]
+    },
+    "ru": {
+      "title": "Системы безопасности для гостиниц",
+      "description": "Безопасность гостиниц — видеонаблюдение, контроль доступа, пожарная сигнализация, сеть и интеграция BMS.",
+      "sections": [
+        { "heading": "Особенности гостиницы", "body": "В гостиницах важно учитывать зоны отдыха, стойку регистрации, парковку, коридоры и аварийные сценарии." },
+        { "heading": "Комплексное решение", "body": "Smart Tech работала над проектами Wyndham Grand Tsaghkadzor, Eria Hotel, Abovyan 5/5 Hotel и другими объектами." },
+        { "heading": "Предлагаемые системы", "body": "IP-видеонаблюдение, контроль доступа, пожарная сигнализация, сеть, громкоговорящее оповещение и BMS." }
+      ]
+    }
+  },
+  "security-systems-banks": {
+    "en": {
+      "sections": [
+        { "heading": "Bank requirements", "body": "Long archive retention, clear images, access control, alarm zones and network security." },
+        { "heading": "Smart Tech's experience", "body": "We have delivered integrated solutions for ACBA Bank at 80 Sebastia Street, Evocabank and other projects." }
+      ]
+    },
+    "ru": {
+      "title": "Системы безопасности для банков",
+      "description": "Безопасность банков — видеонаблюдение, контроль доступа, сигнализация, архив и защищённая сеть.",
+      "sections": [
+        { "heading": "Требования банка", "body": "Длительное хранение архива, чёткое изображение, контроль доступа, зоны сигнализации и сетевая безопасность." },
+        { "heading": "Опыт Smart Tech", "body": "Мы реализовали комплексные решения для ACBA Bank по адресу Себастия, 80, Evocabank и других проектов." }
+      ]
+    }
+  },
+  "security-systems-warehouses": {
+    "en": {
+      "sections": [
+        { "heading": "Warehouse challenges", "body": "Large floor areas, high walls, truck traffic, night-time security and remote viewing." },
+        { "heading": "Solutions", "body": "Outdoor cameras, IR/ColorVu, perimeter sensors, NVR storage, a UPS and remote alerts." }
+      ]
+    },
+    "ru": {
+      "title": "Системы безопасности для складов",
+      "description": "Видеонаблюдение складов, защита периметра, контроль доступа и сеть с учётом опыта работы с Wildberries и промышленными объектами.",
+      "sections": [
+        { "heading": "Особенности склада", "body": "Большая площадь, высокие стены, поток грузовиков, ночная охрана и удалённый просмотр." },
+        { "heading": "Решения", "body": "Уличные камеры, IR/ColorVu, периметральные датчики, архив NVR, ИБП и удалённые оповещения." }
+      ]
+    }
+  },
+  "electrical-installation-standards-armenia": {
+    "en": {
+      "sections": [
+        { "heading": "Safety fundamentals", "body": "Correct cabling, distribution boards, protective devices and grounding form the basis of a safe power supply." },
+        { "heading": "Design and delivery", "body": "Smart Tech provides design, installation, testing and handover with infrastructure prepared for automation." }
+      ]
+    },
+    "ru": {
+      "title": "Стандарты электромонтажа в Армении",
+      "description": "Безопасность электромонтажа, заземление, щиты, расчёт нагрузок и инженерный проект.",
+      "sections": [
+        { "heading": "Основа безопасности", "body": "Правильная прокладка кабелей, распределительные щиты, защитные устройства и заземление — основа безопасного электроснабжения." },
+        { "heading": "Проектирование и реализация", "body": "Smart Tech выполняет проектирование, монтаж, испытания и сдачу с подготовкой инфраструктуры для автоматизации." }
+      ]
+    }
+  },
+  "structured-cabling-armenia": {
+    "en": {
+      "sections": [
+        { "heading": "Why it matters", "body": "Structured cabling provides a stable network, room for expansion and professional maintainability." },
+        { "heading": "What we do", "body": "Design, UTP and fiber installation, racks, patch panels, switches, Wi-Fi access points and testing." }
+      ]
+    },
+    "ru": {
+      "title": "Структурированные кабельные системы в Армении",
+      "description": "Проектирование сетей UTP, оптоволокна, патч-панелей, стоек и Wi-Fi для офисов и торговых объектов.",
+      "sections": [
+        { "heading": "Почему это важно", "body": "Структурированная кабельная система обеспечивает стабильную сеть, возможность расширения и удобство профессионального обслуживания." },
+        { "heading": "Что мы выполняем", "body": "Проектирование, прокладка UTP и оптоволокна, установка стоек, патч-панелей, коммутаторов, точек доступа Wi-Fi и тестирование." }
+      ]
+    }
+  },
+  "hotel-cctv-design-checklist": {
+    "en": {
+      "sections": [
+        { "heading": "Zones", "body": "Entrances, reception, corridors, lifts, parking and loading areas, with respect for privacy." },
+        { "heading": "Equipment", "body": "IP cameras, NVR, PoE, a UPS, remote monitoring and integration with access control." }
+      ]
+    },
+    "ru": {
+      "title": "Проверочный список для проектирования видеонаблюдения гостиницы",
+      "description": "Проверочный список проекта видеонаблюдения гостиницы — зоны, архив, конфиденциальность и удалённый просмотр.",
+      "sections": [
+        { "heading": "Зоны", "body": "Входы, стойка регистрации, коридоры, лифты, парковка и погрузочные зоны с соблюдением конфиденциальности." },
+        { "heading": "Оборудование", "body": "IP-камеры, NVR, PoE, ИБП, удалённый мониторинг и интеграция с контролем доступа." }
+      ]
+    }
+  },
+  "nvr-storage-guide-armenia": {
+    "en": {
+      "sections": [
+        { "heading": "Calculation basics", "body": "Storage capacity depends on camera count, resolution, compression and retention days." },
+        { "heading": "Guidance", "body": "Business premises commonly choose 14–30 or more days of storage, depending on their requirements." }
+      ]
+    },
+    "ru": {
+      "title": "Руководство по расчёту архива NVR",
+      "description": "Какой объём HDD требуется для архива видеонаблюдения с учётом количества камер, битрейта и срока хранения.",
+      "sections": [
+        { "heading": "Основы расчёта", "body": "Объём архива зависит от количества камер, разрешения, сжатия и количества дней хранения." },
+        { "heading": "Рекомендация", "body": "Для коммерческих объектов обычно выбирают хранение от 14–30 дней и более в зависимости от требований." }
+      ]
+    }
+  },
+  "wifi-office-yerevan": {
+    "en": {
+      "sections": [
+        { "heading": "Challenges", "body": "Thick walls, multiple floors, a high number of users and coverage dead zones." },
+        { "heading": "Solution", "body": "A site survey, access point installation, a PoE switch, a router/firewall and configuration." }
+      ]
+    },
+    "ru": {
+      "title": "Покрытие Wi-Fi для офисов в Ереване",
+      "description": "Проектирование офисного Wi-Fi — точки доступа, VLAN, гостевая сеть и стабильное покрытие.",
+      "sections": [
+        { "heading": "Проблемы", "body": "Толстые стены, несколько этажей, большое количество пользователей и зоны без покрытия." },
+        { "heading": "Решение", "body": "Обследование объекта, установка точек доступа, PoE-коммутатора, маршрутизатора с межсетевым экраном и настройка." }
+      ]
+    }
+  }
+}

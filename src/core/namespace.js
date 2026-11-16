@@ -8,6 +8,7 @@
   ];
   function valid(value) { return stages.some(function (stage) { return stage.id === value; }); }
   function selected(project) {
+    if (!project) return "";
     if (project.status === "completed") return "handover";
     return valid(project.stage) ? project.stage : "";
   }
@@ -16,17 +17,7 @@
     return stage ? (stage.labels[language] || stage.labels.hy) : "";
   }
   function badgeStageId(project) {
-    if (!project) return "";
-    if (valid(project.stage)) return project.stage;
-    if (project.status === "current") {
-      var works = Array.isArray(project.works) ? project.works.join(" ") : "";
-      var text = (works + " " + (project.title || "") + " " + (project.id || "")).toLowerCase();
-      if (text.includes("ծրագրավ") || text.includes("programm") || text.includes("програм") || text.includes("only-one")) {
-        return "programming";
-      }
-      return "installation";
-    }
-    return "";
+    return selected(project);
   }
   function badgeStage(project, language) {
     var id = badgeStageId(project);

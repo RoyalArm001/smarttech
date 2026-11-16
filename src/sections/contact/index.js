@@ -10,7 +10,7 @@
     var phoneLinks = contacts.phones.map(function (phone, index) {
       return '' +
         '<a class="contact-line" href="' + e(site.utils.telHref(phone.number)) + '">' +
-          '<span>' + e(phone.label || phoneLabels[index] || "") + '</span>' +
+          '<span>' + e(site.i18n.language === "hy" ? phone.label || phoneLabels[index] || "" : phoneLabels[index] || phone.label || "") + '</span>' +
           '<strong>' + e(site.utils.phoneDisplay(phone.number)) + '</strong>' +
         '</a>';
     }).join("");
@@ -45,7 +45,7 @@
               phoneLinks +
               emailLinks +
               '<a class="contact-line" href="' + e(mapUrl) + '" target="_blank" rel="noreferrer">' +
-                '<span>' + e(labels.address) + '</span><strong>' + e(contacts.addressHy) + '</strong>' +
+                '<span>' + e(labels.address) + '</span><strong>' + e(site.i18n.language === "hy" ? contacts.addressHy : contacts.address) + '</strong>' +
               '</a>' +
             '</div>' +
             '<div class="social-row">' + socialLinks + '</div>' +
